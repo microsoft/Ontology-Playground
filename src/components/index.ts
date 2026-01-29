@@ -6,4 +6,5 @@ export { Header } from './Header';
 export { WelcomeModal } from './WelcomeModal';
 export { HelpModal } from './HelpModal';
 export { DataSourcesModal } from './DataSourcesModal';
+export { ImportExportModal } from './ImportExportModal';
 export { Toast } from './Toast';

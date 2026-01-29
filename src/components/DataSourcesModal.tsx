@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
 import { X, Database, Table, BarChart3, Cloud } from 'lucide-react';
-import { cosmicCoffeeOntology, sampleBindings } from '../data/ontology';
+import { useAppStore } from '../store/appStore';
 
 interface DataSourcesModalProps {
   onClose: () => void;
 }
 
 export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
+  const { currentOntology, dataBindings } = useAppStore();
+  
   return (
     <motion.div
       className="modal-overlay"
@@ -66,8 +68,8 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
 
         {/* Bindings Grid */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {sampleBindings.map((binding) => {
-            const entity = cosmicCoffeeOntology.entityTypes.find(e => e.id === binding.entityTypeId);
+          {dataBindings.map((binding) => {
+            const entity = currentOntology.entityTypes.find(e => e.id === binding.entityTypeId);
             if (!entity) return null;
 
             const isLakehouse = binding.source === 'OneLake';

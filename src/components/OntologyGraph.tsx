@@ -1,7 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import cytoscape from 'cytoscape';
 import type { Core, EventObject } from 'cytoscape';
-import { cosmicCoffeeOntology } from '../data/ontology';
 import { useAppStore } from '../store/appStore';
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw } from 'lucide-react';
 
@@ -10,6 +9,7 @@ export function OntologyGraph() {
   const containerRef = useRef<HTMLDivElement>(null);
   
   const {
+    currentOntology,
     selectedEntityId,
     selectedRelationshipId,
     highlightedEntities,
@@ -23,7 +23,7 @@ export function OntologyGraph() {
 
   // Build graph elements from ontology
   const buildElements = useCallback(() => {
-    const nodes = cosmicCoffeeOntology.entityTypes.map(entity => ({
+    const nodes = currentOntology.entityTypes.map(entity => ({
       data: {
         id: entity.id,
         label: `${entity.icon} ${entity.name}`,
@@ -35,7 +35,7 @@ export function OntologyGraph() {
       }
     }));
 
-    const edges = cosmicCoffeeOntology.relationships.map(rel => ({
+    const edges = currentOntology.relationships.map(rel => ({
       data: {
         id: rel.id,
         source: rel.from,
@@ -48,7 +48,7 @@ export function OntologyGraph() {
     }));
 
     return [...nodes, ...edges];
-  }, []);
+  }, [currentOntology]);
 
   // Initialize Cytoscape
   useEffect(() => {
@@ -326,7 +326,7 @@ export function OntologyGraph() {
 
       <div className="graph-legend">
         <div className="legend-title">Entity Types</div>
-        {cosmicCoffeeOntology.entityTypes.map(entity => (
+        {currentOntology.entityTypes.map(entity => (
           <div key={entity.id} className="legend-item">
             <div className="legend-dot" style={{ backgroundColor: entity.color }} />
             <span>{entity.icon} {entity.name}</span>

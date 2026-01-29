@@ -1,8 +1,14 @@
 import { create } from 'zustand';
 import type { Quest } from '../data/quests';
 import { quests } from '../data/quests';
+import type { Ontology, DataBinding } from '../data/ontology';
+import { cosmicCoffeeOntology, sampleBindings } from '../data/ontology';
 
 interface AppState {
+  // Ontology State
+  currentOntology: Ontology;
+  dataBindings: DataBinding[];
+  
   // UI State
   selectedEntityId: string | null;
   selectedRelationshipId: string | null;
@@ -21,6 +27,11 @@ interface AppState {
   // Query State
   queryInput: string;
   queryResult: string | null;
+  
+  // Ontology Actions
+  loadOntology: (ontology: Ontology, bindings?: DataBinding[]) => void;
+  resetToDefault: () => void;
+  exportOntology: () => string;
   
   // Actions
   selectEntity: (id: string | null) => void;
@@ -43,6 +54,10 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
+  // Initial Ontology State
+  currentOntology: cosmicCoffeeOntology,
+  dataBindings: sampleBindings,
+  
   // Initial UI State
   selectedEntityId: null,
   selectedRelationshipId: null,
@@ -61,6 +76,32 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Initial Query State
   queryInput: '',
   queryResult: null,
+  
+  // Ontology Actions
+  loadOntology: (ontology, bindings = []) => set({
+    currentOntology: ontology,
+    dataBindings: bindings,
+    selectedEntityId: null,
+    selectedRelationshipId: null,
+    highlightedEntities: [],
+    highlightedRelationships: [],
+    activeQuest: null,
+    currentStepIndex: 0
+  }),
+  
+  resetToDefault: () => set({
+    currentOntology: cosmicCoffeeOntology,
+    dataBindings: sampleBindings,
+    selectedEntityId: null,
+    selectedRelationshipId: null,
+    highlightedEntities: [],
+    highlightedRelationships: []
+  }),
+  
+  exportOntology: () => {
+    const { currentOntology, dataBindings } = get();
+    return JSON.stringify({ ontology: currentOntology, bindings: dataBindings }, null, 2);
+  },
   
   // UI Actions
   selectEntity: (id) => set({ 

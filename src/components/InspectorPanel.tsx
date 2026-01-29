@@ -1,9 +1,8 @@
-import { cosmicCoffeeOntology, sampleBindings } from '../data/ontology';
 import { useAppStore } from '../store/appStore';
 import { Database, ArrowRight, Key, Link2, Layers, Box, GitBranch } from 'lucide-react';
 
 export function InspectorPanel() {
-  const { selectedEntityId, selectedRelationshipId, showDataBindings } = useAppStore();
+  const { currentOntology, dataBindings, selectedEntityId, selectedRelationshipId, showDataBindings } = useAppStore();
 
   if (!selectedEntityId && !selectedRelationshipId) {
     return (
@@ -23,11 +22,11 @@ export function InspectorPanel() {
   }
 
   if (selectedRelationshipId) {
-    const relationship = cosmicCoffeeOntology.relationships.find(r => r.id === selectedRelationshipId);
+    const relationship = currentOntology.relationships.find(r => r.id === selectedRelationshipId);
     if (!relationship) return null;
 
-    const fromEntity = cosmicCoffeeOntology.entityTypes.find(e => e.id === relationship.from);
-    const toEntity = cosmicCoffeeOntology.entityTypes.find(e => e.id === relationship.to);
+    const fromEntity = currentOntology.entityTypes.find(e => e.id === relationship.from);
+    const toEntity = currentOntology.entityTypes.find(e => e.id === relationship.to);
 
     return (
       <div className="inspector-panel">
@@ -91,11 +90,11 @@ export function InspectorPanel() {
     );
   }
 
-  const entity = cosmicCoffeeOntology.entityTypes.find(e => e.id === selectedEntityId);
+  const entity = currentOntology.entityTypes.find(e => e.id === selectedEntityId);
   if (!entity) return null;
 
-  const binding = sampleBindings.find(b => b.entityTypeId === selectedEntityId);
-  const entityRelationships = cosmicCoffeeOntology.relationships.filter(
+  const binding = dataBindings.find(b => b.entityTypeId === selectedEntityId);
+  const entityRelationships = currentOntology.relationships.filter(
     r => r.from === selectedEntityId || r.to === selectedEntityId
   );
 
@@ -143,7 +142,7 @@ export function InspectorPanel() {
             {entityRelationships.map(rel => {
               const isOutgoing = rel.from === selectedEntityId;
               const otherEntityId = isOutgoing ? rel.to : rel.from;
-              const otherEntity = cosmicCoffeeOntology.entityTypes.find(e => e.id === otherEntityId);
+              const otherEntity = currentOntology.entityTypes.find(e => e.id === otherEntityId);
               
               return (
                 <div key={rel.id} className="property-item">
