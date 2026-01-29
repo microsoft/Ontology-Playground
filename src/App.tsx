@@ -7,6 +7,8 @@ import {
   InspectorPanel, 
   QueryPlayground,
   WelcomeModal,
+  HelpModal,
+  DataSourcesModal,
   Toast
 } from './components';
 import { useAppStore } from './store/appStore';
@@ -14,6 +16,8 @@ import './styles/app.css';
 
 function App() {
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showHelp, setShowHelp] = useState(false);
+  const [showDataSources, setShowDataSources] = useState(false);
   const [toast, setToast] = useState<{ message: string; icon: string } | null>(null);
   const { darkMode, earnedBadges } = useAppStore();
 
@@ -33,7 +37,10 @@ function App() {
 
   return (
     <div className={`app-container ${darkMode ? '' : 'light-theme'}`}>
-      <Header />
+      <Header 
+        onHelpClick={() => setShowHelp(true)} 
+        onDataSourcesClick={() => setShowDataSources(true)} 
+      />
       <QuestPanel />
       <OntologyGraph />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -43,6 +50,14 @@ function App() {
 
       <AnimatePresence>
         {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showDataSources && <DataSourcesModal onClose={() => setShowDataSources(false)} />}
       </AnimatePresence>
 
       <AnimatePresence>

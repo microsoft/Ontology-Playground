@@ -4,4 +4,6 @@ export { QuestPanel } from './QuestPanel';
 export { QueryPlayground } from './QueryPlayground';
 export { Header } from './Header';
 export { WelcomeModal } from './WelcomeModal';
+export { HelpModal } from './HelpModal';
+export { DataSourcesModal } from './DataSourcesModal';
 export { Toast } from './Toast';

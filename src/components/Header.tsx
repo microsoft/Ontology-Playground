@@ -1,7 +1,12 @@
 import { useAppStore } from '../store/appStore';
 import { Moon, Sun, Database, Trophy, HelpCircle } from 'lucide-react';
 
-export function Header() {
+interface HeaderProps {
+  onHelpClick: () => void;
+  onDataSourcesClick: () => void;
+}
+
+export function Header({ onHelpClick, onDataSourcesClick }: HeaderProps) {
   const { darkMode, toggleDarkMode, totalPoints, earnedBadges } = useAppStore();
 
   return (
@@ -34,10 +39,10 @@ export function Header() {
       </div>
 
       <div className="header-actions">
-        <button className="icon-btn" title="Help">
+        <button className="icon-btn" onClick={onHelpClick} title="Help">
           <HelpCircle size={20} />
         </button>
-        <button className="icon-btn" title="Data Sources">
+        <button className="icon-btn" onClick={onDataSourcesClick} title="Data Sources">
           <Database size={20} />
         </button>
         <button className="icon-btn" onClick={toggleDarkMode} title="Toggle Theme">
