@@ -6,6 +6,7 @@ import {
   QuestPanel, 
   InspectorPanel, 
   QueryPlayground,
+  SearchFilter,
   WelcomeModal,
   HelpModal,
   DataSourcesModal,
@@ -50,6 +51,7 @@ function App() {
       <QuestPanel />
       <OntologyGraph />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <SearchFilter />
         <InspectorPanel />
         <QueryPlayground />
       </div>
