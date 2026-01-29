@@ -18,8 +18,14 @@ export function OntologyGraph() {
     selectRelationship,
     activeQuest,
     currentStepIndex,
-    advanceQuestStep
+    advanceQuestStep,
+    darkMode
   } = useAppStore();
+  
+  // Theme-aware colors
+  const themeColors = darkMode 
+    ? { nodeText: '#B3B3B3', edgeColor: '#505050', edgeText: '#808080' }
+    : { nodeText: '#2A2A2A', edgeColor: '#888888', edgeText: '#555555' };
 
   // Build graph elements from ontology
   const buildElements = useCallback(() => {
@@ -68,7 +74,7 @@ export function OntologyGraph() {
             'font-size': '14px',
             'font-family': 'Segoe UI, sans-serif',
             'font-weight': 600,
-            'color': '#B3B3B3',
+            'color': themeColors.nodeText,
             'text-margin-y': 10,
             'width': 70,
             'height': 70,
@@ -114,12 +120,12 @@ export function OntologyGraph() {
             'label': 'data(label)',
             'font-size': '12px',
             'font-family': 'Segoe UI, sans-serif',
-            'color': '#808080',
+            'color': themeColors.edgeText,
             'text-rotation': 'autorotate',
             'text-margin-y': -10,
             'width': 3,
-            'line-color': '#404040',
-            'target-arrow-color': '#404040',
+            'line-color': themeColors.edgeColor,
+            'target-arrow-color': themeColors.edgeColor,
             'target-arrow-shape': 'triangle',
             'curve-style': 'bezier',
             'transition-property': 'width, line-color, target-arrow-color',
@@ -215,7 +221,7 @@ export function OntologyGraph() {
     return () => {
       cy.destroy();
     };
-  }, [buildElements, selectEntity, selectRelationship, activeQuest, currentStepIndex, advanceQuestStep]);
+  }, [buildElements, selectEntity, selectRelationship, activeQuest, currentStepIndex, advanceQuestStep, darkMode, themeColors]);
 
   // Handle selection changes
   useEffect(() => {

@@ -50,22 +50,34 @@
   /* Font Family */
   --font-primary: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Cascadia Code', 'Fira Code', monospace;
+  
+  /* Graph-specific dark mode colors */
+  --graph-bg: #1E1E1E;
+  --graph-node-text: #B3B3B3;
+  --graph-edge-color: #505050;
+  --graph-edge-text: #808080;
 }
 
 /* Light Theme */
 .light-theme {
-  --bg-primary: #FAFAFA;
-  --bg-secondary: #F0F0F0;
-  --bg-tertiary: #E5E5E5;
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #E8E8E8;
   --bg-elevated: #FFFFFF;
-  --text-primary: #1B1B1B;
-  --text-secondary: #5C5C5C;
-  --text-tertiary: #8C8C8C;
-  --border-color: #D0D0D0;
-  --border-subtle: #E0E0E0;
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+  --text-primary: #1A1A1A;
+  --text-secondary: #444444;
+  --text-tertiary: #666666;
+  --border-color: #C0C0C0;
+  --border-subtle: #D8D8D8;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
+  
+  /* Graph-specific light mode colors */
+  --graph-bg: #FCFCFC;
+  --graph-node-text: #2A2A2A;
+  --graph-edge-color: #888888;
+  --graph-edge-text: #555555;
 }
 
 * {
