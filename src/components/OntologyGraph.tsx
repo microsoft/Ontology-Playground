@@ -196,8 +196,7 @@ export function OntologyGraph() {
         minTemp: 1.0
       },
       minZoom: 0.3,
-      maxZoom: 3,
-      wheelSensitivity: 0.3
+      maxZoom: 3
     });
 
     // Event handlers
