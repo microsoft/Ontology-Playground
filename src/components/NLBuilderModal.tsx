@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { X, Sparkles, Send, Loader2, Check, AlertCircle, Edit3 } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Ontology } from '../data/ontology';
 
 interface NLBuilderModalProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
 type Step = 'input' | 'loading' | 'preview' | 'error';
 
-export function NLBuilderModal({ isOpen, onClose }: NLBuilderModalProps) {
+export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   const [description, setDescription] = useState('');
   const [step, setStep] = useState<Step>('input');
   const [generatedOntology, setGeneratedOntology] = useState<Ontology | null>(null);
@@ -78,31 +77,29 @@ export function NLBuilderModal({ isOpen, onClose }: NLBuilderModalProps) {
   ];
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="modal-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={handleClose}
-        >
-          <motion.div
-            className="modal-content nl-builder-modal"
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={20} style={{ color: 'var(--accent)' }} />
-                <h2>Describe Your Ontology</h2>
-              </div>
-              <button className="modal-close" onClick={handleClose}>
-                <X size={20} />
-              </button>
-            </div>
+    <motion.div
+      className="modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={handleClose}
+    >
+      <motion.div
+        className="modal-content nl-builder-modal"
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Sparkles size={20} style={{ color: 'var(--accent)' }} />
+            <h2>Describe Your Ontology</h2>
+          </div>
+          <button className="modal-close" onClick={handleClose}>
+            <X size={20} />
+          </button>
+        </div>
 
             {step === 'input' && (
               <div className="nl-builder-content">
@@ -239,7 +236,5 @@ export function NLBuilderModal({ isOpen, onClose }: NLBuilderModalProps) {
             )}
           </motion.div>
         </motion.div>
-      )}
-    </AnimatePresence>
   );
 }
