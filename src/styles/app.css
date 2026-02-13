@@ -1687,6 +1687,7 @@ body {
   padding: 8px 12px;
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   border-bottom: 1px solid var(--border-color);
 }
 .designer-rdf-source {
@@ -1700,6 +1701,27 @@ body {
   white-space: pre-wrap;
   word-break: break-all;
   color: var(--text-secondary);
+}
+.designer-rdf-textarea {
+  resize: none;
+  border: none;
+  outline: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+.designer-rdf-textarea::placeholder {
+  color: var(--text-tertiary, #999);
+}
+.designer-import-error {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #d83b01;
+  background: rgba(216, 59, 1, 0.08);
+  border-bottom: 1px solid var(--border-color);
+}
+.designer-add-btn.small.secondary {
+  background: var(--bg-tertiary, #e0e0e0);
+  color: var(--text-primary);
 }
 
 /* Section headers */

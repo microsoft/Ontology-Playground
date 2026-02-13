@@ -5,6 +5,7 @@ import type { Core } from 'cytoscape';
 import { useDesignerStore } from '../../store/designerStore';
 import { useAppStore } from '../../store/appStore';
 import { serializeToRDF } from '../../lib/rdf/serializer';
+import { parseRDF } from '../../lib/rdf/parser';
 
 cytoscape.use(fcose);
 
@@ -150,6 +151,10 @@ function GraphPreview({ ontology, darkMode, onSelectEntity, onSelectRelationship
 
 function RdfPreview({ ontology }: { ontology: GraphPreviewProps['ontology'] & { name: string; description: string } }) {
   const [copied, setCopied] = useState(false);
+  const [importMode, setImportMode] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importError, setImportError] = useState<string | null>(null);
+  const loadDraft = useDesignerStore((s) => s.loadDraft);
 
   let rdfOutput: string;
   try {
@@ -165,14 +170,67 @@ function RdfPreview({ ontology }: { ontology: GraphPreviewProps['ontology'] & { 
     });
   };
 
+  const handleImport = () => {
+    const trimmed = importText.trim();
+    if (!trimmed) {
+      setImportError('Paste RDF/XML content first');
+      return;
+    }
+    try {
+      const { ontology: parsed } = parseRDF(trimmed);
+      loadDraft(parsed);
+      setImportMode(false);
+      setImportText('');
+      setImportError(null);
+    } catch (err) {
+      setImportError(err instanceof Error ? err.message : 'Failed to parse RDF');
+    }
+  };
+
+  const handleCancel = () => {
+    setImportMode(false);
+    setImportText('');
+    setImportError(null);
+  };
+
   return (
     <div className="designer-rdf-container">
       <div className="designer-rdf-toolbar">
-        <button className="designer-add-btn small" onClick={handleCopy}>
-          {copied ? 'Copied!' : 'Copy RDF'}
-        </button>
+        {importMode ? (
+          <>
+            <button className="designer-add-btn small" onClick={handleImport}>
+              Load into Designer
+            </button>
+            <button className="designer-add-btn small secondary" onClick={handleCancel}>
+              Cancel
+            </button>
+          </>
+        ) : (
+          <>
+            <button className="designer-add-btn small" onClick={() => { setImportMode(true); setImportText(''); }}>
+              Paste RDF
+            </button>
+            <button className="designer-add-btn small" onClick={handleCopy}>
+              {copied ? 'Copied!' : 'Copy RDF'}
+            </button>
+          </>
+        )}
       </div>
-      <pre className="designer-rdf-source">{rdfOutput}</pre>
+      {importError && (
+        <div className="designer-import-error">{importError}</div>
+      )}
+      {importMode ? (
+        <textarea
+          className="designer-rdf-source designer-rdf-textarea"
+          value={importText}
+          onChange={(e) => { setImportText(e.target.value); setImportError(null); }}
+          placeholder="Paste RDF/XML content here…"
+          autoFocus
+          spellCheck={false}
+        />
+      ) : (
+        <pre className="designer-rdf-source">{rdfOutput}</pre>
+      )}
     </div>
   );
 }
