@@ -45,7 +45,7 @@ The current RDF export is inline in `ImportExportModal.tsx` and there is no RDF
   - Malformed XML → graceful error
 - [x] Round-trip tests: serialize → parse → deep-equal for every sample ontology
   in `sampleOntologies.ts` and `cosmicCoffeeOntology`
-- [ ] Integration test: import an RDF file via the modal, verify store state
+- [x] Integration test: import an RDF file via the modal, verify store state
 - [x] Add `"test": "vitest run"` and `"test:watch": "vitest"` to
   `package.json` scripts
 
