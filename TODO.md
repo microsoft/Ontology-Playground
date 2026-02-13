@@ -58,11 +58,11 @@ work as a pure static build with zero server-side dependencies. Azure SWA is
 the **primary** deployment target; GitHub Pages support is for forks.
 
 ### 2.1 Remove runtime API dependency
-- [ ] The Azure OpenAI feature is already behind `VITE_ENABLE_AI_BUILDER` —
+- [x] The Azure OpenAI feature is already behind `VITE_ENABLE_AI_BUILDER` —
   confirm the build produces zero `/api` calls when the flag is off
-- [ ] Audit all `fetch()` calls; ensure none target a dynamic backend when
+- [x] Audit all `fetch()` calls; ensure none target a dynamic backend when
   running in static mode
-- [ ] Guard the Vite dev proxy (`server.proxy`) behind `VITE_ENABLE_AI_BUILDER`
+- [x] Guard the Vite dev proxy (`server.proxy`) behind `VITE_ENABLE_AI_BUILDER`
   so it doesn't confuse static deployments
 
 ### 2.2 Azure Static Web Apps (primary)
@@ -71,23 +71,23 @@ The existing workflow
 build + deploy. Adapt it for the new build pipeline:
 - [ ] Add `npm run catalogue:build` step before the SWA deploy action (once
   §3.2 is done)
-- [ ] Verify `staticwebapp.config.json` is correct for the static-only build
+- [x] Verify `staticwebapp.config.json` is correct for the static-only build
   (remove `api_location` if the API feature flag is off)
-- [ ] Ensure the `output_location: "build"` matches Vite's `outDir`
-- [ ] Keep the existing PR preview environment support (staging URLs on PRs)
+- [x] Ensure the `output_location: "build"` matches Vite's `outDir`
+- [x] Keep the existing PR preview environment support (staging URLs on PRs)
 
 ### 2.3 GitHub Pages (for forks)
-- [ ] Add a **separate** GitHub Actions workflow
+- [x] Add a **separate** GitHub Actions workflow
   `.github/workflows/deploy-ghpages.yml`:
   - Trigger on push to `main`
   - `npm ci && npm run catalogue:build && npm run build`
   - Deploy `build/` via `actions/deploy-pages`
   - Disabled by default (forks enable it by setting the Pages source)
-- [ ] Set `base` in `vite.config.ts` dynamically from an env var
+- [x] Set `base` in `vite.config.ts` dynamically from an env var
   (`VITE_BASE_PATH`) so it works at `/` (Azure SWA) and
   `/<repo-name>/` (GitHub Pages)
-- [ ] Copy `index.html` → `build/404.html` for SPA fallback on GitHub Pages
-- [ ] Document both deployment paths in README
+- [x] Copy `index.html` → `build/404.html` for SPA fallback on GitHub Pages
+- [x] Document both deployment paths in README
 
 ---
 
@@ -329,3 +329,12 @@ one-click PR flow.
 | **Phase 2** | §3.3–3.4 (Community workflow + UI), §5.1 (Deep linking), §6.1–6.4 (Editor/designer) | Community: accept contributions, browse catalogue, share links, design ontologies |
 | **Phase 3** | §6.5–6.6 (One-click PR), §4 (Embed widget), §5.6 (Learning content) | Growth: frictionless contribution, embeds drive adoption, docs help newcomers |
 | **Phase 4** | §5.2–5.5 (Diff, A11y, PWA, Analytics) | Polish: robustness, accessibility, offline, usage insights |
+
+---
+
+## Low-priority / deferred
+
+- [ ] **Re-enable GitHub Pages workflow** — the repo is currently private so
+  GitHub Pages won't work. Once the repo is made public (or moved to GitHub
+  Enterprise with Pages support), uncomment the `push` trigger in
+  `.github/workflows/deploy-ghpages.yml` and enable Pages in repo settings.

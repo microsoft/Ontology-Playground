@@ -1,10 +1,13 @@
 # GitHub Pages deployment — for forks
-# Enable by going to Settings → Pages → Source: GitHub Actions
+# Currently disabled (private repo). To enable:
+#   1. Make the repo public (or use GitHub Enterprise with Pages)
+#   2. Uncomment the push trigger below
+#   3. Go to Settings → Pages → Source: GitHub Actions
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 
 permissions:
