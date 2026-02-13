@@ -325,6 +325,14 @@ one-click PR flow.
 - [ ] When editing a community ontology, the PR targets the original file
   path (update, not create)
 
+### 6.7 Undo / Redo in the designer
+- [ ] Add an undo/redo history stack to the designer store (track snapshots
+  of the ontology state on each mutation)
+- [ ] Wire Ctrl+Z / Cmd+Z (undo) and Ctrl+Shift+Z / Cmd+Shift+Z (redo)
+  keyboard shortcuts
+- [ ] Add undo/redo buttons in the designer toolbar
+- [ ] Cap history depth (e.g., 50 steps) to limit memory usage
+
 ---
 
 ## Priority order (suggested)
