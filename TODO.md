@@ -259,13 +259,13 @@ These enhance the overall experience for a community learning resource.
 - [ ] Track which ontologies are most loaded to surface popular ones
 
 ### 5.6 Documentation site / learning content
-- [ ] Add a `/learn` section with markdown-rendered educational content:
+- [x] Add a `/learn` section with markdown-rendered educational content:
   - "What is an ontology?"
   - "Understanding RDF and OWL"
   - "Microsoft Fabric IQ Ontology concepts"
   - "Building your first ontology"
-- [ ] Content stored as `.md` files in `content/learn/`, compiled at build time
-- [ ] Each tutorial can embed an interactive ontology widget (from §4)
+- [x] Content stored as `.md` files in `content/learn/`, compiled at build time
+- [x] Each tutorial can embed an interactive ontology widget (from §4)
 
 ---
 
@@ -366,7 +366,88 @@ one-click PR flow.
 | **Phase 1** | §1 (RDF), §2 (Static), §3.1–3.2 (Catalogue structure + build) | Foundation: proper serialization, static deploy, catalogue pipeline |
 | **Phase 2** | §3.3–3.4 (Community workflow + UI), §5.1 (Deep linking), §6.1–6.4 (Editor/designer) | Community: accept contributions, browse catalogue, share links, design ontologies |
 | **Phase 3** | §6.5–6.6 (One-click PR), §4 (Embed widget), §5.6 (Learning content) | Growth: frictionless contribution, embeds drive adoption, docs help newcomers |
-| **Phase 4** | §5.2–5.5 (Diff, A11y, PWA, Analytics) | Polish: robustness, accessibility, offline, usage insights |
+| **Phase 4** | §7 (Responsive), §8 (Fabric wizard), §5.3 (A11y) | Polish: mobile users, direct adoption path, accessibility |
+| **Phase 5** | §5.2–5.5 (Diff, PWA, Analytics), §9–§11 | Extras: offline, insights, power-user features |
+
+---
+
+## 7. Responsive design & mobile-friendly layout
+
+The app must be usable on phones and tablets. Shared links (Teams, Slack,
+social media) often land on mobile — if users can't interact, adoption stalls.
+
+### 7.1 Responsive header
+- [ ] Collapse icon buttons into a hamburger/overflow menu on small screens
+- [ ] Stack logo + subtitle vertically on narrow viewports
+- [ ] Hide gamification stats on mobile (or move to hamburger menu)
+
+### 7.2 Responsive main layout
+- [ ] Switch from the 3-column grid (inspector | graph | quest) to a
+  single-column stacked layout below 768px
+- [ ] Graph takes full width; inspector and quest panel become collapsible
+  drawers or tabs below the graph
+- [ ] Touch-friendly: larger tap targets, swipe to dismiss drawers
+
+### 7.3 Responsive modals
+- [ ] Modals become full-screen sheets on mobile (no floating card)
+- [ ] Scrollable content within the sheet
+- [ ] Close button always visible at top
+
+### 7.4 Responsive learn page
+- [ ] Article cards stack single-column on narrow screens
+- [ ] Article content uses fluid typography and responsive images
+- [ ] Navigation buttons (prev/next) are full-width on mobile
+
+### 7.5 Responsive catalogue / gallery
+- [ ] Gallery grid adapts: 1 column on phone, 2 on tablet, 3+ on desktop
+- [ ] Filter bar wraps or collapses on narrow screens
+- [ ] Search bar is full-width on mobile
+
+### 7.6 Responsive designer
+- [ ] Stacked layout: entity/relationship form on top, graph preview below
+- [ ] Toolbar wraps or uses overflow on narrow screens
+
+---
+
+## 8. "Use in Fabric IQ" export wizard (new)
+
+A guided flow that bridges "I designed an ontology" to "I'm using it in
+Fabric IQ". This is the most direct adoption driver.
+
+- [ ] Add a "Deploy to Fabric IQ" button in the designer and catalogue
+- [ ] Step 1: Validate ontology (run existing validation)
+- [ ] Step 2: Download RDF file (auto-triggered)
+- [ ] Step 3: Show exact Fabric IQ instructions with links to Microsoft
+  docs for uploading an ontology
+- [ ] Include a checklist: "Ontology has identifiers ✓, relationships ✓,
+  namespace set ✓"
+
+---
+
+## 9. Command palette / keyboard shortcuts (new)
+
+- [ ] `Cmd+K` / `Ctrl+K` opens a command palette
+- [ ] Type to navigate: ontologies, designer, learn, import/export
+- [ ] Keyboard shortcuts for common actions (listed in Help modal)
+
+---
+
+## 10. Starter templates in designer (new)
+
+- [ ] "Start from template" option when opening the designer empty
+- [ ] Domain presets: Retail, Healthcare, Finance, IoT, Education
+- [ ] Each template creates 2–3 entities with relationships pre-wired
+- [ ] Lowers the "blank page" barrier
+
+---
+
+## 11. Interactive onboarding tour (new)
+
+- [ ] Replace the static welcome modal with a 5-step guided tour
+- [ ] Spotlight overlay highlights: header → graph → inspector → query bar
+  → designer
+- [ ] Dismissable, with "Don't show again" option
+- [ ] First-time users get oriented in 30 seconds
 
 ---
 
