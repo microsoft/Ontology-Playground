@@ -2357,4 +2357,300 @@ body {
   animation: spin 1s linear infinite;
 }
 
+/* ========================================================================
+   Learn Page
+   ======================================================================== */
+
+.learn-page {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.learn-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.learn-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--ms-blue);
+  font: 500 14px/1 var(--font-primary);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+.learn-back-btn:hover {
+  background: var(--bg-tertiary);
+}
+
+.learn-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 16px/1 var(--font-primary);
+  color: var(--text-primary);
+}
+
+.learn-loading,
+.learn-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+.learn-error { color: var(--error); }
+
+/* --- Article index --- */
+
+.learn-index {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  width: 100%;
+}
+
+.learn-index-hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.learn-index-hero h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+.learn-index-hero p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.learn-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.learn-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.learn-card:hover {
+  border-color: var(--ms-blue);
+  box-shadow: var(--shadow-md);
+}
+
+.learn-card-order {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ms-blue);
+  color: #fff;
+  font: 700 13px/1 var(--font-primary);
+  margin-bottom: 12px;
+}
+
+.learn-card h2 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.learn-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0 0 auto;
+  padding-bottom: 16px;
+}
+
+.learn-card-cta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ms-blue);
+  font: 500 13px/1 var(--font-primary);
+  margin-top: 8px;
+}
+
+/* --- Article view --- */
+
+.learn-article {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  width: 100%;
+}
+
+.learn-article-content h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0 0 24px;
+  line-height: 1.3;
+}
+.learn-article-content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 32px 0 12px;
+  line-height: 1.3;
+}
+.learn-article-content h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 24px 0 8px;
+}
+.learn-article-content p {
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0 0 16px;
+  color: var(--text-primary);
+}
+.learn-article-content a {
+  color: var(--ms-blue);
+  text-decoration: none;
+}
+.learn-article-content a:hover {
+  text-decoration: underline;
+}
+.learn-article-content strong {
+  font-weight: 600;
+}
+.learn-article-content em {
+  color: var(--text-secondary);
+}
+.learn-article-content ul,
+.learn-article-content ol {
+  margin: 0 0 16px;
+  padding-left: 24px;
+}
+.learn-article-content li {
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 4px;
+}
+
+.learn-article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 20px;
+  font-size: 14px;
+}
+.learn-article-content th,
+.learn-article-content td {
+  text-align: left;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+}
+.learn-article-content th {
+  background: var(--bg-tertiary);
+  font-weight: 600;
+}
+
+.learn-article-content pre {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 0 0 20px;
+}
+.learn-article-content code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.learn-article-content p code {
+  background: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+/* Embed slot inside article */
+.learn-embed-slot {
+  margin: 20px 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.learn-embed-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+/* --- Article navigation --- */
+
+.learn-article-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.learn-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  cursor: pointer;
+  max-width: 48%;
+  transition: border-color var(--transition-fast);
+}
+.learn-nav-btn:hover {
+  border-color: var(--ms-blue);
+}
+.learn-nav-next {
+  margin-left: auto;
+  text-align: right;
+}
+.learn-nav-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+.learn-nav-title {
+  display: block;
+  font: 500 14px/1.3 var(--font-primary);
+  color: var(--ms-blue);
+}
+
 

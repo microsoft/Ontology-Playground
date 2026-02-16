@@ -9,13 +9,16 @@
  *   /#/embed/<source>/<slug>                         → full-page embed view
  *   /#/designer                                       → new blank ontology
  *   /#/designer/<source>/<slug>                       → edit existing ontology
+ *   /#/learn                                          → learning content index
+ *   /#/learn/<slug>                                   → specific article
  */
 
 export type Route =
   | { page: 'home' }
   | { page: 'catalogue'; ontologyId?: string }
   | { page: 'embed'; ontologyId: string }
-  | { page: 'designer'; ontologyId?: string };
+  | { page: 'designer'; ontologyId?: string }
+  | { page: 'learn'; articleSlug?: string };
 
 /**
  * Validate and sanitize an ontology ID parsed from the URL hash.
@@ -67,6 +70,12 @@ export function parseHash(hash: string): Route {
     const id = sanitizeOntologyId(rest.join('/'));
     return { page: 'designer', ontologyId: id };
   }
+  if (segments[0] === 'learn') {
+    const slug = segments[1];
+    if (!slug) return { page: 'learn' };
+    const sanitized = sanitizeOntologyId(slug);
+    return { page: 'learn', articleSlug: sanitized };
+  }
   return { page: 'home' };
 }
 
@@ -83,6 +92,10 @@ export function routeToHash(route: Route): string {
       return route.ontologyId
         ? `#/designer/${route.ontologyId}`
         : '#/designer';
+    case 'learn':
+      return route.articleSlug
+        ? `#/learn/${route.articleSlug}`
+        : '#/learn';
     case 'home':
     default:
       return '#/';

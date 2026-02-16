@@ -13,4 +13,5 @@ export { GalleryModal } from './GalleryModal';
 // only when the VITE_ENABLE_AI_BUILDER feature flag is enabled.
 export { OntologySummaryModal } from './OntologySummaryModal';
 export { OntologyDesigner } from './OntologyDesigner';
+export { LearnPage } from './LearnPage';
 export { Toast } from './Toast';

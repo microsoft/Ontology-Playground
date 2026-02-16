@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "catalogue:build": "tsx scripts/compile-catalogue.ts",
-    "build": "npm run catalogue:build && tsc -b && vite build && npm run build:embed",
+    "learn:build": "tsx scripts/compile-learn.ts",
+    "build": "npm run catalogue:build && npm run learn:build && tsc -b && vite build && npm run build:embed",
     "build:embed": "vite build --config vite.config.embed.ts",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -38,6 +39,7 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "jsdom": "^28.0.0",
+    "marked": "^17.0.2",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",

@@ -14,6 +14,7 @@ import {
   GalleryModal,
   OntologySummaryModal,
   OntologyDesigner,
+  LearnPage,
   Toast
 } from './components';
 import { useAppStore } from './store/appStore';
@@ -100,9 +101,12 @@ function App() {
     navigate({ page: 'designer' });
   }, []);
 
-  // Designer is a full-page view — render it instead of the main layout
+  // Full-page views
   if (route.page === 'designer') {
     return <OntologyDesigner route={route} />;
+  }
+  if (route.page === 'learn') {
+    return <LearnPage route={route} />;
   }
 
   return (
@@ -113,6 +117,7 @@ function App() {
         onImportExportClick={() => setShowImportExport(true)}
         onGalleryClick={openGallery}
         onDesignerClick={openDesigner}
+        onLearnClick={() => navigate({ page: 'learn' })}
         onNLBuilderClick={AI_BUILDER_ENABLED ? () => setShowNLBuilder(true) : undefined}
         onSummaryClick={() => setShowSummary(true)}
       />

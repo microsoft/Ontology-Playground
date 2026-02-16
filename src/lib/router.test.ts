@@ -71,7 +71,23 @@ describe('parseHash', () => {
       ontologyId: undefined,
     });
   });
+  it('parses learn route without slug', () => {
+    expect(parseHash('#/learn')).toEqual({ page: 'learn', articleSlug: undefined });
+  });
 
+  it('parses learn route with slug', () => {
+    expect(parseHash('#/learn/what-is-an-ontology')).toEqual({
+      page: 'learn',
+      articleSlug: 'what-is-an-ontology',
+    });
+  });
+
+  it('rejects learn route with path traversal', () => {
+    expect(parseHash('#/learn/../../etc/passwd')).toEqual({
+      page: 'learn',
+      articleSlug: undefined,
+    });
+  });
   it('handles leading slash variations', () => {
     expect(parseHash('#catalogue/test')).toEqual({ page: 'catalogue', ontologyId: 'test' });
   });
@@ -174,6 +190,16 @@ describe('routeToHash', () => {
       '#/designer/official/cosmic-coffee',
     );
   });
+
+  it('converts learn route without slug', () => {
+    expect(routeToHash({ page: 'learn' })).toBe('#/learn');
+  });
+
+  it('converts learn route with slug', () => {
+    expect(routeToHash({ page: 'learn', articleSlug: 'what-is-an-ontology' })).toBe(
+      '#/learn/what-is-an-ontology',
+    );
+  });
 });
 
 describe('roundtrip', () => {
@@ -185,6 +211,8 @@ describe('roundtrip', () => {
     { page: 'embed' as const, ontologyId: 'official/finance' },
     { page: 'designer' as const },
     { page: 'designer' as const, ontologyId: 'official/cosmic-coffee' },
+    { page: 'learn' as const },
+    { page: 'learn' as const, articleSlug: 'what-is-an-ontology' },
   ];
 
   for (const route of routes) {
