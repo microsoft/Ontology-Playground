@@ -26,20 +26,29 @@ This document contains guidelines for AI coding assistants working on this proje
 - Test changes locally (`npm run dev`)
 - Ensure no TypeScript errors
 - Review the diff for unintended changes
+- **Update documentation** — if the change adds, removes, or modifies user-visible
+  features, update `README.md` (feature descriptions, route table, env vars) and
+  any relevant guides in `docs/` before merging. Also update `TODO.md` to mark
+  completed items.
 
 ## Project Structure
 
 ```
 ontology-quest/
 ├── src/
-│   ├── components/    # React components
-│   ├── data/          # Data models and sample data
-│   ├── store/         # Zustand state management
+│   ├── components/    # React components (graph, designer, modals, tour, learn)
+│   ├── data/          # Data models, templates, and sample data
+│   ├── lib/           # Router, RDF parser/serializer, catalogue helpers
+│   ├── store/         # Zustand state management (app + designer)
 │   ├── styles/        # CSS styles
 │   └── types/         # TypeScript type definitions
-├── api/               # Azure Functions backend
+├── catalogue/         # Official + community ontology RDF files
+├── content/learn/     # Markdown articles for the learning section
+├── scripts/           # Build-time compilers (catalogue, learning content)
+├── docs/              # Guides and documentation
+├── api/               # Azure Functions backend (optional)
 ├── build/             # Production build output
-└── public/            # Static assets
+└── public/            # Static assets (compiled catalogue.json, learn.json)
 ```
 
 ## Code Style
@@ -86,9 +95,11 @@ npx tsc --noEmit
 
 ## Dependencies
 
-- **React 18** - UI framework
+- **React 19** - UI framework
 - **TypeScript 5** - Type safety
 - **Vite** - Build tool
 - **Cytoscape.js** - Graph visualization
 - **Zustand** - State management
 - **Framer Motion** - Animations
+- **Lucide Icons** - Icon library
+- **marked** - Markdown compilation (build-time)

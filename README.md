@@ -73,6 +73,25 @@ Type natural language questions ("Which customers placed orders?") and see how
 they map to ontology entities and relationships — a preview of Fabric IQ's
 NL2Ontology capability.
 
+### Command Palette & Keyboard Shortcuts
+
+Press `⌘K` / `Ctrl+K` anywhere to open a searchable command palette. Jump
+to the Catalogue, Designer, Learn page, Import/Export, Help, and more without
+leaving the keyboard. Press `?` for quick help access. Arrow keys + Enter to
+navigate the palette.
+
+### Starter Templates
+
+The designer offers five domain templates (Retail, Healthcare, Finance, IoT,
+Education) so new users never face a blank page. Each template creates 3
+entities with properties and 2 relationships, ready to customise.
+
+### Interactive Onboarding Tour
+
+First-time visitors get a 5-step guided tour with a spotlight overlay that
+highlights the Header, Graph, Quests, Inspector, and Designer in sequence.
+Dismissable with a "don't show again" option persisted to `localStorage`.
+
 ### Deep Linking & URL Routing
 
 Client-side hash routing with shareable URLs for every page:
