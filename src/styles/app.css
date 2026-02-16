@@ -183,11 +183,37 @@ body {
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
+  position: relative;
 }
 
 .icon-btn:hover {
   background: var(--bg-tertiary);
   color: var(--text-primary);
+}
+
+/* Tooltips */
+.icon-btn[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.icon-btn[data-tooltip]:hover::after {
+  opacity: 1;
 }
 
 /* Header Text Button */

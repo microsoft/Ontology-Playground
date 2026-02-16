@@ -78,29 +78,29 @@ export function Header({ onHelpClick, onDataSourcesClick, onImportExportClick, o
           <span>Summary</span>
         </button>
         {onNLBuilderClick && (
-          <button className="icon-btn" onClick={onNLBuilderClick} title="Build from Description">
+          <button className="icon-btn" onClick={onNLBuilderClick} data-tooltip="AI Builder">
             <Sparkles size={20} />
           </button>
         )}
-        <button className="icon-btn" onClick={onGalleryClick} title="Ontology Gallery">
+        <button className="icon-btn" onClick={onGalleryClick} data-tooltip="Catalogue">
           <LayoutGrid size={20} />
         </button>
-        <button className="icon-btn" onClick={onDesignerClick} title="Ontology Designer">
+        <button className="icon-btn" onClick={onDesignerClick} data-tooltip="Designer">
           <PenTool size={20} />
         </button>
-        <button className="icon-btn" onClick={onLearnClick} title="Learn">
+        <button className="icon-btn" onClick={onLearnClick} data-tooltip="Learn">
           <BookOpen size={20} />
         </button>
-        <button className="icon-btn" onClick={onImportExportClick} title="Import / Export Ontology">
+        <button className="icon-btn" onClick={onImportExportClick} data-tooltip="Import / Export">
           <FileJson size={20} />
         </button>
-        <button className="icon-btn" onClick={onHelpClick} title="Help">
+        <button className="icon-btn" onClick={onHelpClick} data-tooltip="Help">
           <HelpCircle size={20} />
         </button>
-        <button className="icon-btn" onClick={onDataSourcesClick} title="Data Sources">
+        <button className="icon-btn" onClick={onDataSourcesClick} data-tooltip="Data Sources">
           <Database size={20} />
         </button>
-        <button className="icon-btn" onClick={toggleDarkMode} title="Toggle Theme">
+        <button className="icon-btn" onClick={toggleDarkMode} data-tooltip={darkMode ? 'Light Mode' : 'Dark Mode'}>
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </div>
