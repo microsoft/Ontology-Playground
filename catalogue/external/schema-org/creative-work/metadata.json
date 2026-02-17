@@ -1,7 +1,7 @@
 {
   "name": "Schema.org — CreativeWork",
   "description": "Books, movies, articles, and other creative works — modelling authorship, publication, and audience ratings from Schema.org.",
-  "category": "web",
+  "category": "media",
   "author": "Schema.org (adapted)",
   "tags": ["schema-org", "creative-work", "book", "article", "structured-data"]
 }

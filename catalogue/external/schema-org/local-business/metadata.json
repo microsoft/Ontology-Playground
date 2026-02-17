@@ -2,7 +2,7 @@
   "name": "Schema.org — LocalBusiness",
   "description": "Local businesses, opening hours, reviews, and postal addresses — a subset of Schema.org for describing brick-and-mortar businesses and their services.",
   "icon": "🏪",
-  "category": "web",
+  "category": "retail",
   "tags": [
     "schema-org",
     "local-business",

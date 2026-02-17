@@ -2,7 +2,7 @@
   "name": "Schema.org — Event",
   "description": "Events, venues, performers, and offers — a subset of Schema.org's vocabulary for describing events, ticket sales, and scheduling.",
   "icon": "🎫",
-  "category": "web",
+  "category": "events",
   "tags": [
     "schema-org",
     "event",
