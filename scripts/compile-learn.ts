@@ -129,7 +129,12 @@ function parseFrontmatter<T extends Record<string, string>>(
     const colonIdx = line.indexOf(':');
     if (colonIdx === -1) continue;
     const key = line.slice(0, colonIdx).trim();
-    const value = line.slice(colonIdx + 1).trim();
+    let value = line.slice(colonIdx + 1).trim();
+    // Strip surrounding quotes (YAML allows "..." or '...')
+    if ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
     meta[key] = value;
   }
 
