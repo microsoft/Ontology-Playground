@@ -455,7 +455,5 @@ social media) often land on mobile — if users can't interact, adoption stalls.
   download RDF → show Fabric IQ upload instructions). Deferred until the
   Fabric IQ integration story is clearer and a native link/API may be
   available.
-- [ ] **Re-enable GitHub Pages workflow** — the repo is currently private so
-  GitHub Pages won't work. Once the repo is made public (or moved to GitHub
-  Enterprise with Pages support), uncomment the `push` trigger in
-  `.github/workflows/deploy-ghpages.yml` and enable Pages in repo settings.
+- [x] **Re-enable GitHub Pages workflow** — enabled with repo-scoped behavior:
+  push-triggered Pages deploy runs for `microsoft/Ontology-Playground`.
