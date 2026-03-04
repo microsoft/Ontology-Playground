@@ -66,7 +66,27 @@ export const useAppStore = create<AppState>((set, get) => ({
   highlightedEntities: [],
   highlightedRelationships: [],
   showDataBindings: false,
-  darkMode: true,
+  darkMode: (() => {
+    // Safely read dark mode preference; default to true if unavailable or invalid
+    if (typeof window === 'undefined' || !('localStorage' in window)) {
+      return true;
+    }
+
+    try {
+      const stored = window.localStorage.getItem('darkMode');
+      if (stored === 'true') {
+        return true;
+      }
+      if (stored === 'false') {
+        return false;
+      }
+      // Treat unexpected values as unset
+      return true;
+    } catch {
+      // Handles SecurityError and other storage-related issues
+      return true;
+    }
+  })(),
   
   // Initial Quest State - use default quests for Cosmic Coffee
   availableQuests: defaultQuests,
@@ -132,7 +152,15 @@ export const useAppStore = create<AppState>((set, get) => ({
   setHighlightedRelationships: (ids) => set({ highlightedRelationships: ids }),
   
   toggleDataBindings: () => set((state) => ({ showDataBindings: !state.showDataBindings })),
-  toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+  toggleDarkMode: () => set((state) => {
+    const next = !state.darkMode;
+    try {
+      localStorage.setItem('darkMode', String(next));
+    } catch {
+      // Ignore persistence errors; still update in-memory state
+    }
+    return { darkMode: next };
+  }),
   
   // Quest Actions
   startQuest: (questId) => {
