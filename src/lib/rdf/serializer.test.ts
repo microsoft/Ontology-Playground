@@ -280,4 +280,83 @@ describe('serializeToRDF', () => {
     const rdf = serializeToRDF(emptyOntology);
     expect(rdf.trimEnd()).toMatch(/<\/rdf:RDF>$/);
   });
+
+  it('excludes external stub entities from output', () => {
+    const ontology: Ontology = {
+      name: 'Test',
+      description: '',
+      entityTypes: [
+        { id: 'loan', name: 'Loan', description: 'A loan', icon: '💰', color: '#000', properties: [] },
+        { id: 'ext-thing', name: 'Thing', description: 'External class', icon: '📦', color: '#ccc', properties: [], isExternal: true },
+      ],
+      relationships: [],
+    };
+    const rdf = serializeToRDF(ontology);
+    expect(rdf).toContain('owl:Class rdf:about="http://example.org/ontology/test/Loan"');
+    expect(rdf).not.toContain('owl:Class rdf:about="http://example.org/ontology/test/Ext-thing"');
+    // Properties on external entities should also be excluded
+    expect(rdf).not.toContain('External class');
+  });
+
+  it('serializes owl:imports in the ontology declaration', () => {
+    const ontology: Ontology = {
+      name: 'Test',
+      description: '',
+      entityTypes: [],
+      relationships: [],
+      imports: [
+        'https://spec.edmcouncil.org/fibo/ontology/LOAN/LoansGeneral/LoanApplications/',
+        'https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/',
+      ],
+    };
+    const rdf = serializeToRDF(ontology);
+    expect(rdf).toContain('<owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/LoansGeneral/LoanApplications/"/>');
+    expect(rdf).toContain('<owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/"/>');
+    // Imports should appear inside the Ontology element
+    const ontologyBlock = rdf.split('</owl:Ontology>')[0];
+    expect(ontologyBlock).toContain('owl:imports');
+  });
+
+  it('serializes inheritance as rdfs:subClassOf instead of ObjectProperty', () => {
+    const ontology: Ontology = {
+      name: 'Test',
+      description: '',
+      entityTypes: [
+        { id: 'animal', name: 'Animal', description: '', icon: '🐾', color: '#000', properties: [] },
+        { id: 'dog', name: 'Dog', description: '', icon: '🐕', color: '#000', properties: [] },
+      ],
+      relationships: [
+        { id: 'dog_inherits_animal', name: 'inherits', from: 'dog', to: 'animal', cardinality: 'one-to-one' },
+      ],
+    };
+    const rdf = serializeToRDF(ontology);
+    // Should have rdfs:subClassOf inside the Dog class element
+    expect(rdf).toContain('<rdfs:subClassOf rdf:resource="http://example.org/ontology/test/Animal"/>');
+    // Should NOT have an ObjectProperty for inheritance
+    expect(rdf).not.toContain('owl:ObjectProperty rdf:about="http://example.org/ontology/test/dog_inherits_animal"');
+  });
+
+  it('handles multiple inheritance parents', () => {
+    const ontology: Ontology = {
+      name: 'Test',
+      description: '',
+      entityTypes: [
+        { id: 'a', name: 'A', description: '', icon: '📦', color: '#000', properties: [] },
+        { id: 'b', name: 'B', description: '', icon: '📦', color: '#000', properties: [] },
+        { id: 'c', name: 'C', description: '', icon: '📦', color: '#000', properties: [] },
+      ],
+      relationships: [
+        { id: 'c_inherits_a', name: 'inherits', from: 'c', to: 'a', cardinality: 'one-to-one' },
+        { id: 'c_inherits_b', name: 'inherits', from: 'c', to: 'b', cardinality: 'one-to-one' },
+        { id: 'a_links_b', name: 'links', from: 'a', to: 'b', cardinality: 'one-to-many' },
+      ],
+    };
+    const rdf = serializeToRDF(ontology);
+    // C should inherit from both A and B
+    const cClassBlock = rdf.split('owl:Class rdf:about="http://example.org/ontology/test/C"')[1]?.split('</owl:Class>')[0];
+    expect(cClassBlock).toContain('<rdfs:subClassOf rdf:resource="http://example.org/ontology/test/A"/>');
+    expect(cClassBlock).toContain('<rdfs:subClassOf rdf:resource="http://example.org/ontology/test/B"/>');
+    // Non-inheritance relationship should still be an ObjectProperty
+    expect(rdf).toContain('owl:ObjectProperty rdf:about="http://example.org/ontology/test/a_links_b"');
+  });
 });

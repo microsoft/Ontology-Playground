@@ -70,19 +70,56 @@ export function serializeToRDF(
   if (ontology.description) {
     rdf += `        <rdfs:comment>${escapeXml(ontology.description)}</rdfs:comment>\n`;
   }
+  if (ontology.imports) {
+    for (const imp of ontology.imports) {
+      rdf += `        <owl:imports rdf:resource="${escapeXml(imp)}"/>\n`;
+    }
+  }
   rdf += '    </owl:Ontology>\n\n';
+
+  // Skip external stub entities — they represent classes from imported ontologies
+  const localEntities = ontology.entityTypes.filter(e => !e.isExternal);
+
+  // Build a lookup of inheritance relationships for rdfs:subClassOf serialization
+  const inheritanceByChild = new Map<string, string[]>();
+  const nonInheritanceRels: typeof ontology.relationships = [];
+  for (const rel of ontology.relationships) {
+    if (rel.name === 'inherits') {
+      const parents = inheritanceByChild.get(rel.from) || [];
+      parents.push(rel.to);
+      inheritanceByChild.set(rel.from, parents);
+    } else {
+      nonInheritanceRels.push(rel);
+    }
+  }
 
   // Entity Types as OWL Classes
   rdf += '    <!-- ===================== -->\n';
   rdf += '    <!-- Entity Types (Classes) -->\n';
   rdf += '    <!-- ===================== -->\n\n';
 
-  for (const entity of ontology.entityTypes) {
+  for (const entity of localEntities) {
     const className = capitalize(entity.id);
     rdf += `    <owl:Class rdf:about="${baseUri}${className}">\n`;
     rdf += `        <rdfs:label>${escapeXml(entity.name)}</rdfs:label>\n`;
     if (entity.description) {
       rdf += `        <rdfs:comment>${escapeXml(entity.description)}</rdfs:comment>\n`;
+    }
+    // Emit inheritance as rdfs:subClassOf
+    const parents = inheritanceByChild.get(entity.id);
+    if (parents) {
+      for (const parentId of parents) {
+        const parentClass = capitalize(parentId);
+        // Check if parent is external (use full URI) or local
+        const parentEntity = ontology.entityTypes.find(e => e.id === parentId);
+        if (parentEntity?.isExternal) {
+          // External parents are not at our base URI — skip or use a placeholder
+          // Since we don't track original URIs, emit with our base URI
+          rdf += `        <rdfs:subClassOf rdf:resource="${baseUri}${parentClass}"/>\n`;
+        } else {
+          rdf += `        <rdfs:subClassOf rdf:resource="${baseUri}${parentClass}"/>\n`;
+        }
+      }
     }
     // Store icon and color as custom annotations
     rdf += `        <ont:icon>${escapeXml(entity.icon)}</ont:icon>\n`;
@@ -95,7 +132,7 @@ export function serializeToRDF(
   rdf += '    <!-- Data Properties -->\n';
   rdf += '    <!-- ================ -->\n\n';
 
-  for (const entity of ontology.entityTypes) {
+  for (const entity of localEntities) {
     const className = capitalize(entity.id);
 
     for (const prop of entity.properties) {
@@ -130,7 +167,7 @@ export function serializeToRDF(
   rdf += '    <!-- Object Properties -->\n';
   rdf += '    <!-- ================== -->\n\n';
 
-  for (const rel of ontology.relationships) {
+  for (const rel of nonInheritanceRels) {
     const fromClass = capitalize(rel.from);
     const toClass = capitalize(rel.to);
 
