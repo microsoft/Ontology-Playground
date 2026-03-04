@@ -407,4 +407,458 @@ describe('parseRDF', () => {
       expect(ontology.entityTypes[0].name).toBe('Widget');
     });
   });
+
+  describe('description fallback (skos:definition, dcterms:abstract)', () => {
+    it('uses skos:definition when rdfs:comment is absent on ontology', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+    <owl:Ontology rdf:about="http://example.org/">
+        <rdfs:label>Test</rdfs:label>
+        <skos:definition>A SKOS-described ontology</skos:definition>
+    </owl:Ontology>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.description).toBe('A SKOS-described ontology');
+    });
+
+    it('uses dcterms:abstract when rdfs:comment and skos:definition are absent', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:dcterms="http://purl.org/dc/terms/">
+    <owl:Ontology rdf:about="http://example.org/">
+        <rdfs:label>Test</rdfs:label>
+        <dcterms:abstract>A dcterms-described ontology</dcterms:abstract>
+    </owl:Ontology>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.description).toBe('A dcterms-described ontology');
+    });
+
+    it('prefers rdfs:comment over skos:definition', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+    <owl:Ontology rdf:about="http://example.org/">
+        <rdfs:label>Test</rdfs:label>
+        <rdfs:comment>The comment</rdfs:comment>
+        <skos:definition>The definition</skos:definition>
+    </owl:Ontology>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.description).toBe('The comment');
+    });
+
+    it('uses skos:definition for class descriptions', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+    <owl:Class rdf:about="http://example.org/Mortgage">
+        <rdfs:label>Mortgage</rdfs:label>
+        <skos:definition>A grant of financial interest in real property</skos:definition>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.entityTypes[0].description).toBe('A grant of financial interest in real property');
+    });
+  });
+
+  describe('owl:imports', () => {
+    it('extracts imported ontology URIs', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://example.org/main/">
+        <rdfs:label>Main</rdfs:label>
+        <owl:imports rdf:resource="http://example.org/base/"/>
+        <owl:imports rdf:resource="http://example.org/extension/"/>
+    </owl:Ontology>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.imports).toEqual([
+        'http://example.org/base/',
+        'http://example.org/extension/',
+      ]);
+    });
+
+    it('omits imports field when no imports present', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://example.org/">
+        <rdfs:label>No imports</rdfs:label>
+    </owl:Ontology>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.imports).toBeUndefined();
+    });
+  });
+
+  describe('rdfs:subClassOf inheritance', () => {
+    it('creates inheritance relationships from subClassOf URI references', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/Animal">
+        <rdfs:label>Animal</rdfs:label>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/Dog">
+        <rdfs:label>Dog</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://example.org/Animal"/>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.entityTypes).toHaveLength(2);
+      expect(ontology.relationships).toHaveLength(1);
+      const rel = ontology.relationships[0];
+      expect(rel.name).toBe('inherits');
+      expect(rel.from).toBe('dog');
+      expect(rel.to).toBe('animal');
+      expect(rel.cardinality).toBe('one-to-one');
+    });
+
+    it('creates stub external entities for unresolved parent classes', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/Dog">
+        <rdfs:label>Dog</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://external.org/Animal"/>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      // Should have 2 entities: Dog (local) + Animal (external stub)
+      expect(ontology.entityTypes).toHaveLength(2);
+      const animal = ontology.entityTypes.find(e => e.id === 'animal');
+      expect(animal).toBeDefined();
+      expect(animal!.isExternal).toBe(true);
+      expect(animal!.icon).toBe('🔗');
+      expect(animal!.color).toBe('#888888');
+
+      // Dog should not be external
+      const dog = ontology.entityTypes.find(e => e.id === 'dog');
+      expect(dog!.isExternal).toBeUndefined();
+    });
+
+    it('handles multiple inheritance correctly', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/A"><rdfs:label>A</rdfs:label></owl:Class>
+    <owl:Class rdf:about="http://example.org/B"><rdfs:label>B</rdfs:label></owl:Class>
+    <owl:Class rdf:about="http://example.org/C">
+        <rdfs:label>C</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://example.org/A"/>
+        <rdfs:subClassOf rdf:resource="http://example.org/B"/>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      const inherits = ontology.relationships.filter(r => r.name === 'inherits');
+      expect(inherits).toHaveLength(2);
+      expect(inherits.map(r => r.to).sort()).toEqual(['a', 'b']);
+      expect(inherits.every(r => r.from === 'c')).toBe(true);
+    });
+  });
+
+  describe('owl:Restriction parsing', () => {
+    it('extracts relationships from owl:Restriction with someValuesFrom', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/Loan">
+        <rdfs:label>Loan</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/isCollateralizedBy"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/Property">
+        <rdfs:label>Property</rdfs:label>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      const rel = ontology.relationships.find(r => r.name === 'isCollateralizedBy');
+      expect(rel).toBeDefined();
+      expect(rel!.from).toBe('loan');
+      expect(rel!.to).toBe('property');
+      expect(rel!.cardinality).toBe('one-to-many');
+    });
+
+    it('extracts relationships from owl:Restriction with allValuesFrom', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/Course">
+        <rdfs:label>Course</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/taughtBy"/>
+                <owl:allValuesFrom rdf:resource="http://example.org/Professor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/Professor">
+        <rdfs:label>Professor</rdfs:label>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      const rel = ontology.relationships.find(r => r.name === 'taughtBy');
+      expect(rel).toBeDefined();
+      expect(rel!.from).toBe('course');
+      expect(rel!.to).toBe('professor');
+    });
+
+    it('creates stub entities for external restriction targets', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/Loan">
+        <rdfs:label>Loan</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://external.org/securedBy"/>
+                <owl:someValuesFrom rdf:resource="http://external.org/Collateral"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      // Loan (local) + Collateral (external stub)
+      expect(ontology.entityTypes).toHaveLength(2);
+      const collateral = ontology.entityTypes.find(e => e.id === 'collateral');
+      expect(collateral).toBeDefined();
+      expect(collateral!.isExternal).toBe(true);
+
+      const rel = ontology.relationships.find(r => r.name === 'securedBy');
+      expect(rel).toBeDefined();
+      expect(rel!.from).toBe('loan');
+      expect(rel!.to).toBe('collateral');
+    });
+
+    it('handles multiple restrictions on the same class', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/A"><rdfs:label>A</rdfs:label></owl:Class>
+    <owl:Class rdf:about="http://example.org/B"><rdfs:label>B</rdfs:label></owl:Class>
+    <owl:Class rdf:about="http://example.org/C">
+        <rdfs:label>C</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/relToA"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/A"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/relToB"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/B"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.relationships).toHaveLength(2);
+      expect(ontology.relationships.map(r => r.name).sort()).toEqual(['relToA', 'relToB']);
+    });
+
+    it('ignores restrictions without a target class', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/Thing">
+        <rdfs:label>Thing</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/count"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.relationships).toHaveLength(0);
+    });
+  });
+
+  describe('dangling relationship safety', () => {
+    it('filters out relationships with unresolved from/to', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:ont="http://example.org/ontology/test/">
+    <owl:Class rdf:about="http://example.org/ontology/test/A">
+        <rdfs:label>A</rdfs:label>
+    </owl:Class>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/test/dangles">
+        <rdfs:label>dangles</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/test/A"/>
+    </owl:ObjectProperty>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      // The object property has from=a but to="" — should be filtered out
+      expect(ontology.relationships).toHaveLength(0);
+    });
+
+    it('does not crash on ObjectProperty with no domain or range', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://example.org/">
+        <rdfs:label>Test</rdfs:label>
+    </owl:Ontology>
+    <owl:ObjectProperty rdf:about="http://example.org/orphanProp">
+        <rdfs:label>orphan</rdfs:label>
+    </owl:ObjectProperty>
+</rdf:RDF>`;
+      // Should not throw — just skip the property
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.relationships).toHaveLength(0);
+    });
+  });
+
+  describe('unique relationship IDs', () => {
+    it('deduplicates relationship IDs when multiple restrictions produce the same base ID', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Class rdf:about="http://example.org/A"><rdfs:label>A</rdfs:label></owl:Class>
+    <owl:Class rdf:about="http://example.org/B"><rdfs:label>B</rdfs:label></owl:Class>
+    <owl:Class rdf:about="http://example.org/C">
+        <rdfs:label>C</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://example.org/A"/>
+        <rdfs:subClassOf rdf:resource="http://example.org/B"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/rel"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/A"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      const ids = ontology.relationships.map(r => r.id);
+      // All IDs should be unique
+      expect(new Set(ids).size).toBe(ids.length);
+    });
+  });
+
+  describe('FIBO-style ontology (integration)', () => {
+    it('parses a FIBO-like mortgage ontology without crashing', () => {
+      const rdf = `<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+         xmlns:dcterms="http://purl.org/dc/terms/">
+    <owl:Ontology rdf:about="http://example.org/mortgage/">
+        <owl:imports rdf:resource="http://example.org/loans/"/>
+        <owl:imports rdf:resource="http://example.org/debt/"/>
+        <dcterms:abstract>A mortgage ontology</dcterms:abstract>
+        <rdfs:label>Mortgage Ontology</rdfs:label>
+    </owl:Ontology>
+
+    <owl:ObjectProperty rdf:about="http://example.org/mortgage/hasClosingDate">
+        <rdfs:subPropertyOf rdf:resource="http://example.org/contracts/hasEffectiveDate"/>
+        <rdfs:label>has closing date</rdfs:label>
+        <skos:definition>The date on which the mortgage closes</skos:definition>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/mortgage/isConvertible">
+        <rdfs:domain rdf:resource="http://example.org/mortgage/MortgageLoan"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:label>is convertible</rdfs:label>
+        <skos:definition>Whether the loan can be converted</skos:definition>
+    </owl:DatatypeProperty>
+
+    <owl:Class rdf:about="http://example.org/mortgage/MortgageLoan">
+        <rdfs:subClassOf rdf:resource="http://example.org/loans/CollateralizedLoan"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/debt/isCollateralizedBy"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/property/RealProperty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label>Mortgage Loan</rdfs:label>
+        <skos:definition>A loan secured by real property</skos:definition>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/mortgage/ReverseMortgage">
+        <rdfs:subClassOf rdf:resource="http://example.org/mortgage/MortgageLoan"/>
+        <rdfs:label>Reverse Mortgage</rdfs:label>
+        <skos:definition>A mortgage that pays money to the borrower</skos:definition>
+    </owl:Class>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+
+      // Metadata
+      expect(ontology.name).toBe('Mortgage Ontology');
+      expect(ontology.description).toBe('A mortgage ontology');
+      expect(ontology.imports).toEqual([
+        'http://example.org/loans/',
+        'http://example.org/debt/',
+      ]);
+
+      // Local classes (2) + external stubs (CollateralizedLoan, RealProperty)
+      expect(ontology.entityTypes.length).toBeGreaterThanOrEqual(4);
+      const local = ontology.entityTypes.filter(e => !e.isExternal);
+      expect(local).toHaveLength(2);
+      const external = ontology.entityTypes.filter(e => e.isExternal);
+      expect(external.length).toBeGreaterThanOrEqual(2);
+
+      // Class descriptions from skos:definition
+      const mortgage = ontology.entityTypes.find(e => e.id === 'mortgageLoan');
+      expect(mortgage?.description).toBe('A loan secured by real property');
+
+      // Datatype property attached via domain
+      expect(mortgage?.properties).toHaveLength(1);
+      expect(mortgage?.properties[0].name).toBe('is convertible');
+      expect(mortgage?.properties[0].type).toBe('boolean');
+      expect(mortgage?.properties[0].description).toBe('Whether the loan can be converted');
+
+      // Inheritance relationships
+      const inherits = ontology.relationships.filter(r => r.name === 'inherits');
+      expect(inherits.length).toBeGreaterThanOrEqual(2);
+
+      // Restriction relationship
+      const collRel = ontology.relationships.find(r => r.name === 'isCollateralizedBy');
+      expect(collRel).toBeDefined();
+      expect(collRel!.from).toBe('mortgageLoan');
+      expect(collRel!.to).toBe('realProperty');
+
+      // Object property without domain/range should be filtered (hasClosingDate)
+      const closingRel = ontology.relationships.find(r => r.name === 'has closing date');
+      expect(closingRel).toBeUndefined();
+
+      // All relationship from/to point to valid entity IDs
+      const entityIds = new Set(ontology.entityTypes.map(e => e.id));
+      for (const rel of ontology.relationships) {
+        expect(entityIds.has(rel.from)).toBe(true);
+        expect(entityIds.has(rel.to)).toBe(true);
+      }
+    });
+  });
 });

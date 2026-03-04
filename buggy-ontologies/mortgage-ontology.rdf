@@ -1,0 +1,250 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"
+     xml:base="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:cmns-av="https://www.omg.org/spec/Commons/AnnotationVocabulary/"
+     xmlns:dcterms="http://purl.org/dc/terms/"
+     xmlns:cmns-doc="https://www.omg.org/spec/Commons/Documents/"
+     xmlns:fibo-fnd-plc-rp="https://spec.edmcouncil.org/fibo/ontology/FND/Places/RealProperty/"
+     xmlns:fibo-fnd-utl-av="https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/"
+     xmlns:fibo-loan-ln-ln="https://spec.edmcouncil.org/fibo/ontology/LOAN/LoansGeneral/Loans/"
+     xmlns:fibo-fbc-dae-dbt="https://spec.edmcouncil.org/fibo/ontology/FBC/DebtAndEquities/Debt/"
+     xmlns:fibo-fbc-pas-caa="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/"
+     xmlns:fibo-fnd-acc-cur="https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/"
+     xmlns:fibo-fnd-agr-ctr="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/"
+     xmlns:fibo-loan-reln-mtg="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"
+     xmlns:IdentifiersAndIndices="https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/"
+     xmlns:SpecificationMetadata="http://www.omg.org/techprocess/ab/SpecificationMetadata/">
+    <owl:Ontology rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/">
+        <owl:versionIRI rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/LOAN/RealEstateLoans/Mortgages/"/>
+        <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FBC/DebtAndEquities/Debt/"/>
+        <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FBC/ProductsAndServices/ClientsAndAccounts/"/>
+        <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/Accounting/CurrencyAmount/"/>
+        <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/Agreements/Contracts/"/>
+        <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/Places/RealProperty/"/>
+        <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/Utilities/AnnotationVocabulary/"/>
+        <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/LOAN/LoansGeneral/Loans/"/>
+        <owl:imports rdf:resource="https://www.omg.org/spec/Commons/AnnotationVocabulary/"/>
+        <owl:imports rdf:resource="https://www.omg.org/spec/Commons/Documents/"/>
+        <dcterms:abstract>This ontology covers high-level concepts related to loans secured by real property.</dcterms:abstract>
+        <dcterms:license>Copyright (c) 2016-2025 EDM Council, Inc.
+Copyright (c) 2016-2025 Object Management Group, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &apos;Software&apos;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &apos;AS IS&apos;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+		
+See https://opensource.org/licenses/MIT.</dcterms:license>
+        <rdfs:label xml:lang="en">Mortgages Ontology</rdfs:label>
+        <skos:changeNote>The https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages.rdf version of this ontology was modified to move the property &apos;has credit limit&apos; to FBC as needed to define certain credit facilities (FBC-324).</skos:changeNote>
+        <fibo-fnd-utl-av:hasMaturityLevel rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/Release"/>
+        <cmns-av:copyright>Copyright (c) 2016-2025 EDM Council, Inc.</cmns-av:copyright>
+        <cmns-av:copyright>Copyright (c) 2016-2025 Object Management Group, Inc.</cmns-av:copyright>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/hasInitialFundingDate -->
+
+    <owl:ObjectProperty rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/hasInitialFundingDate">
+        <rdfs:subPropertyOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/hasEffectiveDate"/>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label>has initial funding date</rdfs:label>
+        <skos:definition>relates a mortgage to the date on which the contract is consummated, officially creating the obligations therein</skos:definition>
+        <cmns-av:synonym>has closing date</cmns-av:synonym>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/isARMConvertible -->
+
+    <owl:DatatypeProperty rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/isARMConvertible">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/LoanSecuredByRealEstate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label xml:lang="en">is ARM convertible</rdfs:label>
+        <skos:definition xml:lang="en">indicates whether or not the loan can be converted into an adjustable-rate mortgage contract (ARM)</skos:definition>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ClosedEndMortgageLoan -->
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ClosedEndMortgageLoan">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/LoansGeneral/Loans/ClosedEndCredit"/>
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/LoanSecuredByRealEstate"/>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label>closed-end mortgage loan</rdfs:label>
+        <skos:definition>loan secured by real estate with no ability for the borrower to receive additional funds under the loan at a later date</skos:definition>
+        <cmns-av:adaptedFrom>MISMO Business Glossary, available at https://www.mismo.org/standards-resources/business-glossary/</cmns-av:adaptedFrom>
+    </owl:Class>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ClosedEndReverseMortgage -->
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ClosedEndReverseMortgage">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ClosedEndMortgageLoan"/>
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ReverseMortgageLoan"/>
+        <dcterms:source>Instructions for the Preparation of Consolidated Reports of Condition and Income, FFIEC 031 and FFIEC 041, Updated March 2023, clause A-91</dcterms:source>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label>closed-end reverse mortgage</rdfs:label>
+        <skos:definition>reverse mortgage that provides a lump sum payment to the borrower at closing, with no ability for the borrower to receive additional funds under the mortgage at a later date</skos:definition>
+        <cmns-av:explanatoryNote>Normally, closed-end reverse mortgages are first liens.</cmns-av:explanatoryNote>
+    </owl:Class>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/LoanSecuredByRealEstate -->
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/LoanSecuredByRealEstate">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/LoansGeneral/Loans/CollateralizedLoan"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/DebtAndEquities/Debt/isCollateralizedBy"/>
+                <owl:someValuesFrom rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Places/RealProperty/RealProperty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/hasContractualElement"/>
+                <owl:someValuesFrom rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/DisclosureProvision"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/hasContractualElement"/>
+                <owl:someValuesFrom rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/UseOfProceedsProvision"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/hasInitialFundingDate"/>
+                <owl:someValuesFrom rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/TransactionDate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Documents/refersTo"/>
+                <owl:someValuesFrom rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/DebtAndEquities/Debt/SecurityAgreement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <dcterms:source>Consolidated Reports of Condition and Income for a Bank with Domestic and Foreign Offices - FFIEC 031; Board of Governors of the Federal Reserve System OMB Number 7100-0036, Federal Deposit Insurance Corporation OMB Number 3064-0052, Office of the Comptroller of the Currency OMB Number 1557-0081, dated 20240930</dcterms:source>
+        <dcterms:source>Instructions for the Preparation of Consolidated Reports of Condition and Income, FFIEC 031 and FFIEC 041, Updated March 2023, clause A-91</dcterms:source>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label>loan secured by real estate</rdfs:label>
+        <skos:definition>loan that, at origination, is secured wholly or substantially by a lien or liens on real property for which the lien or liens are central to the extension of the credit - that is, the borrower would not have been extended credit in the same amount or on terms as favorable without the lien or liens on real property</skos:definition>
+        <skos:example xml:lang="en">Examples include (a) Construction, land development, and other land loans: (1) 1-4 family residential construction loans, and (2) Other construction loans and all land development and other land loans; (b) Secured by farmland (including farm residential and other improvements); (c) Secured by 1-4 family residential properties: (1) Revolving, open-end loans secured by 1-4 family residential properties and extended under lines of credit, and (2) Closed-end loans secured by 1-4 family residential properties including those secured by first liens and those secured by junior liens; (d) Secured by multifamily (5 or more) residential properties; and (e) Secured by nonfarm nonresidential properties: (1) Loans secured by owner-occupied nonfarm nonresidential, and (2) Loans secured by other nonfarm nonresidential properties.</skos:example>
+        <cmns-av:explanatoryNote xml:lang="en">In general parlance, loans secured by real estate are often called mortgages or mortgage loans. This usage conflates a number of related concepts, which would limit the usability of FIBO for financial institutions and regulators with respect to such loans. As described herein, many different kinds of loans can be secured by real estate, including various commercial, construction, agricultural, and consumer loans.</cmns-av:explanatoryNote>
+        <cmns-av:explanatoryNote xml:lang="en">In the US, to be considered wholly or substantially secured by a lien or liens on real property, the estimated value of the real estate collateral at origination (after deducting any more senior liens held by others) must be greater than 50 percent of the principal amount of the loan at origination.</cmns-av:explanatoryNote>
+        <cmns-av:explanatoryNote xml:lang="en">The borrower agrees to pay the lender over time, typically in a series of regular payments divided into principal and interest. The property then serves as collateral to secure the loan.</cmns-av:explanatoryNote>
+    </owl:Class>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/Mortgage -->
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/Mortgage">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/DebtAndEquities/Debt/SecurityAgreement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/DebtAndEquities/Debt/isCollateralizedBy"/>
+                <owl:someValuesFrom rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Places/RealProperty/RealProperty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label>mortgage</rdfs:label>
+        <skos:definition>grant of financial interest in real property to a party that is not an owner of that real property and is recorded by a registration authority</skos:definition>
+        <cmns-av:explanatoryNote xml:lang="en">A mortgage prevents transfer of the ownership of the real property unless the financial interest is satisfied. Any loan can be collateralized by a mortgage, including, for example, a bail bond.</cmns-av:explanatoryNote>
+    </owl:Class>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/OpenEndMortgageLoan -->
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/OpenEndMortgageLoan">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/LoansGeneral/Loans/OpenEndCredit"/>
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/LoanSecuredByRealEstate"/>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label>open-end mortgage loan</rdfs:label>
+        <skos:definition>loan secured by real estate with a provision that the outstanding loan amount may be increased upon mutual agreement of the lender and the borrower</skos:definition>
+        <cmns-av:adaptedFrom>MISMO Business Glossary, available at https://www.mismo.org/standards-resources/business-glossary/</cmns-av:adaptedFrom>
+    </owl:Class>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/OpenEndReverseMortgage -->
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/OpenEndReverseMortgage">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/OpenEndMortgageLoan"/>
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ReverseMortgageLoan"/>
+        <dcterms:source>Instructions for the Preparation of Consolidated Reports of Condition and Income, FFIEC 031 and FFIEC 041, Updated March 2023, clause A-91</dcterms:source>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label>open-end reverse mortgage</rdfs:label>
+        <skos:definition>reverse mortgage structured like a home equity line of credit in that it provides the borrower with additional funds after closing (either as fixed monthly payments, under a line of credit, or both)</skos:definition>
+        <cmns-av:explanatoryNote>Normally, open-end reverse mortgages are first liens. These include combinations of both a lump sum payment to the borrower at closing and payments after the closing of the loan.</cmns-av:explanatoryNote>
+    </owl:Class>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ReverseMortgageLoan -->
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/ReverseMortgageLoan">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/LoanSecuredByRealEstate"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/DebtAndEquities/Debt/hasCreditLimit"/>
+                <owl:someValuesFrom rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryAmount"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/Mortgages/"/>
+        <rdfs:label>reverse mortgage loan</rdfs:label>
+        <skos:definition>loan secured by real estate that pays money to the borrower against a set principal limit based on the value of existing equity in the underlying collateral</skos:definition>
+        <cmns-av:explanatoryNote>The interest accrued is added to the principal balance.</cmns-av:explanatoryNote>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+

@@ -31,6 +31,7 @@ export interface EntityType {
   properties: Property[];
   icon: string;
   color: string;
+  isExternal?: boolean;
 }
 
 export interface EntityInstance {
@@ -44,6 +45,7 @@ export interface Ontology {
   description: string;
   entityTypes: EntityType[];
   relationships: Relationship[];
+  imports?: string[];
 }
 
 export interface DataBinding {

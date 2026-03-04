@@ -53,7 +53,7 @@ function getChildResource(
     if (childLocal === localName) {
       return (
         child.getAttribute('rdf:resource') ||
-        child.getAttributeNS('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'resource')
+        child.getAttributeNS(RDF_NS, 'resource')
       );
     }
   }
@@ -94,6 +94,21 @@ function uncapitalize(str: string): string {
   return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
+/**
+ * Extract a description from an element, trying multiple annotation vocabularies
+ * in order of preference: rdfs:comment, skos:definition, dcterms:abstract,
+ * cmns-av:explanatoryNote.
+ */
+function extractDescription(el: Element): string {
+  return (
+    getChildText(el, 'comment', RDFS_NS) ||
+    getChildText(el, 'definition', SKOS_NS) ||
+    getChildText(el, 'abstract', DCTERMS_NS) ||
+    getChildText(el, 'explanatoryNote') ||
+    ''
+  );
+}
+
 const VALID_PROPERTY_TYPES = ['string', 'integer', 'decimal', 'double', 'date', 'datetime', 'boolean', 'enum'] as const;
 type PropertyType = (typeof VALID_PROPERTY_TYPES)[number];
 
@@ -124,6 +139,8 @@ function isValidCardinality(c: string): c is Cardinality {
 const RDF_NS = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 const RDFS_NS = 'http://www.w3.org/2000/01/rdf-schema#';
 const OWL_NS = 'http://www.w3.org/2002/07/owl#';
+const SKOS_NS = 'http://www.w3.org/2004/02/skos/core#';
+const DCTERMS_NS = 'http://purl.org/dc/terms/';
 
 interface ParsedDatatypeProperty {
   about: string;
@@ -137,6 +154,36 @@ interface ParsedDatatypeProperty {
   propertyType: string | null;
   relationshipAttributeOf: string | null;
   attributeType: string | null;
+}
+
+/**
+ * Create a stub (external) entity for a URI that is referenced but not
+ * defined in the current document.
+ */
+function createExternalEntity(uri: string): EntityType {
+  const className = localNameFromUri(uri);
+  return {
+    id: uncapitalize(className),
+    name: className,
+    description: `External class from ${uri}`,
+    icon: '🔗',
+    color: '#888888',
+    properties: [],
+    isExternal: true,
+  };
+}
+
+/**
+ * Ensure an entity exists for a given URI in the entity map. If the URI is
+ * not already present, a stub external entity is created and added.
+ * Returns the entity ID.
+ */
+function ensureEntity(uri: string, entityMap: Map<string, EntityType>): string {
+  if (!entityMap.has(uri)) {
+    const stub = createExternalEntity(uri);
+    entityMap.set(uri, stub);
+  }
+  return entityMap.get(uri)!.id;
 }
 
 /**
@@ -157,12 +204,25 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   // --- Extract ontology metadata ---
   let ontologyName = '';
   let ontologyDescription = '';
+  const imports: string[] = [];
 
   const ontologyEls = root.getElementsByTagNameNS(OWL_NS, 'Ontology');
   if (ontologyEls.length > 0) {
     const ontEl = ontologyEls[0];
     ontologyName = getChildText(ontEl, 'label', RDFS_NS) || '';
-    ontologyDescription = getChildText(ontEl, 'comment', RDFS_NS) || '';
+    ontologyDescription = extractDescription(ontEl);
+
+    // Extract owl:imports
+    for (let i = 0; i < ontEl.children.length; i++) {
+      const child = ontEl.children[i];
+      const childLocal = child.localName || child.tagName.split(':').pop();
+      if (childLocal === 'imports') {
+        const importUri =
+          child.getAttribute('rdf:resource') ||
+          child.getAttributeNS(RDF_NS, 'resource');
+        if (importUri) imports.push(importUri);
+      }
+    }
   }
 
   // --- Extract OWL Classes → EntityTypes ---
@@ -177,7 +237,7 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
     const className = localNameFromUri(about);
     const entityId = uncapitalize(className);
     const label = getChildText(el, 'label', RDFS_NS) || className;
-    const description = getChildText(el, 'comment', RDFS_NS) || '';
+    const description = extractDescription(el);
     const icon = getChildText(el, 'icon') || '📦';
     const color = getChildText(el, 'color') || '#0078D4';
 
@@ -189,6 +249,80 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
       color,
       properties: [],
     });
+  }
+
+  // --- Extract rdfs:subClassOf as inheritance relationships ---
+  // --- Extract owl:Restriction blocks as relationships ---
+  const relationships: Relationship[] = [];
+  const seenRelIds = new Set<string>();
+
+  /** Generate a unique relationship ID, appending a suffix if needed. */
+  function uniqueRelId(base: string): string {
+    let id = base;
+    let counter = 2;
+    while (seenRelIds.has(id)) {
+      id = `${base}_${counter++}`;
+    }
+    seenRelIds.add(id);
+    return id;
+  }
+
+  for (let i = 0; i < classEls.length; i++) {
+    const el = classEls[i];
+    const about = el.getAttribute('rdf:about') || el.getAttributeNS(RDF_NS, 'about') || '';
+    if (!about) continue;
+
+    const fromId = uncapitalize(localNameFromUri(about));
+
+    for (let j = 0; j < el.children.length; j++) {
+      const child = el.children[j];
+      const childLocal = child.localName || child.tagName.split(':').pop();
+      if (childLocal !== 'subClassOf') continue;
+
+      // Case 1: Direct URI reference — rdfs:subClassOf rdf:resource="..."
+      const parentUri =
+        child.getAttribute('rdf:resource') ||
+        child.getAttributeNS(RDF_NS, 'resource');
+      if (parentUri) {
+        const toId = ensureEntity(parentUri, entityMap);
+        const relId = uniqueRelId(`${fromId}_inherits_${toId}`);
+        relationships.push({
+          id: relId,
+          name: 'inherits',
+          from: fromId,
+          to: toId,
+          cardinality: 'one-to-one',
+        });
+        continue;
+      }
+
+      // Case 2: Anonymous restriction — rdfs:subClassOf > owl:Restriction
+      const restrictionEls = child.getElementsByTagNameNS(OWL_NS, 'Restriction');
+      if (restrictionEls.length === 0) continue;
+
+      const restriction = restrictionEls[0];
+      const onPropertyUri = getChildResource(restriction, 'onProperty');
+      if (!onPropertyUri) continue;
+
+      // Find the target class from someValuesFrom or allValuesFrom
+      const targetUri =
+        getChildResource(restriction, 'someValuesFrom') ||
+        getChildResource(restriction, 'allValuesFrom') ||
+        getChildResource(restriction, 'onClass');
+      if (!targetUri) continue;
+
+      const toId = ensureEntity(targetUri, entityMap);
+      const propName = localNameFromUri(onPropertyUri);
+      const relId = uniqueRelId(`${fromId}_${propName}_${toId}`);
+
+      relationships.push({
+        id: relId,
+        name: propName,
+        from: fromId,
+        to: toId,
+        cardinality: 'one-to-many',
+      });
+    }
   }
 
   // --- Extract DatatypeProperties → Properties + Relationship Attributes ---
@@ -204,12 +338,17 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
     const hasIdentifierComment = comments.some(c => /^identifier\s+property$/i.test(c.trim()));
     const descriptionComment = comments.find(c => !/^identifier\s+property$/i.test(c.trim())) ?? null;
 
+    // Also try skos:definition for DatatypeProperty descriptions
+    const description = descriptionComment ||
+      getChildText(el, 'definition', SKOS_NS) ||
+      null;
+
     parsedDtProps.push({
       about,
       label: getChildText(el, 'label', RDFS_NS) || localNameFromUri(about),
       domainUri: getChildResource(el, 'domain'),
       rangeUri: getChildResource(el, 'range'),
-      comment: descriptionComment,
+      comment: description,
       isIdentifier: getChildText(el, 'isIdentifier') === 'true' || hasIdentifierComment,
       unit: getChildText(el, 'unit'),
       enumValues: getChildText(el, 'enumValues'),
@@ -269,16 +408,16 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
 
   // --- Extract ObjectProperties → Relationships ---
   const objPropEls = root.getElementsByTagNameNS(OWL_NS, 'ObjectProperty');
-  const relationships: Relationship[] = [];
 
   for (let i = 0; i < objPropEls.length; i++) {
     const el = objPropEls[i];
     const about = el.getAttribute('rdf:about') || el.getAttributeNS(RDF_NS, 'about') || '';
     if (!about) continue;
 
-    const relId = localNameFromUri(about);
-    const label = getChildText(el, 'label', RDFS_NS) || relId;
-    const description = getChildText(el, 'comment', RDFS_NS) || undefined;
+    const baseRelId = localNameFromUri(about);
+    const label = getChildText(el, 'label', RDFS_NS) || baseRelId;
+    const description = getChildText(el, 'comment', RDFS_NS) ||
+      getChildText(el, 'definition', SKOS_NS) || undefined;
 
     // Get from/to entity IDs — prefer explicit ont:fromEntityId/toEntityId,
     // fallback to domain/range URI.  Always uncapitalize to match entity IDs.
@@ -294,11 +433,15 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
       if (rangeUri) toId = uncapitalize(localNameFromUri(rangeUri));
     }
 
+    // Skip object properties without resolvable endpoints
+    if (!fromId && !toId) continue;
+
     const cardinalityStr = getChildText(el, 'cardinality') || 'one-to-many';
     const cardinality: Cardinality = isValidCardinality(cardinalityStr)
       ? cardinalityStr
       : 'one-to-many';
 
+    const relId = uniqueRelId(baseRelId);
     const rel: Relationship = {
       id: relId,
       name: label,
@@ -310,7 +453,7 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
     if (description) rel.description = description;
 
     // Attach relationship attributes
-    const attrs = relAttrMap.get(relId);
+    const attrs = relAttrMap.get(baseRelId);
     if (attrs && attrs.length > 0) {
       rel.attributes = attrs;
     }
@@ -348,6 +491,12 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   // --- Build the Ontology ---
   const entityTypes = Array.from(entityMap.values());
 
+  // Safety: filter out relationships with unresolved from/to
+  const entityIds = new Set(entityTypes.map(e => e.id));
+  const validRelationships = relationships.filter(
+    r => r.from && r.to && entityIds.has(r.from) && entityIds.has(r.to),
+  );
+
   if (!ontologyName && entityTypes.length === 0) {
     throw new RDFParseError('No ontology metadata or OWL classes found in the RDF document.');
   }
@@ -356,8 +505,12 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
     name: ontologyName || 'Imported Ontology',
     description: ontologyDescription,
     entityTypes,
-    relationships,
+    relationships: validRelationships,
   };
+
+  if (imports.length > 0) {
+    ontology.imports = imports;
+  }
 
   return { ontology, bindings };
 }

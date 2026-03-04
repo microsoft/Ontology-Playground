@@ -71,8 +71,10 @@ export function OntologyGraph() {
         icon: entity.icon,
         color: entity.color,
         description: entity.description,
-        type: 'entity'
-      }
+        type: 'entity',
+        isExternal: entity.isExternal ?? false,
+      },
+      classes: entity.isExternal ? 'external' : undefined,
     }));
 
     const edges = currentOntology.relationships.map(rel => ({
@@ -145,6 +147,15 @@ export function OntologyGraph() {
           selector: 'node.dimmed',
           style: {
             'opacity': 0.3
+          }
+        },
+        // External (stub) node — dashed border, muted appearance
+        {
+          selector: 'node.external',
+          style: {
+            'border-style': 'dashed',
+            'border-width': 2,
+            'opacity': 0.7,
           }
         },
         // Base edge style
