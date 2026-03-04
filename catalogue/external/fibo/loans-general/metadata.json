@@ -1,0 +1,15 @@
+{
+  "name": "FIBO Loans General (Adapted Subset)",
+  "description": "A curated, classroom-friendly subset inspired by FIBO LOAN/LoansGeneral/Loans for loan, collateral, servicing, and payment semantics.",
+  "icon": "🏛️",
+  "category": "finance",
+  "tags": [
+    "fibo",
+    "finance",
+    "loan",
+    "mortgage",
+    "external",
+    "adapted"
+  ],
+  "author": "EDM Council FIBO (adapted by ontology-quest)"
+}

@@ -9,6 +9,7 @@ This document contains guidelines for AI coding assistants working on this proje
 - **Feature branches**: `feature/<feature-name>` - for new features
 - **Bugfix branches**: `fix/<issue-description>` - for bug fixes
 - **Always create a feature branch** before making changes to existing functionality
+- **Do not push directly to `main`**. All changes must go through a branch + pull request workflow.
 
 ### Commit Practices
 - **Commit incrementally** - small, focused commits that do one thing

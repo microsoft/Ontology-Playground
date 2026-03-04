@@ -1,0 +1,8 @@
+{
+  "name": "FIBO Loans Lab - Step 1: Loan, Borrower, Lender",
+  "description": "Start with the core FIBO loan triangle: Loan, Borrower, and Lender.",
+  "icon": "🏦",
+  "category": "school",
+  "tags": ["fibo", "loan", "school", "step-1"],
+  "author": "ontology-quest"
+}

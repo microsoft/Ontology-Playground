@@ -6,6 +6,12 @@
 
 ---
 
+## Recently Completed
+
+- [x] Add a tutorialized FIBO Loans subset to `catalogue/external/fibo/loans-general/`
+- [x] Add an Ontology School course `content/learn/fibo-loans-lab/` with progressive step ontologies (`fibo-loans-step-1` to `fibo-loans-step-4`)
+- [x] Add a reusable Copilot Skill at `.github/skills/ontology-school-tutorializer/` with install docs in `docs/ontology-school-skill.md`
+
 ## 1. RDF Import / Export (with full test coverage)
 
 The current RDF export is inline in `ImportExportModal.tsx` and there is no RDF

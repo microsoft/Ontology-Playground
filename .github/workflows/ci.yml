@@ -25,6 +25,10 @@ jobs:
       - name: Compile learning content (sanitized)
         run: npm run learn:build
 
+      - name: Validate Ontology School submissions
+        if: github.event_name == 'pull_request'
+        run: npm run qa:tutorial-content
+
       - name: Validate RDF files
         run: npm run validate
 

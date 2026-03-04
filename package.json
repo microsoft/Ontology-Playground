@@ -16,7 +16,8 @@
     "secrets:scan": "gitleaks detect --source . --redact --config .gitleaks.toml",
     "test": "vitest run",
     "test:watch": "vitest",
-    "validate": "tsx scripts/validate-rdf.ts"
+    "validate": "tsx scripts/validate-rdf.ts",
+    "qa:tutorial-content": "sh scripts/qa-tutorial-content.sh"
   },
   "dependencies": {
     "@types/cytoscape": "^3.21.9",

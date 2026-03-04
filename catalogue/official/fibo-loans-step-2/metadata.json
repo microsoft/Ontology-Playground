@@ -1,0 +1,8 @@
+{
+  "name": "FIBO Loans Lab - Step 2: Collateral & Payment Schedule",
+  "description": "Add collateral and payment schedule semantics to the core loan model.",
+  "icon": "🏠",
+  "category": "school",
+  "tags": ["fibo", "loan", "school", "step-2"],
+  "author": "ontology-quest"
+}

@@ -26,7 +26,7 @@ the live search bar to filter entities and relationships.
 
 ### Ontology Catalogue
 
-A curated library of official and community-contributed ontologies spanning six
+A curated library of official, external, and community-contributed ontologies spanning six
 domains (Retail, E-Commerce, Healthcare, Finance, Manufacturing, Education).
 Browse by category, search by name or tags, load any ontology with one click,
 and view its RDF source. Every ontology has a shareable deep link
@@ -63,7 +63,7 @@ inline base64), and click-to-inspect. See the
 
 ### Ontology School
 
-A structured learning hub (`/#/learn`) with **8 courses** spanning conceptual
+A structured learning hub (`/#/learn`) with **9 courses** spanning conceptual
 learning paths and hands-on labs:
 
 - **Ontology Fundamentals** — 6 articles covering core concepts (What is an
@@ -75,6 +75,9 @@ learning paths and hands-on labs:
   each stage.
 - **IQ Lab: Retail Supply Chain** — A 7-step hands-on lab that builds a 15-entity
   ontology from scratch (3 → 15 entities across 6 progressive catalogue entries).
+- **FIBO Loans Lab** — A 5-article hands-on lab that tutorializes a curated
+   subset of FIBO loan concepts (Loan, Borrower, Lender, Collateral, servicing,
+   payment history, and lien classifiers) with progressive ontology diffs.
 
 Every article supports **presentation mode** (slides split at `##` headings)
 and includes **interactive quizzes** with instant feedback. Ontology embeds
@@ -242,6 +245,7 @@ Ontology-Playground/
 | [GitHub OAuth Setup](docs/github-oauth-setup.md) | How to configure GitHub OAuth for one-click catalogue PRs |
 | [Embed Security](docs/embed-security.md) | Security model for the embeddable widget |
 | [Learning Content Guide](docs/learn-content-guide.md) | How to author courses, articles, quizzes, and ontology embeds for the Ontology School |
+| [Ontology School Skill](docs/ontology-school-skill.md) | How to install and share the reusable Copilot skill that generates tutorialized Ontology School courses |
 
 ## Technologies
 
