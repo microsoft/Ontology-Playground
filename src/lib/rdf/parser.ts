@@ -315,6 +315,9 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
       rel.attributes = attrs;
     }
 
+    // Skip relationships with unresolved source or target
+    if (!rel.from || !rel.to) continue;
+
     relationships.push(rel);
   }
 
