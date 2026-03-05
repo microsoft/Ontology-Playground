@@ -75,17 +75,21 @@ export function OntologyGraph() {
       }
     }));
 
-    const edges = currentOntology.relationships.map(rel => ({
-      data: {
-        id: rel.id,
-        source: rel.from,
-        target: rel.to,
-        label: rel.name,
-        cardinality: rel.cardinality,
-        description: rel.description,
-        type: 'relationship'
-      }
-    }));
+    const nodeIds = new Set(nodes.map(n => n.data.id));
+
+    const edges = currentOntology.relationships
+      .filter(rel => rel.from && rel.to && nodeIds.has(rel.from) && nodeIds.has(rel.to))
+      .map(rel => ({
+        data: {
+          id: rel.id,
+          source: rel.from,
+          target: rel.to,
+          label: rel.name,
+          cardinality: rel.cardinality,
+          description: rel.description,
+          type: 'relationship'
+        }
+      }));
 
     return [...nodes, ...edges];
   }, [currentOntology]);
