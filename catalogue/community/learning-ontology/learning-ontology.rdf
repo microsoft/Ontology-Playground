@@ -19,7 +19,7 @@
     <owl:Class rdf:about="http://example.org/ontology/learning-ontology/Person">
         <rdfs:label>Person</rdfs:label>
         <rdfs:comment>A learner or worker participating in learning programs, assignments, completions, and skill tracking.</rdfs:comment>
-        <ont:icon>�</ont:icon>
+        <ont:icon>👤</ont:icon>
         <ont:color>#107C10</ont:color>
     </owl:Class>
 
@@ -33,28 +33,28 @@
     <owl:Class rdf:about="http://example.org/ontology/learning-ontology/Curriculum">
         <rdfs:label>Curriculum</rdfs:label>
         <rdfs:comment>A rules-based grouping of courses or learning items with an effective validity period and completion requirements.</rdfs:comment>
-        <ont:icon>�</ont:icon>
+        <ont:icon>📋</ont:icon>
         <ont:color>#E81123</ont:color>
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/learning-ontology/Course">
         <rdfs:label>Course</rdfs:label>
         <rdfs:comment>A formal course container with a delivery model and duration measured in hours.</rdfs:comment>
-        <ont:icon>�</ont:icon>
+        <ont:icon>📚</ont:icon>
         <ont:color>#FFB900</ont:color>
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/learning-ontology/LearningItem">
         <rdfs:label>LearningItem</rdfs:label>
         <rdfs:comment>An atomic learning resource such as a module, class, video, assessment, or external content item.</rdfs:comment>
-        <ont:icon>�</ont:icon>
+        <ont:icon>📄</ont:icon>
         <ont:color>#5C2D91</ont:color>
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/learning-ontology/LearningAssignment">
         <rdfs:label>LearningAssignment</rdfs:label>
         <rdfs:comment>An assignment of a learning item to a person, including business reason and required completion dates.</rdfs:comment>
-        <ont:icon>�</ont:icon>
+        <ont:icon>📝</ont:icon>
         <ont:color>#00A9E0</ont:color>
     </owl:Class>
 
