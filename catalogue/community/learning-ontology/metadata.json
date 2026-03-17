@@ -1,0 +1,12 @@
+{
+  "name": "learning-ontology",
+  "title": "Learning Ontology",
+  "description": "Canonical learning ontology defining business entities, key attributes, required non-key attributes, and core relationships for an HR/learning domain.",
+  "tags": ["Learning"],
+  "domain": "HR",
+  "author": "",
+  "version": "1.0.0",
+  "files": [
+    "learning-ontology.rdf"
+  ]
+}

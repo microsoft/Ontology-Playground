@@ -1,8 +1,0 @@
-{
-  "name": "Learning Ontology",
-  "description": "Canonical learning ontology derived from the reference model in clean_with_keys_and_attributes.owl. It defines business entities, explicit key attributes, required non-key attributes, and core relationships for a learning domain.",
-  "icon": "📦",
-  "category": "HR",
-  "tags": [Learning],
-  "author": "Mudassar A"
-}
