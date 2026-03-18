@@ -28,6 +28,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sanitize-html": "^2.17.1",
+    "three": "^0.183.2",
     "zustand": "^5.0.10"
   },
   "devDependencies": {
