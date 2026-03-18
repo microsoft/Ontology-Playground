@@ -170,7 +170,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 type="text"
                 value={workspaceId}
                 onChange={(e) => setWorkspaceId(e.target.value)}
-                placeholder="cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+                placeholder="00000000-0000-0000-0000-000000000000"
                 spellCheck={false}
                 style={{
                   width: '100%', padding: '8px 12px',
