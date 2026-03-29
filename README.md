@@ -63,16 +63,16 @@ inline base64), and click-to-inspect. See the
 
 ### Ontology School
 
-A structured learning hub (`/#/learn`) with **8 courses** spanning conceptual
+A structured learning hub (`/#/learn`) with **9 courses** spanning conceptual
 learning paths and hands-on labs:
 
 - **Ontology Fundamentals** — 6 articles covering core concepts (What is an
   Ontology? → RDF/OWL → Fabric IQ → Build Your First → Design Patterns →
   Contributing)
-- **6 Domain Learning Paths** — Cosmic Coffee, E-Commerce, Finance, Healthcare,
-  Manufacturing, and University. Each path has 4 progressive articles that build
-  an ontology step-by-step, with live embedded graphs showing new entities at
-  each stage.
+- **7 Domain Learning Paths** — Cosmic Coffee, E-Commerce, Finance, Healthcare,
+  Manufacturing, University, and HR System. Each path has 4 progressive articles
+  that build an ontology step-by-step, with live embedded graphs showing new
+  entities at each stage.
 - **IQ Lab: Retail Supply Chain** — A 7-step hands-on lab that builds a 15-entity
   ontology from scratch (3 → 15 entities across 6 progressive catalogue entries).
 

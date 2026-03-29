@@ -23,8 +23,8 @@ describe('catalogue compilation (end-to-end)', () => {
     expect(result).toContain('official/ecommerce');
 
     const output = readCatalogue();
-    expect(output.count).toBe(35);
-    expect(output.entries).toHaveLength(35);
+    expect(output.count).toBe(36);
+    expect(output.entries).toHaveLength(36);
     expect(output.generatedAt).toBeTruthy();
   });
 
@@ -72,6 +72,7 @@ describe('catalogue metadata validation', () => {
   it('all entries have path-based ids', () => {
     for (const entry of readCatalogue().entries) {
       expect(entry.id).toMatch(/^(official|community|external)\//);
+      expect(entry.id).not.toContain('\\');
     }
   });
 });
