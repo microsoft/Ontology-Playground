@@ -107,6 +107,15 @@ export function LearnPage({ route }: LearnPageProps) {
 // -------------------------------------------------------------------
 
 function CourseCatalogue({ courses }: { courses: LearnCourse[] }) {
+  const orderedCourses = useMemo(() => {
+    const pinnedSlug = 'ontology-fundamentals';
+    return [...courses].sort((a, b) => {
+      if (a.slug === pinnedSlug) return -1;
+      if (b.slug === pinnedSlug) return 1;
+      return 0;
+    });
+  }, [courses]);
+
   return (
     <div className="learn-index">
       <div className="learn-index-hero">
@@ -116,7 +125,7 @@ function CourseCatalogue({ courses }: { courses: LearnCourse[] }) {
         </p>
       </div>
       <div className="learn-card-grid">
-        {courses.map((c) => (
+        {orderedCourses.map((c) => (
           <button
             key={c.slug}
             className="learn-card"
