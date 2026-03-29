@@ -519,6 +519,31 @@ body {
   height: 100%;
 }
 
+/* Three.js CSS2D node labels */
+.graph3d-label {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6), 0 0 8px rgba(0, 0, 0, 0.4);
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+/* Three.js CSS2D edge labels */
+.graph3d-edge-label {
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  padding: 2px 7px;
+  border-radius: 4px;
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+
 .graph-controls {
   position: absolute;
   bottom: 24px;
