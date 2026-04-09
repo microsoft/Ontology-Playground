@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+if command -v gitleaks >/dev/null 2>&1; then
+  echo "Running gitleaks on staged changes..."
+  gitleaks protect --staged --redact --config .gitleaks.toml
+else
+  echo "gitleaks not installed; skipping local secret scan."
+  echo "Install: brew install gitleaks"
+fi

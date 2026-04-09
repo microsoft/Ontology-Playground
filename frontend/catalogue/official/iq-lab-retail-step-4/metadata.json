@@ -1,0 +1,13 @@
+{
+  "name": "Retail Supply Chain — Step 4: Fulfillment & Logistics",
+  "description": "Shipment, Carrier, Warehouse model the delivery pipeline",
+  "icon": "🚚",
+  "category": "school",
+  "tags": [
+    "retail",
+    "supply-chain",
+    "lab",
+    "step-4"
+  ],
+  "author": "ontology-quest"
+}

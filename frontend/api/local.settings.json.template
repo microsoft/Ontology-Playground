@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": "",
+    "AZURE_OPENAI_ENDPOINT": "https://YOUR-RESOURCE.openai.azure.com/",
+    "AZURE_OPENAI_API_KEY": "YOUR-API-KEY",
+    "AZURE_OPENAI_DEPLOYMENT": "gpt-4o-mini"
+  }
+}

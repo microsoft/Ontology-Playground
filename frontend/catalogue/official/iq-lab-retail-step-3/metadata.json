@@ -1,0 +1,13 @@
+{
+  "name": "Retail Supply Chain — Step 3: Geography",
+  "description": "Region and Store model where orders are fulfilled",
+  "icon": "🌐",
+  "category": "school",
+  "tags": [
+    "retail",
+    "supply-chain",
+    "lab",
+    "step-3"
+  ],
+  "author": "ontology-quest"
+}

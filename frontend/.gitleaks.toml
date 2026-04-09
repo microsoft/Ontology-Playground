@@ -1,0 +1,15 @@
+title = "ontology-quest gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Common non-secret placeholders and generated assets"
+paths = [
+  '''^build/''',
+  '''^dist/''',
+  '''^node_modules/''',
+  '''^public/learn\.json$''',
+  '''^public/catalogue\.json$''',
+  '''^api/local\.settings\.json\.template$'''
+]

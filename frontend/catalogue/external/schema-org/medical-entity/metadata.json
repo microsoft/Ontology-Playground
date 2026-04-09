@@ -1,0 +1,7 @@
+{
+  "name": "Schema.org — MedicalEntity",
+  "description": "Medical conditions, drugs, procedures, and healthcare providers — a health-domain subset of Schema.org.",
+  "category": "healthcare",
+  "author": "Schema.org (adapted)",
+  "tags": ["schema-org", "medical", "health", "drug", "hospital"]
+}

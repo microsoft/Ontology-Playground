@@ -1,0 +1,10 @@
+{
+  "name": "FIBO Risk Lab — Step 1: Industry Classification",
+  "description": "Economic sectors, subsectors, and NAICS industry groups — the foundation for concentration risk analysis.",
+  "icon": "🏭",
+  "category": "school",
+  "tags": ["fibo", "risk", "industry", "school", "step-1"],
+  "author": "EDM Council FIBO (adapted by ontology-quest)",
+  "license": "MIT",
+  "sourceUrl": "https://github.com/edmcouncil/fibo"
+}

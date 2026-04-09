@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Adapted from EDM Council FIBO — LOAN/LoansGeneral/Loans + FBC/ProductsAndServices/ClientsAndAccounts
+  Source: https://github.com/edmcouncil/fibo
+  Copyright (c) 2016-2025 EDM Council, Inc.
+  Copyright (c) 2016-2025 Object Management Group, Inc.
+  Licensed under the MIT License — https://opensource.org/licenses/MIT
+-->
+<rdf:RDF
+    xml:base="http://example.org/ontology/fibo-loans-step-3/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/fibo-loans-step-3/">
+
+  <owl:Ontology rdf:about="">
+    <rdfs:label>FIBO Loans Lab — Step 3</rdfs:label>
+    <rdfs:comment>Servicing and payment history concepts for operational tracking. Adapted from EDM Council FIBO. Source: https://github.com/edmcouncil/fibo — MIT License.</rdfs:comment>
+  </owl:Ontology>
+
+  <!-- Entities from Steps 1-2 -->
+  <owl:Class rdf:about="Loan">
+    <rdfs:label>Loan</rdfs:label>
+    <rdfs:comment>Debt instrument extended to a borrower and repaid according to contract terms.</rdfs:comment>
+    <ont:icon>📄</ont:icon>
+    <ont:color>#00A9E0</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="Borrower">
+    <rdfs:label>Borrower</rdfs:label>
+    <rdfs:comment>Party that receives funds and assumes repayment obligations.</rdfs:comment>
+    <ont:icon>👤</ont:icon>
+    <ont:color>#0078D4</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="Lender">
+    <rdfs:label>Lender</rdfs:label>
+    <rdfs:comment>Party that provides funds or credit under loan agreement terms.</rdfs:comment>
+    <ont:icon>🏦</ont:icon>
+    <ont:color>#107C10</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="Collateral">
+    <rdfs:label>Collateral</rdfs:label>
+    <rdfs:comment>Asset pledged to secure repayment obligations.</rdfs:comment>
+    <ont:icon>🏠</ont:icon>
+    <ont:color>#D83B01</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="LoanPaymentSchedule">
+    <rdfs:label>LoanPaymentSchedule</rdfs:label>
+    <rdfs:comment>Regular schedule defining due dates and expected loan payments.</rdfs:comment>
+    <ont:icon>🗓️</ont:icon>
+    <ont:color>#5C2D91</ont:color>
+  </owl:Class>
+
+  <!-- New in Step 3 -->
+  <owl:Class rdf:about="Servicer">
+    <rdfs:label>Servicer</rdfs:label>
+    <rdfs:comment>Financial service provider responsible for collecting loan payments. Adapted from fibo-loan-ln-ln:Servicer.</rdfs:comment>
+    <ont:icon>🧾</ont:icon>
+    <ont:color>#008272</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="PaymentHistory">
+    <rdfs:label>PaymentHistory</rdfs:label>
+    <rdfs:comment>Record of all payment events associated with a loan account. Adapted from fibo-fbc-pas-caa:PaymentHistory.</rdfs:comment>
+    <ont:icon>📚</ont:icon>
+    <ont:color>#FFB900</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="PaymentTransaction">
+    <rdfs:label>PaymentTransaction</rdfs:label>
+    <rdfs:comment>Single payment event that contributes to payment history. Adapted from fibo-fbc-pas-caa:IndividualTransaction.</rdfs:comment>
+    <ont:icon>💸</ont:icon>
+    <ont:color>#E81123</ont:color>
+  </owl:Class>
+
+  <!-- Properties -->
+  <owl:DatatypeProperty rdf:about="loanId">
+    <rdfs:label>loanId</rdfs:label>
+    <rdfs:domain rdf:resource="Loan"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="principalAmount">
+    <rdfs:label>principalAmount</rdfs:label>
+    <rdfs:domain rdf:resource="Loan"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    <ont:propertyType>decimal</ont:propertyType>
+    <ont:unit>USD</ont:unit>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="borrowerId">
+    <rdfs:label>borrowerId</rdfs:label>
+    <rdfs:domain rdf:resource="Borrower"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="lenderId">
+    <rdfs:label>lenderId</rdfs:label>
+    <rdfs:domain rdf:resource="Lender"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="assetType">
+    <rdfs:label>assetType</rdfs:label>
+    <rdfs:domain rdf:resource="Collateral"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="scheduleId">
+    <rdfs:label>scheduleId</rdfs:label>
+    <rdfs:domain rdf:resource="LoanPaymentSchedule"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="servicerId">
+    <rdfs:label>servicerId</rdfs:label>
+    <rdfs:domain rdf:resource="Servicer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="organizationName">
+    <rdfs:label>organizationName</rdfs:label>
+    <rdfs:domain rdf:resource="Servicer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="paymentHistoryId">
+    <rdfs:label>paymentHistoryId</rdfs:label>
+    <rdfs:domain rdf:resource="PaymentHistory"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="paymentTransactionId">
+    <rdfs:label>paymentTransactionId</rdfs:label>
+    <rdfs:domain rdf:resource="PaymentTransaction"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="amount">
+    <rdfs:label>amount</rdfs:label>
+    <rdfs:domain rdf:resource="PaymentTransaction"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    <ont:propertyType>decimal</ont:propertyType>
+    <ont:unit>USD</ont:unit>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="postedAt">
+    <rdfs:label>postedAt</rdfs:label>
+    <rdfs:domain rdf:resource="PaymentTransaction"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <ont:propertyType>datetime</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <!-- Relationships -->
+  <owl:ObjectProperty rdf:about="owedBy">
+    <rdfs:label>owedBy</rdfs:label>
+    <rdfs:domain rdf:resource="Loan"/>
+    <rdfs:range rdf:resource="Borrower"/>
+    <rdfs:comment>Relates a loan to the borrower obligated to repay it.</rdfs:comment>
+    <ont:cardinality>many-to-one</ont:cardinality>
+    <ont:fromEntityId>Loan</ont:fromEntityId>
+    <ont:toEntityId>Borrower</ont:toEntityId>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="originatedBy">
+    <rdfs:label>originatedBy</rdfs:label>
+    <rdfs:domain rdf:resource="Loan"/>
+    <rdfs:range rdf:resource="Lender"/>
+    <rdfs:comment>Relates a loan to the lending organization that originated it.</rdfs:comment>
+    <ont:cardinality>many-to-one</ont:cardinality>
+    <ont:fromEntityId>Loan</ont:fromEntityId>
+    <ont:toEntityId>Lender</ont:toEntityId>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="securedBy">
+    <rdfs:label>securedBy</rdfs:label>
+    <rdfs:domain rdf:resource="Loan"/>
+    <rdfs:range rdf:resource="Collateral"/>
+    <rdfs:comment>Relates a secured loan to pledged collateral assets.</rdfs:comment>
+    <ont:cardinality>one-to-many</ont:cardinality>
+    <ont:fromEntityId>Loan</ont:fromEntityId>
+    <ont:toEntityId>Collateral</ont:toEntityId>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="repaidBySchedule">
+    <rdfs:label>repaidBySchedule</rdfs:label>
+    <rdfs:domain rdf:resource="Loan"/>
+    <rdfs:range rdf:resource="LoanPaymentSchedule"/>
+    <rdfs:comment>Relates a loan to its payment schedule.</rdfs:comment>
+    <ont:cardinality>one-to-one</ont:cardinality>
+    <ont:fromEntityId>Loan</ont:fromEntityId>
+    <ont:toEntityId>LoanPaymentSchedule</ont:toEntityId>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="servicedBy">
+    <rdfs:label>servicedBy</rdfs:label>
+    <rdfs:domain rdf:resource="Loan"/>
+    <rdfs:range rdf:resource="Servicer"/>
+    <rdfs:comment>Relates a loan to the servicing organization collecting payments.</rdfs:comment>
+    <ont:cardinality>many-to-one</ont:cardinality>
+    <ont:fromEntityId>Loan</ont:fromEntityId>
+    <ont:toEntityId>Servicer</ont:toEntityId>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="hasPaymentHistory">
+    <rdfs:label>hasPaymentHistory</rdfs:label>
+    <rdfs:domain rdf:resource="LoanPaymentSchedule"/>
+    <rdfs:range rdf:resource="PaymentHistory"/>
+    <rdfs:comment>Links a payment schedule to payment history records.</rdfs:comment>
+    <ont:cardinality>one-to-one</ont:cardinality>
+    <ont:fromEntityId>LoanPaymentSchedule</ont:fromEntityId>
+    <ont:toEntityId>PaymentHistory</ont:toEntityId>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="hasIndividualPayment">
+    <rdfs:label>hasIndividualPayment</rdfs:label>
+    <rdfs:domain rdf:resource="PaymentHistory"/>
+    <rdfs:range rdf:resource="PaymentTransaction"/>
+    <rdfs:comment>Links a payment history record to each payment transaction event.</rdfs:comment>
+    <ont:cardinality>one-to-many</ont:cardinality>
+    <ont:fromEntityId>PaymentHistory</ont:fromEntityId>
+    <ont:toEntityId>PaymentTransaction</ont:toEntityId>
+  </owl:ObjectProperty>
+
+</rdf:RDF>

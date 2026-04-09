@@ -1,0 +1,15 @@
+dist/
+**/__pycache__/*
+*.py[cod]
+.mypy_cache/
+.coverage
+htmlcov/
+.idea/
+.env
+docs/build/
+.vscode/
+.python-version
+.DS_Store
+.venv
+.tox/
+.plans

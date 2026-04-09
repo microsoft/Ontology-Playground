@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Adapted from EDM Council FIBO — debt, classification, and loan modules
+  Source: https://github.com/edmcouncil/fibo
+  Copyright (c) 2016-2025 EDM Council, Inc.
+  Copyright (c) 2016-2025 Object Management Group, Inc.
+  Licensed under the MIT License — https://opensource.org/licenses/MIT
+-->
+<rdf:RDF
+    xml:base="http://example.org/ontology/fibo-loan-classification/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/fibo-loan-classification/">
+
+  <owl:Ontology rdf:about="">
+    <rdfs:label>FIBO Loan Classification</rdfs:label>
+    <rdfs:comment>Loan types with Basel risk weights, collateral categories, and OCC/FDIC concentration buckets. Adapted from EDM Council FIBO. Source: https://github.com/edmcouncil/fibo — MIT License.</rdfs:comment>
+  </owl:Ontology>
+
+  <!-- Entity Types -->
+  <owl:Class rdf:about="ConcentrationCategory">
+    <rdfs:label>ConcentrationCategory</rdfs:label>
+    <rdfs:comment>Regulatory concentration bucket defined by OCC/FDIC guidance for portfolio risk management.</rdfs:comment>
+    <ont:icon>📊</ont:icon>
+    <ont:color>#D83B01</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="LoanType">
+    <rdfs:label>LoanType</rdfs:label>
+    <rdfs:comment>Loan product classification with Basel III risk weight, regulatory treatment, and capital tier.</rdfs:comment>
+    <ont:icon>💰</ont:icon>
+    <ont:color>#E81123</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="CollateralType">
+    <rdfs:label>CollateralType</rdfs:label>
+    <rdfs:comment>Collateral asset category with recovery expectations and concentration classification.</rdfs:comment>
+    <ont:icon>🏠</ont:icon>
+    <ont:color>#FF8C00</ont:color>
+  </owl:Class>
+
+  <!-- ConcentrationCategory Properties -->
+  <owl:DatatypeProperty rdf:about="categoryId">
+    <rdfs:label>categoryId</rdfs:label>
+    <rdfs:domain rdf:resource="ConcentrationCategory"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="categoryName">
+    <rdfs:label>name</rdfs:label>
+    <rdfs:domain rdf:resource="ConcentrationCategory"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="categoryDescription">
+    <rdfs:label>description</rdfs:label>
+    <rdfs:domain rdf:resource="ConcentrationCategory"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="occGuidance">
+    <rdfs:label>occGuidance</rdfs:label>
+    <rdfs:domain rdf:resource="ConcentrationCategory"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <!-- LoanType Properties -->
+  <owl:DatatypeProperty rdf:about="loanTypeCode">
+    <rdfs:label>loanTypeCode</rdfs:label>
+    <rdfs:domain rdf:resource="LoanType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="loanTypeName">
+    <rdfs:label>name</rdfs:label>
+    <rdfs:domain rdf:resource="LoanType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="baselRiskWeight">
+    <rdfs:label>baselRiskWeight</rdfs:label>
+    <rdfs:domain rdf:resource="LoanType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    <ont:propertyType>decimal</ont:propertyType>
+    <ont:unit>%</ont:unit>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="regulatoryTreatment">
+    <rdfs:label>regulatoryTreatment</rdfs:label>
+    <rdfs:domain rdf:resource="LoanType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="capitalTier">
+    <rdfs:label>capitalTier</rdfs:label>
+    <rdfs:domain rdf:resource="LoanType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="loanTypeDescription">
+    <rdfs:label>description</rdfs:label>
+    <rdfs:domain rdf:resource="LoanType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <!-- CollateralType Properties -->
+  <owl:DatatypeProperty rdf:about="collateralTypeCode">
+    <rdfs:label>collateralTypeCode</rdfs:label>
+    <rdfs:domain rdf:resource="CollateralType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="collateralTypeName">
+    <rdfs:label>name</rdfs:label>
+    <rdfs:domain rdf:resource="CollateralType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="recoveryExpectation">
+    <rdfs:label>recoveryExpectation</rdfs:label>
+    <rdfs:domain rdf:resource="CollateralType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="collateralTypeDescription">
+    <rdfs:label>description</rdfs:label>
+    <rdfs:domain rdf:resource="CollateralType"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <!-- Relationships -->
+  <owl:ObjectProperty rdf:about="loanClassifiedAs">
+    <rdfs:label>loanClassifiedAs</rdfs:label>
+    <rdfs:domain rdf:resource="LoanType"/>
+    <rdfs:range rdf:resource="ConcentrationCategory"/>
+    <rdfs:comment>Classifies a loan type into an OCC/FDIC concentration category.</rdfs:comment>
+    <ont:cardinality>many-to-one</ont:cardinality>
+    <ont:fromEntityId>LoanType</ont:fromEntityId>
+    <ont:toEntityId>ConcentrationCategory</ont:toEntityId>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="collateralClassifiedAs">
+    <rdfs:label>collateralClassifiedAs</rdfs:label>
+    <rdfs:domain rdf:resource="CollateralType"/>
+    <rdfs:range rdf:resource="ConcentrationCategory"/>
+    <rdfs:comment>Classifies a collateral type into an OCC/FDIC concentration category.</rdfs:comment>
+    <ont:cardinality>many-to-one</ont:cardinality>
+    <ont:fromEntityId>CollateralType</ont:fromEntityId>
+    <ont:toEntityId>ConcentrationCategory</ont:toEntityId>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="typicallySecuredBy">
+    <rdfs:label>typicallySecuredBy</rdfs:label>
+    <rdfs:domain rdf:resource="CollateralType"/>
+    <rdfs:range rdf:resource="LoanType"/>
+    <rdfs:comment>Links a collateral type to the loan types it typically secures.</rdfs:comment>
+    <ont:cardinality>many-to-many</ont:cardinality>
+    <ont:fromEntityId>CollateralType</ont:fromEntityId>
+    <ont:toEntityId>LoanType</ont:toEntityId>
+  </owl:ObjectProperty>
+
+</rdf:RDF>

@@ -1,0 +1,9 @@
+{
+  "slug": "basketball-player-evaluation-ontology",
+  "name": "Basketball Player Evaluation Ontology",
+  "description": "A practical ontology draft for modeling basketball players, their physical profiles, tactical roles, skill assessments, performance metrics, contracts, awards, injuries, and commercial relationships.",
+  "updated_at": "2026-04-09T07:32:15.707481+00:00",
+  "rdf_filename": "basketball-player-evaluation-ontology.rdf",
+  "json_filename": "basketball-player-evaluation-ontology.json",
+  "tags": []
+}

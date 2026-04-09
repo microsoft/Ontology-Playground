@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/microsoft/Ontology-Playground/blob/main/catalogue/metadata-schema.json",
+  "title": "Ontology Catalogue Metadata",
+  "description": "Metadata for an ontology entry in the catalogue",
+  "type": "object",
+  "required": ["name", "description", "category"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable ontology name"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short description of the ontology"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji icon for display"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["retail", "healthcare", "finance", "manufacturing", "education", "food", "media", "events", "general", "school", "fibo"],
+      "description": "Domain category"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional tags for filtering"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author name or GitHub username"
+    }
+  },
+  "additionalProperties": false
+}

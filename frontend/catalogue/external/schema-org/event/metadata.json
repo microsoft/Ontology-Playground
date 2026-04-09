@@ -1,0 +1,14 @@
+{
+  "name": "Schema.org — Event",
+  "description": "Events, venues, performers, and offers — a subset of Schema.org's vocabulary for describing events, ticket sales, and scheduling.",
+  "icon": "🎫",
+  "category": "events",
+  "tags": [
+    "schema-org",
+    "event",
+    "venue",
+    "ticket",
+    "structured-data"
+  ],
+  "author": "Schema.org (adapted)"
+}

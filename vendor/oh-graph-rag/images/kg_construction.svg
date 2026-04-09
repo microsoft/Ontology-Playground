@@ -1,0 +1,138 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="790.758666992" height="490.906555176"
+    viewBox="-409.3672180175781 -175.3655242919922 395.37933349609375 245.45327758789062">
+    <title>Neo4j Graph Visualization</title>
+    <desc>Created using Neo4j (http://www.neo4j.com/)</desc>
+    <g class="layer relationships">
+        <g class="relationship"
+            transform="translate(-120.0725519349426 -145.01324299804457) rotate(494.782070638353)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 55.763253996050096 0.5 L 55.763253996050096 -0.5 L 25 -0.5 Z M 118.2085664960501 0.5 L 148.9718204921002 0.5 L 148.9718204921002 3.5 L 155.9718204921002 0 L 148.9718204921002 -3.5 L 148.9718204921002 -0.5 L 118.2085664960501 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="86.9859102460501" y="3" transform="rotate(180 86.9859102460501 0)"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">FROM_CHUNK</text>
+        </g>
+        <g class="relationship"
+            transform="translate(-120.0725519349426 -145.01324299804457) rotate(180.58552803974726)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 42.32767628985535 0.5 L 42.32767628985535 -0.5 L 25 -0.5 Z M 82.99955128985535 0.5 L 100.3272275797107 0.5 L 100.3272275797107 3.5 L 107.3272275797107 0 L 100.3272275797107 -3.5 L 100.3272275797107 -0.5 L 82.99955128985535 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="62.66361378985535" y="3" transform="rotate(180 62.66361378985535 0)"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">HEIR_OF</text>
+        </g>
+        <g class="relationship"
+            transform="translate(-42.98790867373941 41.087753877403614) rotate(195.73857017824423)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 71.54300531787909 0.5 L 71.54300531787909 -0.5 L 25 -0.5 Z M 133.98831781787908 0.5 L 180.53132313575819 0.5 L 180.53132313575819 3.5 L 187.53132313575819 0 L 180.53132313575819 -3.5 L 180.53132313575819 -0.5 L 133.98831781787908 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="102.76566156787909" y="3" transform="rotate(180 102.76566156787909 0)"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">FROM_CHUNK</text>
+        </g>
+        <g class="relationship"
+            transform="translate(-42.98790867373941 41.087753877403614) rotate(247.50024008717492)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 70.50797455538884 0.5 L 70.50797455538884 -0.5 L 25 -0.5 Z M 123.92594330538884 0.5 L 169.43391786077768 0.5 L 169.43391786077768 3.5 L 176.43391786077768 0 L 169.43391786077768 -3.5 L 169.43391786077768 -0.5 L 123.92594330538884 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="97.21695893038884" y="3" transform="rotate(180 97.21695893038884 0)"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">PARENT_OF</text>
+        </g>
+        <g class="relationship"
+            transform="translate(-115.28263406340949 -14.579466378727105) rotate(180.85830727873912)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 31.419096907702965 0.5 L 31.419096907702965 -0.5 L 25 -0.5 Z M 93.86440940770296 0.5 L 100.28350631540593 0.5 L 100.28350631540593 3.5 L 107.28350631540593 0 L 100.28350631540593 -3.5 L 100.28350631540593 -0.5 L 93.86440940770296 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="62.641753157702965" y="3" transform="rotate(180 62.641753157702965 0)"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">FROM_CHUNK</text>
+        </g>
+        <g class="relationship"
+            transform="translate(-115.28263406340949 -14.579466378727105) rotate(267.8968729092867)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 35.05186414153793 0.5 L 35.05186414153793 -0.5 L 25 -0.5 Z M 88.46983289153793 0.5 L 98.52169703307587 0.5 L 98.52169703307587 3.5 L 105.52169703307587 0 L 98.52169703307587 -3.5 L 98.52169703307587 -0.5 L 88.46983289153793 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="61.76084851653793" y="3" transform="rotate(180 61.76084851653793 0)"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">PARENT_OF</text>
+        </g>
+        <g class="relationship"
+            transform="translate(-252.3928697132048 -146.3655232915704) rotate(447.8639174324242)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 30.224717455927745 0.5 L 30.224717455927745 -0.5 L 25 -0.5 Z M 92.67002995592775 0.5 L 97.89474741185549 0.5 L 97.89474741185549 3.5 L 104.89474741185549 0 L 97.89474741185549 -3.5 L 97.89474741185549 -0.5 L 92.67002995592775 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="61.447373705927745" y="3"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">FROM_CHUNK</text>
+        </g>
+        <g class="relationship"
+            transform="translate(-252.3928697132048 -146.3655232915704) rotate(486.9551816484338)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 86.59628002084311 0.5 L 86.59628002084311 -0.5 L 25 -0.5 Z M 119.27206127084311 0.5 L 180.86834129168622 0.5 L 180.86834129168622 3.5 L 187.86834129168622 0 L 180.86834129168622 -3.5 L 180.86834129168622 -0.5 L 119.27206127084311 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="102.93417064584311" y="3" transform="rotate(180 102.93417064584311 0)"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">RULES</text>
+        </g>
+        <g class="relationship"
+            transform="translate(-380.3672142522258 23.73885015038948) rotate(343.1208048892249)">
+            <path class="b-outline" fill="#A5ABB6" stroke="none"
+                d="M 25 0.5 L 34.675017661361366 0.5 L 34.675017661361366 -0.5 L 25 -0.5 Z M 97.12033016136137 0.5 L 106.79534782272273 0.5 L 106.79534782272273 3.5 L 113.79534782272273 0 L 106.79534782272273 -3.5 L 106.79534782272273 -0.5 L 97.12033016136137 -0.5 Z" />
+            <text text-anchor="middle" pointer-events="none" font-size="8px" fill="#A5ABB6"
+                x="65.89767391136137" y="3"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif">FROM_CHUNK</text>
+        </g>
+    </g>
+    <g class="layer nodes">
+        <g class="node" aria-label="graph-node0"
+            transform="translate(-120.0725519349426,-145.01324299804457)">
+            <circle class="b-outline" cx="0" cy="0" r="25" fill="#57C7E3" stroke="#23b3d7"
+                stroke-width="2px" />
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="5"
+                font-size="10px" fill="#2A2C34"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> Paul</text>
+        </g>
+        <g class="node" aria-label="graph-node1"
+            transform="translate(-42.98790867373941,41.087753877403614)">
+            <circle class="b-outline" cx="0" cy="0" r="25" fill="#57C7E3" stroke="#23b3d7"
+                stroke-width="2px" />
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="0"
+                font-size="10px" fill="#2A2C34"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> Duke Leto</text>
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="10"
+                font-size="10px" fill="#2A2C34"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> Atreides</text>
+        </g>
+        <g class="node" aria-label="graph-node2"
+            transform="translate(-115.28263406340949,-14.579466378727105)">
+            <circle class="b-outline" cx="0" cy="0" r="25" fill="#57C7E3" stroke="#23b3d7"
+                stroke-width="2px" />
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="0"
+                font-size="10px" fill="#2A2C34"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> Lady</text>
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="10"
+                font-size="10px" fill="#2A2C34"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> Jessica</text>
+        </g>
+        <g class="node" aria-label="graph-node3"
+            transform="translate(-252.3928697132048,-146.3655232915704)">
+            <circle class="b-outline" cx="0" cy="0" r="25" fill="#F16667" stroke="#eb2728"
+                stroke-width="2px" />
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="0"
+                font-size="10px" fill="#FFFFFF"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> House</text>
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="10"
+                font-size="10px" fill="#FFFFFF"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> Atreides</text>
+        </g>
+        <g class="node" aria-label="graph-node4"
+            transform="translate(-380.3672142522258,23.73885015038948)">
+            <circle class="b-outline" cx="0" cy="0" r="25" fill="#D9C8AE" stroke="#c0a378"
+                stroke-width="2px" />
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="5"
+                font-size="10px" fill="#2A2C34"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> Caladan</text>
+        </g>
+        <g class="node" aria-label="graph-node5"
+            transform="translate(-247.5512978497959,-16.561037286343357)">
+            <circle class="b-outline" cx="0" cy="0" r="25" fill="#8DCC93" stroke="#5db665"
+                stroke-width="2px" />
+            <text class="caption" text-anchor="middle" pointer-events="none" x="0" y="5"
+                font-size="10px" fill="#2A2C34"
+                font-family="Helvetica Neue, Helvetica, Arial, sans-serif"> 0</text>
+        </g>
+    </g>
+</svg>

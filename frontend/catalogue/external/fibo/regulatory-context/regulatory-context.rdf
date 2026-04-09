@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Adapted from EDM Council FIBO — regulatory and compliance modules
+  Source: https://github.com/edmcouncil/fibo
+  Copyright (c) 2016-2025 EDM Council, Inc.
+  Copyright (c) 2016-2025 Object Management Group, Inc.
+  Licensed under the MIT License — https://opensource.org/licenses/MIT
+-->
+<rdf:RDF
+    xml:base="http://example.org/ontology/fibo-regulatory-context/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/fibo-regulatory-context/">
+
+  <owl:Ontology rdf:about="">
+    <rdfs:label>FIBO Regulatory Context</rdfs:label>
+    <rdfs:comment>Banking regulations and concentration limits for OCC, FDIC, and Basel III compliance. Adapted from EDM Council FIBO. Source: https://github.com/edmcouncil/fibo — MIT License.</rdfs:comment>
+  </owl:Ontology>
+
+  <!-- Entity Types -->
+  <owl:Class rdf:about="Regulation">
+    <rdfs:label>Regulation</rdfs:label>
+    <rdfs:comment>Regulatory framework issued by a banking authority (OCC, FDIC, Basel Committee) governing portfolio risk.</rdfs:comment>
+    <ont:icon>⚖️</ont:icon>
+    <ont:color>#5C2D91</ont:color>
+  </owl:Class>
+
+  <owl:Class rdf:about="RegulatoryLimit">
+    <rdfs:label>RegulatoryLimit</rdfs:label>
+    <rdfs:comment>Quantitative threshold or limit imposed by a regulation on portfolio concentration, exposure, or capital ratios.</rdfs:comment>
+    <ont:icon>🚨</ont:icon>
+    <ont:color>#8764B8</ont:color>
+  </owl:Class>
+
+  <!-- Regulation Properties -->
+  <owl:DatatypeProperty rdf:about="regulationCode">
+    <rdfs:label>regulationCode</rdfs:label>
+    <rdfs:domain rdf:resource="Regulation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="regulationName">
+    <rdfs:label>name</rdfs:label>
+    <rdfs:domain rdf:resource="Regulation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="issuingAuthority">
+    <rdfs:label>issuingAuthority</rdfs:label>
+    <rdfs:domain rdf:resource="Regulation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="effectiveDate">
+    <rdfs:label>effectiveDate</rdfs:label>
+    <rdfs:domain rdf:resource="Regulation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+    <ont:propertyType>date</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="scope">
+    <rdfs:label>scope</rdfs:label>
+    <rdfs:domain rdf:resource="Regulation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="regulationDescription">
+    <rdfs:label>description</rdfs:label>
+    <rdfs:domain rdf:resource="Regulation"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <!-- RegulatoryLimit Properties -->
+  <owl:DatatypeProperty rdf:about="limitId">
+    <rdfs:label>limitId</rdfs:label>
+    <rdfs:domain rdf:resource="RegulatoryLimit"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+    <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="limitName">
+    <rdfs:label>limitName</rdfs:label>
+    <rdfs:domain rdf:resource="RegulatoryLimit"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="category">
+    <rdfs:label>category</rdfs:label>
+    <rdfs:domain rdf:resource="RegulatoryLimit"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="thresholdPct">
+    <rdfs:label>thresholdPct</rdfs:label>
+    <rdfs:domain rdf:resource="RegulatoryLimit"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    <ont:propertyType>decimal</ont:propertyType>
+    <ont:unit>%</ont:unit>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="severity">
+    <rdfs:label>severity</rdfs:label>
+    <rdfs:domain rdf:resource="RegulatoryLimit"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="limitDescription">
+    <rdfs:label>description</rdfs:label>
+    <rdfs:domain rdf:resource="RegulatoryLimit"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <ont:propertyType>string</ont:propertyType>
+  </owl:DatatypeProperty>
+
+  <!-- Relationships -->
+  <owl:ObjectProperty rdf:about="mandatedBy">
+    <rdfs:label>mandatedBy</rdfs:label>
+    <rdfs:domain rdf:resource="RegulatoryLimit"/>
+    <rdfs:range rdf:resource="Regulation"/>
+    <rdfs:comment>Links a regulatory limit to the regulation that mandates it.</rdfs:comment>
+    <ont:cardinality>many-to-one</ont:cardinality>
+    <ont:fromEntityId>RegulatoryLimit</ont:fromEntityId>
+    <ont:toEntityId>Regulation</ont:toEntityId>
+  </owl:ObjectProperty>
+
+</rdf:RDF>

@@ -1,0 +1,2803 @@
+{
+  "nodes": [
+    {
+      "node_id": "player:anthony_davis",
+      "label": "Player",
+      "class_id": "player",
+      "properties": {
+        "source": "approved_review",
+        "playerId": "anthony_davis",
+        "fullName": "Anthony Davis",
+        "draftYear": 2012,
+        "draftPick": 1,
+        "draftNarrativeType": "BlueChip",
+        "snsFollowers": 1000000
+      }
+    },
+    {
+      "node_id": "position:C",
+      "label": "Position C",
+      "class_id": "position",
+      "properties": {
+        "source": "approved_review",
+        "positionId": "C",
+        "name": "C",
+        "description": "Center"
+      }
+    },
+    {
+      "node_id": "position:PF",
+      "label": "Position PF",
+      "class_id": "position",
+      "properties": {
+        "source": "approved_review",
+        "positionId": "PF",
+        "name": "PF",
+        "description": "Power forward"
+      }
+    },
+    {
+      "node_id": "skill:defense",
+      "label": "Skill Defense",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "defense",
+        "name": "Defense",
+        "category": "Defense",
+        "description": "Overall defensive impact including rim protection and contests"
+      }
+    },
+    {
+      "node_id": "skill:rim_protection",
+      "label": "Skill Rim Protection",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "rim_protection",
+        "name": "Rim Protection",
+        "category": "Defense",
+        "description": "Shot blocking and paint defense"
+      }
+    },
+    {
+      "node_id": "skill:scoring",
+      "label": "Skill Scoring",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "scoring",
+        "name": "Scoring",
+        "category": "Offense",
+        "description": "Point production and shot creation/finishing"
+      }
+    },
+    {
+      "node_id": "skill:rebounding",
+      "label": "Skill Rebounding",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "rebounding",
+        "name": "Rebounding",
+        "category": "Defense",
+        "description": "Securing rebounds"
+      }
+    },
+    {
+      "node_id": "award:all_star",
+      "label": "Award All-Star",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "all_star",
+        "name": "All-Star",
+        "category": "AllStar",
+        "description": "NBA All-Star selection"
+      }
+    },
+    {
+      "node_id": "award:all_nba_first_team",
+      "label": "Award All-NBA First Team",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "all_nba_first_team",
+        "name": "All-NBA First Team",
+        "category": "AllNBA",
+        "description": "All-NBA First Team selection"
+      }
+    },
+    {
+      "node_id": "award:all_nba_second_team",
+      "label": "Award All-NBA Second Team",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "all_nba_second_team",
+        "name": "All-NBA Second Team",
+        "category": "AllNBA",
+        "description": "All-NBA Second Team selection"
+      }
+    },
+    {
+      "node_id": "award:all_defensive_first_team",
+      "label": "Award NBA All-Defensive First Team",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "all_defensive_first_team",
+        "name": "NBA All-Defensive First Team",
+        "category": "Other",
+        "description": "All-Defensive First Team selection"
+      }
+    },
+    {
+      "node_id": "award:all_star_mvp",
+      "label": "Award All-Star MVP",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "all_star_mvp",
+        "name": "All-Star MVP",
+        "category": "Other",
+        "description": "NBA All-Star Game MVP"
+      }
+    },
+    {
+      "node_id": "award:championship",
+      "label": "Award NBA Championship",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "championship",
+        "name": "NBA Championship",
+        "category": "Championship",
+        "description": "NBA title"
+      }
+    },
+    {
+      "node_id": "contract:ad_pelicans_2015",
+      "label": "Contract",
+      "class_id": "contract",
+      "properties": {
+        "source": "approved_review",
+        "contractId": "ad_pelicans_2015",
+        "salary": "145000000",
+        "contractLengthYears": "5"
+      }
+    },
+    {
+      "node_id": "team:new_orleans_hornets_pelicans",
+      "label": "Team New Orleans Hornets/Pelicans",
+      "class_id": "team",
+      "properties": {
+        "source": "approved_review",
+        "teamId": "new_orleans_hornets_pelicans",
+        "name": "New Orleans Hornets/Pelicans",
+        "league": "NBA"
+      }
+    },
+    {
+      "node_id": "contract:ad_lakers_2020",
+      "label": "Contract",
+      "class_id": "contract",
+      "properties": {
+        "source": "approved_review",
+        "contractId": "ad_lakers_2020",
+        "salary": "190000000",
+        "startDate": "2020-12-03",
+        "optionType": "Player",
+        "contractLengthYears": "5"
+      }
+    },
+    {
+      "node_id": "team:los_angeles_lakers",
+      "label": "Team Los Angeles Lakers",
+      "class_id": "team",
+      "properties": {
+        "source": "approved_review",
+        "teamId": "los_angeles_lakers",
+        "name": "Los Angeles Lakers",
+        "league": "NBA"
+      }
+    },
+    {
+      "node_id": "contract:ad_lakers_2023_extension",
+      "label": "Contract",
+      "class_id": "contract",
+      "properties": {
+        "source": "approved_review",
+        "contractId": "ad_lakers_2023_extension",
+        "salary": "186600000",
+        "contractLengthYears": "3"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2012_13",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2012_13",
+        "season": "2012-13",
+        "pointsPerGame": "13.5",
+        "reboundsPerGame": "8.2",
+        "blocksPerGame": "1.4"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2013_14",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2013_14",
+        "season": "2013-14",
+        "pointsPerGame": "20.9",
+        "reboundsPerGame": "10.1",
+        "blocksPerGame": "2.8"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2014_15",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2014_15",
+        "season": "2014-15",
+        "per": "30"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2018_19",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2018_19",
+        "season": "2018-19",
+        "pointsPerGame": "28",
+        "reboundsPerGame": "13"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2019_20",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2019_20",
+        "season": "2019-20",
+        "pointsPerGame": "28.8",
+        "reboundsPerGame": "12.5",
+        "per": "34.6"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2020_21",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2020_21",
+        "season": "2020-21",
+        "pointsPerGame": "22.5",
+        "reboundsPerGame": "8.4",
+        "assistsPerGame": "3.0",
+        "per": "24.7",
+        "trueShootingPct": "53.3"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2022_23",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2022_23",
+        "season": "2022-23",
+        "pointsPerGame": "26.3",
+        "reboundsPerGame": "12.4"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2023_24",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2023_24",
+        "season": "2023-24"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2024_25_lakers",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2024_25_lakers",
+        "season": "2024-25",
+        "pointsPerGame": "31.1",
+        "reboundsPerGame": "10.9",
+        "assistsPerGame": "2.7",
+        "stealsPerGame": "1.2",
+        "blocksPerGame": "2.1",
+        "trueShootingPct": "55.7"
+      }
+    },
+    {
+      "node_id": "season-performance:ad_2025_26_mavericks",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "ad_2025_26_mavericks",
+        "season": "2025-26"
+      }
+    },
+    {
+      "node_id": "team:dallas_mavericks",
+      "label": "Team Dallas Mavericks",
+      "class_id": "team",
+      "properties": {
+        "source": "approved_review",
+        "teamId": "dallas_mavericks",
+        "name": "Dallas Mavericks",
+        "league": "NBA"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2012_concussion",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2012_concussion",
+        "bodyPart": "head",
+        "injuryType": "concussion",
+        "gamesMissed": 2
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2012_ankle",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2012_ankle",
+        "bodyPart": "ankle",
+        "injuryType": "ankle injury"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2013_shoulder",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2013_shoulder",
+        "bodyPart": "shoulder",
+        "injuryType": "shoulder injury",
+        "gamesMissed": 2
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2013_left_knee",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2013_left_knee",
+        "bodyPart": "left knee",
+        "injuryType": "knee injury"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2021_groin",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2021_groin",
+        "bodyPart": "groin",
+        "injuryType": "groin injury"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2021_knee",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2021_knee",
+        "bodyPart": "knee",
+        "injuryType": "knee injury"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2022_right_ankle",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2022_right_ankle",
+        "bodyPart": "right ankle",
+        "injuryType": "ankle sprain"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2022_foot",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2022_foot",
+        "bodyPart": "foot",
+        "injuryType": "foot pain/injury"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2023_concussion_protocol",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2023_concussion_protocol",
+        "bodyPart": "head",
+        "injuryType": "concussion symptoms"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2025_abdominal",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2025_abdominal",
+        "bodyPart": "abdomen",
+        "injuryType": "abdominal injury"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2025_groin_reinjury",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2025_groin_reinjury",
+        "bodyPart": "groin",
+        "injuryType": "groin injury recurrence"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2025_adductor",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2025_adductor",
+        "bodyPart": "adductor",
+        "injuryType": "adductor strain"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2025_calf",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2025_calf",
+        "bodyPart": "calf",
+        "injuryType": "calf strain"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2025_groin",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2025_groin",
+        "bodyPart": "groin",
+        "injuryType": "groin injury"
+      }
+    },
+    {
+      "node_id": "injury-record:ad_2026_left_hand_ligament",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ad_2026_left_hand_ligament",
+        "bodyPart": "left hand",
+        "injuryType": "ligament damage"
+      }
+    },
+    {
+      "node_id": "player:jayson_tatum",
+      "label": "Player",
+      "class_id": "player",
+      "properties": {
+        "source": "approved_review",
+        "playerId": "jayson_tatum",
+        "fullName": "Jayson Tatum",
+        "heightCm": "203",
+        "wingspanCm": "211",
+        "standingReachCm": "272",
+        "draftYear": 2017,
+        "draftPick": 3,
+        "draftNarrativeType": "BlueChip"
+      }
+    },
+    {
+      "node_id": "position:sf",
+      "label": "Position SF",
+      "class_id": "position",
+      "properties": {
+        "source": "approved_review",
+        "positionId": "sf",
+        "name": "SF",
+        "description": "Small Forward"
+      }
+    },
+    {
+      "node_id": "skill:shooting",
+      "label": "Skill Shooting",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "shooting",
+        "name": "Shooting",
+        "category": "Offense",
+        "description": "Perimeter and jump shooting ability"
+      }
+    },
+    {
+      "node_id": "skill:court_vision",
+      "label": "Skill Court Vision",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "court_vision",
+        "name": "Court Vision",
+        "category": "NonCognitive",
+        "description": "Passing vision and teammate utilization"
+      }
+    },
+    {
+      "node_id": "skill:clutch_play",
+      "label": "Skill Clutch Play",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "clutch_play",
+        "name": "Clutch Play",
+        "category": "NonCognitive",
+        "description": "Performance in late-game high-pressure situations"
+      }
+    },
+    {
+      "node_id": "season-performance:jayson_tatum_2017_18",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "jayson_tatum_2017_18",
+        "season": "2017-18",
+        "pointsPerGame": "13.9",
+        "reboundsPerGame": "5.0",
+        "assistsPerGame": "1.6",
+        "per": "15.2"
+      }
+    },
+    {
+      "node_id": "team:boston_celtics",
+      "label": "Team Boston Celtics",
+      "class_id": "team",
+      "properties": {
+        "source": "approved_review",
+        "teamId": "boston_celtics",
+        "name": "Boston Celtics",
+        "league": "NBA"
+      }
+    },
+    {
+      "node_id": "season-performance:jayson_tatum_2018_19",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "jayson_tatum_2018_19",
+        "season": "2018-19",
+        "pointsPerGame": "15.7",
+        "reboundsPerGame": "6.0",
+        "assistsPerGame": "2.1",
+        "per": "15.1"
+      }
+    },
+    {
+      "node_id": "season-performance:jayson_tatum_2019_20",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "jayson_tatum_2019_20",
+        "season": "2019-20",
+        "pointsPerGame": "23.4",
+        "reboundsPerGame": "7.0",
+        "assistsPerGame": "3.0",
+        "per": "20.4"
+      }
+    },
+    {
+      "node_id": "season-performance:jayson_tatum_2020_21",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "jayson_tatum_2020_21",
+        "season": "2020-21",
+        "pointsPerGame": "26.4",
+        "reboundsPerGame": "7.4",
+        "assistsPerGame": "4.3",
+        "per": "21.3"
+      }
+    },
+    {
+      "node_id": "season-performance:jayson_tatum_2021_22",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "jayson_tatum_2021_22",
+        "season": "2021-22",
+        "pointsPerGame": "26.9",
+        "reboundsPerGame": "8.0",
+        "assistsPerGame": "4.4",
+        "per": "21.8"
+      }
+    },
+    {
+      "node_id": "season-performance:jayson_tatum_2022_23",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "jayson_tatum_2022_23",
+        "season": "2022-23",
+        "pointsPerGame": "30.1",
+        "reboundsPerGame": "8.8",
+        "assistsPerGame": "4.6",
+        "per": "23.7"
+      }
+    },
+    {
+      "node_id": "award:all_rookie_first_team",
+      "label": "Award All-Rookie 1st Team",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "all_rookie_first_team",
+        "name": "All-Rookie 1st Team",
+        "category": "Other",
+        "description": "NBA All-Rookie First Team selection"
+      }
+    },
+    {
+      "node_id": "award:all_nba_third_team",
+      "label": "Award All-NBA 3rd Team",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "all_nba_third_team",
+        "name": "All-NBA 3rd Team",
+        "category": "AllNBA",
+        "description": "NBA All-NBA Third Team selection"
+      }
+    },
+    {
+      "node_id": "award:conference_finals_mvp",
+      "label": "Award Larry Bird Conference Finals MVP",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "conference_finals_mvp",
+        "name": "Larry Bird Conference Finals MVP",
+        "category": "Other",
+        "description": "Eastern Conference Finals MVP award"
+      }
+    },
+    {
+      "node_id": "contract:jayson_tatum_extension_2020",
+      "label": "Contract",
+      "class_id": "contract",
+      "properties": {
+        "source": "approved_review",
+        "contractId": "jayson_tatum_extension_2020",
+        "salary": "163000000",
+        "startDate": "2021-22-01",
+        "endDate": "2025-26-01",
+        "optionType": "Player",
+        "contractLengthYears": "5"
+      }
+    },
+    {
+      "node_id": "contract:jayson_tatum_supermax_2023",
+      "label": "Contract",
+      "class_id": "contract",
+      "properties": {
+        "source": "approved_review",
+        "contractId": "jayson_tatum_supermax_2023",
+        "salary": "318000000",
+        "contractLengthYears": "5"
+      }
+    },
+    {
+      "node_id": "injury-record:covid19_2021",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "covid19_2021",
+        "bodyPart": "lungs",
+        "injuryType": "COVID-19",
+        "startDate": "2021-01-01"
+      }
+    },
+    {
+      "node_id": "injury-record:left_wrist_fracture_2022",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "left_wrist_fracture_2022",
+        "bodyPart": "left wrist",
+        "injuryType": "fracture"
+      }
+    },
+    {
+      "node_id": "injury-record:shoulder_injury_2022_finals",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "shoulder_injury_2022_finals",
+        "bodyPart": "shoulder",
+        "injuryType": "injury"
+      }
+    },
+    {
+      "node_id": "injury-record:ankle_injury_2023_ecf",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "ankle_injury_2023_ecf",
+        "bodyPart": "ankle",
+        "injuryType": "injury",
+        "startDate": "2023-05-29"
+      }
+    },
+    {
+      "node_id": "injury-record:achilles_rupture_2025",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "achilles_rupture_2025",
+        "bodyPart": "Achilles tendon",
+        "injuryType": "rupture surgery aftermath"
+      }
+    },
+    {
+      "node_id": "player:kyrie_irving",
+      "label": "Player",
+      "class_id": "player",
+      "properties": {
+        "source": "approved_review",
+        "playerId": "kyrie_irving",
+        "fullName": "Kyrie Irving",
+        "nationality": "Australian, American",
+        "draftYear": 2011,
+        "draftPick": 1,
+        "draftNarrativeType": "BlueChip"
+      }
+    },
+    {
+      "node_id": "position:PG",
+      "label": "Position PG",
+      "class_id": "position",
+      "properties": {
+        "source": "approved_review",
+        "positionId": "PG",
+        "name": "PG",
+        "description": "Point guard"
+      }
+    },
+    {
+      "node_id": "archetype:scoring_playmaker",
+      "label": "Archetype Scoring Playmaker",
+      "class_id": "archetype",
+      "properties": {
+        "source": "approved_review",
+        "archetypeId": "scoring_playmaker",
+        "name": "Scoring Playmaker",
+        "description": "Primary or secondary creator with elite shot creation and scoring"
+      }
+    },
+    {
+      "node_id": "skill:ball_handling",
+      "label": "Skill Ball Handling",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "ball_handling",
+        "name": "Ball Handling",
+        "category": "Offense",
+        "description": "Dribbling and self-creation"
+      }
+    },
+    {
+      "node_id": "skill:passing",
+      "label": "Skill Passing",
+      "class_id": "skill",
+      "properties": {
+        "source": "approved_review",
+        "skillId": "passing",
+        "name": "Passing",
+        "category": "Offense",
+        "description": "Playmaking and assist creation"
+      }
+    },
+    {
+      "node_id": "injury-record:injury_right_big_toe_duke",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "injury_right_big_toe_duke",
+        "bodyPart": "right big toe",
+        "injuryType": "injury"
+      }
+    },
+    {
+      "node_id": "injury-record:injury_kneecap_fracture_2015",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "injury_kneecap_fracture_2015",
+        "bodyPart": "knee",
+        "injuryType": "patellar fracture"
+      }
+    },
+    {
+      "node_id": "injury-record:injury_acl_tear_2025",
+      "label": "InjuryRecord",
+      "class_id": "injury-record",
+      "properties": {
+        "source": "approved_review",
+        "injuryId": "injury_acl_tear_2025",
+        "bodyPart": "knee",
+        "injuryType": "ACL tear",
+        "startDate": "2025-03-04"
+      }
+    },
+    {
+      "node_id": "season-performance:perf_duke_freshman",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "perf_duke_freshman",
+        "season": "2010-11",
+        "pointsPerGame": "17.4",
+        "reboundsPerGame": "3.8",
+        "assistsPerGame": "5.1",
+        "stealsPerGame": "1.5"
+      }
+    },
+    {
+      "node_id": "season-performance:perf_2011_12_cavs",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "perf_2011_12_cavs",
+        "season": "2011-12",
+        "pointsPerGame": "18.5",
+        "reboundsPerGame": "3.7",
+        "assistsPerGame": "5.4"
+      }
+    },
+    {
+      "node_id": "season-performance:perf_2018_19_celtics",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "perf_2018_19_celtics",
+        "season": "2018-19",
+        "pointsPerGame": "23.8",
+        "reboundsPerGame": "5",
+        "assistsPerGame": "6.9"
+      }
+    },
+    {
+      "node_id": "season-performance:perf_2023_24_mavs",
+      "label": "SeasonPerformance",
+      "class_id": "season-performance",
+      "properties": {
+        "source": "approved_review",
+        "performanceId": "perf_2023_24_mavs",
+        "season": "2023-24",
+        "pointsPerGame": "25.6",
+        "reboundsPerGame": "5.0",
+        "assistsPerGame": "5.2",
+        "stealsPerGame": "1.3",
+        "trueShootingPct": "49.7/41.1/90.5"
+      }
+    },
+    {
+      "node_id": "team:cleveland_cavaliers",
+      "label": "Team Cleveland Cavaliers",
+      "class_id": "team",
+      "properties": {
+        "source": "approved_review",
+        "teamId": "cleveland_cavaliers",
+        "name": "Cleveland Cavaliers",
+        "league": "NBA"
+      }
+    },
+    {
+      "node_id": "award:nba_rookie_of_the_year",
+      "label": "Award NBA Rookie of the Year",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "nba_rookie_of_the_year",
+        "name": "NBA Rookie of the Year",
+        "category": "Other",
+        "description": "NBA rookie award"
+      }
+    },
+    {
+      "node_id": "award:nba_all_star",
+      "label": "Award NBA All-Star",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "nba_all_star",
+        "name": "NBA All-Star",
+        "category": "AllStar",
+        "description": "NBA All-Star selection"
+      }
+    },
+    {
+      "node_id": "award:nba_championship",
+      "label": "Award NBA Championship",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "nba_championship",
+        "name": "NBA Championship",
+        "category": "Championship",
+        "description": "NBA Finals championship"
+      }
+    },
+    {
+      "node_id": "award:fiba_world_cup_mvp",
+      "label": "Award FIBA Basketball World Cup MVP",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "fiba_world_cup_mvp",
+        "name": "FIBA Basketball World Cup MVP",
+        "category": "Other",
+        "description": "2014 FIBA Basketball World Cup MVP"
+      }
+    },
+    {
+      "node_id": "award:olympic_gold_medal",
+      "label": "Award Olympic Gold Medal",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "olympic_gold_medal",
+        "name": "Olympic Gold Medal",
+        "category": "Other",
+        "description": "Olympic basketball gold medal"
+      }
+    },
+    {
+      "node_id": "contract:contract_mavericks_2023",
+      "label": "Contract",
+      "class_id": "contract",
+      "properties": {
+        "source": "approved_review",
+        "contractId": "contract_mavericks_2023",
+        "salary": "126000000",
+        "contractLengthYears": "3"
+      }
+    },
+    {
+      "node_id": "contract:contract_mavericks_2025",
+      "label": "Contract",
+      "class_id": "contract",
+      "properties": {
+        "source": "approved_review",
+        "contractId": "contract_mavericks_2025",
+        "salary": "40000000+",
+        "contractLengthYears": "3",
+        "optionType": "Player"
+      }
+    },
+    {
+      "node_id": "player:player_lebron_james",
+      "label": "Player",
+      "class_id": "player",
+      "properties": {
+        "source": "approved_review",
+        "playerId": "player_lebron_james",
+        "fullName": "LeBron James",
+        "nationality": "American",
+        "heightCm": "204.5",
+        "weightKg": "113.4",
+        "wingspanCm": "214",
+        "snsFollowers": 130000000,
+        "draftYear": 2003,
+        "draftPick": 1,
+        "draftNarrativeType": "BlueChip"
+      }
+    },
+    {
+      "node_id": "position:position_sf",
+      "label": "Position SF",
+      "class_id": "position",
+      "properties": {
+        "source": "approved_review",
+        "positionId": "position_sf",
+        "name": "SF",
+        "description": "Small Forward"
+      }
+    },
+    {
+      "node_id": "position:position_pf",
+      "label": "Position PF",
+      "class_id": "position",
+      "properties": {
+        "source": "approved_review",
+        "positionId": "position_pf",
+        "name": "PF",
+        "description": "Power Forward"
+      }
+    },
+    {
+      "node_id": "brand:brand_nike",
+      "label": "Brand Nike",
+      "class_id": "brand",
+      "properties": {
+        "source": "approved_review",
+        "brandId": "brand_nike",
+        "name": "Nike",
+        "category": "Footwear",
+        "description": "LeBron endorsement/sponsorship"
+      }
+    },
+    {
+      "node_id": "contract:contract_lebron_lakers_2024_2026",
+      "label": "Contract",
+      "class_id": "contract",
+      "properties": {
+        "source": "approved_review",
+        "contractId": "contract_lebron_lakers_2024_2026",
+        "salary": "101355998",
+        "startDate": "2024-01-01",
+        "endDate": "2026-12-31",
+        "optionType": "None",
+        "contractLengthYears": "2"
+      }
+    },
+    {
+      "node_id": "team:team_los_angeles_lakers",
+      "label": "Team Los Angeles Lakers",
+      "class_id": "team",
+      "properties": {
+        "source": "approved_review",
+        "teamId": "team_los_angeles_lakers",
+        "name": "Los Angeles Lakers",
+        "league": "NBA"
+      }
+    },
+    {
+      "node_id": "award:award_nba_mvp",
+      "label": "Award NBA Regular Season MVP",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_nba_mvp",
+        "name": "NBA Regular Season MVP",
+        "category": "MVP",
+        "description": "NBA regular season MVP award"
+      }
+    },
+    {
+      "node_id": "award:award_nba_championship",
+      "label": "Award NBA Championship",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_nba_championship",
+        "name": "NBA Championship",
+        "category": "Championship",
+        "description": "NBA title"
+      }
+    },
+    {
+      "node_id": "award:award_nba_all_star",
+      "label": "Award NBA All-Star",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_nba_all_star",
+        "name": "NBA All-Star",
+        "category": "AllStar",
+        "description": "NBA All-Star selection"
+      }
+    },
+    {
+      "node_id": "award:award_all_nba_first_team",
+      "label": "Award All-NBA First Team",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_all_nba_first_team",
+        "name": "All-NBA First Team",
+        "category": "AllNBA",
+        "description": "All-NBA First Team selection"
+      }
+    },
+    {
+      "node_id": "award:award_all_nba_second_team",
+      "label": "Award All-NBA Second Team",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_all_nba_second_team",
+        "name": "All-NBA Second Team",
+        "category": "AllNBA",
+        "description": "All-NBA Second Team selection"
+      }
+    },
+    {
+      "node_id": "award:award_all_nba_third_team",
+      "label": "Award All-NBA Third Team",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_all_nba_third_team",
+        "name": "All-NBA Third Team",
+        "category": "AllNBA",
+        "description": "All-NBA Third Team selection"
+      }
+    },
+    {
+      "node_id": "award:award_nba_finals_mvp",
+      "label": "Award NBA Finals MVP",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_nba_finals_mvp",
+        "name": "NBA Finals MVP",
+        "category": "Other",
+        "description": "NBA Finals MVP award"
+      }
+    },
+    {
+      "node_id": "award:award_nba_rookie_of_the_year",
+      "label": "Award NBA Rookie of the Year",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_nba_rookie_of_the_year",
+        "name": "NBA Rookie of the Year",
+        "category": "Other",
+        "description": "NBA Rookie of the Year award"
+      }
+    },
+    {
+      "node_id": "award:award_nba_scoring_title",
+      "label": "Award NBA Scoring Title",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_nba_scoring_title",
+        "name": "NBA Scoring Title",
+        "category": "Other",
+        "description": "NBA scoring leader award"
+      }
+    },
+    {
+      "node_id": "award:award_nba_assists_title",
+      "label": "Award NBA Assists Title",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_nba_assists_title",
+        "name": "NBA Assists Title",
+        "category": "Other",
+        "description": "NBA assists leader award"
+      }
+    },
+    {
+      "node_id": "award:award_in_season_tournament_championship",
+      "label": "Award NBA In-Season Tournament Championship",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_in_season_tournament_championship",
+        "name": "NBA In-Season Tournament Championship",
+        "category": "Championship",
+        "description": "NBA In-Season Tournament title"
+      }
+    },
+    {
+      "node_id": "award:award_in_season_tournament_mvp",
+      "label": "Award NBA In-Season Tournament MVP",
+      "class_id": "award",
+      "properties": {
+        "source": "approved_review",
+        "awardId": "award_in_season_tournament_mvp",
+        "name": "NBA In-Season Tournament MVP",
+        "category": "MVP",
+        "description": "NBA In-Season Tournament MVP"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "staging_fact_0001",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "position:C",
+      "relation_id": "plays-position",
+      "label": "playsPosition",
+      "properties": {
+        "review_decision_id": "review_0001",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0002",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "position:PF",
+      "relation_id": "plays-position",
+      "label": "playsPosition",
+      "properties": {
+        "review_decision_id": "review_0002",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0003",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "position:C",
+      "relation_id": "plays-position",
+      "label": "playsPosition",
+      "properties": {
+        "review_decision_id": "review_0003",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0004",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "skill:defense",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0004",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0005",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "skill:rim_protection",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0005",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0006",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "skill:scoring",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0006",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0007",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "skill:rebounding",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0007",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0008",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_star",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0008",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0009",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_star",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0009",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0010",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_nba_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0010",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0011",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_nba_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0011",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0012",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_nba_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0012",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0013",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_nba_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0013",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0014",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_nba_second_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0014",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0015",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_defensive_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0015",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0016",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_defensive_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0016",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0017",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:all_star_mvp",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0017",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0018",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "award:championship",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0018",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0019",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "contract:ad_pelicans_2015",
+      "relation_id": "has-contract",
+      "label": "hasContract",
+      "properties": {
+        "review_decision_id": "review_0019",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0020",
+      "source_node_id": "contract:ad_pelicans_2015",
+      "target_node_id": "team:new_orleans_hornets_pelicans",
+      "relation_id": "with-team",
+      "label": "withTeam",
+      "properties": {
+        "review_decision_id": "review_0020",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0021",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "contract:ad_lakers_2020",
+      "relation_id": "has-contract",
+      "label": "hasContract",
+      "properties": {
+        "review_decision_id": "review_0021",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0022",
+      "source_node_id": "contract:ad_lakers_2020",
+      "target_node_id": "team:los_angeles_lakers",
+      "relation_id": "with-team",
+      "label": "withTeam",
+      "properties": {
+        "review_decision_id": "review_0022",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0023",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "contract:ad_lakers_2023_extension",
+      "relation_id": "has-contract",
+      "label": "hasContract",
+      "properties": {
+        "review_decision_id": "review_0023",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0024",
+      "source_node_id": "contract:ad_lakers_2023_extension",
+      "target_node_id": "team:los_angeles_lakers",
+      "relation_id": "with-team",
+      "label": "withTeam",
+      "properties": {
+        "review_decision_id": "review_0024",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0025",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2012_13",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0025",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0026",
+      "source_node_id": "season-performance:ad_2012_13",
+      "target_node_id": "team:new_orleans_hornets_pelicans",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0026",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0027",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2013_14",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0027",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0028",
+      "source_node_id": "season-performance:ad_2013_14",
+      "target_node_id": "team:new_orleans_hornets_pelicans",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0028",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0029",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2014_15",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0029",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0030",
+      "source_node_id": "season-performance:ad_2014_15",
+      "target_node_id": "team:new_orleans_hornets_pelicans",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0030",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0031",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2018_19",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0031",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0032",
+      "source_node_id": "season-performance:ad_2018_19",
+      "target_node_id": "team:new_orleans_hornets_pelicans",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0032",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0033",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2019_20",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0033",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0034",
+      "source_node_id": "season-performance:ad_2019_20",
+      "target_node_id": "team:los_angeles_lakers",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0034",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0035",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2020_21",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0035",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0036",
+      "source_node_id": "season-performance:ad_2020_21",
+      "target_node_id": "team:los_angeles_lakers",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0036",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0037",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2022_23",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0037",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0038",
+      "source_node_id": "season-performance:ad_2022_23",
+      "target_node_id": "team:los_angeles_lakers",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0038",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0039",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2023_24",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0039",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0040",
+      "source_node_id": "season-performance:ad_2023_24",
+      "target_node_id": "team:los_angeles_lakers",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0040",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0041",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2024_25_lakers",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0041",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0042",
+      "source_node_id": "season-performance:ad_2024_25_lakers",
+      "target_node_id": "team:los_angeles_lakers",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0042",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0043",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "season-performance:ad_2025_26_mavericks",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0043",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0044",
+      "source_node_id": "season-performance:ad_2025_26_mavericks",
+      "target_node_id": "team:dallas_mavericks",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0044",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0045",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2012_concussion",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0045",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0046",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2012_ankle",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0046",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0047",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2013_shoulder",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0047",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0048",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2013_left_knee",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0048",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0049",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2021_groin",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0049",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0050",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2021_knee",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0050",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0051",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2022_right_ankle",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0051",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0052",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2022_foot",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0052",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0053",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2023_concussion_protocol",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0053",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0054",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2025_abdominal",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0054",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0055",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2025_groin_reinjury",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0055",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0056",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2025_adductor",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0056",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0057",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2025_calf",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0057",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0058",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2025_groin",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0058",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0059",
+      "source_node_id": "player:anthony_davis",
+      "target_node_id": "injury-record:ad_2026_left_hand_ligament",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0059",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0060",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "position:sf",
+      "relation_id": "plays-position",
+      "label": "playsPosition",
+      "properties": {
+        "review_decision_id": "review_0060",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0061",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "skill:scoring",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0061",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0062",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "skill:shooting",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0062",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0063",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "skill:defense",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0063",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0064",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "skill:court_vision",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0064",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0065",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "skill:clutch_play",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0065",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0066",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "season-performance:jayson_tatum_2017_18",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0066",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0067",
+      "source_node_id": "season-performance:jayson_tatum_2017_18",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0067",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0068",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "season-performance:jayson_tatum_2018_19",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0068",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0069",
+      "source_node_id": "season-performance:jayson_tatum_2018_19",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0069",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0070",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "season-performance:jayson_tatum_2019_20",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0070",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0071",
+      "source_node_id": "season-performance:jayson_tatum_2019_20",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0071",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0072",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "season-performance:jayson_tatum_2020_21",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0072",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0073",
+      "source_node_id": "season-performance:jayson_tatum_2020_21",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0073",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0074",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "season-performance:jayson_tatum_2021_22",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0074",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0075",
+      "source_node_id": "season-performance:jayson_tatum_2021_22",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0075",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0076",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "season-performance:jayson_tatum_2022_23",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0076",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0077",
+      "source_node_id": "season-performance:jayson_tatum_2022_23",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0077",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0078",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_rookie_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0078",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0079",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_star",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0079",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0080",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_star",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0080",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0081",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_star",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0081",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0082",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_nba_third_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0082",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0083",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_nba_second_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0083",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0084",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_nba_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0084",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0085",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_nba_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0085",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0086",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:conference_finals_mvp",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0086",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0087",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "award:all_star_mvp",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0087",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0088",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "contract:jayson_tatum_extension_2020",
+      "relation_id": "has-contract",
+      "label": "hasContract",
+      "properties": {
+        "review_decision_id": "review_0088",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0089",
+      "source_node_id": "contract:jayson_tatum_extension_2020",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "with-team",
+      "label": "withTeam",
+      "properties": {
+        "review_decision_id": "review_0089",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0090",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "contract:jayson_tatum_supermax_2023",
+      "relation_id": "has-contract",
+      "label": "hasContract",
+      "properties": {
+        "review_decision_id": "review_0090",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0091",
+      "source_node_id": "contract:jayson_tatum_supermax_2023",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "with-team",
+      "label": "withTeam",
+      "properties": {
+        "review_decision_id": "review_0091",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0092",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "injury-record:covid19_2021",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0092",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0093",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "injury-record:left_wrist_fracture_2022",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0093",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0094",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "injury-record:shoulder_injury_2022_finals",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0094",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0095",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "injury-record:ankle_injury_2023_ecf",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0095",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0096",
+      "source_node_id": "player:jayson_tatum",
+      "target_node_id": "injury-record:achilles_rupture_2025",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0096",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0097",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "position:PG",
+      "relation_id": "plays-position",
+      "label": "playsPosition",
+      "properties": {
+        "review_decision_id": "review_0097",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0098",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "archetype:scoring_playmaker",
+      "relation_id": "has-archetype",
+      "label": "hasArchetype",
+      "properties": {
+        "review_decision_id": "review_0098",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0099",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "skill:shooting",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0099",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0100",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "skill:ball_handling",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0100",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0101",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "skill:passing",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0101",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0102",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "skill:clutch_play",
+      "relation_id": "demonstrates-skill",
+      "label": "demonstratesSkill",
+      "properties": {
+        "review_decision_id": "review_0102",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0103",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "injury-record:injury_right_big_toe_duke",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0103",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0104",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "injury-record:injury_kneecap_fracture_2015",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0104",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0105",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "injury-record:injury_acl_tear_2025",
+      "relation_id": "has-injury-record",
+      "label": "hasInjuryRecord",
+      "properties": {
+        "review_decision_id": "review_0105",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0106",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "season-performance:perf_duke_freshman",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0106",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0107",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "season-performance:perf_2011_12_cavs",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0107",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0108",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "season-performance:perf_2018_19_celtics",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0108",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0109",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "season-performance:perf_2023_24_mavs",
+      "relation_id": "has-season-performance",
+      "label": "hasSeasonPerformance",
+      "properties": {
+        "review_decision_id": "review_0109",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0110",
+      "source_node_id": "season-performance:perf_2011_12_cavs",
+      "target_node_id": "team:cleveland_cavaliers",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0110",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0111",
+      "source_node_id": "season-performance:perf_2018_19_celtics",
+      "target_node_id": "team:boston_celtics",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0111",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0112",
+      "source_node_id": "season-performance:perf_2023_24_mavs",
+      "target_node_id": "team:dallas_mavericks",
+      "relation_id": "recorded-for",
+      "label": "recordedFor",
+      "properties": {
+        "review_decision_id": "review_0112",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0113",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "award:nba_rookie_of_the_year",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0113",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0114",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "award:nba_all_star",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0114",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0115",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "award:all_nba_third_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0115",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0116",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "award:all_nba_third_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0116",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0117",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "award:nba_championship",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0117",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0118",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "award:fiba_world_cup_mvp",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0118",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0119",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "award:olympic_gold_medal",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0119",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0120",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "contract:contract_mavericks_2023",
+      "relation_id": "has-contract",
+      "label": "hasContract",
+      "properties": {
+        "review_decision_id": "review_0120",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0121",
+      "source_node_id": "contract:contract_mavericks_2023",
+      "target_node_id": "team:dallas_mavericks",
+      "relation_id": "with-team",
+      "label": "withTeam",
+      "properties": {
+        "review_decision_id": "review_0121",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0122",
+      "source_node_id": "player:kyrie_irving",
+      "target_node_id": "contract:contract_mavericks_2025",
+      "relation_id": "has-contract",
+      "label": "hasContract",
+      "properties": {
+        "review_decision_id": "review_0122",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0123",
+      "source_node_id": "contract:contract_mavericks_2025",
+      "target_node_id": "team:dallas_mavericks",
+      "relation_id": "with-team",
+      "label": "withTeam",
+      "properties": {
+        "review_decision_id": "review_0123",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0124",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "position:position_sf",
+      "relation_id": "plays-position",
+      "label": "playsPosition",
+      "properties": {
+        "review_decision_id": "review_0124",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0125",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "position:position_pf",
+      "relation_id": "plays-position",
+      "label": "playsPosition",
+      "properties": {
+        "review_decision_id": "review_0125",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0126",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "brand:brand_nike",
+      "relation_id": "endorsed-by",
+      "label": "endorsedBy",
+      "properties": {
+        "review_decision_id": "review_0126",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0127",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "contract:contract_lebron_lakers_2024_2026",
+      "relation_id": "has-contract",
+      "label": "hasContract",
+      "properties": {
+        "review_decision_id": "review_0127",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0128",
+      "source_node_id": "contract:contract_lebron_lakers_2024_2026",
+      "target_node_id": "team:team_los_angeles_lakers",
+      "relation_id": "with-team",
+      "label": "withTeam",
+      "properties": {
+        "review_decision_id": "review_0128",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0129",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_nba_mvp",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0129",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0130",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_nba_championship",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0130",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0131",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_nba_all_star",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0131",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0132",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_all_nba_first_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0132",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0133",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_all_nba_second_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0133",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0134",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_all_nba_third_team",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0134",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0135",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_nba_finals_mvp",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0135",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0136",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_nba_rookie_of_the_year",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0136",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0137",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_nba_scoring_title",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0137",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0138",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_nba_assists_title",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0138",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0139",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_in_season_tournament_championship",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0139",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    },
+    {
+      "edge_id": "staging_fact_0140",
+      "source_node_id": "player:player_lebron_james",
+      "target_node_id": "award:award_in_season_tournament_mvp",
+      "relation_id": "received-award",
+      "label": "receivedAward",
+      "properties": {
+        "review_decision_id": "review_0140",
+        "schema_version_id": "schema_v2_basketball-player-evaluation-ontology_a83f7376fa"
+      }
+    }
+  ],
+  "total_facts": 140
+}

@@ -1,0 +1,114 @@
+# Copyright (c) "Neo4j"
+# Neo4j Sweden AB [https://neo4j.com]
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+[project]
+name = "neo4j-graphrag"
+version = "1.13.1"
+description = "Python package to allow easy integration to Neo4j's GraphRAG features"
+authors = [
+    {name = "Neo4j, Inc", email = "team-gen-ai@neo4j.com"}
+]
+license = {text = "Apache License, Version 2.0"}
+readme = "README.md"
+requires-python = ">=3.10.0,<3.15"
+dependencies = [
+    "neo4j>=5.17.0,<7.0.0",
+    "pydantic>=2.6.3,<3.0.0",
+    "fsspec>=2024.9.0,<2025.0.0",
+    "pypdf>=6.0.0,<7.0.0",
+    "json-repair>=0.44.1,<0.45.0",
+    "pyyaml>=6.0.2,<7.0.0",
+    "types-pyyaml>=6.0.12.20240917,<7.0.0",
+    "numpy>=2.0.0,<3.0.0; python_version >= '3.9' and python_version < '3.13'",
+    "numpy>=2.1.0,<3.0.0; python_version >= '3.13' and python_version < '3.15'",
+    "scipy>=1.13.0,<2.0.0; python_version >= '3.9' and python_version < '3.13'",
+    "scipy>=1.15.0,<2.0.0; python_version >= '3.13' and python_version < '3.15'",
+    "tenacity>=9.1.2,<10.0.0",
+]
+
+[project.urls]
+Homepage = "https://neo4j.com/"
+Repository = "https://github.com/neo4j/neo4j-graphrag-python"
+
+[project.optional-dependencies]
+weaviate = ["weaviate-client>=4.6.1,<5.0.0"]
+pinecone = ["pinecone-client>=4.1.0,<5.0.0"]
+google = ["google-cloud-aiplatform>=1.66.0,<2.0.0"]
+cohere = ["cohere>=5.9.0,<6.0.0"]
+anthropic = ["anthropic>=0.49.0,<0.50.0"]
+ollama = ["ollama>=0.4.4,<0.5.0"]
+openai = ["openai>=1.51.1,<2.0.0"]
+mistralai = ["mistralai>=1.0.3,<2.0.0"]
+qdrant = ["qdrant-client>=1.11.3,<2.0.0"]
+kg_creation_tools = ["neo4j-viz>=0.4.2,<0.5.0"]
+sentence-transformers = ["sentence-transformers>=3.0.0,<4.0.0"]
+experimental = [
+    "langchain-text-splitters>=0.3.0,<0.4.0",
+    "neo4j-viz>=0.4.2,<0.5.0",
+    "llama-index>=0.13.0,<0.14.0",
+]
+examples = [
+    "langchain-openai>=0.2.2,<0.3.0",
+    "langchain-huggingface>=0.1.0,<0.2.0",
+]
+# NOTE: spaCy currently has a Python 3.14 import-time failure via its pydantic v1 path
+# (see https://github.com/explosion/spaCy/issues/13895). Until upstream resolves this,
+# only advertise/install the `nlp` extra on Python <3.14.
+nlp = ["spacy==3.8.7; python_version < '3.14'"]
+fuzzy-matching = ["rapidfuzz>=3.12.2,<4.0.0"]
+
+[dependency-groups]
+dev = [
+    "urllib3<2",
+    "ruff>=0.3.0,<0.4.0",
+    "mypy>=1.10.0,<2.0.0",
+    "pytest>=8.0.2,<9.0.0",
+    "coverage>=7.4.3,<8.0.0",
+    "pytest-asyncio>=0.23.8,<0.24.0",
+    "pre-commit>=3.6.2,<4.0.0; python_version >= '3.9'",
+    "sphinx>=7.2.6,<8.0.0; python_version >= '3.9'",
+    "enum-tools[sphinx]>=0.12.0,<0.13.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/neo4j_graphrag"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "",
+]
+
+[tool.coverage.paths]
+source = ["src"]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+allow_subclassing_any = true
+disallow_untyped_calls = false
+exclude = ["docs"]
+
+[[tool.mypy.overrides]]
+module = [
+    "weaviate.*",
+    "sentence_transformers.*",
+    "conftest",
+]
+ignore_missing_imports = true
