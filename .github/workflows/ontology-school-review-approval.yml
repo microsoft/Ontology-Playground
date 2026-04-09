@@ -1,0 +1,104 @@
+name: Ontology School Review Approval
+
+on:
+  issues:
+    types: [closed]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  remove-under-review-marker:
+    # Trigger on: (1) issue closed with 'ontology-school-approved' label, OR
+    #             (2) comment containing '#approved' on a review issue
+    if: >-
+      (github.event_name == 'issues'
+        && github.event.action == 'closed'
+        && contains(github.event.issue.labels.*.name, 'ontology-school-approved'))
+      || (github.event_name == 'issue_comment'
+        && contains(github.event.comment.body, '#approved')
+        && contains(github.event.issue.labels.*.name, 'ontology-school-review'))
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add approved label and close issue (comment trigger)
+        if: github.event_name == 'issue_comment'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              labels: ['ontology-school-approved'],
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              state: 'closed',
+            });
+
+      - name: Extract lesson path from issue body
+        id: extract
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const sectionRegex = /###\s+Lesson Path\s*\n+([^\n]+)/i;
+            const match = body.match(sectionRegex);
+            if (!match) {
+              core.setFailed('Could not find "Lesson Path" in issue body.');
+              return;
+            }
+
+            const lessonPath = match[1].trim();
+            if (!lessonPath.startsWith('content/learn/') || !lessonPath.endsWith('.md')) {
+              core.setFailed(`Invalid lesson path: ${lessonPath}`);
+              return;
+            }
+
+            core.setOutput('lesson_path', lessonPath);
+
+      - name: Remove under-review marker
+        env:
+          LESSON_PATH: ${{ steps.extract.outputs.lesson_path }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! -f "$LESSON_PATH" ]]; then
+            echo "Lesson file not found: $LESSON_PATH"
+            exit 1
+          fi
+
+          # Remove the frontmatter marker if present.
+          # We target the exact line so this is idempotent.
+          sed -i '/^reviewStatus: under-human-review$/d' "$LESSON_PATH"
+
+      - name: Recompile learn content
+        run: npx tsx scripts/compile-learn.ts
+
+      - name: Create approval PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/ontology-school-approve-${{ github.event.issue.number }}
+          title: "chore: approve ontology school lesson ${{ steps.extract.outputs.lesson_path }}"
+          body: |
+            Auto-generated from issue #${{ github.event.issue.number }}.
+
+            This PR removes `reviewStatus: under-human-review` from:
+            - `${{ steps.extract.outputs.lesson_path }}`
+
+            Triggered by ${{ github.event_name == 'issue_comment' && format('comment #{0}', github.event.comment.id) || 'closing issue with ontology-school-approved label' }}.
+
+            Once merged, the site will deploy without the "Under human review" badge on this lesson.
+          commit-message: "chore: remove under-human-review marker from approved lesson"
+          labels: ontology-school-review

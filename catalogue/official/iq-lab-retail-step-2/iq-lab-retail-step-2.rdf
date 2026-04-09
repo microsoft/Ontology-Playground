@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/">
+        <rdfs:label>Retail Supply Chain — Step 2: Order Details &amp; Categories</rdfs:label>
+        <rdfs:comment>OrderLine and ProductCategory add detail and grouping</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Customer">
+        <rdfs:label>Customer</rdfs:label>
+        <rdfs:comment>The buyer associated with an order</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Order">
+        <rdfs:label>Order</rdfs:label>
+        <rdfs:comment>A customer purchase transaction</rdfs:comment>
+        <ont:icon>📋</ont:icon>
+        <ont:color>#107C10</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Product">
+        <rdfs:label>Product</rdfs:label>
+        <rdfs:comment>Items available for sale</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#FFB900</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Orderline">
+        <rdfs:label>OrderLine</rdfs:label>
+        <rdfs:comment>Individual line items within an order</rdfs:comment>
+        <ont:icon>📝</ont:icon>
+        <ont:color>#00B7C3</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Productcategory">
+        <rdfs:label>ProductCategory</rdfs:label>
+        <rdfs:comment>Groupings of related products</rdfs:comment>
+        <ont:icon>🏷️</ont:icon>
+        <ont:color>#8764B8</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/customer_customerId">
+        <rdfs:label>customerId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/customer_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/customer_email">
+        <rdfs:label>email</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/customer_loyaltyTier">
+        <rdfs:label>loyaltyTier</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/customer_lifetimeValue">
+        <rdfs:label>lifetimeValue</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/order_orderId">
+        <rdfs:label>orderId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/order_orderDate">
+        <rdfs:label>orderDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/order_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/order_totalAmount">
+        <rdfs:label>totalAmount</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/product_productId">
+        <rdfs:label>productId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/product_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/product_unitCost">
+        <rdfs:label>unitCost</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/product_discountPercent">
+        <rdfs:label>discountPercent</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>%</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/orderline_orderLineId">
+        <rdfs:label>orderLineId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Orderline"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/orderline_quantity">
+        <rdfs:label>quantity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Orderline"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/orderline_lineTotal">
+        <rdfs:label>lineTotal</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Orderline"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/productcategory_categoryId">
+        <rdfs:label>categoryId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Productcategory"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/productcategory_categoryName">
+        <rdfs:label>categoryName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Productcategory"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/order-placedby-customer">
+        <rdfs:label>OrderPlacedByCustomer</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Order"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Customer"/>
+        <rdfs:comment>Which customer placed the order</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>order</ont:fromEntityId>
+        <ont:toEntityId>customer</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/order-contains-product">
+        <rdfs:label>OrderContainsProduct</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Order"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Product"/>
+        <rdfs:comment>Products included in the order</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>order</ont:fromEntityId>
+        <ont:toEntityId>product</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/order-has-lineitem">
+        <rdfs:label>OrderHasLineItem</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Order"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Orderline"/>
+        <rdfs:comment>Line items within an order</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>order</ont:fromEntityId>
+        <ont:toEntityId>orderline</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/orderline-refs-product">
+        <rdfs:label>OrderLineReferencesProduct</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Orderline"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Product"/>
+        <rdfs:comment>Which product this line item refers to</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>orderline</ont:fromEntityId>
+        <ont:toEntityId>product</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/product-in-category">
+        <rdfs:label>ProductInCategory</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Product"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/retail-supply-chain-step-2-order-details-categories/Productcategory"/>
+        <rdfs:comment>Which category a product belongs to</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>product</ont:fromEntityId>
+        <ont:toEntityId>productcategory</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>

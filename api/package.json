@@ -1,0 +1,17 @@
+{
+  "name": "ontology-quest-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for Ontology Playground",
+  "scripts": {
+    "build": "tsc",
+    "start": "func start",
+    "prestart": "npm run build"
+  },
+  "dependencies": {
+    "@azure/functions": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Retail Supply Chain — Step 5: Inventory & Demand",
+  "description": "Inventory, Forecast, DemandSignal track stock and predictions",
+  "icon": "📊",
+  "category": "school",
+  "tags": [
+    "retail",
+    "supply-chain",
+    "lab",
+    "step-5"
+  ],
+  "author": "ontology-quest"
+}

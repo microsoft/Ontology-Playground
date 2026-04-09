@@ -1,0 +1,20 @@
+{
+  "name": "FIBO Regulatory Context",
+  "description": "Banking regulations (OCC, FDIC, Basel III) and quantitative concentration limits for portfolio risk management — adapted from EDM Council FIBO regulatory modules.",
+  "icon": "⚖️",
+  "category": "fibo",
+  "tags": [
+    "fibo",
+    "finance",
+    "regulation",
+    "occ",
+    "fdic",
+    "basel",
+    "compliance",
+    "external",
+    "adapted"
+  ],
+  "author": "EDM Council FIBO (adapted by ontology-quest)",
+  "license": "MIT",
+  "sourceUrl": "https://github.com/edmcouncil/fibo"
+}

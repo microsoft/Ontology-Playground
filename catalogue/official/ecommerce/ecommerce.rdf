@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/e-commerce-platform/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/e-commerce-platform/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/e-commerce-platform/">
+        <rdfs:label>E-Commerce Platform</rdfs:label>
+        <rdfs:comment>Online retail business model with customers, products, and orders</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/e-commerce-platform/Buyer">
+        <rdfs:label>Buyer</rdfs:label>
+        <rdfs:comment>Registered customer who makes purchases</rdfs:comment>
+        <ont:icon>🛒</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/e-commerce-platform/Product">
+        <rdfs:label>Product</rdfs:label>
+        <rdfs:comment>Item available for purchase</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#107C10</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/e-commerce-platform/Cart">
+        <rdfs:label>Shopping-Cart</rdfs:label>
+        <rdfs:comment>Active shopping session</rdfs:comment>
+        <ont:icon>🛍️</ont:icon>
+        <ont:color>#FFB900</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/e-commerce-platform/Order">
+        <rdfs:label>Order</rdfs:label>
+        <rdfs:comment>Completed purchase transaction</rdfs:comment>
+        <ont:icon>📋</ont:icon>
+        <ont:color>#8764B8</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/e-commerce-platform/Review">
+        <rdfs:label>Review</rdfs:label>
+        <rdfs:comment>Customer product review and rating</rdfs:comment>
+        <ont:icon>⭐</ont:icon>
+        <ont:color>#00B7C3</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/buyer_buyerId">
+        <rdfs:label>buyerId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Buyer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/buyer_email">
+        <rdfs:label>email</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Buyer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/buyer_memberSince">
+        <rdfs:label>memberSince</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Buyer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/buyer_loyaltyTier">
+        <rdfs:label>loyaltyTier</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Buyer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/buyer_totalSpent">
+        <rdfs:label>totalSpent</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Buyer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/product_sku">
+        <rdfs:label>sku</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/product_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/product_category">
+        <rdfs:label>category</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/product_price">
+        <rdfs:label>price</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/product_stockQty">
+        <rdfs:label>stockQty</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/cart_cartId">
+        <rdfs:label>cartId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Cart"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/cart_createdAt">
+        <rdfs:label>createdAt</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Cart"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/cart_itemCount">
+        <rdfs:label>itemCount</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Cart"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/cart_subtotal">
+        <rdfs:label>subtotal</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Cart"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/order_orderId">
+        <rdfs:label>orderId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/order_orderDate">
+        <rdfs:label>orderDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/order_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/order_total">
+        <rdfs:label>total</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/order_shippingMethod">
+        <rdfs:label>shippingMethod</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/review_reviewId">
+        <rdfs:label>reviewId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Review"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/review_rating">
+        <rdfs:label>rating</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Review"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/review_title">
+        <rdfs:label>title</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Review"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/review_body">
+        <rdfs:label>body</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Review"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/e-commerce-platform/review_verified">
+        <rdfs:label>verified</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Review"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/e-commerce-platform/buyer_has_cart">
+        <rdfs:label>has_cart</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Buyer"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/e-commerce-platform/Cart"/>
+        <rdfs:comment>Buyer&apos;s active shopping cart</rdfs:comment>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>buyer</ont:fromEntityId>
+        <ont:toEntityId>cart</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/e-commerce-platform/cart_contains">
+        <rdfs:label>contains</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Cart"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/e-commerce-platform/Product"/>
+        <rdfs:comment>Products in cart</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>cart</ont:fromEntityId>
+        <ont:toEntityId>product</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/e-commerce-platform/buyer_places">
+        <rdfs:label>places</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Buyer"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/e-commerce-platform/Order"/>
+        <rdfs:comment>Orders placed by buyer</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>buyer</ont:fromEntityId>
+        <ont:toEntityId>order</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/e-commerce-platform/order_includes">
+        <rdfs:label>includes</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Order"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/e-commerce-platform/Product"/>
+        <rdfs:comment>Products in order</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>order</ont:fromEntityId>
+        <ont:toEntityId>product</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/e-commerce-platform/buyer_writes">
+        <rdfs:label>writes</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Buyer"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/e-commerce-platform/Review"/>
+        <rdfs:comment>Reviews authored by buyer</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>buyer</ont:fromEntityId>
+        <ont:toEntityId>review</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/e-commerce-platform/review_for">
+        <rdfs:label>reviews</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/e-commerce-platform/Review"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/e-commerce-platform/Product"/>
+        <rdfs:comment>Product being reviewed</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>review</ont:fromEntityId>
+        <ont:toEntityId>product</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>

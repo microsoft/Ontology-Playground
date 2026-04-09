@@ -1,0 +1,13 @@
+{
+  "name": "Retail Supply Chain — Step 1: Core Commerce",
+  "description": "Customer, Order, Product — the foundational entities",
+  "icon": "🛒",
+  "category": "school",
+  "tags": [
+    "retail",
+    "supply-chain",
+    "lab",
+    "step-1"
+  ],
+  "author": "ontology-quest"
+}

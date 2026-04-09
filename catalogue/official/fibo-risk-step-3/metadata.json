@@ -1,0 +1,10 @@
+{
+  "name": "FIBO Risk Lab — Step 3: Loan Classification",
+  "description": "Add loan types with Basel risk weights, collateral categories, and OCC/FDIC concentration buckets.",
+  "icon": "💰",
+  "category": "school",
+  "tags": ["fibo", "risk", "loan", "basel", "school", "step-3"],
+  "author": "EDM Council FIBO (adapted by ontology-quest)",
+  "license": "MIT",
+  "sourceUrl": "https://github.com/edmcouncil/fibo"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Cosmic Coffee Company",
+  "description": "A sample ontology representing a modern coffee shop chain with suppliers, products, stores, customers, and orders.",
+  "icon": "☕",
+  "category": "retail",
+  "tags": [
+    "coffee",
+    "supply-chain",
+    "fabric-iq",
+    "demo"
+  ],
+  "author": "ontology-quest"
+}

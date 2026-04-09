@@ -1,0 +1,17 @@
+{
+  "name": "FIBO Loans General (Adapted Subset)",
+  "description": "A curated, classroom-friendly subset adapted from the EDM Council FIBO LOAN/LoansGeneral/Loans module — covering loan, collateral, servicing, and payment semantics.",
+  "icon": "🏛️",
+  "category": "fibo",
+  "tags": [
+    "fibo",
+    "finance",
+    "loan",
+    "mortgage",
+    "external",
+    "adapted"
+  ],
+  "author": "EDM Council FIBO (adapted by ontology-quest)",
+  "license": "MIT",
+  "sourceUrl": "https://github.com/edmcouncil/fibo"
+}
