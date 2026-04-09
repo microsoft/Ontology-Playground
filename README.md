@@ -2,7 +2,7 @@
 
 > Local ontology design, extraction review, graph curation, and Neo4j publishing workspace.
 
-[![Oh-tology workspace](frontend/public/og-image.png)](frontend/public/og-image.png)
+[![Oh-tology workspace](docs/images/main_graph.png)](docs/images/main_graph.png)
 
 Oh-tology is a full local workspace for:
 
@@ -18,6 +18,21 @@ Oh-tology is a full local workspace for:
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi)
 ![Neo4j](https://img.shields.io/badge/Neo4j-Graph-4581C3?style=flat-square&logo=neo4j)
+
+## End-to-End Product Flow
+
+Oh-tology now supports the full loop, not just static ontology editing:
+
+1. Upload text or reference material and auto-generate an ontology draft
+2. Refine the schema visually in the designer
+3. Upload actual source data and extract review candidates against that schema
+4. Approve facts into an instance graph
+5. Publish the graph to Neo4j
+6. Query the result with Cypher or natural language
+
+This is the core value of the workspace: it covers schema authoring, AI-assisted
+draft generation, instance extraction, graph curation, and query execution in a
+single local environment.
 
 ## What It Includes
 
@@ -37,6 +52,13 @@ The designer provides a full editing surface for entity types, properties,
 relationships, cardinalities, icons, and colors. The same environment also
 hosts the review workflow for extraction candidates, so ontology iteration and
 fact review happen in one place.
+
+### AI-assisted ontology draft generation
+
+The workspace now supports prompt-driven ontology draft generation from uploaded
+reference text and files. Instead of starting from a blank graph, you can feed
+domain notes or documents into the system and generate a structured ontology
+draft that is then editable in the visual designer.
 
 ### Extraction workflow
 
@@ -60,6 +82,7 @@ to Neo4j with an `ingest_run_id`. The query tab supports:
 - raw Cypher execution
 - `ingest_run_id` scoped queries
 - natural-language-to-Cypher translation using the current ontology context
+- live Neo4j schema-aware translation checks
 - editable translator system prompts
 
 ### Local content library
@@ -73,13 +96,41 @@ These are intended to be committed, shared, and reused.
 
 ## Screenshots
 
-### Main workspace
+### Main schema workspace
 
-![Oh-tology main workspace](docs/images/screenshot.png)
+![Oh-tology main schema workspace](docs/images/main_schema.png)
 
-The main workspace combines the approved graph canvas, graph-aware right-side
-inspection panels, and the top-level schema / graph / query navigation in one
-surface.
+The schema tab is the starting point for ontology structure, entity and
+relationship inspection, and general workspace navigation.
+
+### Main graph workspace
+
+![Oh-tology main graph workspace](docs/images/main_graph.png)
+
+The graph tab shows the approved instance graph, graph-aware side panels, and
+navigation into downstream graph querying.
+
+### Prompt-to-ontology generation
+
+![Ontology draft generation from prompt](docs/images/generate_ontology_with_prompt.png)
+
+This flow highlights one of the major additions in this workspace: uploaded
+text and prompt-driven ontology draft generation that feeds directly into the
+visual editor.
+
+### Review and extraction workflow
+
+![Review and graph workflow](docs/images/review_graph.png)
+
+This is the stage where uploaded source data is mapped against the schema and
+reviewed into an approved graph.
+
+### Natural language to Cypher
+
+![Natural language to Cypher query flow](docs/images/cypherquery.png)
+
+The query tab now supports natural-language-to-Cypher translation with editable
+system prompts and schema-aware query review before execution.
 
 ## Repository Layout
 
@@ -110,10 +161,24 @@ Oh-tology/
 - approve, reject, or defer candidate facts
 - produce an approved instance graph from reviewed facts
 
+### File upload to ontology draft
+
+- upload text or document-derived reference material
+- generate ontology drafts from natural language plus supporting context
+- carry that generated draft directly into the visual ontology editor
+
+### Schema to instance graph
+
+- upload actual source data after the schema is defined
+- extract review candidates against the current ontology
+- map approved facts into a concrete instance graph
+- keep graph snapshots in the local library for iteration and reuse
+
 ### Natural-language query translation
 
 - ask questions in plain language from the query tab
 - inspect the schema context used for translation
+- inspect the live Neo4j schema snapshot when available
 - review the generated Cypher before execution
 - override the translator system prompt from a modal editor
 - execute the translated query directly against Neo4j
@@ -201,12 +266,13 @@ cd backend
 
 1. Start the backend and frontend.
 2. Open the main workspace and inspect or load an ontology.
-3. Move into the designer to edit or generate a draft ontology.
-4. Add source documents in the review flow and run extraction.
-5. Review the candidate queue and approve valid facts.
-6. Build the approved instance graph.
-7. Preview or publish that graph to Neo4j.
-8. Query the published graph with raw Cypher or natural language.
+3. Upload text or reference material and generate an ontology draft.
+4. Refine the draft in the designer and finalize the schema.
+5. Add real source documents in the review flow and run extraction.
+6. Review the candidate queue and approve valid facts.
+7. Build the approved instance graph.
+8. Preview or publish that graph to Neo4j.
+9. Query the published graph with raw Cypher or natural language.
 
 ## Environment Variables
 
