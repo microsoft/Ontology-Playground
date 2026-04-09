@@ -4,12 +4,13 @@
 
 **[Try it live &#x2192; microsoft.github.io/Ontology-Playground](https://microsoft.github.io/Ontology-Playground/)**
 
-[![Ontology Playground screenshot](public/og-image.png)](https://microsoft.github.io/Ontology-Playground/)
+[![Ontology Playground 3D visualizer demo](public/3d-visualizer.gif)](https://microsoft.github.io/Ontology-Playground/)
 
-A free, open-source web application for learning about ontologies and
-**Microsoft Fabric IQ**. Explore pre-built ontologies, design your own in a
-visual editor, export as RDF/XML, and share interactive diagrams — all from a
-fully static site with zero backend dependencies.
+A free, open-source 3D ontology visualizer and learning environment for
+exploring ontologies and **Microsoft Fabric IQ**. Load pre-built ontologies,
+inspect them in an interactive 3D graph, design your own in a visual editor,
+export as RDF/XML, and share interactive diagrams — all from a fully static
+site with zero backend dependencies.
 
 ![Microsoft Fabric](https://img.shields.io/badge/Microsoft-Fabric-0078D4?style=flat-square&logo=microsoft)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
@@ -18,11 +19,11 @@ fully static site with zero backend dependencies.
 
 ## Features
 
-### Interactive Graph Exploration
+### Interactive 3D Graph Exploration
 
-Cytoscape.js-powered graph that renders any ontology as an interactive
-node-and-edge diagram. Pan, zoom, click nodes to inspect properties, and use
-the live search bar to filter entities and relationships.
+A 3D ontology visualizer that renders any ontology as an interactive
+node-and-edge scene. Orbit, pan, zoom, click nodes to inspect properties, and
+use the live search bar to filter entities and relationships.
 
 ### Ontology Catalogue
 
