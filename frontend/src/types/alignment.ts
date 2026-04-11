@@ -230,6 +230,7 @@ export interface OntologyGraphBuildRequest {
   ontology: OntologyInput;
   source_documents?: SourceDocumentInput[];
   extraction_prompt_override?: string | null;
+  llm_provider_override?: 'auto' | 'openai' | 'azure_openai' | null;
 }
 
 export interface OntologyGraphBuildResponse {

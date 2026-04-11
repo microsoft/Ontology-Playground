@@ -60,11 +60,16 @@ Primary routes:
 Extraction mode env vars:
 - `ALIGNMENT_EXTRACTION_MODE=auto|neo4j_graphrag`
 - `ALIGNMENT_NEO4J_GRAPHRAG_SRC=/abs/path/to/vendor/oh-graph-rag/src`
-- `ALIGNMENT_LLM_PROVIDER=openai`
-- `ALIGNMENT_OPENAI_API_KEY` or standard `OPENAI_API_KEY`
+- `ALIGNMENT_LLM_PROVIDER=auto|openai|azure_openai`
+- OpenAI mode:
+  `ALIGNMENT_OPENAI_API_KEY` or standard `OPENAI_API_KEY`
 - `ALIGNMENT_OPENAI_MODEL` default: `gpt-5`
 - `ALIGNMENT_OPENAI_BASE_URL` optional
 - `ALIGNMENT_OPENAI_ORGANIZATION` optional
 - `ALIGNMENT_OPENAI_PROJECT` optional
+- Azure OpenAI mode:
+  `AZURE_OPENAI_KEY` or `AZURE_OPENAI_API_KEY`
+- `AZURE_OPENAI_ENDPOINT`
+- `AZURE_OPENAI_DEPLOYMENT`
 - `ALIGNMENT_LLM_TEMPERATURE` default: `0`
 - `ALIGNMENT_EXTRACTION_MAX_CONCURRENCY` default: `4`

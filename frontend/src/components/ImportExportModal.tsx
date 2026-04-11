@@ -44,12 +44,44 @@ const sampleSchema = `{
 }`;
 
 export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalProps) {
-  const { currentOntology, dataBindings, loadOntology, resetToDefault, exportOntology } = useAppStore();
+  const { currentOntology, dataBindings, loadOntology, resetToDefault, exportOntology, languageMode } = useAppStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const [exportFormat, setExportFormat] = useState<'json' | 'yaml' | 'csv' | 'rdf'>('rdf');
+  const copy =
+    languageMode === 'ko'
+      ? {
+          invalidStructure: '유효하지 않은 온톨로지 구조입니다. ontology.entityTypes 와 ontology.relationships 가 필요합니다.',
+          unsupportedPrefix: '지원되지 않는 파일 형식:',
+          supportedLegacy: 'RDF/OWL (.rdf, .owl, .iq) 또는 JSON (.json)',
+          supportedRdf: 'RDF/OWL (.rdf, .owl, .iq)',
+          rdfParseError: 'RDF 파싱 오류',
+          parseFailed: '파일을 파싱하지 못했습니다',
+          title: '온톨로지 가져오기 / 내보내기',
+          subtitle: '직접 만든 온톨로지를 불러오거나 현재 온톨로지를 내보냅니다',
+          current: '현재 로드됨',
+          entityTypes: '엔티티 타입',
+          relationships: '관계',
+          reset: '기본값으로 초기화',
+          loaded: '온톨로지를 성공적으로 불러왔습니다!',
+        }
+      : {
+          invalidStructure: 'Invalid ontology structure. Must have ontology.entityTypes and ontology.relationships.',
+          unsupportedPrefix: 'Unsupported file format:',
+          supportedLegacy: 'an RDF/OWL (.rdf, .owl, .iq) or JSON (.json)',
+          supportedRdf: 'an RDF/OWL (.rdf, .owl, .iq)',
+          rdfParseError: 'RDF parse error',
+          parseFailed: 'Failed to parse file',
+          title: 'Import / Export Ontology',
+          subtitle: 'Load your own ontology or export the current one',
+          current: 'Currently Loaded',
+          entityTypes: 'entity types',
+          relationships: 'relationships',
+          reset: 'Reset to Default',
+          loaded: 'Ontology loaded successfully!',
+        };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -77,16 +109,16 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
           const parsed = JSON.parse(content);
 
           if (!parsed.ontology || !parsed.ontology.entityTypes || !parsed.ontology.relationships) {
-            throw new Error('Invalid ontology structure. Must have ontology.entityTypes and ontology.relationships.');
+            throw new Error(copy.invalidStructure);
           }
 
           ontology = parsed.ontology;
           bindings = parsed.bindings || [];
         } else {
           const supported = LEGACY_FORMATS_ENABLED
-            ? 'an RDF/OWL (.rdf, .owl, .iq) or JSON (.json)'
-            : 'an RDF/OWL (.rdf, .owl, .iq)';
-          throw new Error(`Unsupported file format: "${file.name}". Please import ${supported} file.`);
+            ? copy.supportedLegacy
+            : copy.supportedRdf;
+          throw new Error(`${copy.unsupportedPrefix} "${file.name}". Please import ${supported} file.`);
         }
 
         // Fall back to filename (without extension) if no ontology name was parsed
@@ -103,9 +135,9 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
       } catch (err) {
         setImportStatus('error');
         if (err instanceof RDFParseError) {
-          setErrorMessage(`RDF parse error: ${err.message}`);
+          setErrorMessage(`${copy.rdfParseError}: ${err.message}`);
         } else {
-          setErrorMessage(err instanceof Error ? err.message : 'Failed to parse file');
+          setErrorMessage(err instanceof Error ? err.message : copy.parseFailed);
         }
       }
     };
@@ -254,9 +286,9 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>
-            <h2 style={{ fontSize: 24, fontWeight: 600 }}>Import / Export Ontology</h2>
+            <h2 style={{ fontSize: 24, fontWeight: 600 }}>{copy.title}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
-              Load your own ontology or export the current one
+              {copy.subtitle}
             </p>
           </div>
           <button className="icon-btn" onClick={onClose}>
@@ -275,10 +307,10 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
           alignItems: 'center'
         }}>
           <div>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 4 }}>Currently Loaded</div>
+            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 4 }}>{copy.current}</div>
             <div style={{ fontSize: 16, fontWeight: 600 }}>{currentOntology.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-              {currentOntology.entityTypes.length} entity types, {currentOntology.relationships.length} relationships
+              {currentOntology.entityTypes.length} {copy.entityTypes}, {currentOntology.relationships.length} {copy.relationships}
             </div>
           </div>
           <button 
@@ -287,7 +319,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
             style={{ display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <RotateCcw size={14} />
-            Reset to Default
+            {copy.reset}
           </button>
         </div>
 
@@ -304,7 +336,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
             color: 'var(--ms-green)'
           }}>
             <CheckCircle size={18} />
-            <span>Ontology loaded successfully!</span>
+            <span>{copy.loaded}</span>
           </div>
         )}
 

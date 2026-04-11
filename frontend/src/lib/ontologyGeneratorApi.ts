@@ -14,12 +14,20 @@ export interface OntologyDraftGenerationRequest {
   references: ReferenceTextInput[];
   current_ontology?: Ontology;
   system_prompt_override?: string;
+  llm_provider_override?: 'auto' | 'openai' | 'azure_openai';
 }
 
 export interface OntologyDraftGenerationResponse {
   ontology: Ontology;
   assumptions: string[];
   open_questions: string[];
+}
+
+interface ApiErrorPayload {
+  message?: string;
+  details?: {
+    error?: string;
+  };
 }
 
 export async function generateOntologyDraft(
@@ -40,9 +48,12 @@ export async function generateOntologyDraft(
   if (!response.ok) {
     let message = `Request failed with status ${response.status}`;
     try {
-      const error = (await response.json()) as { message?: string };
+      const error = (await response.json()) as ApiErrorPayload;
       if (error.message) {
         message = error.message;
+      }
+      if (error.details?.error) {
+        message = `${message}: ${error.details.error}`;
       }
     } catch {
       // Ignore JSON parsing failures and use the generic message.

@@ -3,6 +3,7 @@ from __future__ import annotations
 from app.repositories.mock_repository import repository
 from app.services.generation_service import GenerationService
 from app.services.library_service import LibraryService
+from app.services.llm_diagnostic_service import LlmDiagnosticService
 from app.services.neo4j_publish_service import Neo4jPublishService
 from app.services.neo4j_query_service import Neo4jQueryService
 from app.services.natural_language_cypher_service import NaturalLanguageCypherService
@@ -22,6 +23,10 @@ def get_ontology_generation_service() -> OntologyGenerationService:
 
 def get_library_service() -> LibraryService:
     return LibraryService()
+
+
+def get_llm_diagnostic_service() -> LlmDiagnosticService:
+    return LlmDiagnosticService()
 
 
 def get_neo4j_publish_service() -> Neo4jPublishService:

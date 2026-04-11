@@ -26,8 +26,15 @@ export function isValidFabricIQName(name: string): boolean {
   return FABRIC_IQ_NAME_RE.test(name);
 }
 
-export function fabricIQNameError(kind: string, name: string): string | null {
+export function fabricIQNameError(kind: string, name: string, languageMode: 'ko' | 'en' = 'en'): string | null {
   if (!name) return null; // empty names are caught separately
+  if (languageMode === 'ko') {
+    if (name.length > 26) return `${kind} 이름 "${name}"은 26자를 넘을 수 없습니다.`;
+    if (!/^[A-Za-z0-9]/.test(name)) return `${kind} 이름 "${name}"은 영문자 또는 숫자로 시작해야 합니다.`;
+    if (!/[A-Za-z0-9]$/.test(name)) return `${kind} 이름 "${name}"은 영문자 또는 숫자로 끝나야 합니다.`;
+    if (!FABRIC_IQ_NAME_RE.test(name)) return `${kind} 이름 "${name}"에는 영문자, 숫자, 하이픈(-), 밑줄(_)만 사용할 수 있습니다.`;
+    return null;
+  }
   if (name.length > 26) return `${kind} name "${name}" exceeds 26 characters.`;
   if (!/^[A-Za-z0-9]/.test(name)) return `${kind} name "${name}" must start with a letter or digit.`;
   if (!/[A-Za-z0-9]$/.test(name)) return `${kind} name "${name}" must end with a letter or digit.`;

@@ -6,6 +6,7 @@ export function InspectorPanel() {
   const {
     currentOntology,
     dataBindings,
+    languageMode,
     selectedEntityId,
     selectedRelationshipId,
     showDataBindings,
@@ -28,6 +29,43 @@ export function InspectorPanel() {
   const [relName, setRelName] = useState('');
   const [relDescription, setRelDescription] = useState('');
   const [relCardinality, setRelCardinality] = useState<'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many'>('one-to-many');
+
+  const copy =
+    languageMode === 'ko'
+      ? {
+          inspector: '인스펙터',
+          select: '항목을 선택하세요',
+          selectBody: '그래프에서 엔티티 타입이나 관계를 클릭하면 속성, 데이터 바인딩, 연결 정보를 확인할 수 있습니다.',
+          relationship: '관계',
+          entityType: '엔티티 타입',
+          done: '완료 ✓',
+          edit: '편집 ✎',
+          name: '이름',
+          description: '설명',
+          cardinality: '카디널리티',
+          relationshipAttributes: '관계 속성',
+          properties: '속성',
+          relationships: '관계',
+          dataBindings: '데이터 바인딩',
+          id: 'ID',
+        }
+      : {
+          inspector: 'Inspector',
+          select: 'Select an Element',
+          selectBody: 'Click on an entity type or relationship in the graph to inspect its properties, data bindings, and connections.',
+          relationship: 'Relationship',
+          entityType: 'Entity Type',
+          done: 'Done ✓',
+          edit: 'Edit ✎',
+          name: 'Name',
+          description: 'Description',
+          cardinality: 'Cardinality',
+          relationshipAttributes: 'Relationship Attributes',
+          properties: 'Properties',
+          relationships: 'Relationships',
+          dataBindings: 'Data Bindings',
+          id: 'ID',
+        };
 
   // Reset edit mode and local fields when selection changes
   useEffect(() => {
@@ -63,13 +101,13 @@ export function InspectorPanel() {
     return (
       <div className="inspector-panel">
         <div className="panel-header">
-          <h3 className="panel-title">Inspector</h3>
+          <h3 className="panel-title">{copy.inspector}</h3>
         </div>
         <div className="inspector-empty">
           <div className="inspector-empty-icon">🔍</div>
-          <div className="inspector-empty-title">Select an Element</div>
+          <div className="inspector-empty-title">{copy.select}</div>
           <div className="inspector-empty-text">
-            Click on an entity type or relationship in the graph to inspect its properties, data bindings, and connections.
+            {copy.selectBody}
           </div>
         </div>
       </div>
@@ -86,19 +124,19 @@ export function InspectorPanel() {
     return (
       <div className="inspector-panel">
         <div className="panel-header">
-          <h3 className="panel-title">Relationship</h3>
+          <h3 className="panel-title">{copy.relationship}</h3>
           <button
             className="inspector-edit-btn"
             onClick={() => setIsEditing(e => !e)}
           >
-            {isEditing ? 'Done ✓' : 'Edit ✎'}
+            {isEditing ? copy.done : copy.edit}
           </button>
         </div>
         <div className="inspector-content">
           {isEditing ? (
             <>
               <div className="inspector-edit-row">
-                <span className="inspector-edit-label">Name</span>
+                <span className="inspector-edit-label">{copy.name}</span>
                 <input
                   className="inspector-edit-field"
                   value={relName}
@@ -109,7 +147,7 @@ export function InspectorPanel() {
                 />
               </div>
               <div className="inspector-edit-row">
-                <span className="inspector-edit-label">Description</span>
+                <span className="inspector-edit-label">{copy.description}</span>
                 <input
                   className="inspector-edit-field"
                   value={relDescription}
@@ -120,7 +158,7 @@ export function InspectorPanel() {
                 />
               </div>
               <div className="inspector-edit-row">
-                <span className="inspector-edit-label">Cardinality</span>
+                <span className="inspector-edit-label">{copy.cardinality}</span>
                 <select
                   className="inspector-edit-select"
                   value={relCardinality}
@@ -167,7 +205,7 @@ export function InspectorPanel() {
               <div className="inspector-section">
                 <div className="section-title">
                   <Layers size={14} />
-                  Cardinality
+                  {copy.cardinality}
                 </div>
                 <div className="cardinality-badge">{relationship.cardinality}</div>
               </div>
@@ -176,7 +214,7 @@ export function InspectorPanel() {
                 <div className="inspector-section">
                   <div className="section-title">
                     <Box size={14} />
-                    Relationship Attributes
+                    {copy.relationshipAttributes}
                   </div>
                   <div className="property-list">
                     {relationship.attributes.map(attr => (
@@ -209,18 +247,19 @@ export function InspectorPanel() {
     <div className="inspector-panel">
       <div className="panel-header">
         <h3 className="panel-title">Entity Type</h3>
+        <h3 className="panel-title">{copy.entityType}</h3>
         <button
           className="inspector-edit-btn"
           onClick={() => setIsEditing(e => !e)}
         >
-          {isEditing ? 'Done ✓' : 'Edit ✎'}
+          {isEditing ? copy.done : copy.edit}
         </button>
       </div>
       <div className="inspector-content">
         {isEditing ? (
           <>
             <div className="inspector-edit-row">
-              <span className="inspector-edit-label">Name</span>
+              <span className="inspector-edit-label">{copy.name}</span>
               <input
                 className="inspector-edit-field"
                 value={entityName}
@@ -231,7 +270,7 @@ export function InspectorPanel() {
               />
             </div>
             <div className="inspector-edit-row">
-              <span className="inspector-edit-label">Description</span>
+              <span className="inspector-edit-label">{copy.description}</span>
               <input
                 className="inspector-edit-field"
                 value={entityDescription}
@@ -281,7 +320,7 @@ export function InspectorPanel() {
             <div className="inspector-section">
               <div className="section-title">
                 <Key size={14} />
-                Properties ({entity.properties.length})
+                  {copy.properties} ({entity.properties.length})
               </div>
               <div className="property-list">
                 {entity.properties.map(prop => (
@@ -295,7 +334,7 @@ export function InspectorPanel() {
                   }}>
                     <div>
                       <span className="property-name">{prop.name}</span>
-                      {prop.isIdentifier && <span className="property-identifier">ID</span>}
+                      {prop.isIdentifier && <span className="property-identifier">{copy.id}</span>}
                       {prop.unit && <span className="property-type" style={{ marginLeft: 8 }}>({prop.unit})</span>}
                     </div>
                     <span className="property-type">{prop.type}</span>
@@ -307,7 +346,7 @@ export function InspectorPanel() {
             <div className="inspector-section">
               <div className="section-title">
                 <GitBranch size={14} />
-                Relationships ({entityRelationships.length})
+                {copy.relationships} ({entityRelationships.length})
               </div>
               <div className="property-list">
                 {entityRelationships.map(rel => {
@@ -343,7 +382,7 @@ export function InspectorPanel() {
               <div className="inspector-section">
                 <div className="section-title">
                   <Link2 size={14} />
-                  Data Bindings
+                  {copy.dataBindings}
                 </div>
                 <div className="binding-card">
                   <div className="binding-source">

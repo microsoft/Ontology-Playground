@@ -4,6 +4,7 @@ import {
   Header, 
   HomeGraphWorkspace,
   HomeSidebar,
+  InfoHubModal,
   QueryPlayground,
   WelcomeModal,
   AboutModal,
@@ -41,6 +42,7 @@ function App() {
 
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTour, setShowTour] = useState(() => !isTourDismissed());
+  const [showSettings, setShowSettings] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
@@ -51,7 +53,7 @@ function App() {
   const [toast] = useState<{ message: string; icon: string } | null>(null);
   const [mobilePanel, setMobilePanel] = useState<'graph' | 'quests' | 'inspector' | 'query'>('graph');
   const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const { darkMode, loadOntology, toggleDarkMode } = useAppStore();
+  const { darkMode, loadOntology, toggleDarkMode, languageMode } = useAppStore();
 
   // Deep-link: /#/catalogue/<id> — load a specific ontology from the catalogue
   useEffect(() => {
@@ -143,15 +145,16 @@ function App() {
 
   // ── Command palette items ──────────────────────────────
   const commands = useMemo<CommandItem[]>(() => [
-    { id: 'library', label: 'Open Library', icon: <LayoutGrid size={18} />, action: openGallery },
-    { id: 'designer', label: 'Open Designer', icon: <PenTool size={18} />, action: openDesigner },
-    { id: 'review-graph', label: 'Open Review & Graph', icon: <BookOpen size={18} />, action: openReviewGraph },
-    { id: 'import-export', label: 'Import / Export', icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
-    { id: 'summary', label: 'View Summary', icon: <FileText size={18} />, action: () => setShowSummary(true) },
-    { id: 'about', label: 'About & Trademark Notice', icon: <Info size={18} />, action: () => setShowAbout(true) },
-    { id: 'help', label: 'Help', icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
-    { id: 'theme', label: darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode', icon: darkMode ? <Sun size={18} /> : <Moon size={18} />, action: toggleDarkMode },
-  ], [darkMode, openDesigner, openGallery, openReviewGraph, toggleDarkMode]);
+    { id: 'library', label: languageMode === 'ko' ? '라이브러리 열기' : 'Open Library', icon: <LayoutGrid size={18} />, action: openGallery },
+    { id: 'designer', label: languageMode === 'ko' ? '디자이너 열기' : 'Open Designer', icon: <PenTool size={18} />, action: openDesigner },
+    { id: 'review-graph', label: languageMode === 'ko' ? '리뷰 & 그래프 열기' : 'Open Review & Graph', icon: <BookOpen size={18} />, action: openReviewGraph },
+    { id: 'import-export', label: languageMode === 'ko' ? '가져오기 / 내보내기' : 'Import / Export', icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
+    { id: 'summary', label: languageMode === 'ko' ? '요약 보기' : 'View Summary', icon: <FileText size={18} />, action: () => setShowSummary(true) },
+    { id: 'info', label: languageMode === 'ko' ? '안내' : 'Information', icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
+    { id: 'settings', label: languageMode === 'ko' ? '설정' : 'Settings', icon: <Info size={18} />, action: () => setShowSettings(true) },
+    { id: 'about', label: languageMode === 'ko' ? '소개' : 'About', icon: <Info size={18} />, action: () => setShowAbout(true) },
+    { id: 'theme', label: darkMode ? (languageMode === 'ko' ? '라이트 모드로 전환' : 'Switch to Light Mode') : (languageMode === 'ko' ? '다크 모드로 전환' : 'Switch to Dark Mode'), icon: darkMode ? <Sun size={18} /> : <Moon size={18} />, action: toggleDarkMode },
+  ], [darkMode, languageMode, openDesigner, openGallery, openReviewGraph, toggleDarkMode]);
 
   // Full-page views
   if (route.page === 'designer') {
@@ -172,6 +175,7 @@ function App() {
       <Header 
         onAboutClick={() => setShowAbout(true)}
         onHelpClick={() => setShowHelp(true)} 
+        onSettingsClick={() => setShowSettings(true)}
         onImportExportClick={() => setShowImportExport(true)}
         onGalleryClick={openGallery}
         onDesignerClick={openDesigner}
@@ -187,23 +191,23 @@ function App() {
       {/* Mobile bottom tabs — visible only on small screens via CSS */}
       <div className="mobile-panel-tabs">
         <button className={`mobile-tab ${mobilePanel === 'graph' ? 'active' : ''}`} onClick={() => setMobilePanel('graph')}>
-          <Search size={18} /> Graph
+          <Search size={18} /> {languageMode === 'ko' ? '그래프' : 'Graph'}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'quests' ? 'active' : ''}`} onClick={() => setMobilePanel('quests')}>
-          <Compass size={18} /> Schema
+          <Compass size={18} /> {languageMode === 'ko' ? '스키마' : 'Schema'}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'inspector' ? 'active' : ''}`} onClick={() => setMobilePanel('inspector')}>
-          <Info size={18} /> Inspector
+          <Info size={18} /> {languageMode === 'ko' ? '인스펙터' : 'Inspector'}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'query' ? 'active' : ''}`} onClick={() => setMobilePanel('query')}>
-          <MessageSquare size={18} /> Query
+          <MessageSquare size={18} /> {languageMode === 'ko' ? '질의' : 'Query'}
         </button>
       </div>
 
       {/* Mobile panel drawer — visible only on small screens when a panel is selected */}
       {mobilePanel !== 'graph' && (
         <div className="mobile-panel-drawer">
-          <button className="mobile-panel-close" onClick={() => setMobilePanel('graph')}>✕ Close</button>
+          <button className="mobile-panel-close" onClick={() => setMobilePanel('graph')}>✕ {languageMode === 'ko' ? '닫기' : 'Close'}</button>
           {mobilePanel === 'quests' && <HomeGraphWorkspace />}
           {mobilePanel === 'inspector' && (
             <HomeSidebar />
@@ -218,6 +222,10 @@ function App() {
 
       <AnimatePresence>
         {showWelcome && !showTour && <WelcomeModal onClose={() => setShowWelcome(false)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSettings && <InfoHubModal onClose={() => setShowSettings(false)} />}
       </AnimatePresence>
 
       <AnimatePresence>

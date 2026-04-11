@@ -57,28 +57,49 @@ class NaturalLanguageCypherService:
         self,
         request: NaturalLanguageCypherRequest,
     ) -> NaturalLanguageCypherResponse:
-        config = get_neo4j_graphrag_config()
-        if not config.openai_api_key:
+        config = get_neo4j_graphrag_config(request.llm_provider_override)
+        api_key = (
+            config.azure_openai_api_key if config.llm_provider == "azure_openai" else config.openai_api_key
+        )
+        model_name = (
+            config.azure_openai_deployment if config.llm_provider == "azure_openai" else config.openai_model
+        )
+        if not api_key:
             raise ServiceError(
                 error_code="QUERY_TRANSLATION_CONFIG_ERROR",
-                message="Natural language query translation requires an OpenAI API key",
+                message="Natural language query translation requires an LLM API key",
                 status_code=400,
-                details={"required_env": "ALIGNMENT_OPENAI_API_KEY or OPENAI_API_KEY"},
+                details={
+                    "required_env": (
+                        "AZURE_OPENAI_KEY or AZURE_OPENAI_API_KEY"
+                        if config.llm_provider == "azure_openai"
+                        else "ALIGNMENT_OPENAI_API_KEY or OPENAI_API_KEY"
+                    )
+                },
             )
 
-        client_kwargs = {"api_key": config.openai_api_key}
-        if config.openai_base_url:
+        client_kwargs = {"api_key": api_key, "timeout": config.request_timeout_seconds}
+        if config.llm_provider == "azure_openai":
+            if not config.azure_openai_endpoint or not config.azure_openai_deployment:
+                raise ServiceError(
+                    error_code="QUERY_TRANSLATION_CONFIG_ERROR",
+                    message="Azure OpenAI query translation requires endpoint and deployment",
+                    status_code=400,
+                    details={"required_env": "AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT"},
+                )
+            client_kwargs["base_url"] = config.azure_openai_endpoint
+        elif config.openai_base_url:
             client_kwargs["base_url"] = config.openai_base_url
-        if config.openai_organization:
+        if config.llm_provider != "azure_openai" and config.openai_organization:
             client_kwargs["organization"] = config.openai_organization
-        if config.openai_project:
+        if config.llm_provider != "azure_openai" and config.openai_project:
             client_kwargs["project"] = config.openai_project
 
         client = OpenAI(**client_kwargs)
         prompt = self._build_prompt(request)
         try:
             response = client.responses.create(
-                model=config.openai_model,
+                model=model_name,
                 reasoning={"effort": "medium"},
                 input=prompt,
                 text={
@@ -91,12 +112,15 @@ class NaturalLanguageCypherService:
                 },
             )
         except Exception as exc:
-            raise ServiceError(
-                error_code="QUERY_TRANSLATION_FAILED",
-                message="Natural language query translation failed",
-                status_code=502,
-                details={"error": str(exc)},
-            ) from exc
+            from app.services.openai_error_utils import raise_openai_service_error
+
+            raise_openai_service_error(
+                exc=exc,
+                provider=config.llm_provider,
+                operation="QUERY_TRANSLATION",
+                azure_endpoint=config.azure_openai_endpoint,
+                azure_deployment=config.azure_openai_deployment,
+            )
 
         try:
             payload = json.loads(response.output_text)

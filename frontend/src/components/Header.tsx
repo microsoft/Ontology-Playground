@@ -4,11 +4,12 @@ import { useRoute } from '../hooks/useRoute';
 import { routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
-import { Moon, Sun, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info } from 'lucide-react';
+import { Moon, Sun, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info, Settings2 } from 'lucide-react';
 
 interface HeaderProps {
   onAboutClick: () => void;
   onHelpClick: () => void;
+  onSettingsClick: () => void;
   onImportExportClick: () => void;
   onGalleryClick: () => void;
   onDesignerClick: () => void;
@@ -17,14 +18,50 @@ interface HeaderProps {
   onSummaryClick: () => void;
 }
 
-export function Header({ onAboutClick, onHelpClick, onImportExportClick, onGalleryClick, onDesignerClick, onReviewGraphClick, onNLBuilderClick, onSummaryClick }: HeaderProps) {
-  const { darkMode, toggleDarkMode, currentOntology, dataBindings } = useAppStore();
+export function Header({ onAboutClick, onHelpClick, onSettingsClick, onImportExportClick, onGalleryClick, onDesignerClick, onReviewGraphClick, onNLBuilderClick, onSummaryClick }: HeaderProps) {
+  const { darkMode, toggleDarkMode, currentOntology, dataBindings, languageMode } = useAppStore();
   const route = useRoute();
   const [shareStatus, setShareStatus] = useState<'idle' | 'copying' | 'copied' | 'downloaded'>('idle');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const ontologyDisplayName = currentOntology.name || 'Untitled Ontology';
+  const copy =
+    languageMode === 'ko'
+      ? {
+          share: '공유',
+          summary: '요약',
+          aiBuilder: 'AI 빌더',
+          library: '라이브러리',
+          designer: '디자이너',
+          reviewGraph: '리뷰 & 그래프',
+          importExport: '가져오기 / 내보내기',
+          help: '안내',
+          settings: '설정',
+          about: '소개',
+          lightMode: '라이트 모드',
+          darkMode: '다크 모드',
+          copied: '복사됨!',
+          downloaded: 'RDF 다운로드됨',
+          encoding: '인코딩 중…',
+        }
+      : {
+          share: 'Share',
+          summary: 'Summary',
+          aiBuilder: 'AI Builder',
+          library: 'Library',
+          designer: 'Designer',
+          reviewGraph: 'Review & Graph',
+          importExport: 'Import / Export',
+          help: 'Information',
+          settings: 'Settings',
+          about: 'About',
+          lightMode: 'Light Mode',
+          darkMode: 'Dark Mode',
+          copied: 'Copied!',
+          downloaded: 'Downloaded RDF',
+          encoding: 'Encoding…',
+        };
 
   const shareableId = route.page === 'catalogue' && route.ontologyId ? route.ontologyId : null;
 
@@ -66,7 +103,7 @@ export function Header({ onAboutClick, onHelpClick, onImportExportClick, onGalle
     }
   };
 
-  const shareLabel = shareStatus === 'copied' ? 'Copied!' : shareStatus === 'downloaded' ? 'Downloaded RDF' : shareStatus === 'copying' ? 'Encoding…' : 'Share';
+  const shareLabel = shareStatus === 'copied' ? copy.copied : shareStatus === 'downloaded' ? copy.downloaded : shareStatus === 'copying' ? copy.encoding : copy.share;
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -113,32 +150,35 @@ export function Header({ onAboutClick, onHelpClick, onImportExportClick, onGalle
         </button>
         <button className="header-text-btn" onClick={onSummaryClick} title="View Ontology Summary">
           <FileText size={16} />
-          <span>Summary</span>
+          <span>{copy.summary}</span>
         </button>
         {onNLBuilderClick && (
-          <button className="icon-btn" onClick={onNLBuilderClick} data-tooltip="AI Builder" aria-label="AI Builder">
+          <button className="icon-btn" onClick={onNLBuilderClick} data-tooltip={copy.aiBuilder} aria-label={copy.aiBuilder}>
             <Sparkles size={20} />
           </button>
         )}
-        <button className="icon-btn" onClick={onGalleryClick} data-tooltip="Library" aria-label="Library">
+        <button className="icon-btn" onClick={onGalleryClick} data-tooltip={copy.library} aria-label={copy.library}>
           <LayoutGrid size={20} />
         </button>
-        <button className="icon-btn" onClick={onDesignerClick} data-tooltip="Designer" aria-label="Designer">
+        <button className="icon-btn" onClick={onDesignerClick} data-tooltip={copy.designer} aria-label={copy.designer}>
           <PenTool size={20} />
         </button>
-        <button className="icon-btn" onClick={onReviewGraphClick} data-tooltip="Review & Graph" aria-label="Review & Graph">
+        <button className="icon-btn" onClick={onReviewGraphClick} data-tooltip={copy.reviewGraph} aria-label={copy.reviewGraph}>
           <BookOpen size={20} />
         </button>
-        <button className="icon-btn" onClick={onImportExportClick} data-tooltip="Import / Export" aria-label="Import / Export">
+        <button className="icon-btn" onClick={onImportExportClick} data-tooltip={copy.importExport} aria-label={copy.importExport}>
           <FileJson size={20} />
         </button>
-        <button className="icon-btn" onClick={onHelpClick} data-tooltip="Help" aria-label="Help">
+        <button className="icon-btn" onClick={onHelpClick} data-tooltip={copy.help} aria-label={copy.help}>
           <HelpCircle size={20} />
         </button>
-        <button className="icon-btn" onClick={onAboutClick} data-tooltip="About" aria-label="About">
+        <button className="icon-btn" onClick={onSettingsClick} data-tooltip={copy.settings} aria-label={copy.settings}>
+          <Settings2 size={20} />
+        </button>
+        <button className="icon-btn" onClick={onAboutClick} data-tooltip={copy.about} aria-label={copy.about}>
           <Info size={20} />
         </button>
-        <button className="icon-btn" onClick={toggleDarkMode} data-tooltip={darkMode ? 'Light Mode' : 'Dark Mode'} aria-label={darkMode ? 'Light Mode' : 'Dark Mode'}>
+        <button className="icon-btn" onClick={toggleDarkMode} data-tooltip={darkMode ? copy.lightMode : copy.darkMode} aria-label={darkMode ? copy.lightMode : copy.darkMode}>
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </div>
@@ -154,34 +194,37 @@ export function Header({ onAboutClick, onHelpClick, onImportExportClick, onGalle
               <Share2 size={18} /> {shareLabel}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onSummaryClick)}>
-              <FileText size={18} /> Summary
+              <FileText size={18} /> {copy.summary}
             </button>
             {onNLBuilderClick && (
               <button className="mobile-menu-item" onClick={menuAction(onNLBuilderClick)}>
-                <Sparkles size={18} /> AI Builder
+                <Sparkles size={18} /> {copy.aiBuilder}
               </button>
             )}
             <button className="mobile-menu-item" onClick={menuAction(onGalleryClick)}>
-              <LayoutGrid size={18} /> Library
+              <LayoutGrid size={18} /> {copy.library}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onDesignerClick)}>
-              <PenTool size={18} /> Designer
+              <PenTool size={18} /> {copy.designer}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onReviewGraphClick)}>
-              <BookOpen size={18} /> Review & Graph
+              <BookOpen size={18} /> {copy.reviewGraph}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onImportExportClick)}>
-              <FileJson size={18} /> Import / Export
+              <FileJson size={18} /> {copy.importExport}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onHelpClick)}>
-              <HelpCircle size={18} /> Help
+              <HelpCircle size={18} /> {copy.help}
+            </button>
+            <button className="mobile-menu-item" onClick={menuAction(onSettingsClick)}>
+              <Settings2 size={18} /> {copy.settings}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onAboutClick)}>
-              <Info size={18} /> About
+              <Info size={18} /> {copy.about}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(toggleDarkMode)}>
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-              {darkMode ? 'Light Mode' : 'Dark Mode'}
+              {darkMode ? copy.lightMode : copy.darkMode}
             </button>
           </div>
         )}

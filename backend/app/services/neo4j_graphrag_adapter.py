@@ -33,6 +33,7 @@ class Neo4jGraphRagAdapter:
         extraction_run_id: str,
         source_documents: list[SourceDocumentInput],
         extraction_prompt_override: str | None = None,
+        llm_provider_override: str | None = None,
     ) -> list[QueueCandidate]:
         status = get_extraction_runtime_status()
         if not status.neo4j_graphrag_available:
@@ -53,11 +54,11 @@ class Neo4jGraphRagAdapter:
                 },
             )
 
-        config = get_neo4j_graphrag_config()
-        if config.llm_provider != "openai":
+        config = get_neo4j_graphrag_config(llm_provider_override)
+        if config.llm_provider not in {"openai", "azure_openai"}:
             raise ServiceError(
                 error_code="NEO4J_GRAPHRAG_CONFIG_ERROR",
-                message="Only the OpenAI provider is supported in the current integration phase",
+                message="Only OpenAI-compatible providers are supported in the current integration phase",
                 status_code=400,
                 details={"llm_provider": config.llm_provider},
             )
@@ -70,15 +71,34 @@ class Neo4jGraphRagAdapter:
                 details={"missing_dependency": "openai"},
             )
 
-        if not config.openai_api_key:
+        api_key = config.azure_openai_api_key if config.llm_provider == "azure_openai" else config.openai_api_key
+        if not api_key:
             raise ServiceError(
                 error_code="NEO4J_GRAPHRAG_CONFIG_ERROR",
-                message="OpenAI extraction mode requires an API key",
+                message="Extraction mode requires an API key",
                 status_code=400,
                 details={
-                    "required_env": "ALIGNMENT_OPENAI_API_KEY or OPENAI_API_KEY",
-                    "openai_model": config.openai_model,
+                    "required_env": (
+                        "AZURE_OPENAI_KEY or AZURE_OPENAI_API_KEY"
+                        if config.llm_provider == "azure_openai"
+                        else "ALIGNMENT_OPENAI_API_KEY or OPENAI_API_KEY"
+                    ),
+                    "openai_model": (
+                        config.azure_openai_deployment
+                        if config.llm_provider == "azure_openai"
+                        else config.openai_model
+                    ),
                 },
+            )
+
+        if config.llm_provider == "azure_openai" and (
+            not config.azure_openai_endpoint or not config.azure_openai_deployment
+        ):
+            raise ServiceError(
+                error_code="NEO4J_GRAPHRAG_CONFIG_ERROR",
+                message="Azure OpenAI extraction mode requires endpoint and deployment",
+                status_code=400,
+                details={"required_env": "AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT"},
             )
 
         return asyncio.run(
@@ -113,7 +133,6 @@ class Neo4jGraphRagAdapter:
             "neo4j_graphrag.experimental.components.types"
         )
 
-        OpenAILLM = getattr(llm_module, "OpenAILLM")
         LLMEntityRelationExtractor = getattr(extractor_module, "LLMEntityRelationExtractor")
         OnError = getattr(extractor_module, "OnError")
         SchemaBuilder = getattr(schema_module, "SchemaBuilder")
@@ -124,18 +143,30 @@ class Neo4jGraphRagAdapter:
         TextChunk = getattr(types_module, "TextChunk")
         TextChunks = getattr(types_module, "TextChunks")
 
+        OpenAILLM = getattr(llm_module, "OpenAILLM")
         llm_kwargs = {
-            "api_key": config.openai_api_key,
+            "api_key": (
+                config.azure_openai_api_key
+                if config.llm_provider == "azure_openai"
+                else config.openai_api_key
+            ),
         }
-        if config.openai_base_url:
+        model_name = (
+            config.azure_openai_deployment
+            if config.llm_provider == "azure_openai"
+            else config.openai_model
+        )
+        if config.llm_provider == "azure_openai":
+            llm_kwargs["base_url"] = config.azure_openai_endpoint
+        elif config.openai_base_url:
             llm_kwargs["base_url"] = config.openai_base_url
-        if config.openai_organization:
+        if config.llm_provider != "azure_openai" and config.openai_organization:
             llm_kwargs["organization"] = config.openai_organization
-        if config.openai_project:
+        if config.llm_provider != "azure_openai" and config.openai_project:
             llm_kwargs["project"] = config.openai_project
 
         llm = OpenAILLM(
-            model_name=config.openai_model,
+            model_name=model_name,
             model_params={"temperature": config.temperature},
             **llm_kwargs,
         )

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { useDesignerStore } from '../store/designerStore';
 
 vi.mock('./designer', () => ({
+  OntologyCopilotPanel: () => <div>Ontology Copilot Panel</div>,
   EntityForm: () => <div>Entity Form</div>,
   RelationshipForm: () => <div>Relationship Form</div>,
   DesignerToolbar: () => <div>Designer Toolbar</div>,

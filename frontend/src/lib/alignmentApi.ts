@@ -189,12 +189,14 @@ export async function buildGraphFromOntology(
   editorId: string,
   sourceDocuments: SourceDocumentInput[] = [],
   extractionPromptOverride?: string | null,
+  llmProviderOverride?: 'auto' | 'openai' | 'azure_openai',
 ): Promise<OntologyGraphBuildResponse> {
   const payload: OntologyGraphBuildRequest = {
     editor_id: editorId,
     ontology,
     source_documents: sourceDocuments,
     extraction_prompt_override: extractionPromptOverride ?? null,
+    llm_provider_override: llmProviderOverride ?? null,
   };
 
   if (useLiveAlignmentApi) {

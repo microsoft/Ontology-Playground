@@ -57,6 +57,7 @@ export async function translateNaturalLanguageQuery(payload: {
   prompt: string;
   ontology: Ontology;
   system_prompt_override?: string | null;
+  llm_provider_override?: 'auto' | 'openai' | 'azure_openai';
 }): Promise<NaturalLanguageCypherResponse> {
   return requestJson<NaturalLanguageCypherResponse>('/api/query/translate-cypher', {
     method: 'POST',

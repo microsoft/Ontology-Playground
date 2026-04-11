@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Braces, Search, Settings2, Sparkles } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
+import { useDesignerStore } from '../store/designerStore';
 import {
   runNeo4jQuery,
   translateNaturalLanguageQuery,
@@ -42,7 +43,13 @@ Output rules:
 - warnings must be an array of strings.`;
 
 export function Neo4jQueryPanel() {
-  const currentOntology = useAppStore((state) => state.currentOntology);
+  const storedOntology = useAppStore((state) => state.currentOntology);
+  const draftOntology = useDesignerStore((state) => state.ontology);
+  const llmChatMode = useAppStore((state) => state.llmChatMode);
+  const currentOntology =
+    draftOntology.entityTypes.length > 0 || draftOntology.relationships.length > 0
+      ? draftOntology
+      : storedOntology;
   const [mode, setMode] = useState<'natural_language' | 'cypher' | 'ingest_run'>('natural_language');
   const [schemaExpanded, setSchemaExpanded] = useState(false);
   const [ingestRunId, setIngestRunId] = useState('');
@@ -106,6 +113,7 @@ export function Neo4jQueryPanel() {
         prompt: naturalLanguagePrompt,
         ontology: currentOntology,
         system_prompt_override: systemPrompt,
+        llm_provider_override: llmChatMode,
       });
       setTranslation(response);
       setQuery(response.cypher);

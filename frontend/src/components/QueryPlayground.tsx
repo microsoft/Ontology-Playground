@@ -12,6 +12,7 @@ export function QueryPlayground() {
   
   const { 
     currentOntology,
+    languageMode,
     setHighlightedEntities, 
     setHighlightedRelationships, 
     clearHighlights,
@@ -80,31 +81,48 @@ export function QueryPlayground() {
       ));
   };
 
+  const copy =
+    languageMode === 'ko'
+      ? {
+          title: '자연어 질의 (NL2Ontology)',
+          placeholder: `${currentOntology.name}에 대해 질문하세요...`,
+          clear: '지우기',
+          run: '질의 실행',
+          tryAsking: '이렇게 질문해보세요:',
+        }
+      : {
+          title: 'Natural Language Query (NL2Ontology)',
+          placeholder: `Ask about ${currentOntology.name}...`,
+          clear: 'Clear query',
+          run: 'Run query',
+          tryAsking: 'Try asking:',
+        };
+
   return (
     <div className="query-section">
       <div className="section-title">
         <Sparkles size={14} />
-        Natural Language Query (NL2Ontology)
+        {copy.title}
       </div>
       
       <div className="query-input-container">
         <input
           type="text"
           className="query-input"
-          placeholder={`Ask about ${currentOntology.name}...`}
+          placeholder={copy.placeholder}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
         />
         {input && (
-          <button className="icon-btn" onClick={handleClear} title="Clear" aria-label="Clear query">
+          <button className="icon-btn" onClick={handleClear} title={copy.clear} aria-label={copy.clear}>
             <X size={18} />
           </button>
         )}
         <button 
           className="btn btn-primary" 
           onClick={handleQuery}
-          aria-label="Run query"
+          aria-label={copy.run}
           disabled={isProcessing}
         >
           {isProcessing ? (
@@ -123,7 +141,7 @@ export function QueryPlayground() {
       {!result && !isProcessing && (
         <div style={{ marginBottom: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8 }}>
-            Try asking:
+            {copy.tryAsking}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {sampleQueries.slice(0, 3).map((query, index) => (

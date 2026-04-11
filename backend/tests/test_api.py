@@ -8,6 +8,8 @@ from app.main import app
 from app.api.dependencies import get_natural_language_cypher_service
 from app.api.dependencies import get_ontology_generation_service
 from app.api.dependencies import get_neo4j_publish_service
+from app.services.extraction_mode import ExtractionRuntimeStatus
+import app.repositories.mock_repository as mock_repository_module
 from app.repositories.mock_repository import repository
 
 client = TestClient(app)
@@ -204,6 +206,88 @@ def test_generate_graph_returns_clear_error_when_neo4j_graphrag_mode_is_requeste
     payload = response.json()
     assert payload["error_code"] == "NEO4J_GRAPHRAG_CONFIG_ERROR"
     assert "required_env" in payload["details"]
+
+
+def test_generate_graph_auto_mode_prefers_neo4j_graphrag_when_runtime_is_ready() -> None:
+    original_status_getter = mock_repository_module.get_extraction_runtime_status
+    original_extract_candidates = repository.neo4j_graphrag_adapter.extract_candidates
+    original_schema_guided = repository.schema_guided_extractor.extract_candidates
+    original_openai_api_key = os.environ.get("OPENAI_API_KEY")
+
+    mock_repository_module.get_extraction_runtime_status = lambda: ExtractionRuntimeStatus(
+        mode="auto",
+        neo4j_graphrag_available=True,
+        missing_dependencies=(),
+        source_path="/tmp/fake-graphrag-src",
+    )
+    os.environ["OPENAI_API_KEY"] = "test-key"
+    repository.neo4j_graphrag_adapter.extract_candidates = lambda **_: []
+    repository.schema_guided_extractor.extract_candidates = lambda **_: (_ for _ in ()).throw(
+        AssertionError("schema_guided_extractor should not run when neo4j_graphrag is available in auto mode")
+    )
+
+    try:
+        response = client.post(
+            "/api/graph/generate",
+            json={
+                "editor_id": "editor_lee",
+                "ontology": {
+                    "name": "Maintenance Draft",
+                    "description": "User-authored maintenance ontology",
+                    "entityTypes": [
+                        {
+                            "id": "technician",
+                            "name": "Technician",
+                            "description": "Maintenance worker",
+                            "properties": [
+                                {"name": "technicianId", "type": "string", "isIdentifier": True},
+                            ],
+                            "icon": "🔧",
+                            "color": "#3366FF",
+                        },
+                        {
+                            "id": "pump",
+                            "name": "Pump",
+                            "description": "Industrial pump",
+                            "properties": [
+                                {"name": "assetTag", "type": "string", "isIdentifier": True},
+                            ],
+                            "icon": "⚙️",
+                            "color": "#00AA88",
+                        },
+                    ],
+                    "relationships": [
+                        {
+                            "id": "inspects",
+                            "name": "INSPECTS",
+                            "from": "technician",
+                            "to": "pump",
+                            "cardinality": "one-to-many",
+                            "description": "Technician inspects a pump",
+                        }
+                    ],
+                },
+                "source_documents": [
+                    {
+                        "source_doc_id": "doc_001",
+                        "source_doc_name": "maintenance-note.txt",
+                        "doc_type": "maintenance_log",
+                        "page": 1,
+                        "text": "Technician Kim inspects Pump P-101 before restart.",
+                    }
+                ],
+            },
+        )
+    finally:
+        mock_repository_module.get_extraction_runtime_status = original_status_getter
+        repository.neo4j_graphrag_adapter.extract_candidates = original_extract_candidates
+        repository.schema_guided_extractor.extract_candidates = original_schema_guided
+        if original_openai_api_key is None:
+            os.environ.pop("OPENAI_API_KEY", None)
+        else:
+            os.environ["OPENAI_API_KEY"] = original_openai_api_key
+
+    assert response.status_code == 200
 
 
 def test_get_queue_returns_expected_shape() -> None:

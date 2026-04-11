@@ -11,6 +11,7 @@ export function SearchFilter() {
   
   const { 
     currentOntology, 
+    languageMode,
     setHighlightedEntities, 
     setHighlightedRelationships,
     clearHighlights,
@@ -80,6 +81,27 @@ export function SearchFilter() {
     return entityColors[entityName] || 'var(--ms-blue)';
   };
 
+  const copy =
+    languageMode === 'ko'
+      ? {
+          title: '검색 & 필터',
+          placeholder: '엔티티, 속성 검색...',
+          entities: '엔티티',
+          relationships: '관계',
+          noResults: '검색 결과 없음',
+          properties: '속성',
+          searchResults: '검색 결과',
+        }
+      : {
+          title: 'Search & Filter',
+          placeholder: 'Search entities, properties...',
+          entities: 'Entities',
+          relationships: 'Relationships',
+          noResults: 'No results for',
+          properties: 'properties',
+          searchResults: 'Search results',
+        };
+
   return (
     <div className="search-filter-section">
       <div 
@@ -89,7 +111,7 @@ export function SearchFilter() {
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <Filter size={14} />
-          Search & Filter
+          {copy.title}
         </span>
         {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </div>
@@ -118,7 +140,7 @@ export function SearchFilter() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search entities, properties..."
+                  placeholder={copy.placeholder}
                   style={{
                     width: '100%',
                     padding: '8px 30px 8px 32px',
@@ -164,7 +186,7 @@ export function SearchFilter() {
                   color: showEntities ? 'white' : 'var(--text-secondary)'
                 }}
               >
-                Entities ({currentOntology.entityTypes.length})
+                {copy.entities} ({currentOntology.entityTypes.length})
               </button>
               <button
                 onClick={() => setShowRelationships(!showRelationships)}
@@ -178,12 +200,12 @@ export function SearchFilter() {
                   color: showRelationships ? 'white' : 'var(--text-secondary)'
                 }}
               >
-                Relationships ({currentOntology.relationships.length})
+                {copy.relationships} ({currentOntology.relationships.length})
               </button>
             </div>
 
             {/* Results or Quick Access */}
-            <div style={{ maxHeight: 200, overflowY: 'auto' }} tabIndex={0} aria-label="Search results">
+            <div style={{ maxHeight: 200, overflowY: 'auto' }} tabIndex={0} aria-label={copy.searchResults}>
               {searchQuery && !hasResults && (
                 <div style={{ 
                   padding: 12, 
@@ -191,7 +213,7 @@ export function SearchFilter() {
                   color: 'var(--text-tertiary)',
                   fontSize: 11
                 }}>
-                  No results for "{searchQuery}"
+                  {copy.noResults} "{searchQuery}"
                 </div>
               )}
 
@@ -221,12 +243,12 @@ export function SearchFilter() {
                       background: getEntityColor(entity.name)
                     }}
                   />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-primary)' }}>{entity.name}</div>
-                    <div style={{ fontSize: 9, color: 'var(--text-secondary)' }}>
-                      {entity.properties.length} properties
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-primary)' }}>{entity.name}</div>
+                      <div style={{ fontSize: 9, color: 'var(--text-secondary)' }}>
+                        {entity.properties.length} {copy.properties}
+                      </div>
                     </div>
-                  </div>
                 </motion.div>
               ))}
 

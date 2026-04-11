@@ -17,6 +17,36 @@ function getInitialDarkMode(): boolean {
   }
 }
 
+function getInitialLlmChatMode(): 'auto' | 'openai' | 'azure_openai' {
+  if (typeof window === 'undefined' || !('localStorage' in window)) {
+    return 'auto';
+  }
+  try {
+    const stored = window.localStorage.getItem('llmChatMode');
+    if (stored === 'openai' || stored === 'azure_openai' || stored === 'auto') {
+      return stored;
+    }
+    return 'auto';
+  } catch {
+    return 'auto';
+  }
+}
+
+function getInitialLanguageMode(): 'ko' | 'en' {
+  if (typeof window === 'undefined' || !('localStorage' in window)) {
+    return 'en';
+  }
+  try {
+    const stored = window.localStorage.getItem('languageMode');
+    if (stored === 'ko' || stored === 'en') {
+      return stored;
+    }
+    return 'en';
+  } catch {
+    return 'en';
+  }
+}
+
 interface AppState {
   // Ontology State
   currentOntology: Ontology;
@@ -29,6 +59,8 @@ interface AppState {
   highlightedRelationships: string[];
   showDataBindings: boolean;
   darkMode: boolean;
+  languageMode: 'ko' | 'en';
+  llmChatMode: 'auto' | 'openai' | 'azure_openai';
   workspaceTab: 'review' | 'approved-graph';
   graphViewMode: 'schema' | 'instance' | 'query';
   
@@ -56,6 +88,8 @@ interface AppState {
   setHighlightedRelationships: (ids: string[]) => void;
   toggleDataBindings: () => void;
   toggleDarkMode: () => void;
+  setLanguageMode: (mode: 'ko' | 'en') => void;
+  setLlmChatMode: (mode: 'auto' | 'openai' | 'azure_openai') => void;
   setWorkspaceTab: (tab: 'review' | 'approved-graph') => void;
   setGraphViewMode: (mode: 'schema' | 'instance' | 'query') => void;
   
@@ -87,6 +121,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   highlightedRelationships: [],
   showDataBindings: false,
   darkMode: getInitialDarkMode(),
+  languageMode: getInitialLanguageMode(),
+  llmChatMode: getInitialLlmChatMode(),
   workspaceTab: 'review',
   graphViewMode: 'schema',
   
@@ -163,6 +199,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     return { darkMode: next };
   }),
+  setLanguageMode: (mode) => {
+    try {
+      localStorage.setItem('languageMode', mode);
+    } catch {
+      // Ignore persistence errors; still update in-memory state
+    }
+    set({ languageMode: mode });
+  },
+  setLlmChatMode: (mode) => {
+    try {
+      localStorage.setItem('llmChatMode', mode);
+    } catch {
+      // Ignore persistence errors; still update in-memory state
+    }
+    set({ llmChatMode: mode });
+  },
   setWorkspaceTab: (tab) => set({ workspaceTab: tab }),
   setGraphViewMode: (mode) => set({ graphViewMode: mode }),
   

@@ -44,6 +44,7 @@ from app.models.contracts import (
 from app.services.schema_guided_extractor import SchemaGuidedExtractor
 from app.services.extraction_mode import get_extraction_runtime_status
 from app.services.neo4j_graphrag_adapter import Neo4jGraphRagAdapter
+from app.services.neo4j_graphrag_config import get_neo4j_graphrag_config
 from app.services.schema_normalizer import SchemaNormalizer
 
 
@@ -226,13 +227,29 @@ class MockAlignmentRepository:
         )
 
         runtime_status = get_extraction_runtime_status()
-        if runtime_status.mode == "neo4j_graphrag":
+        llm_config = get_neo4j_graphrag_config(request.llm_provider_override)
+        llm_ready = bool(
+            (
+                llm_config.azure_openai_api_key
+                and llm_config.azure_openai_endpoint
+                and llm_config.azure_openai_deployment
+            )
+            if llm_config.llm_provider == "azure_openai"
+            else llm_config.openai_api_key
+        )
+        use_neo4j_graphrag = runtime_status.mode == "neo4j_graphrag" or (
+            runtime_status.mode == "auto"
+            and runtime_status.neo4j_graphrag_available
+            and llm_ready
+        )
+        if use_neo4j_graphrag:
             queue_items = self.neo4j_graphrag_adapter.extract_candidates(
                 ontology=ontology,
                 schema=schema,
                 extraction_run_id=extraction_run_id,
                 source_documents=source_documents,
                 extraction_prompt_override=request.extraction_prompt_override,
+                llm_provider_override=request.llm_provider_override,
             )
         else:
             queue_items = self.schema_guided_extractor.extract_candidates(

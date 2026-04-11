@@ -11,6 +11,7 @@ export function RdfEditorPanel() {
   const currentOntology = useAppStore((s) => s.currentOntology);
   const loadOntology = useAppStore((s) => s.loadOntology);
   const darkMode = useAppStore((s) => s.darkMode);
+  const languageMode = useAppStore((s) => s.languageMode);
   const hlTheme = darkMode ? RDF_HIGHLIGHT_DARK : RDF_HIGHLIGHT_LIGHT;
 
   const serializeOrFallback = useCallback((o: typeof currentOntology) => {
@@ -76,17 +77,34 @@ export function RdfEditorPanel() {
   };
 
   const statusLabel =
-    status === 'synced' ? '✓ Valid — graph synced' :
-    status === 'pending' ? '● Parsing…' :
-    `✗ ${errorMsg ?? 'Invalid RDF'}`;
+    status === 'synced'
+      ? languageMode === 'ko' ? '✓ 유효함 — 그래프 동기화 완료' : '✓ Valid — graph synced'
+      : status === 'pending'
+        ? languageMode === 'ko' ? '● 파싱 중…' : '● Parsing…'
+        : `✗ ${errorMsg ?? (languageMode === 'ko' ? '유효하지 않은 RDF' : 'Invalid RDF')}`;
+
+  const copy =
+    languageMode === 'ko'
+      ? {
+          title: 'RDF/XML 편집기',
+          copy: '복사',
+          copied: '복사됨!',
+          aria: 'RDF/XML 편집기',
+        }
+      : {
+          title: 'RDF/XML Editor',
+          copy: 'Copy',
+          copied: 'Copied!',
+          aria: 'RDF/XML editor',
+        };
 
   return (
     <div className="rdf-panel">
       <div className="rdf-panel-header" onClick={() => setOpen(o => !o)}>
-        <span className="rdf-panel-title">RDF/XML Editor</span>
+        <span className="rdf-panel-title">{copy.title}</span>
         {open && (
           <button className="rdf-panel-copy" onClick={handleCopy}>
-            {copied ? 'Copied!' : 'Copy'}
+            {copied ? copy.copied : copy.copy}
           </button>
         )}
         <span className="rdf-panel-toggle">{open ? '▲' : '▼'}</span>
@@ -118,7 +136,7 @@ export function RdfEditorPanel() {
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
-              aria-label="RDF/XML editor"
+              aria-label={copy.aria}
             />
           </div>
         </>

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import re
 import textwrap
 from io import BytesIO
@@ -16,6 +17,7 @@ from app.models.contracts import (
     ReferenceTextInput,
 )
 from app.services.neo4j_graphrag_config import get_neo4j_graphrag_config
+from app.services.openai_error_utils import raise_openai_service_error
 
 DEFAULT_ONTOLOGY_GENERATION_SYSTEM_PROMPT = textwrap.dedent(
     """
@@ -59,6 +61,12 @@ DEFAULT_ONTOLOGY_GENERATION_SYSTEM_PROMPT = textwrap.dedent(
     """
 ).strip()
 
+MAX_REFERENCE_CHARS = 12000
+MAX_TOTAL_REFERENCE_CHARS = 32000
+MAX_CURRENT_ONTOLOGY_CHARS = 8000
+
+logger = logging.getLogger(__name__)
+
 
 class OntologyGenerationService:
     def generate_draft(
@@ -72,31 +80,60 @@ class OntologyGenerationService:
                 status_code=400,
             )
 
-        config = get_neo4j_graphrag_config()
-        if not config.openai_api_key:
+        config = get_neo4j_graphrag_config(request.llm_provider_override)
+        api_key = (
+            config.azure_openai_api_key if config.llm_provider == "azure_openai" else config.openai_api_key
+        )
+        model_name = (
+            config.azure_openai_deployment if config.llm_provider == "azure_openai" else "gpt-5.4"
+        )
+        if not api_key:
             raise ServiceError(
                 error_code="ONTOLOGY_GENERATION_CONFIG_ERROR",
-                message="Ontology generation requires an OpenAI API key",
+                message="Ontology generation requires an LLM API key",
                 status_code=400,
-                details={"required_env": "ALIGNMENT_OPENAI_API_KEY or OPENAI_API_KEY"},
+                details={
+                    "required_env": (
+                        "AZURE_OPENAI_KEY or AZURE_OPENAI_API_KEY"
+                        if config.llm_provider == "azure_openai"
+                        else "ALIGNMENT_OPENAI_API_KEY or OPENAI_API_KEY"
+                    )
+                },
             )
 
-        client_kwargs = {"api_key": config.openai_api_key}
-        if config.openai_base_url:
+        client_kwargs = {"api_key": api_key, "timeout": config.request_timeout_seconds}
+        if config.llm_provider == "azure_openai":
+            if not config.azure_openai_endpoint or not config.azure_openai_deployment:
+                raise ServiceError(
+                    error_code="ONTOLOGY_GENERATION_CONFIG_ERROR",
+                    message="Azure OpenAI draft generation requires endpoint and deployment",
+                    status_code=400,
+                    details={"required_env": "AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT"},
+                )
+            client_kwargs["base_url"] = config.azure_openai_endpoint
+        elif config.openai_base_url:
             client_kwargs["base_url"] = config.openai_base_url
-        if config.openai_organization:
+        if config.llm_provider != "azure_openai" and config.openai_organization:
             client_kwargs["organization"] = config.openai_organization
-        if config.openai_project:
+        if config.llm_provider != "azure_openai" and config.openai_project:
             client_kwargs["project"] = config.openai_project
 
         client = OpenAI(**client_kwargs)
         prompt = self._build_prompt(request)
+        logger.info(
+            "Ontology draft request prepared provider=%s model=%s prompt_chars=%s reference_count=%s current_ontology=%s",
+            config.llm_provider,
+            model_name,
+            len(prompt),
+            len(request.references),
+            request.current_ontology is not None,
+        )
         try:
-            response = client.responses.create(
-                model="gpt-5.4",
-                reasoning={"effort": "medium"},
-                input=prompt,
-                text={
+            response_kwargs = {
+                "model": model_name,
+                "input": prompt,
+                "max_output_tokens": 4000,
+                "text": {
                     "format": {
                         "type": "json_schema",
                         "name": "ontology_draft_generation",
@@ -104,20 +141,30 @@ class OntologyGenerationService:
                         "strict": True,
                     }
                 },
-            )
+            }
+            if config.llm_provider != "azure_openai":
+                response_kwargs["reasoning"] = {"effort": "low"}
+            response = client.responses.create(**response_kwargs)
         except Exception as exc:
-            raise ServiceError(
-                error_code="ONTOLOGY_GENERATION_FAILED",
-                message="The ontology generation request failed",
-                status_code=502,
-                details={"error": str(exc)},
-            ) from exc
+            raise_openai_service_error(
+                exc=exc,
+                provider=config.llm_provider,
+                operation="ONTOLOGY_GENERATION",
+                azure_endpoint=config.azure_openai_endpoint,
+                azure_deployment=config.azure_openai_deployment,
+            )
 
         try:
             payload = json.loads(response.output_text)
             validated = OntologyDraftGenerationResponse.model_validate(payload)
             return self._normalize_generated_ontology(validated)
         except Exception as exc:
+            logger.exception(
+                "Failed to parse ontology draft response provider=%s model=%s output_preview=%r",
+                config.llm_provider,
+                model_name,
+                response.output_text[:2000],
+            )
             raise ServiceError(
                 error_code="ONTOLOGY_GENERATION_FAILED",
                 message="Failed to parse the generated ontology draft",
@@ -171,13 +218,10 @@ class OntologyGenerationService:
 
     def _build_prompt(self, request: OntologyDraftGenerationRequest) -> str:
         normalized_references = self._normalize_references(request.references)
-        references = "\n\n".join(
-            f"[Reference: {reference.reference_name}]\n{reference_text}"
-            for reference, reference_text in normalized_references
-        ) or "No additional reference texts were provided."
+        references = self._build_reference_block(normalized_references)
 
         current_ontology = (
-            json.dumps(request.current_ontology.model_dump(by_alias=True), ensure_ascii=False, indent=2)
+            self._summarize_current_ontology(request.current_ontology.model_dump(by_alias=True))
             if request.current_ontology
             else "No current ontology provided."
         )
@@ -201,10 +245,10 @@ class OntologyGenerationService:
         normalized: list[tuple[ReferenceTextInput, str]] = []
         for reference in references:
             if reference.text:
-                normalized.append((reference, reference.text))
+                normalized.append((reference, reference.text.strip()))
                 continue
             if reference.content_base64:
-                normalized.append((reference, self._extract_text_from_attachment(reference)))
+                normalized.append((reference, self._extract_text_from_attachment(reference).strip()))
         return normalized
 
     def _extract_text_from_attachment(self, reference: ReferenceTextInput) -> str:
@@ -216,7 +260,18 @@ class OntologyGenerationService:
 
         if lower_name.endswith(".pdf"):
             reader = PdfReader(BytesIO(raw_bytes))
-            return "\n".join(page.extract_text() or "" for page in reader.pages).strip()
+            pages: list[str] = []
+            total_chars = 0
+            for page in reader.pages:
+                page_text = (page.extract_text() or "").strip()
+                if not page_text:
+                    continue
+                remaining = MAX_REFERENCE_CHARS - total_chars
+                if remaining <= 0:
+                    break
+                pages.append(page_text[:remaining])
+                total_chars += len(pages[-1])
+            return "\n".join(pages).strip()
 
         decoded = self._decode_text_bytes(raw_bytes)
         if lower_name.endswith(".html") or lower_name.endswith(".htm"):
@@ -238,6 +293,72 @@ class OntologyGenerationService:
         without_tags = re.sub(r"<[^>]+>", " ", no_scripts)
         collapsed = re.sub(r"\s+", " ", without_tags)
         return collapsed.strip()
+
+    @staticmethod
+    def _truncate_text(text: str, limit: int) -> str:
+        cleaned = re.sub(r"\s+", " ", text).strip()
+        if len(cleaned) <= limit:
+            return cleaned
+        return cleaned[: limit - 20].rstrip() + " [truncated]"
+
+    def _build_reference_block(self, references: list[tuple[ReferenceTextInput, str]]) -> str:
+        if not references:
+            return "No additional reference texts were provided."
+
+        parts: list[str] = []
+        remaining = MAX_TOTAL_REFERENCE_CHARS
+        for reference, reference_text in references:
+            if remaining <= 0:
+                break
+            truncated = self._truncate_text(reference_text, min(MAX_REFERENCE_CHARS, remaining))
+            if not truncated:
+                continue
+            block = f"[Reference: {reference.reference_name}]\n{truncated}"
+            if len(block) > remaining:
+                block = self._truncate_text(block, remaining)
+            parts.append(block)
+            remaining -= len(block)
+
+        if not parts:
+            return "No additional reference texts were provided."
+        return "\n\n".join(parts)
+
+    def _summarize_current_ontology(self, ontology_payload: dict) -> str:
+        entity_types = ontology_payload.get("entityTypes", [])
+        relationships = ontology_payload.get("relationships", [])
+        summary = {
+            "name": ontology_payload.get("name", ""),
+            "description": ontology_payload.get("description", ""),
+            "entityTypes": [
+                {
+                    "id": entity.get("id"),
+                    "name": entity.get("name"),
+                    "properties": [
+                        {
+                            "name": prop.get("name"),
+                            "type": prop.get("type"),
+                            "isIdentifier": prop.get("isIdentifier", False),
+                        }
+                        for prop in entity.get("properties", [])[:12]
+                    ],
+                }
+                for entity in entity_types[:20]
+            ],
+            "relationships": [
+                {
+                    "id": rel.get("id"),
+                    "name": rel.get("name"),
+                    "from": rel.get("from"),
+                    "to": rel.get("to"),
+                    "attributes": rel.get("attributes", [])[:10] if rel.get("attributes") else [],
+                }
+                for rel in relationships[:30]
+            ],
+        }
+        return self._truncate_text(
+            json.dumps(summary, ensure_ascii=False, indent=2),
+            MAX_CURRENT_ONTOLOGY_CHARS,
+        )
 
     @staticmethod
     def _json_schema() -> dict:

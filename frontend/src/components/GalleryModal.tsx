@@ -10,6 +10,7 @@ interface GalleryModalProps {
 }
 
 export function GalleryModal({ onClose }: GalleryModalProps) {
+  const languageMode = useAppStore((state) => state.languageMode);
   const loadOntology = useAppStore((state) => state.loadOntology);
   const setGraphViewMode = useAppStore((state) => state.setGraphViewMode);
   const setInstanceGraphSnapshot = useAlignmentStore((state) => state.setInstanceGraphSnapshot);
@@ -18,6 +19,32 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
   const [graphs, setGraphs] = useState<LibraryGraphItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const copy =
+    languageMode === 'ko'
+      ? {
+          title: '로컬 라이브러리',
+          subtitle: '이 워크스페이스에 저장된 온톨로지와 그래프 스냅샷을 관리합니다.',
+          ontologies: '온톨로지',
+          graphs: '그래프',
+          loading: '라이브러리 불러오는 중…',
+          loadError: '로컬 라이브러리를 불러오지 못했습니다.',
+          noDescription: '설명 없음',
+          facts: '팩트',
+          noOntologies: '아직 저장된 온톨로지가 없습니다. 디자이너에서 “로컬 라이브러리에 저장”을 사용하세요.',
+          noGraphs: '아직 저장된 그래프 스냅샷이 없습니다. 그래프 탭에서 “Save Graph”를 사용하세요.',
+        }
+      : {
+          title: 'Local Library',
+          subtitle: 'Manage ontologies and graph snapshots stored in this workspace.',
+          ontologies: 'Ontologies',
+          graphs: 'Graphs',
+          loading: 'Loading library…',
+          loadError: 'Failed to load the local library.',
+          noDescription: 'No description',
+          facts: 'facts',
+          noOntologies: 'No ontologies saved yet. Use “Save to Local Library” from the designer.',
+          noGraphs: 'No graph snapshots saved yet. Use “Save Graph” from the graph tab.',
+        };
 
   useEffect(() => {
     setLoading(true);
@@ -29,11 +56,11 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         setLoading(false);
       })
       .catch((loadError) => {
-        const message = loadError instanceof Error ? loadError.message : 'Failed to load the local library.';
+        const message = loadError instanceof Error ? loadError.message : copy.loadError;
         setError(message);
         setLoading(false);
       });
-  }, []);
+  }, [copy.loadError]);
 
   const handleLoadOntology = async (slug: string) => {
     const ontology = await getLocalOntology(slug);
@@ -66,9 +93,9 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 24, fontWeight: 600 }}>Local Library</h2>
+            <h2 style={{ fontSize: 24, fontWeight: 600 }}>{copy.title}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
-              Manage ontologies and graph snapshots stored in this workspace.
+              {copy.subtitle}
             </p>
           </div>
           <button className="icon-btn" onClick={onClose}>
@@ -82,18 +109,18 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
             className={`designer-tab ${tab === 'ontologies' ? 'active' : ''}`}
             onClick={() => setTab('ontologies')}
           >
-            Ontologies
+            {copy.ontologies}
           </button>
           <button
             type="button"
             className={`designer-tab ${tab === 'graphs' ? 'active' : ''}`}
             onClick={() => setTab('graphs')}
           >
-            Graphs
+            {copy.graphs}
           </button>
         </div>
 
-        {loading ? <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>Loading library…</div> : null}
+        {loading ? <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>{copy.loading}</div> : null}
         {error ? <div style={{ padding: 32, textAlign: 'center', color: 'var(--ms-red, #D13438)' }}>{error}</div> : null}
 
         {!loading && !error && tab === 'ontologies' ? (
@@ -109,7 +136,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
               >
                 <span className="template-card-icon"><BookOpen size={18} /></span>
                 <span className="template-card-label">{item.name}</span>
-                <span className="template-card-desc">{item.description || 'No description'}</span>
+                <span className="template-card-desc">{item.description || copy.noDescription}</span>
               </button>
             ))}
           </div>
@@ -129,9 +156,9 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                 <span className="template-card-icon"><Share2 size={18} /></span>
                 <span className="template-card-label">{item.name}</span>
                 <span className="template-card-desc">
-                  {item.description || 'No description'}
+                  {item.description || copy.noDescription}
                   <br />
-                  {item.total_facts} facts
+                  {item.total_facts} {copy.facts}
                 </span>
               </button>
             ))}
@@ -140,13 +167,13 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
 
         {!loading && !error && tab === 'ontologies' && ontologies.length === 0 ? (
           <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>
-            No ontologies saved yet. Use “Save to Local Library” from the designer.
+            {copy.noOntologies}
           </div>
         ) : null}
 
         {!loading && !error && tab === 'graphs' && graphs.length === 0 ? (
           <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>
-            No graph snapshots saved yet. Use “Save Graph” from the graph tab.
+            {copy.noGraphs}
           </div>
         ) : null}
       </motion.div>

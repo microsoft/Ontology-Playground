@@ -162,6 +162,7 @@ export const useAlignmentStore = create<AlignmentState>((set, get) => ({
         get().reviewerId,
         get().sourceDocuments,
         get().extractionPromptOverride,
+        useAppStore.getState().llmChatMode,
       );
       const activeCandidateId = graphRun.queue.items[0]?.candidate_id ?? null;
       const activeCandidate = graphRun.queue.items.find((item) => item.candidate_id === activeCandidateId);

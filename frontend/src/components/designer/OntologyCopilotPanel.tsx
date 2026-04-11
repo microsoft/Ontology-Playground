@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Bot, FileUp, Settings2, Sparkles, Trash2 } from 'lucide-react';
 import { useDesignerStore } from '../../store/designerStore';
 import { generateOntologyDraft, type ReferenceTextInput } from '../../lib/ontologyGeneratorApi';
+import { useAppStore } from '../../store/appStore';
 import { SystemPromptModal } from './SystemPromptModal';
 
 const DEFAULT_SYSTEM_PROMPT = `Role:
@@ -61,6 +62,8 @@ async function toBase64(file: File): Promise<string> {
 }
 
 export function OntologyCopilotPanel() {
+  const llmChatMode = useAppStore((state) => state.llmChatMode);
+  const languageMode = useAppStore((state) => state.languageMode);
   const ontology = useDesignerStore((state) => state.ontology);
   const loadDraft = useDesignerStore((state) => state.loadDraft);
   const resetDraft = useDesignerStore((state) => state.resetDraft);
@@ -73,6 +76,50 @@ export function OntologyCopilotPanel() {
   const [openQuestions, setOpenQuestions] = useState<string[]>([]);
   const [systemPrompt, setSystemPrompt] = useState(DEFAULT_SYSTEM_PROMPT);
   const [showPromptModal, setShowPromptModal] = useState(false);
+  const copy =
+    languageMode === 'ko'
+      ? {
+          unsupportedFiles: 'AI 온톨로지 생성에서는 현재 `.txt`, `.md`, `.html`, `.doc`, `.pdf` 파일만 지원합니다.',
+          promptRequired: '프롬프트를 입력하거나 참고 파일을 하나 이상 첨부하세요.',
+          generationFailed: '온톨로지 초안 생성에 실패했습니다.',
+          title: 'AI 온톨로지 초안',
+          attachFiles: '파일 첨부',
+          editSystemPrompt: '시스템 프롬프트 편집',
+          introPoints: [
+            '도메인 지식을 자연어로 설명하거나 파일을 첨부하세요.',
+            'AI가 온톨로지 초안을 생성해 스키마에 보여줍니다.',
+            '지원 형식: txt, md, html, doc, pdf',
+          ],
+          promptLabel: '프롬프트',
+          promptPlaceholder: '예시: 커피 주문, 출하, 공급업체, 매장 재고를 위한 온톨로지를 만들어줘. 주문에는 상품이 포함되고, 매장은 주문을 처리하며, 출하는 상품을 매장으로 배송한다.',
+          generating: '초안 생성 중…',
+          generate: '초안 생성',
+          clearSchema: '스키마 비우기',
+          attachedFiles: '첨부된 파일',
+          assumptions: '가정',
+          openQuestions: '열린 질문',
+        }
+      : {
+          unsupportedFiles: 'Only .txt, .md, .html, .doc, and .pdf files are supported in AI ontology generation for now.',
+          promptRequired: 'Write a prompt or attach at least one reference file.',
+          generationFailed: 'Failed to generate an ontology draft.',
+          title: 'AI Ontology Draft',
+          attachFiles: 'Attach Files',
+          editSystemPrompt: 'Edit System Prompt',
+          introPoints: [
+            'Describe the domain in natural language or attach files.',
+            'AI generates an ontology draft and shows it in the schema view.',
+            'Supported formats: txt, md, html, doc, pdf',
+          ],
+          promptLabel: 'Prompt',
+          promptPlaceholder: 'Example: Build an ontology for coffee orders, shipments, suppliers, and store inventory. Orders contain products, stores process orders, shipments deliver products to stores.',
+          generating: 'Generating Draft…',
+          generate: 'Generate Draft',
+          clearSchema: 'Clear Schema',
+          attachedFiles: 'Attached Files',
+          assumptions: 'Assumptions',
+          openQuestions: 'Open Questions',
+        };
 
   const handlePickFiles = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
@@ -91,7 +138,7 @@ export function OntologyCopilotPanel() {
     });
 
     if (supported.length === 0) {
-      setError('Only .txt, .md, .html, .doc, and .pdf files are supported in AI ontology generation for now.');
+      setError(copy.unsupportedFiles);
       return;
     }
 
@@ -121,7 +168,7 @@ export function OntologyCopilotPanel() {
 
   const handleGenerate = async () => {
     if (!prompt.trim() && references.length === 0) {
-      setError('Write a prompt or attach at least one reference file.');
+      setError(copy.promptRequired);
       return;
     }
 
@@ -133,6 +180,7 @@ export function OntologyCopilotPanel() {
         prompt,
         references,
         system_prompt_override: systemPrompt,
+        llm_provider_override: llmChatMode,
         current_ontology:
           ontology.entityTypes.length > 0 || ontology.relationships.length > 0
             ? ontology
@@ -143,7 +191,7 @@ export function OntologyCopilotPanel() {
       setAssumptions(response.assumptions);
       setOpenQuestions(response.open_questions);
     } catch (generationError) {
-      const message = generationError instanceof Error ? generationError.message : 'Failed to generate an ontology draft.';
+      const message = generationError instanceof Error ? generationError.message : copy.generationFailed;
       setError(message);
     } finally {
       setLoading(false);
@@ -156,7 +204,7 @@ export function OntologyCopilotPanel() {
         <div className="designer-section-header">
           <h3>
             <Bot size={16} />
-            AI Ontology Draft
+            {copy.title}
           </h3>
         </div>
         <div className="ontology-copilot-actions">
@@ -166,7 +214,7 @@ export function OntologyCopilotPanel() {
             onClick={() => fileInputRef.current?.click()}
           >
             <FileUp size={12} />
-            Attach Files
+            {copy.attachFiles}
           </button>
           <button
             type="button"
@@ -174,22 +222,26 @@ export function OntologyCopilotPanel() {
             onClick={() => setShowPromptModal(true)}
           >
             <Settings2 size={12} />
-            Edit System Prompt
+            {copy.editSystemPrompt}
           </button>
         </div>
       </div>
 
-      <p className="ontology-copilot-copy">
-        Describe the domain in plain language and attach supporting `.txt`, `.md`, `.html`, `.doc`, or `.pdf` notes. The AI will generate a draft ontology and load it into the designer.
-      </p>
+      <div className="ontology-copilot-copy">
+        <ul className="ontology-copilot-copy-list">
+          {copy.introPoints.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </div>
 
       <label className="designer-field">
-        <span>Prompt</span>
+        <span>{copy.promptLabel}</span>
         <textarea
           rows={5}
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
-          placeholder="Example: Build an ontology for coffee orders, shipments, suppliers, and store inventory. Orders contain products, stores process orders, shipments deliver products to stores."
+          placeholder={copy.promptPlaceholder}
         />
       </label>
 
@@ -205,12 +257,15 @@ export function OntologyCopilotPanel() {
       />
 
       {references.length > 0 ? (
-        <div className="ontology-copilot-files">
-          {references.map((reference) => (
-            <span key={reference.reference_name} className="alignment-chip">
-              {reference.reference_name}
-            </span>
-          ))}
+        <div className="ontology-copilot-files-block">
+          <span className="ontology-copilot-files-label">{copy.attachedFiles}</span>
+          <div className="ontology-copilot-files">
+            {references.map((reference) => (
+              <span key={reference.reference_name} className="alignment-chip">
+                {reference.reference_name}
+              </span>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -223,7 +278,7 @@ export function OntologyCopilotPanel() {
         }}
       >
         <Sparkles size={16} />
-        {loading ? 'Generating Draft…' : 'Generate Draft'}
+        {loading ? copy.generating : copy.generate}
       </button>
 
       <button
@@ -232,36 +287,43 @@ export function OntologyCopilotPanel() {
         onClick={resetDraft}
       >
         <Trash2 size={14} />
-        Clear Schema
+        {copy.clearSchema}
       </button>
 
       {error ? <div className="designer-validation-errors ontology-copilot-error">{error}</div> : null}
 
       {assumptions.length > 0 ? (
-        <div className="ontology-copilot-notes">
-          <strong>Assumptions</strong>
+        <details className="ontology-copilot-notes" open>
+          <summary className="ontology-copilot-notes-summary">
+            <strong>{copy.assumptions}</strong>
+            <span className="alignment-chip">{assumptions.length}</span>
+          </summary>
           <ul>
             {assumptions.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
-        </div>
+        </details>
       ) : null}
 
       {openQuestions.length > 0 ? (
-        <div className="ontology-copilot-notes">
-          <strong>Open Questions</strong>
+        <details className="ontology-copilot-notes" open>
+          <summary className="ontology-copilot-notes-summary">
+            <strong>{copy.openQuestions}</strong>
+            <span className="alignment-chip">{openQuestions.length}</span>
+          </summary>
           <ul>
             {openQuestions.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
-        </div>
+        </details>
       ) : null}
 
       <AnimatePresence>
         {showPromptModal ? (
           <SystemPromptModal
+            languageMode={languageMode}
             value={systemPrompt}
             defaultValue={DEFAULT_SYSTEM_PROMPT}
             onChange={setSystemPrompt}

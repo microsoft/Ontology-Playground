@@ -3,10 +3,13 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies import (
+    get_llm_diagnostic_service,
     get_natural_language_cypher_service,
     get_neo4j_query_service,
 )
 from app.models.contracts import (
+    LlmDiagnosticChatRequest,
+    LlmDiagnosticChatResponse,
     NaturalLanguageCypherRequest,
     NaturalLanguageCypherResponse,
     Neo4jQueryRequest,
@@ -14,6 +17,7 @@ from app.models.contracts import (
 )
 from app.services.natural_language_cypher_service import NaturalLanguageCypherService
 from app.services.neo4j_query_service import Neo4jQueryService
+from app.services.llm_diagnostic_service import LlmDiagnosticService
 
 router = APIRouter(prefix="/api/query", tags=["query"])
 
@@ -32,3 +36,11 @@ def translate_to_cypher(
     service: NaturalLanguageCypherService = Depends(get_natural_language_cypher_service),
 ) -> NaturalLanguageCypherResponse:
     return service.translate(request)
+
+
+@router.post("/diagnostic-chat", response_model=LlmDiagnosticChatResponse)
+def diagnostic_chat(
+    request: LlmDiagnosticChatRequest,
+    service: LlmDiagnosticService = Depends(get_llm_diagnostic_service),
+) -> LlmDiagnosticChatResponse:
+    return service.chat(request)

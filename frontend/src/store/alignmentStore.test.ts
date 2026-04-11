@@ -245,7 +245,9 @@ describe('useAlignmentStore generateGraphFromCurrentOntology', () => {
     await useAlignmentStore.getState().generateGraphFromCurrentOntology();
 
     expect(buildGraphFromOntologyMock).toHaveBeenCalledWith(
-      expect.anything(),
+      expect.objectContaining({
+        name: 'Untitled Ontology',
+      }),
       'reviewer_demo',
       [
         expect.objectContaining({
@@ -254,6 +256,8 @@ describe('useAlignmentStore generateGraphFromCurrentOntology', () => {
           text: 'Technician Kim inspected pump P-101.',
         }),
       ],
+      null,
+      'auto',
     );
   });
 });

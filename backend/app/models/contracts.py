@@ -259,6 +259,7 @@ class OntologyDraftGenerationRequest(BaseModel):
     references: list[ReferenceTextInput] = Field(default_factory=list)
     current_ontology: OntologyInput | None = None
     system_prompt_override: str | None = None
+    llm_provider_override: str | None = Field(default=None, pattern="^(auto|openai|azure_openai)$")
 
 
 class OntologyDraftGenerationResponse(BaseModel):
@@ -360,12 +361,24 @@ class NaturalLanguageCypherRequest(BaseModel):
     prompt: str = Field(min_length=1)
     ontology: OntologyInput
     system_prompt_override: str | None = None
+    llm_provider_override: str | None = Field(default=None, pattern="^(auto|openai|azure_openai)$")
 
 
 class NaturalLanguageCypherResponse(BaseModel):
     cypher: str
     summary: str
     warnings: list[str] = Field(default_factory=list)
+
+
+class LlmDiagnosticChatRequest(BaseModel):
+    prompt: str = Field(min_length=1)
+    llm_provider_override: str | None = Field(default=None, pattern="^(auto|openai|azure_openai)$")
+
+
+class LlmDiagnosticChatResponse(BaseModel):
+    provider: str
+    model: str
+    response_text: str
 
 
 class GraphProjectionNode(BaseModel):
@@ -395,6 +408,7 @@ class OntologyGraphBuildRequest(BaseModel):
     ontology: OntologyInput
     source_documents: list[SourceDocumentInput] = Field(default_factory=list)
     extraction_prompt_override: str | None = None
+    llm_provider_override: str | None = Field(default=None, pattern="^(auto|openai|azure_openai)$")
 
 
 class OntologyGraphBuildResponse(BaseModel):

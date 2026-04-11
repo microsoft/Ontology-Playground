@@ -52,3 +52,4 @@ data/codemind*.db
 **/codemind*.db
 .codemind/
 >>>>>>> a3206f73718e8425dab5946633c47bb2dd0384eb
+*.tar

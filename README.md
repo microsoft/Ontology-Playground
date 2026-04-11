@@ -1,207 +1,71 @@
+[English](./README.md) | [한국어](./README.ko.md)
+
 # Oh-tology
 
-> Local ontology design, extraction review, graph curation, and Neo4j publishing workspace.
+Oh-tology is a local workspace for designing ontologies, reviewing document-grounded extraction results, approving them into a graph, publishing to Neo4j, and querying the published graph.
 
 [![Oh-tology workspace](docs/images/main_graph.png)](docs/images/main_graph.png)
 
-Oh-tology is a full local workspace for:
+## Core Features
 
-- designing ontologies in a visual editor
-- generating draft ontologies from AI-assisted prompts
-- extracting review candidates from source documents
-- approving facts into an instance graph
-- translating natural language into Cypher
-- publishing approved graphs into Neo4j
-- keeping ontology and graph snapshots under version control
+- Visual ontology design
+- AI-assisted ontology draft generation
+- Document-grounded entity and relationship extraction review
+- Instance graph generation from approved review results
+- Neo4j publish and Cypher / natural-language query flows
+- Local ontology and graph snapshot libraries
 
-![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
-![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi)
-![Neo4j](https://img.shields.io/badge/Neo4j-Graph-4581C3?style=flat-square&logo=neo4j)
+## Product Flow
 
-## End-to-End Product Flow
+1. Generate an ontology draft from prompts or reference documents.
+2. Refine entities, properties, and relationships in the designer.
+3. Map attached documents onto the current ontology to produce extraction candidates.
+4. Review and approve candidates.
+5. Build the approved graph.
+6. Optionally publish to Neo4j and run queries.
 
-Oh-tology now supports the full loop, not just static ontology editing:
+## Screens
 
-1. Upload text or reference material and auto-generate an ontology draft
-2. Refine the schema visually in the designer
-3. Upload actual source data and extract review candidates against that schema
-4. Approve facts into an instance graph
-5. Publish the graph to Neo4j
-6. Query the result with Cypher or natural language
-
-This is the core value of the workspace: it covers schema authoring, AI-assisted
-draft generation, instance extraction, graph curation, and query execution in a
-single local environment.
-
-## What It Includes
-
-### Main workspace
-
-The main app combines:
-
-- a schema graph view
-- an approved graph view
-- a Neo4j query console
-- right-side schema or graph-aware inspection panels
-- RDF/XML editing and ontology exploration tools
-
-### Designer and review flow
-
-The designer provides a full editing surface for entity types, properties,
-relationships, cardinalities, icons, and colors. The same environment also
-hosts the review workflow for extraction candidates, so ontology iteration and
-fact review happen in one place.
-
-### AI-assisted ontology draft generation
-
-The workspace now supports prompt-driven ontology draft generation from uploaded
-reference text and files. Instead of starting from a blank graph, you can feed
-domain notes or documents into the system and generate a structured ontology
-draft that is then editable in the visual designer.
-
-### Extraction workflow
-
-The backend can project a user-authored ontology into:
-
-- a normalized schema summary
-- a candidate review queue
-- a graph projection used by the review UI
-
-Two extraction lanes exist today:
-
-- `auto` for lightweight local heuristic extraction
-- `neo4j_graphrag` for OpenAI-backed graph extraction through the vendored
-  `oh-graph-rag` runtime
-
-### Graph publishing and querying
-
-Approved facts can be turned into an instance graph, previewed, and published
-to Neo4j with an `ingest_run_id`. The query tab supports:
-
-- raw Cypher execution
-- `ingest_run_id` scoped queries
-- natural-language-to-Cypher translation using the current ontology context
-- live Neo4j schema-aware translation checks
-- editable translator system prompts
-
-### Local content library
-
-The repository stores ontology and graph artifacts directly under:
-
-- `frontend/library/ontologies/`
-- `frontend/library/graphs/`
-
-These are intended to be committed, shared, and reused.
-
-## Screenshots
-
-### Main schema workspace
+### Main Schema Workspace
 
 ![Oh-tology main schema workspace](docs/images/main_schema.png)
 
-The schema tab is the starting point for ontology structure, entity and
-relationship inspection, and general workspace navigation.
-
-### Main graph workspace
-
-![Oh-tology main graph workspace](docs/images/main_graph.png)
-
-The graph tab shows the approved instance graph, graph-aware side panels, and
-navigation into downstream graph querying.
-
-### Prompt-to-ontology generation
+### AI Ontology Draft Generation
 
 ![Ontology draft generation from prompt](docs/images/generate_ontology_with_prompt.png)
 
-This flow highlights one of the major additions in this workspace: uploaded
-text and prompt-driven ontology draft generation that feeds directly into the
-visual editor.
-
-### Review and extraction workflow
+### Review and Graph Workflow
 
 ![Review and graph workflow](docs/images/review_graph.png)
 
-This is the stage where uploaded source data is mapped against the schema and
-reviewed into an approved graph.
-
-### Natural language to Cypher
+### Natural Language to Cypher
 
 ![Natural language to Cypher query flow](docs/images/cypherquery.png)
-
-The query tab now supports natural-language-to-Cypher translation with editable
-system prompts and schema-aware query review before execution.
 
 ## Repository Layout
 
 ```text
 Oh-tology/
-├── frontend/                    React + Vite application
-├── backend/                     FastAPI workflow backend
-├── vendor/oh-graph-rag/         Vendored graph extraction dependency
-├── frontend/library/ontologies/ Local ontology snapshots
-├── frontend/library/graphs/     Local graph snapshots
-├── docs/                        Project documentation
-└── RUNNING.md                   Short operational runbook
+├── frontend/                     React + Vite app
+├── backend/                      FastAPI backend
+├── vendor/oh-graph-rag/          Vendored extraction runtime
+├── frontend/library/ontologies/  Local ontology snapshots
+├── frontend/library/graphs/      Local graph snapshots
+├── docs/                         Images and docs
+└── RUNNING.md                    Short operational notes
 ```
 
-## Key Features
+## Local Development
 
-### Visual ontology authoring
-
-- edit ontology classes and relationships directly in the browser
-- tune property types, identifiers, icons, and colors
-- inspect the schema as a live graph while editing
-- export/import RDF/XML and JSON-backed ontology structures
-
-### Review and approval
-
-- generate graph candidates from source documents
-- inspect candidate evidence and suggested mappings
-- approve, reject, or defer candidate facts
-- produce an approved instance graph from reviewed facts
-
-### File upload to ontology draft
-
-- upload text or document-derived reference material
-- generate ontology drafts from natural language plus supporting context
-- carry that generated draft directly into the visual ontology editor
-
-### Schema to instance graph
-
-- upload actual source data after the schema is defined
-- extract review candidates against the current ontology
-- map approved facts into a concrete instance graph
-- keep graph snapshots in the local library for iteration and reuse
-
-### Natural-language query translation
-
-- ask questions in plain language from the query tab
-- inspect the schema context used for translation
-- inspect the live Neo4j schema snapshot when available
-- review the generated Cypher before execution
-- override the translator system prompt from a modal editor
-- execute the translated query directly against Neo4j
-
-### Neo4j integration
-
-- preview publish counts before writing
-- publish nodes and relationships with `ingest_run_id`
-- query the published graph from the same UI
-- inspect how the live database schema differs from ontology-only schema
-
-## Getting Started
-
-### Prerequisites
+### Requirements
 
 - Node.js 18+
 - npm 9+
 - Python 3.10+
-- optional: local Neo4j instance for publish/query features
-- optional: OpenAI API key for AI ontology generation, `neo4j_graphrag`
-  extraction, and natural-language query translation
+- Optional: Neo4j
+- Optional: OpenAI or Azure OpenAI credentials
 
-## Backend Setup
+### Backend
 
 ```bash
 cd backend
@@ -210,10 +74,11 @@ python -m venv .venv310
 cp .env.example .env
 ```
 
-Edit `backend/.env` and set at least the values you need:
+Minimal example:
 
 ```env
 ALIGNMENT_EXTRACTION_MODE=neo4j_graphrag
+ALIGNMENT_LLM_PROVIDER=openai
 ALIGNMENT_OPENAI_API_KEY=...
 NEO4J_URI=neo4j://localhost:7687
 NEO4J_USERNAME=neo4j
@@ -221,7 +86,7 @@ NEO4J_PASSWORD=...
 NEO4J_DATABASE=neo4j
 ```
 
-Run the backend:
+Run:
 
 ```bash
 cd backend
@@ -231,9 +96,9 @@ set +a
 .venv310/bin/python -m uvicorn app.main:app --reload
 ```
 
-Backend will be available at `http://127.0.0.1:8000`.
+Backend: `http://127.0.0.1:8000`
 
-## Frontend Setup
+### Frontend
 
 ```bash
 cd frontend
@@ -241,9 +106,209 @@ npm install
 VITE_ALIGNMENT_API_BASE_URL=http://127.0.0.1:8000 npm run dev
 ```
 
-Frontend will be available at `http://127.0.0.1:5173`.
+Frontend: `http://127.0.0.1:5173`
 
-## Common Development Commands
+## Docker
+
+Docker environment variables directly control backend runtime behavior. In practice, LLM settings affect ontology draft generation, extraction, and natural-language-to-Cypher translation.
+
+### Local Full Stack
+
+Included services:
+
+- `frontend` on `http://localhost:8080`
+- `backend` on `http://localhost:8000`
+- `neo4j` on `http://localhost:7474` and `localhost:7687`
+
+Run:
+
+```bash
+cp .env.docker.example .env
+docker compose up --build
+```
+
+The default `.env.docker.example` assumes:
+
+- `ALIGNMENT_EXTRACTION_MODE=auto`
+- `ALIGNMENT_LLM_PROVIDER=auto`
+- local containerized Neo4j
+- OpenAI or Azure OpenAI credentials supplied by the operator
+
+Recommended setup order:
+
+1. `cp .env.docker.example .env`
+2. Decide whether you want OpenAI or Azure OpenAI.
+3. Fill only the relevant credential block.
+4. Run `docker compose up --build`
+
+Check:
+
+- frontend: `http://localhost:8080`
+- backend health: `http://localhost:8000/health`
+- Neo4j Browser: `http://localhost:7474`
+
+OpenAI example:
+
+```env
+ALIGNMENT_LLM_PROVIDER=openai
+ALIGNMENT_OPENAI_API_KEY=<openai-api-key>
+ALIGNMENT_OPENAI_MODEL=gpt-5.4
+```
+
+Azure OpenAI example:
+
+```env
+ALIGNMENT_LLM_PROVIDER=azure_openai
+AZURE_OPENAI_KEY=<azure-openai-key>
+AZURE_OPENAI_ENDPOINT=https://<resource>.openai.azure.com/openai/v1
+AZURE_OPENAI_DEPLOYMENT=<deployment-name>
+```
+
+### Company Neo4j Deployment
+
+Use [docker-compose.company.yml](docker-compose.company.yml) when the backend should connect directly to an external Neo4j instance instead of starting a local Neo4j container.
+
+Required assets:
+
+- Docker image tar archive
+- [docker-compose.company.yml](docker-compose.company.yml)
+- `.env`
+- Recommended: `frontend/library/`
+
+`.env` example:
+
+```env
+NEO4J_URI=bolt://<company-neo4j-host>:7687
+NEO4J_USERNAME=<username>
+NEO4J_PASSWORD=<password>
+NEO4J_DATABASE=neo4j
+ALIGNMENT_LLM_PROVIDER=azure_openai
+AZURE_OPENAI_KEY=...
+AZURE_OPENAI_ENDPOINT=https://<resource>.openai.azure.com/openai/v1
+AZURE_OPENAI_DEPLOYMENT=<deployment-name>
+```
+
+Run:
+
+```bash
+docker compose -f docker-compose.company.yml up -d
+```
+
+## LLM Behavior
+
+### What does `ALIGNMENT_LLM_PROVIDER=auto` actually do?
+
+`auto` does not choose based on latency, quality, or connection tests. It chooses based on environment variables only.
+
+If all three Azure settings are present:
+
+- `AZURE_OPENAI_KEY` or `AZURE_OPENAI_API_KEY`
+- `AZURE_OPENAI_ENDPOINT`
+- `AZURE_OPENAI_DEPLOYMENT`
+
+then the backend resolves `auto -> azure_openai`.
+
+If any of those are missing, it resolves `auto -> openai`.
+For OpenAI, the backend uses `ALIGNMENT_OPENAI_API_KEY` or `OPENAI_API_KEY`.
+
+So `auto` means "prefer Azure when Azure is fully configured, otherwise use OpenAI", not "pick whichever works best right now".
+
+### Which feature uses which path?
+
+- Ontology draft generation:
+  `POST /api/ontology/generate-draft`
+  Uses OpenAI Responses API with strict JSON schema output.
+- Run extraction:
+  `POST /api/graph/generate`
+  Normalizes the ontology and produces an extraction review queue.
+- Natural language to Cypher:
+  `POST /api/query/translate-cypher`
+  Uses strict JSON schema output for `{ cypher, summary, warnings }`.
+- Cypher execution:
+  `POST /api/query/neo4j`
+  Runs directly against Neo4j. This step does not use OpenAI.
+
+### `ALIGNMENT_EXTRACTION_MODE`
+
+- `neo4j_graphrag`
+  Forces LLM-based extraction. If runtime dependencies, credentials, endpoint, or deployment are missing, the request fails clearly.
+- `auto`
+  Default mode.
+  If the `neo4j-graphrag` runtime and the selected provider configuration are both ready, LLM extraction is used.
+  Otherwise the backend falls back to heuristic/schema-guided extraction.
+
+This makes `auto` the safer mode for mixed local environments, while `neo4j_graphrag` is better when you explicitly want strict LLM extraction behavior.
+
+### Debugging Tips
+
+- Draft generation fails:
+  Check the `/api/ontology/generate-draft` response body and `details.error` in the browser Network tab.
+- Extraction looks too simple:
+  Verify `ALIGNMENT_EXTRACTION_MODE` and the selected provider credentials.
+- Natural-language to Cypher fails:
+  Check `/api/query/translate-cypher` and inspect `details.error`.
+- Cypher execution fails:
+  Verify `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`, and `NEO4J_DATABASE`.
+
+## Docker Image Transfer
+
+### 1. Build Linux `amd64` Images
+
+If the target server is a typical x86 Linux host, `linux/amd64` is the safest target platform.
+
+```bash
+docker buildx build --platform linux/amd64 -t oh-tology-frontend:latest -f frontend/Dockerfile . --load
+docker buildx build --platform linux/amd64 -t oh-tology-backend:latest -f backend/Dockerfile . --load
+docker save -o oh-tology-images-linux-amd64.tar oh-tology-frontend:latest oh-tology-backend:latest
+```
+
+Check:
+
+```bash
+docker image inspect oh-tology-frontend:latest --format '{{.Architecture}}/{{.Os}}'
+docker image inspect oh-tology-backend:latest --format '{{.Architecture}}/{{.Os}}'
+```
+
+### 2. Files to Transfer
+
+For runtime only:
+
+- `oh-tology-images-linux-amd64.tar`
+- [docker-compose.company.yml](docker-compose.company.yml)
+- `.env`
+
+To keep existing library data as well:
+
+- `frontend/library/`
+
+### 3. Run on the Target Server
+
+If containers already exist, stop them first.
+
+```bash
+docker compose -f docker-compose.company.yml down
+docker load -i oh-tology-images-linux-amd64.tar
+mkdir -p frontend/library/ontologies frontend/library/graphs
+docker compose -f docker-compose.company.yml up -d
+```
+
+Check:
+
+```bash
+docker compose -f docker-compose.company.yml ps
+curl http://localhost:8000/health
+```
+
+### 4. `scp` Example
+
+```bash
+scp oh-tology-images-linux-amd64.tar user@host:/path/to/deploy/
+scp docker-compose.company.yml user@host:/path/to/deploy/
+scp .env user@host:/path/to/deploy/
+rsync -av frontend/library/ user@host:/path/to/deploy/frontend/library/
+```
+
+## Useful Commands
 
 ### Frontend
 
@@ -262,85 +327,49 @@ cd backend
 .venv310/bin/pytest tests/test_api.py -q
 ```
 
-## End-to-End Workflow
-
-1. Start the backend and frontend.
-2. Open the main workspace and inspect or load an ontology.
-3. Upload text or reference material and generate an ontology draft.
-4. Refine the draft in the designer and finalize the schema.
-5. Add real source documents in the review flow and run extraction.
-6. Review the candidate queue and approve valid facts.
-7. Build the approved instance graph.
-8. Preview or publish that graph to Neo4j.
-9. Query the published graph with raw Cypher or natural language.
-
-## Environment Variables
+## Key Environment Variables
 
 ### Frontend
 
 | Variable | Description |
 | --- | --- |
-| `VITE_ALIGNMENT_API_BASE_URL` | Base URL for the FastAPI backend |
-| `VITE_ENABLE_AI_BUILDER` | Enables the AI ontology draft builder UI |
-| `VITE_BASE_PATH` | Vite base path for non-root deployments |
-| `VITE_GITHUB_CLIENT_ID` | GitHub OAuth client id if catalogue PR automation is used |
-| `VITE_GITHUB_OAUTH_BASE` | Optional external OAuth proxy for static deployments |
+| `VITE_ALIGNMENT_API_BASE_URL` | FastAPI backend base URL |
+| `VITE_ENABLE_AI_BUILDER` | AI ontology draft UI toggle |
+| `VITE_BASE_PATH` | Vite base path |
+| `VITE_GITHUB_CLIENT_ID` | GitHub OAuth client id |
+| `VITE_GITHUB_OAUTH_BASE` | External OAuth proxy base |
 
 ### Backend
 
 | Variable | Description |
 | --- | --- |
-| `ALIGNMENT_EXTRACTION_MODE` | `auto` or `neo4j_graphrag` |
-| `ALIGNMENT_NEO4J_GRAPHRAG_SRC` | Optional source override for the vendored graphrag package |
-| `ALIGNMENT_LLM_PROVIDER` | Currently `openai` |
-| `ALIGNMENT_OPENAI_API_KEY` | OpenAI key for extraction, draft generation, and query translation |
-| `OPENAI_API_KEY` | Standard fallback OpenAI env var |
-| `ALIGNMENT_OPENAI_MODEL` | Model name used by OpenAI-backed flows |
+| `ALIGNMENT_EXTRACTION_MODE` | `auto` or `neo4j_graphrag`; `auto` uses LLM extraction only when runtime and provider config are ready |
+| `ALIGNMENT_NEO4J_GRAPHRAG_SRC` | Optional source override |
+| `ALIGNMENT_LLM_PROVIDER` | `auto`, `openai`, `azure_openai`; `auto` prefers Azure only when all Azure env vars are present |
+| `ALIGNMENT_OPENAI_API_KEY` | OpenAI API key |
+| `OPENAI_API_KEY` | OpenAI fallback env |
+| `ALIGNMENT_OPENAI_MODEL` | OpenAI model |
 | `ALIGNMENT_OPENAI_BASE_URL` | Optional OpenAI-compatible base URL |
-| `ALIGNMENT_OPENAI_ORGANIZATION` | Optional OpenAI org id |
-| `ALIGNMENT_OPENAI_PROJECT` | Optional OpenAI project id |
-| `ALIGNMENT_LLM_TEMPERATURE` | Temperature for extraction-oriented flows |
-| `ALIGNMENT_EXTRACTION_MAX_CONCURRENCY` | Extraction concurrency limit |
-| `NEO4J_URI` | Neo4j connection string |
+| `ALIGNMENT_OPENAI_ORGANIZATION` | Optional OpenAI org |
+| `ALIGNMENT_OPENAI_PROJECT` | Optional OpenAI project |
+| `AZURE_OPENAI_KEY` | Azure OpenAI key |
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI key alias |
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI OpenAI-compatible base URL, ideally ending with `/openai/v1` |
+| `AZURE_OPENAI_DEPLOYMENT` | Azure deployment name |
+| `ALIGNMENT_OPENAI_TIMEOUT_SECONDS` | LLM request timeout in seconds |
+| `ALIGNMENT_LLM_TEMPERATURE` | Extraction temperature |
+| `ALIGNMENT_EXTRACTION_MAX_CONCURRENCY` | Extraction concurrency |
+| `NEO4J_URI` | Neo4j URI |
 | `NEO4J_USERNAME` | Neo4j username |
 | `NEO4J_PASSWORD` | Neo4j password |
-| `NEO4J_DATABASE` | Neo4j database name |
+| `NEO4J_DATABASE` | Neo4j database |
 
-## Main Routes and Surfaces
+## References
 
-### Main app
-
-- `/` or `/#/` for the primary workspace
-- query tab for Cypher and NL-to-Cypher translation
-- graph tab for approved graph inspection
-
-### Designer and review
-
-- `/#/designer`
-- `/#/review-graph`
-- `/#/alignment` compatibility route
-
-### Learning and catalogue
-
-- `/#/catalogue`
-- `/#/learn`
-
-## Current Implementation Notes
-
-- the backend currently uses an in-memory repository for workflow state
-- publish/query features operate against a live Neo4j instance
-- natural-language query translation is grounded in ontology context and now
-  also consults a live Neo4j schema snapshot when available
-- mismatches between ontology definitions and already-published Neo4j data can
-  still produce surprising query results until the graph is republished
-
-## Documentation
-
-- [RUNNING.md](RUNNING.md) for a shorter operational runbook
-- [backend/README.md](backend/README.md) for backend-specific behavior and env vars
-- [frontend/README.md](frontend/README.md) for the richer frontend feature overview
+- [RUNNING.md](RUNNING.md)
+- [backend/README.md](backend/README.md)
+- [frontend/README.md](frontend/README.md)
 
 ## Vendored Dependency
 
-`vendor/oh-graph-rag/` contains a vendored copy of the graph extraction
-runtime. Keep upstream notices and licensing files intact when updating it.
+`vendor/oh-graph-rag/` is a vendored copy of the extraction runtime. Preserve license and notice files when updating it.

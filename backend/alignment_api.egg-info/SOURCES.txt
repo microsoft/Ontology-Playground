@@ -27,6 +27,7 @@ app/services/__init__.py
 app/services/extraction_mode.py
 app/services/generation_service.py
 app/services/library_service.py
+app/services/natural_language_cypher_service.py
 app/services/neo4j_graphrag_adapter.py
 app/services/neo4j_graphrag_config.py
 app/services/neo4j_publish_service.py

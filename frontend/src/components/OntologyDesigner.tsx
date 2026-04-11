@@ -15,7 +15,20 @@ interface OntologyDesignerProps {
 export function OntologyDesigner({ route, initialPreviewTab = 'graph' }: OntologyDesignerProps) {
   const { ontology, setOntologyName, setOntologyDescription, loadDraft, undo, redo } = useDesignerStore();
   const darkMode = useAppStore((s) => s.darkMode);
+  const languageMode = useAppStore((s) => s.languageMode);
   const isEmpty = ontology.entityTypes.length === 0 && ontology.relationships.length === 0;
+  const copy =
+    languageMode === 'ko'
+      ? {
+          back: '뒤로',
+          name: '온톨로지 이름',
+          description: '설명',
+        }
+      : {
+          back: 'Back',
+          name: 'Ontology name',
+          description: 'Description',
+        };
 
   // Keyboard shortcuts: Cmd/Ctrl+Z → undo, Cmd/Ctrl+Shift+Z → redo
   useEffect(() => {
@@ -54,11 +67,11 @@ export function OntologyDesigner({ route, initialPreviewTab = 'graph' }: Ontolog
   }, [route.ontologyId, loadDraft]);
 
   return (
-    <div className={`designer-page ${darkMode ? '' : 'light-theme'}`}>
+    <div className={`designer-page ${darkMode ? '' : 'light-theme'} ${languageMode === 'ko' ? 'lang-ko' : 'lang-en'}`}>
       {/* Top bar */}
       <div className="designer-topbar">
         <button className="designer-back-btn" onClick={() => navigate({ page: 'home' })}>
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} /> {copy.back}
         </button>
         <div className="designer-meta-fields">
           <input
@@ -66,14 +79,14 @@ export function OntologyDesigner({ route, initialPreviewTab = 'graph' }: Ontolog
             type="text"
             value={ontology.name}
             onChange={(e) => setOntologyName(e.target.value)}
-            placeholder="Ontology name"
+            placeholder={copy.name}
           />
           <input
             className="designer-meta-desc"
             type="text"
             value={ontology.description}
             onChange={(e) => setOntologyDescription(e.target.value)}
-            placeholder="Description"
+            placeholder={copy.description}
           />
         </div>
         <DesignerToolbar />
