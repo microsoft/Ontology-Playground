@@ -13,6 +13,7 @@ import {
   DataSourcesModal,
   ImportExportModal,
   FabricExportModal,
+  GrafeoExportModal,
   GalleryModal,
   OntologySummaryModal,
   OntologyDesigner,
@@ -34,6 +35,7 @@ import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, Fi
 import './styles/app.css';
 
 const AI_BUILDER_ENABLED = import.meta.env.VITE_ENABLE_AI_BUILDER === 'true';
+const GRAFEO_EXPORT_ENABLED = import.meta.env.VITE_ENABLE_GRAFEO_EXPORT === 'true';
 
 const NLBuilderModal = AI_BUILDER_ENABLED
   ? lazy(() => import('./components/NLBuilderModal').then(m => ({ default: m.NLBuilderModal })))
@@ -50,6 +52,7 @@ function App() {
   const [showImportExport, setShowImportExport] = useState(false);
   const [showNLBuilder, setShowNLBuilder] = useState(false);
   const [showFabricExport, setShowFabricExport] = useState(false);
+  const [showGrafeoExport, setShowGrafeoExport] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [toast, setToast] = useState<{ message: string; icon: string } | null>(null);
   const [mobilePanel, setMobilePanel] = useState<'graph' | 'quests' | 'inspector' | 'query'>('graph');
@@ -252,12 +255,18 @@ function App() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showImportExport && <ImportExportModal onClose={() => setShowImportExport(false)} onFabricPush={() => { setShowImportExport(false); setShowFabricExport(true); }} />}
+        {showImportExport && <ImportExportModal onClose={() => setShowImportExport(false)} onFabricPush={() => { setShowImportExport(false); setShowFabricExport(true); }} onGrafeoPush={GRAFEO_EXPORT_ENABLED ? () => { setShowImportExport(false); setShowGrafeoExport(true); } : undefined} />}
       </AnimatePresence>
 
       <AnimatePresence>
         {showFabricExport && <FabricExportModal onClose={() => setShowFabricExport(false)} />}
       </AnimatePresence>
+
+      {GRAFEO_EXPORT_ENABLED && (
+        <AnimatePresence>
+          {showGrafeoExport && <GrafeoExportModal onClose={() => setShowGrafeoExport(false)} />}
+        </AnimatePresence>
+      )}
 
       <AnimatePresence>
         {showGallery && <GalleryModal onClose={closeGallery} />}
