@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { X, Upload, Download, FileJson, AlertCircle, CheckCircle, RotateCcw, Copy, FileText, Table, Share2, Cloud } from 'lucide-react';
+import { X, Upload, Download, FileJson, AlertCircle, CheckCircle, RotateCcw, Copy, FileText, Table, Share2, Cloud, Database } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { serializeToRDF } from '../lib/rdf/serializer';
 import { parseRDF, RDFParseError } from '../lib/rdf/parser';
@@ -11,6 +11,7 @@ const LEGACY_FORMATS_ENABLED = import.meta.env.VITE_ENABLE_LEGACY_FORMATS === 't
 interface ImportExportModalProps {
   onClose: () => void;
   onFabricPush?: () => void;
+  onGrafeoPush?: () => void;
 }
 
 const sampleSchema = `{
@@ -43,7 +44,7 @@ const sampleSchema = `{
   "bindings": []
 }`;
 
-export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalProps) {
+export function ImportExportModal({ onClose, onFabricPush, onGrafeoPush }: ImportExportModalProps) {
   const { currentOntology, dataBindings, loadOntology, resetToDefault, exportOntology } = useAppStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -492,6 +493,17 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
               >
                 <Cloud size={14} />
                 Push to Microsoft Fabric
+              </button>
+            )}
+
+            {onGrafeoPush && (
+              <button
+                className="btn btn-secondary"
+                onClick={onGrafeoPush}
+                style={{ width: '100%', marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+              >
+                <Database size={14} />
+                Push to Grafeo
               </button>
             )}
           </div>
