@@ -3,6 +3,12 @@ import type { Quest } from '../data/quests';
 import type { Ontology, DataBinding, EntityType, Relationship } from '../data/ontology';
 import { emptyBindings, emptyOntology } from '../data/ontology';
 import { generateQuestsForOntology } from '../data/questGenerator';
+import { emptyLlmCredentialInputs } from '../lib/llmConfig';
+import type {
+  LlmConfigurationStatusResponse,
+  LlmCredentialInputs,
+  LlmMode,
+} from '../types/llm';
 
 function getInitialDarkMode(): boolean {
   if (typeof window === 'undefined' || !('localStorage' in window)) {
@@ -17,7 +23,7 @@ function getInitialDarkMode(): boolean {
   }
 }
 
-function getInitialLlmChatMode(): 'auto' | 'openai' | 'azure_openai' {
+ function getInitialLlmChatMode(): LlmMode {
   if (typeof window === 'undefined' || !('localStorage' in window)) {
     return 'auto';
   }
@@ -60,7 +66,9 @@ interface AppState {
   showDataBindings: boolean;
   darkMode: boolean;
   languageMode: 'ko' | 'en';
-  llmChatMode: 'auto' | 'openai' | 'azure_openai';
+  llmChatMode: LlmMode;
+  llmConfigurationStatus: LlmConfigurationStatusResponse | null;
+  llmCredentialInputs: LlmCredentialInputs;
   workspaceTab: 'review' | 'approved-graph';
   graphViewMode: 'schema' | 'instance' | 'query';
   
@@ -89,7 +97,10 @@ interface AppState {
   toggleDataBindings: () => void;
   toggleDarkMode: () => void;
   setLanguageMode: (mode: 'ko' | 'en') => void;
-  setLlmChatMode: (mode: 'auto' | 'openai' | 'azure_openai') => void;
+  setLlmChatMode: (mode: LlmMode) => void;
+  setLlmConfigurationStatus: (status: LlmConfigurationStatusResponse | null) => void;
+  updateLlmCredentialInput: (field: keyof LlmCredentialInputs, value: string) => void;
+  clearLlmCredentialInputs: () => void;
   setWorkspaceTab: (tab: 'review' | 'approved-graph') => void;
   setGraphViewMode: (mode: 'schema' | 'instance' | 'query') => void;
   
@@ -123,6 +134,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   darkMode: getInitialDarkMode(),
   languageMode: getInitialLanguageMode(),
   llmChatMode: getInitialLlmChatMode(),
+  llmConfigurationStatus: null,
+  llmCredentialInputs: emptyLlmCredentialInputs(),
   workspaceTab: 'review',
   graphViewMode: 'schema',
   
@@ -215,6 +228,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     set({ llmChatMode: mode });
   },
+  setLlmConfigurationStatus: (status) => set({ llmConfigurationStatus: status }),
+  updateLlmCredentialInput: (field, value) =>
+    set((state) => ({
+      llmCredentialInputs: {
+        ...state.llmCredentialInputs,
+        [field]: value,
+      },
+    })),
+  clearLlmCredentialInputs: () => set({ llmCredentialInputs: emptyLlmCredentialInputs() }),
   setWorkspaceTab: (tab) => set({ workspaceTab: tab }),
   setGraphViewMode: (mode) => set({ graphViewMode: mode }),
   

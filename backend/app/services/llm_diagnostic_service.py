@@ -2,8 +2,15 @@ from __future__ import annotations
 
 from openai import OpenAI
 
-from app.models.contracts import LlmDiagnosticChatRequest, LlmDiagnosticChatResponse
-from app.services.neo4j_graphrag_config import get_neo4j_graphrag_config
+from app.models.contracts import (
+    LlmConfigurationStatusResponse,
+    LlmDiagnosticChatRequest,
+    LlmDiagnosticChatResponse,
+)
+from app.services.neo4j_graphrag_config import (
+    get_llm_configuration_status,
+    get_neo4j_graphrag_config,
+)
 from app.services.openai_error_utils import raise_openai_service_error
 
 
@@ -12,7 +19,10 @@ class LlmDiagnosticService:
         self,
         request: LlmDiagnosticChatRequest,
     ) -> LlmDiagnosticChatResponse:
-        config = get_neo4j_graphrag_config(request.llm_provider_override)
+        config = get_neo4j_graphrag_config(
+            request.llm_provider_override,
+            request.llm_credentials,
+        )
         api_key = (
             config.azure_openai_api_key if config.llm_provider == "azure_openai" else config.openai_api_key
         )
@@ -72,3 +82,6 @@ class LlmDiagnosticService:
             model=model_name,
             response_text=response.output_text.strip(),
         )
+
+    def get_status(self) -> LlmConfigurationStatusResponse:
+        return get_llm_configuration_status()

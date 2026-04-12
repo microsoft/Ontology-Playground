@@ -254,12 +254,33 @@ class ReferenceTextInput(BaseModel):
     media_type: str | None = None
 
 
+class LlmCredentialsInput(BaseModel):
+    openai_api_key: str | None = None
+    openai_model: str | None = None
+    azure_openai_api_key: str | None = None
+    azure_openai_endpoint: str | None = None
+    azure_openai_deployment: str | None = None
+
+
+class LlmProviderConfigurationStatus(BaseModel):
+    configured: bool
+    missing_fields: list[str] = Field(default_factory=list)
+    model: str | None = None
+
+
+class LlmConfigurationStatusResponse(BaseModel):
+    auto_resolves_to: str = Field(pattern="^(openai|azure_openai)$")
+    openai: LlmProviderConfigurationStatus
+    azure_openai: LlmProviderConfigurationStatus
+
+
 class OntologyDraftGenerationRequest(BaseModel):
     prompt: str = ""
     references: list[ReferenceTextInput] = Field(default_factory=list)
     current_ontology: OntologyInput | None = None
     system_prompt_override: str | None = None
     llm_provider_override: str | None = Field(default=None, pattern="^(auto|openai|azure_openai)$")
+    llm_credentials: LlmCredentialsInput | None = None
 
 
 class OntologyDraftGenerationResponse(BaseModel):
@@ -362,6 +383,7 @@ class NaturalLanguageCypherRequest(BaseModel):
     ontology: OntologyInput
     system_prompt_override: str | None = None
     llm_provider_override: str | None = Field(default=None, pattern="^(auto|openai|azure_openai)$")
+    llm_credentials: LlmCredentialsInput | None = None
 
 
 class NaturalLanguageCypherResponse(BaseModel):
@@ -373,6 +395,7 @@ class NaturalLanguageCypherResponse(BaseModel):
 class LlmDiagnosticChatRequest(BaseModel):
     prompt: str = Field(min_length=1)
     llm_provider_override: str | None = Field(default=None, pattern="^(auto|openai|azure_openai)$")
+    llm_credentials: LlmCredentialsInput | None = None
 
 
 class LlmDiagnosticChatResponse(BaseModel):
@@ -409,6 +432,7 @@ class OntologyGraphBuildRequest(BaseModel):
     source_documents: list[SourceDocumentInput] = Field(default_factory=list)
     extraction_prompt_override: str | None = None
     llm_provider_override: str | None = Field(default=None, pattern="^(auto|openai|azure_openai)$")
+    llm_credentials: LlmCredentialsInput | None = None
 
 
 class OntologyGraphBuildResponse(BaseModel):

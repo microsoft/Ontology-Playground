@@ -15,6 +15,7 @@ import type {
   SchemaSummary,
   SourceDocumentInput,
 } from '../types/alignment';
+import type { LlmCredentialInputs, LlmMode } from '../types/llm';
 
 const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
 const useLiveAlignmentApi = Boolean(alignmentApiBaseUrl);
@@ -189,7 +190,8 @@ export async function buildGraphFromOntology(
   editorId: string,
   sourceDocuments: SourceDocumentInput[] = [],
   extractionPromptOverride?: string | null,
-  llmProviderOverride?: 'auto' | 'openai' | 'azure_openai',
+  llmProviderOverride?: LlmMode,
+  llmCredentials?: Partial<LlmCredentialInputs> | null,
 ): Promise<OntologyGraphBuildResponse> {
   const payload: OntologyGraphBuildRequest = {
     editor_id: editorId,
@@ -197,6 +199,7 @@ export async function buildGraphFromOntology(
     source_documents: sourceDocuments,
     extraction_prompt_override: extractionPromptOverride ?? null,
     llm_provider_override: llmProviderOverride ?? null,
+    llm_credentials: llmCredentials ?? null,
   };
 
   if (useLiveAlignmentApi) {

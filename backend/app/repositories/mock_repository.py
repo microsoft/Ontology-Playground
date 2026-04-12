@@ -227,7 +227,10 @@ class MockAlignmentRepository:
         )
 
         runtime_status = get_extraction_runtime_status()
-        llm_config = get_neo4j_graphrag_config(request.llm_provider_override)
+        llm_config = get_neo4j_graphrag_config(
+            request.llm_provider_override,
+            request.llm_credentials,
+        )
         llm_ready = bool(
             (
                 llm_config.azure_openai_api_key
@@ -250,6 +253,7 @@ class MockAlignmentRepository:
                 source_documents=source_documents,
                 extraction_prompt_override=request.extraction_prompt_override,
                 llm_provider_override=request.llm_provider_override,
+                llm_credentials_override=request.llm_credentials,
             )
         else:
             queue_items = self.schema_guided_extractor.extract_candidates(

@@ -80,7 +80,10 @@ class OntologyGenerationService:
                 status_code=400,
             )
 
-        config = get_neo4j_graphrag_config(request.llm_provider_override)
+        config = get_neo4j_graphrag_config(
+            request.llm_provider_override,
+            request.llm_credentials,
+        )
         api_key = (
             config.azure_openai_api_key if config.llm_provider == "azure_openai" else config.openai_api_key
         )

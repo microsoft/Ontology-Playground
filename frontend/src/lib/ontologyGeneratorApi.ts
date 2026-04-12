@@ -1,4 +1,5 @@
 import type { Ontology } from '../data/ontology';
+import type { LlmCredentialInputs, LlmMode } from '../types/llm';
 
 const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
 
@@ -14,7 +15,8 @@ export interface OntologyDraftGenerationRequest {
   references: ReferenceTextInput[];
   current_ontology?: Ontology;
   system_prompt_override?: string;
-  llm_provider_override?: 'auto' | 'openai' | 'azure_openai';
+  llm_provider_override?: LlmMode;
+  llm_credentials?: Partial<LlmCredentialInputs> | null;
 }
 
 export interface OntologyDraftGenerationResponse {

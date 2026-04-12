@@ -1,4 +1,5 @@
 import type { Ontology } from '../data/ontology';
+import type { LlmCredentialInputs, LlmMode } from '../types/llm';
 
 const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
 
@@ -57,7 +58,8 @@ export async function translateNaturalLanguageQuery(payload: {
   prompt: string;
   ontology: Ontology;
   system_prompt_override?: string | null;
-  llm_provider_override?: 'auto' | 'openai' | 'azure_openai';
+  llm_provider_override?: LlmMode;
+  llm_credentials?: Partial<LlmCredentialInputs> | null;
 }): Promise<NaturalLanguageCypherResponse> {
   return requestJson<NaturalLanguageCypherResponse>('/api/query/translate-cypher', {
     method: 'POST',

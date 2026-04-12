@@ -228,6 +228,10 @@ GitHub Pages build so asset paths resolve correctly.
 | `VITE_GITHUB_CLIENT_ID` | *(empty)* | GitHub OAuth App client ID for one-click catalogue PRs ([setup guide](docs/github-oauth-setup.md)) |
 | `VITE_GITHUB_OAUTH_BASE` | *(empty)* | External OAuth proxy URL for GitHub Pages deployments (e.g. Cloudflare Worker URL) |
 
+If the alignment backend is reachable but its OpenAI or Azure OpenAI env vars are not
+configured, the Settings panel can send temporary in-memory credentials per tab
+session. Those values are not written to local storage and are cleared on refresh.
+
 ## Project Structure
 
 ```

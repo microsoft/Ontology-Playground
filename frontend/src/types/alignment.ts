@@ -1,3 +1,5 @@
+import type { LlmCredentialInputs, LlmMode } from './llm';
+
 export type SchemaStatus = 'DRAFT' | 'PUBLISHED' | 'DEPRECATED';
 
 export type QueueCandidateStatus =
@@ -230,7 +232,8 @@ export interface OntologyGraphBuildRequest {
   ontology: OntologyInput;
   source_documents?: SourceDocumentInput[];
   extraction_prompt_override?: string | null;
-  llm_provider_override?: 'auto' | 'openai' | 'azure_openai' | null;
+  llm_provider_override?: LlmMode | null;
+  llm_credentials?: Partial<LlmCredentialInputs> | null;
 }
 
 export interface OntologyGraphBuildResponse {

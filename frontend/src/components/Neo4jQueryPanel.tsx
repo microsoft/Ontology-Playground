@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Braces, Search, Settings2, Sparkles } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { useDesignerStore } from '../store/designerStore';
+import { buildLlmCredentialsPayload, validateLlmCredentials } from '../lib/llmConfig';
 import {
   runNeo4jQuery,
   translateNaturalLanguageQuery,
@@ -46,6 +47,8 @@ export function Neo4jQueryPanel() {
   const storedOntology = useAppStore((state) => state.currentOntology);
   const draftOntology = useDesignerStore((state) => state.ontology);
   const llmChatMode = useAppStore((state) => state.llmChatMode);
+  const llmConfigurationStatus = useAppStore((state) => state.llmConfigurationStatus);
+  const llmCredentialInputs = useAppStore((state) => state.llmCredentialInputs);
   const currentOntology =
     draftOntology.entityTypes.length > 0 || draftOntology.relationships.length > 0
       ? draftOntology
@@ -106,6 +109,16 @@ export function Neo4jQueryPanel() {
       return;
     }
 
+    const validationError = validateLlmCredentials(
+      llmChatMode,
+      llmConfigurationStatus,
+      llmCredentialInputs,
+    );
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setTranslating(true);
     setError(null);
     try {
@@ -114,6 +127,11 @@ export function Neo4jQueryPanel() {
         ontology: currentOntology,
         system_prompt_override: systemPrompt,
         llm_provider_override: llmChatMode,
+        llm_credentials: buildLlmCredentialsPayload(
+          llmChatMode,
+          llmConfigurationStatus,
+          llmCredentialInputs,
+        ),
       });
       setTranslation(response);
       setQuery(response.cypher);

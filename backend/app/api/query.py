@@ -8,6 +8,7 @@ from app.api.dependencies import (
     get_neo4j_query_service,
 )
 from app.models.contracts import (
+    LlmConfigurationStatusResponse,
     LlmDiagnosticChatRequest,
     LlmDiagnosticChatResponse,
     NaturalLanguageCypherRequest,
@@ -44,3 +45,10 @@ def diagnostic_chat(
     service: LlmDiagnosticService = Depends(get_llm_diagnostic_service),
 ) -> LlmDiagnosticChatResponse:
     return service.chat(request)
+
+
+@router.get("/llm-config-status", response_model=LlmConfigurationStatusResponse)
+def llm_config_status(
+    service: LlmDiagnosticService = Depends(get_llm_diagnostic_service),
+) -> LlmConfigurationStatusResponse:
+    return service.get_status()

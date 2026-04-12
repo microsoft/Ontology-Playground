@@ -8,6 +8,7 @@ import textwrap
 
 from app.core.errors import ServiceError
 from app.models.contracts import (
+    LlmCredentialsInput,
     OntologyInput,
     QueueCandidate,
     QueueCandidateStatus,
@@ -34,6 +35,7 @@ class Neo4jGraphRagAdapter:
         source_documents: list[SourceDocumentInput],
         extraction_prompt_override: str | None = None,
         llm_provider_override: str | None = None,
+        llm_credentials_override: LlmCredentialsInput | None = None,
     ) -> list[QueueCandidate]:
         status = get_extraction_runtime_status()
         if not status.neo4j_graphrag_available:
@@ -54,7 +56,7 @@ class Neo4jGraphRagAdapter:
                 },
             )
 
-        config = get_neo4j_graphrag_config(llm_provider_override)
+        config = get_neo4j_graphrag_config(llm_provider_override, llm_credentials_override)
         if config.llm_provider not in {"openai", "azure_openai"}:
             raise ServiceError(
                 error_code="NEO4J_GRAPHRAG_CONFIG_ERROR",

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { buildGraphFromOntology, fetchApprovedFacts, fetchInstanceGraph, fetchQueue, fetchSchemaVersion, lockCandidate, submitReview } from '../lib/alignmentApi';
 import { defaultSourceDocuments } from '../data/mockAlignment';
+import { buildLlmCredentialsPayload, validateLlmCredentials } from '../lib/llmConfig';
 import { useAppStore } from './appStore';
 import { useDesignerStore } from './designerStore';
 import type { Ontology } from '../data/ontology';
@@ -157,12 +158,28 @@ export const useAlignmentStore = create<AlignmentState>((set, get) => ({
   generateGraphFromCurrentOntology: async () => {
     set({ loading: true, error: null });
     try {
+      const appState = useAppStore.getState();
+      const validationError = validateLlmCredentials(
+        appState.llmChatMode,
+        appState.llmConfigurationStatus,
+        appState.llmCredentialInputs,
+      );
+      if (validationError) {
+        set({ loading: false, error: validationError });
+        return;
+      }
+
       const graphRun = await buildGraphFromOntology(
         resolveCurrentOntology(),
         get().reviewerId,
         get().sourceDocuments,
         get().extractionPromptOverride,
-        useAppStore.getState().llmChatMode,
+        appState.llmChatMode,
+        buildLlmCredentialsPayload(
+          appState.llmChatMode,
+          appState.llmConfigurationStatus,
+          appState.llmCredentialInputs,
+        ),
       );
       const activeCandidateId = graphRun.queue.items[0]?.candidate_id ?? null;
       const activeCandidate = graphRun.queue.items.find((item) => item.candidate_id === activeCandidateId);

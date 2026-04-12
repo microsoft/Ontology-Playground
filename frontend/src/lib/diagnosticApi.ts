@@ -1,3 +1,5 @@
+import type { LlmConfigurationStatusResponse, LlmCredentialInputs, LlmMode } from '../types/llm';
+
 const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
 
 export interface LlmDiagnosticChatResponse {
@@ -8,7 +10,8 @@ export interface LlmDiagnosticChatResponse {
 
 export async function sendDiagnosticChat(payload: {
   prompt: string;
-  llm_provider_override?: 'auto' | 'openai' | 'azure_openai';
+  llm_provider_override?: LlmMode;
+  llm_credentials?: Partial<LlmCredentialInputs> | null;
 }): Promise<LlmDiagnosticChatResponse> {
   if (!alignmentApiBaseUrl) {
     throw new Error('Alignment API base URL is not configured.');
@@ -34,4 +37,17 @@ export async function sendDiagnosticChat(payload: {
   }
 
   return response.json() as Promise<LlmDiagnosticChatResponse>;
+}
+
+export async function fetchLlmConfigurationStatus(): Promise<LlmConfigurationStatusResponse | null> {
+  if (!alignmentApiBaseUrl) {
+    return null;
+  }
+
+  const response = await fetch(`${alignmentApiBaseUrl}/api/query/llm-config-status`);
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return response.json() as Promise<LlmConfigurationStatusResponse>;
 }

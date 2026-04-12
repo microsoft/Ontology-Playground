@@ -738,6 +738,13 @@ body {
   color: var(--text-secondary);
 }
 
+.home-settings-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .home-settings-state {
   display: flex;
   flex-wrap: wrap;
@@ -776,6 +783,7 @@ body {
   color: var(--text-secondary);
 }
 
+.home-settings-diagnostic-field input,
 .home-settings-diagnostic-field textarea {
   width: 100%;
   border: 1px solid var(--border-color);
@@ -785,6 +793,16 @@ body {
   padding: 10px 12px;
   font: inherit;
   resize: vertical;
+}
+
+.home-settings-diagnostic-field input {
+  resize: none;
+}
+
+.home-settings-credentials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
 }
 
 .home-settings-diagnostic-actions {

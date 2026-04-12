@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Bot, FileUp, Settings2, Sparkles, Trash2 } from 'lucide-react';
 import { useDesignerStore } from '../../store/designerStore';
 import { generateOntologyDraft, type ReferenceTextInput } from '../../lib/ontologyGeneratorApi';
+import { buildLlmCredentialsPayload, validateLlmCredentials } from '../../lib/llmConfig';
 import { useAppStore } from '../../store/appStore';
 import { SystemPromptModal } from './SystemPromptModal';
 
@@ -63,6 +64,8 @@ async function toBase64(file: File): Promise<string> {
 
 export function OntologyCopilotPanel() {
   const llmChatMode = useAppStore((state) => state.llmChatMode);
+  const llmConfigurationStatus = useAppStore((state) => state.llmConfigurationStatus);
+  const llmCredentialInputs = useAppStore((state) => state.llmCredentialInputs);
   const languageMode = useAppStore((state) => state.languageMode);
   const ontology = useDesignerStore((state) => state.ontology);
   const loadDraft = useDesignerStore((state) => state.loadDraft);
@@ -172,6 +175,16 @@ export function OntologyCopilotPanel() {
       return;
     }
 
+    const validationError = validateLlmCredentials(
+      llmChatMode,
+      llmConfigurationStatus,
+      llmCredentialInputs,
+    );
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -181,6 +194,11 @@ export function OntologyCopilotPanel() {
         references,
         system_prompt_override: systemPrompt,
         llm_provider_override: llmChatMode,
+        llm_credentials: buildLlmCredentialsPayload(
+          llmChatMode,
+          llmConfigurationStatus,
+          llmCredentialInputs,
+        ),
         current_ontology:
           ontology.entityTypes.length > 0 || ontology.relationships.length > 0
             ? ontology
