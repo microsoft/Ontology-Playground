@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/basketball-player-evaluation-ontology/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/basketball-player-evaluation-ontology/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/">
+        <rdfs:label>Basketball Player Evaluation Ontology</rdfs:label>
+        <rdfs:comment>A practical ontology draft for modeling basketball players, their physical profiles, tactical roles, skill assessments, performance metrics, contracts, awards, injuries, and commercial relationships.</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/Player">
+        <rdfs:label>Player</rdfs:label>
+        <rdfs:comment>A basketball player as the core person entity being evaluated across physical, tactical, performance, economic, and narrative dimensions.</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#2563EB</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/Team">
+        <rdfs:label>Team</rdfs:label>
+        <rdfs:comment>A basketball team or franchise associated with players through contracts, draft events, and season performance.</rdfs:comment>
+        <ont:icon>🛡️</ont:icon>
+        <ont:color>#D97706</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment">
+        <rdfs:label>SkillAssessment</rdfs:label>
+        <rdfs:comment>A scouting or analytical assessment of a player&apos;s role, archetype, and basketball skill proficiency at a point in time.</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#10B981</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record">
+        <rdfs:label>InjuryRecord</rdfs:label>
+        <rdfs:comment>A record of a player&apos;s injury event, affected body part, severity, and missed time.</rdfs:comment>
+        <ont:icon>🩺</ont:icon>
+        <ont:color>#EF4444</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance">
+        <rdfs:label>SeasonPerformance</rdfs:label>
+        <rdfs:comment>A season-level record of a player&apos;s box score and advanced performance metrics.</rdfs:comment>
+        <ont:icon>📊</ont:icon>
+        <ont:color>#8B5CF6</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/Contract">
+        <rdfs:label>Contract</rdfs:label>
+        <rdfs:comment>A player contract record containing salary, duration, and option structure.</rdfs:comment>
+        <ont:icon>📄</ont:icon>
+        <ont:color>#06B6D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/Award">
+        <rdfs:label>Award</rdfs:label>
+        <rdfs:comment>An accolade or achievement record associated with a player for a season or event.</rdfs:comment>
+        <ont:icon>🏆</ont:icon>
+        <ont:color>#EAB308</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/Brand">
+        <rdfs:label>Brand</rdfs:label>
+        <rdfs:comment>A commercial brand associated with a player through sponsorship or endorsement.</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#EC4899</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_playerId">
+        <rdfs:label>playerId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique identifier for the player.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_fullName">
+        <rdfs:label>fullName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Player full name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_nationality">
+        <rdfs:label>nationality</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Player nationality or national team identity.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_heightCm">
+        <rdfs:label>heightCm</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Player height.</rdfs:comment>
+        <ont:unit>cm</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_weightKg">
+        <rdfs:label>weightKg</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Player weight.</rdfs:comment>
+        <ont:unit>kg</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_wingspanCm">
+        <rdfs:label>wingspanCm</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Player wingspan.</rdfs:comment>
+        <ont:unit>cm</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_standingReachCm">
+        <rdfs:label>standingReachCm</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Player standing reach.</rdfs:comment>
+        <ont:unit>cm</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_verticalLeapCm">
+        <rdfs:label>verticalLeapCm</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Vertical jump measurement.</rdfs:comment>
+        <ont:unit>cm</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_agilityScore">
+        <rdfs:label>agilityScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Agility rating or test result.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_sprintSpeedMps">
+        <rdfs:label>sprintSpeedMps</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Sprint speed measurement.</rdfs:comment>
+        <ont:unit>m/s</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_coreStrengthScore">
+        <rdfs:label>coreStrengthScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Core strength rating.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_durabilityScore">
+        <rdfs:label>durabilityScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Derived durability rating influenced by injury history.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_socialFollowers">
+        <rdfs:label>socialFollowers</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Approximate social media follower count.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player_jerseySalesRank">
+        <rdfs:label>jerseySalesRank</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Jersey sales ranking in the relevant market.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/team_teamId">
+        <rdfs:label>teamId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Team"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique identifier for the team.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/team_teamName">
+        <rdfs:label>teamName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Team"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Official team name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/team_teamAbbreviation">
+        <rdfs:label>teamAbbreviation</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Team"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Short team code or abbreviation.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/team_league">
+        <rdfs:label>league</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Team"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>League in which the team competes.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_assessmentId">
+        <rdfs:label>assessmentId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique identifier for the skill assessment.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_assessmentDate">
+        <rdfs:label>assessmentDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date of the assessment.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_primaryTraditionalPosition">
+        <rdfs:label>primaryTraditionalPosition</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Primary traditional basketball position.</rdfs:comment>
+        <ont:enumValues>PG,SG,SF,PF,C</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_primaryArchetype">
+        <rdfs:label>primaryArchetype</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Primary modern role-based archetype.</rdfs:comment>
+        <ont:enumValues>3&amp;D,Slasher,Stretch Big,Playmaking Hub,Other</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_spotUpShootingScore">
+        <rdfs:label>spotUpShootingScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Spot-up shooting proficiency.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_pullUpShootingScore">
+        <rdfs:label>pullUpShootingScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Pull-up shooting proficiency.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_offScreenShootingScore">
+        <rdfs:label>offScreenShootingScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Off-screen shooting proficiency.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_ballHandlingScore">
+        <rdfs:label>ballHandlingScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Ball handling proficiency.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_postUpScore">
+        <rdfs:label>postUpScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Post-up skill proficiency.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_passingSenseScore">
+        <rdfs:label>passingSenseScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Passing sense and creation ability.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_onBallDefenseScore">
+        <rdfs:label>onBallDefenseScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>On-ball defense proficiency.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_offBallDefenseScore">
+        <rdfs:label>offBallDefenseScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Off-ball or help defense proficiency.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_switchDefenseScore">
+        <rdfs:label>switchDefenseScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Ability to defend switches across matchups.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_boxOutReboundingScore">
+        <rdfs:label>boxOutReboundingScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Box-out and rebounding technique proficiency.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_basketballIqScore">
+        <rdfs:label>basketballIqScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Basketball IQ rating.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_courtVisionScore">
+        <rdfs:label>courtVisionScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Court vision rating.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_clutchFocusScore">
+        <rdfs:label>clutchFocusScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Concentration and composure in clutch situations.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/skill-assessment_roleNotes">
+        <rdfs:label>roleNotes</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Optional notes about role fit or tactical usage.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/injury-record_injuryId">
+        <rdfs:label>injuryId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique identifier for the injury record.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/injury-record_bodyPart">
+        <rdfs:label>bodyPart</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Primary body part affected.</rdfs:comment>
+        <ont:enumValues>Knee,Ankle,Foot,Hamstring,Back,Shoulder,Wrist,Hand,Other</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/injury-record_injuryType">
+        <rdfs:label>injuryType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Type or diagnosis of the injury.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/injury-record_severityLevel">
+        <rdfs:label>severityLevel</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Severity classification of the injury.</rdfs:comment>
+        <ont:enumValues>Minor,Moderate,Major,Season-ending</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/injury-record_injuryStartDate">
+        <rdfs:label>injuryStartDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date the injury period began.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/injury-record_injuryEndDate">
+        <rdfs:label>injuryEndDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date the injury period ended.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/injury-record_gamesMissed">
+        <rdfs:label>gamesMissed</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Number of games missed due to the injury.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_performanceId">
+        <rdfs:label>performanceId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique identifier for the performance record.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_seasonLabel">
+        <rdfs:label>seasonLabel</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Season label such as 2024-25.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_gamesPlayed">
+        <rdfs:label>gamesPlayed</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Games played in the season or team stint.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_pointsPerGame">
+        <rdfs:label>pointsPerGame</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Average points per game.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_reboundsPerGame">
+        <rdfs:label>reboundsPerGame</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Average rebounds per game.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_assistsPerGame">
+        <rdfs:label>assistsPerGame</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Average assists per game.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_stealsPerGame">
+        <rdfs:label>stealsPerGame</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Average steals per game.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_blocksPerGame">
+        <rdfs:label>blocksPerGame</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Average blocks per game.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_playerEfficiencyRating">
+        <rdfs:label>playerEfficiencyRating</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Player Efficiency Rating (PER).</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_trueShootingPct">
+        <rdfs:label>trueShootingPct</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>True Shooting Percentage.</rdfs:comment>
+        <ont:unit>%</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_usageRatePct">
+        <rdfs:label>usageRatePct</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Usage rate percentage.</rdfs:comment>
+        <ont:unit>%</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_winShares">
+        <rdfs:label>winShares</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Win Shares contribution.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance_onOffMargin">
+        <rdfs:label>onOffMargin</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>On-off court point margin impact.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract_contractId">
+        <rdfs:label>contractId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique identifier for the contract.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract_salaryAmount">
+        <rdfs:label>salaryAmount</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Salary amount for the contract or contract year.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract_currency">
+        <rdfs:label>currency</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Currency used for the salary amount.</rdfs:comment>
+        <ont:enumValues>USD,EUR,KRW,Other</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract_startDate">
+        <rdfs:label>startDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Contract start date.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract_endDate">
+        <rdfs:label>endDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Contract end date.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract_optionType">
+        <rdfs:label>optionType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Contract option structure.</rdfs:comment>
+        <ont:enumValues>None,Player,Team,Mutual</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract_optionYear">
+        <rdfs:label>optionYear</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Year in which the contract option applies, if any.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract_isActive">
+        <rdfs:label>isActive</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment>Whether the contract is currently active.</rdfs:comment>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/award_awardId">
+        <rdfs:label>awardId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Award"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique identifier for the award record.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/award_awardType">
+        <rdfs:label>awardType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Award"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Type of accolade or achievement.</rdfs:comment>
+        <ont:enumValues>MVP,All-NBA,All-Star,Championship,Defensive Player of the Year,Sixth Man,Most Improved,Other</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/award_seasonLabel">
+        <rdfs:label>seasonLabel</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Award"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Season or year associated with the award.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/award_awardDate">
+        <rdfs:label>awardDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Award"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date the award was granted, if known.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/award_awardDetail">
+        <rdfs:label>awardDetail</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Award"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Additional detail such as All-NBA team or championship context.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/brand_brandId">
+        <rdfs:label>brandId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Brand"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique identifier for the brand.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/brand_brandName">
+        <rdfs:label>brandName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Brand"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Commercial brand name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/brand_category">
+        <rdfs:label>category</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Brand"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Primary brand category.</rdfs:comment>
+        <ont:enumValues>Shoe,Apparel,Beverage,Technology,Other</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-has-skill-assessment">
+        <rdfs:label>hasSkillAssessment</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Skill-assessment"/>
+        <rdfs:comment>A player can have multiple skill assessments over time.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>player</ont:fromEntityId>
+        <ont:toEntityId>skill-assessment</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-has-injury-record">
+        <rdfs:label>hasInjuryRecord</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Injury-record"/>
+        <rdfs:comment>A player can have multiple injury records across a career.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>player</ont:fromEntityId>
+        <ont:toEntityId>injury-record</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-has-season-performance">
+        <rdfs:label>hasSeasonPerformance</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:comment>A player can have multiple season performance records.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>player</ont:fromEntityId>
+        <ont:toEntityId>season-performance</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/season-performance-for-team">
+        <rdfs:label>forTeam</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Season-performance"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Team"/>
+        <rdfs:comment>A season performance record is associated with a specific team stint.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>season-performance</ont:fromEntityId>
+        <ont:toEntityId>team</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-has-contract">
+        <rdfs:label>hasContract</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:comment>A player can sign multiple contracts over time.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>player</ont:fromEntityId>
+        <ont:toEntityId>contract</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/contract-with-team">
+        <rdfs:label>withTeam</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Contract"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Team"/>
+        <rdfs:comment>A contract is signed with a specific team.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>contract</ont:fromEntityId>
+        <ont:toEntityId>team</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-received-award">
+        <rdfs:label>receivedAward</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Award"/>
+        <rdfs:comment>A player can receive multiple awards or accolades.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>player</ont:fromEntityId>
+        <ont:toEntityId>award</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-sponsored-by">
+        <rdfs:label>sponsoredBy</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Brand"/>
+        <rdfs:comment>A player may have one or more sponsorship or endorsement relationships with brands.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>player</ont:fromEntityId>
+        <ont:toEntityId>brand</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-sponsored-by_sponsorshipType">
+        <rdfs:label>sponsorshipType</rdfs:label>
+        <rdfs:comment>Relationship attribute for sponsoredBy</rdfs:comment>
+        <ont:relationshipAttributeOf>player-sponsored-by</ont:relationshipAttributeOf>
+        <ont:attributeType>string</ont:attributeType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-sponsored-by_startDate">
+        <rdfs:label>startDate</rdfs:label>
+        <rdfs:comment>Relationship attribute for sponsoredBy</rdfs:comment>
+        <ont:relationshipAttributeOf>player-sponsored-by</ont:relationshipAttributeOf>
+        <ont:attributeType>date</ont:attributeType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-sponsored-by_endDate">
+        <rdfs:label>endDate</rdfs:label>
+        <rdfs:comment>Relationship attribute for sponsoredBy</rdfs:comment>
+        <ont:relationshipAttributeOf>player-sponsored-by</ont:relationshipAttributeOf>
+        <ont:attributeType>date</ont:attributeType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-sponsored-by_isSignatureLine">
+        <rdfs:label>isSignatureLine</rdfs:label>
+        <rdfs:comment>Relationship attribute for sponsoredBy</rdfs:comment>
+        <ont:relationshipAttributeOf>player-sponsored-by</ont:relationshipAttributeOf>
+        <ont:attributeType>boolean</ont:attributeType>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-drafted-by">
+        <rdfs:label>draftedBy</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Player"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/basketball-player-evaluation-ontology/Team"/>
+        <rdfs:comment>A player is drafted by a team, with draft rank and narrative context stored on the relationship.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>player</ont:fromEntityId>
+        <ont:toEntityId>team</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-drafted-by_draftYear">
+        <rdfs:label>draftYear</rdfs:label>
+        <rdfs:comment>Relationship attribute for draftedBy</rdfs:comment>
+        <ont:relationshipAttributeOf>player-drafted-by</ont:relationshipAttributeOf>
+        <ont:attributeType>integer</ont:attributeType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-drafted-by_draftPick">
+        <rdfs:label>draftPick</rdfs:label>
+        <rdfs:comment>Relationship attribute for draftedBy</rdfs:comment>
+        <ont:relationshipAttributeOf>player-drafted-by</ont:relationshipAttributeOf>
+        <ont:attributeType>integer</ont:attributeType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/basketball-player-evaluation-ontology/player-drafted-by_prospectTier">
+        <rdfs:label>prospectTier</rdfs:label>
+        <rdfs:comment>Relationship attribute for draftedBy</rdfs:comment>
+        <ont:relationshipAttributeOf>player-drafted-by</ont:relationshipAttributeOf>
+        <ont:attributeType>string</ont:attributeType>
+    </owl:DatatypeProperty>
+
+</rdf:RDF>

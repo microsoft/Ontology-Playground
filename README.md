@@ -1,294 +1,401 @@
-# Ontology Playground (Preview) ☕
+[English](./README.md) | [한국어](./README.ko.md)
 
-> Note: This project was developed with AI-assisted coding.
+# Oh-tology
 
-**[Try it live &#x2192; microsoft.github.io/Ontology-Playground](https://microsoft.github.io/Ontology-Playground/)**
+## Live Preview
 
-[![Ontology Playground screenshot](public/og-image.png)](https://microsoft.github.io/Ontology-Playground/)
+**Use the test deployment here:**
 
-A free, open-source web application for learning about ontologies and
-**Microsoft Fabric IQ**. Explore pre-built ontologies, design your own in a
-visual editor, export as RDF/XML, and share interactive diagrams — all from a
-fully static site with zero backend dependencies.
+**https://oh-tology-3jch-git-feature-tran-14bc44-woonsangb-5664s-projects.vercel.app/**
 
-![Microsoft Fabric](https://img.shields.io/badge/Microsoft-Fabric-0078D4?style=flat-square&logo=microsoft)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+This preview is intended to be usable right now.
 
-## Features
+Important:
 
-### Interactive Graph Exploration
+- The Settings tab now defaults `Alignment API Base URL` to `https://oh-tology.onrender.com`.
+- AI features still require your own LLM API key configuration.
+- Open **Settings** before testing AI features.
+- Choose `OpenAI` or `Azure OpenAI` in `Global LLM Mode`.
+- If the backend does not already have credentials for that provider, enter your key in the temporary credentials fields.
+- Temporary credentials and temporary backend URL overrides are kept only for the current tab session and are cleared on refresh.
 
-Cytoscape.js-powered graph that renders any ontology as an interactive
-node-and-edge diagram. Pan, zoom, click nodes to inspect properties, and use
-the live search bar to filter entities and relationships.
+Quick start:
 
-### Ontology Catalogue
+1. Open the preview link above.
+2. Open `Settings`.
+3. Confirm `Alignment API Base URL` is `https://oh-tology.onrender.com`.
+4. Select `OpenAI` or `Azure OpenAI`.
+5. Enter the required API key details.
+6. Run the diagnostic test or try ontology generation.
 
-A curated library of official and community-contributed ontologies spanning six
-domains (Retail, E-Commerce, Healthcare, Finance, Manufacturing, Education).
-Browse by category, search by name or tags, load any ontology with one click,
-and view its RDF source. Every ontology has a shareable deep link
-(`/#/catalogue/official/cosmic-coffee`).
+Oh-tology is a local workspace for designing ontologies, reviewing document-grounded extraction results, approving them into a graph, publishing to Neo4j, and querying the published graph.
 
-### Visual Ontology Designer
+[![Oh-tology workspace](docs/images/main_graph.png)](docs/images/main_graph.png)
 
-A full-screen, split-pane editor for creating ontologies from scratch or
-editing existing ones. Add entity types with icons, colors, and typed
-properties; define relationships with cardinalities; see a live graph preview
-that updates as you work. Includes undo/redo (50 levels), real-time validation,
-and export to RDF/XML or JSON.
+## Core Features
 
-### RDF Import & Export
+- Visual ontology design
+- AI-assisted ontology draft generation
+- Document-grounded entity and relationship extraction review
+- Instance graph generation from approved review results
+- Neo4j publish and Cypher / natural-language query flows
+- Local ontology and graph snapshot libraries
 
-Full round-trip support for RDF/XML (OWL classes, datatype properties, object
-properties with cardinalities). Import `.rdf` / `.owl` files, export in the
-exact format Microsoft Fabric IQ expects, and verify fidelity with automated
-round-trip tests.
+## Product Flow
 
-### One-Click Catalogue PR
+1. Generate an ontology draft from prompts or reference documents.
+2. Refine entities, properties, and relationships in the designer.
+3. Map attached documents onto the current ontology to produce extraction candidates.
+4. Review and approve candidates.
+5. Build the approved graph.
+6. Optionally publish to Neo4j and run queries.
 
-Sign in with GitHub (device flow) and submit your ontology to the community
-catalogue directly from the designer — the app forks the repo, creates a
-branch, commits the RDF + metadata, and opens a pull request automatically.
+## Screens
 
-### Embeddable Widget
+### Main Schema Workspace
 
-A self-contained JavaScript file (`ontology-embed.js`) that renders an
-interactive ontology viewer on any web page with a single `<script>` tag.
-Supports dark/light themes, multiple loading methods (catalogue ID, URL,
-inline base64), and click-to-inspect. See the
-[Embedding Guide](docs/embed-guide.md) for details.
+![Oh-tology main schema workspace](docs/images/main_schema.png)
 
-### Ontology School
+### AI Ontology Draft Generation
 
-A structured learning hub (`/#/learn`) with **8 courses** spanning conceptual
-learning paths and hands-on labs:
+![Ontology draft generation from prompt](docs/images/generate_ontology_with_prompt.png)
 
-- **Ontology Fundamentals** — 6 articles covering core concepts (What is an
-  Ontology? → RDF/OWL → Fabric IQ → Build Your First → Design Patterns →
-  Contributing)
-- **6 Domain Learning Paths** — Cosmic Coffee, E-Commerce, Finance, Healthcare,
-  Manufacturing, and University. Each path has 4 progressive articles that build
-  an ontology step-by-step, with live embedded graphs showing new entities at
-  each stage.
-- **IQ Lab: Retail Supply Chain** — A 7-step hands-on lab that builds a 15-entity
-  ontology from scratch (3 → 15 entities across 6 progressive catalogue entries).
+### Review and Graph Workflow
 
-Every article supports **presentation mode** (slides split at `##` headings)
-and includes **interactive quizzes** with instant feedback. Ontology embeds
-load live graphs from the catalogue with optional diff highlighting.
+![Review and graph workflow](docs/images/review_graph.png)
 
-### Quest System
+### Natural Language to Cypher
 
-Five progressive quests that guide users through ontology concepts with
-multi-step instructions, hints, progress bars, and achievement badges.
+![Natural language to Cypher query flow](docs/images/cypherquery.png)
 
-### Natural Language Query Playground
+## Repository Layout
 
-Type natural language questions ("Which customers placed orders?") and see how
-they map to ontology entities and relationships — a preview of Fabric IQ's
-NL2Ontology capability.
+```text
+Oh-tology/
+├── frontend/                     React + Vite app
+├── backend/                      FastAPI backend
+├── vendor/oh-graph-rag/          Vendored extraction runtime
+├── frontend/library/ontologies/  Local ontology snapshots
+├── frontend/library/graphs/      Local graph snapshots
+├── docs/                         Images and docs
+└── RUNNING.md                    Short operational notes
+```
 
-### Command Palette & Keyboard Shortcuts
+## Local Development
 
-Press `⌘K` / `Ctrl+K` anywhere to open a searchable command palette. Jump
-to the Catalogue, Designer, Ontology School, Import/Export, Help, and more without
-leaving the keyboard. Press `?` for quick help access. Arrow keys + Enter to
-navigate the palette.
-
-### Starter Templates
-
-The designer offers five domain templates (Retail, Healthcare, Finance, IoT,
-Education) so new users never face a blank page. Each template creates 3
-entities with properties and 2 relationships, ready to customise.
-
-### Interactive Onboarding Tour
-
-First-time visitors get a 5-step guided tour with a spotlight overlay that
-highlights the Header, Graph, Quests, Inspector, and Designer in sequence.
-Dismissable with a "don't show again" option persisted to `localStorage`.
-
-### Deep Linking & URL Routing
-
-Client-side hash routing with shareable URLs for every page:
-
-| Route | Page |
-|-------|------|
-| `/#/` | Home (default ontology) |
-| `/#/catalogue` | Ontology gallery |
-| `/#/catalogue/<source>/<slug>` | Specific ontology (e.g. `/#/catalogue/official/cosmic-coffee`) |
-| `/#/designer` | Visual designer |
-| `/#/designer/<source>/<slug>` | Designer with catalogue ontology (e.g. `/#/designer/official/cosmic-coffee`) |
-| `/#/learn` | Ontology School — course catalogue |
-| `/#/learn/<course>` | Course detail — article list |
-| `/#/learn/<course>/<article>` | Article view (with presentation mode) |
-
-## Official Ontologies
-
-| Domain | Ontology | Entities | Relationships |
-|--------|----------|----------|---------------|
-| Retail | Cosmic Coffee Company | 6 | 7 |
-| E-Commerce | Online Retail | 5 | 6 |
-| Healthcare | Clinical System | 5 | 6 |
-| Finance | Banking & Finance | 5 | 6 |
-| Manufacturing | Industry 4.0 | 5 | 5 |
-| Education | University System | 5 | 6 |
-
-## Getting Started
-
-### Prerequisites
+### Requirements
 
 - Node.js 18+
 - npm 9+
+- Python 3.10+
+- Optional: Neo4j
+- Optional: OpenAI or Azure OpenAI credentials
 
-### Installation
+### Backend
 
 ```bash
-cd Ontology-Playground
+cd backend
+python -m venv .venv310
+.venv310/bin/pip install -e .
+cp .env.example .env
+```
+
+Minimal example:
+
+```env
+ALIGNMENT_EXTRACTION_MODE=neo4j_graphrag
+ALIGNMENT_LLM_PROVIDER=openai
+ALIGNMENT_OPENAI_API_KEY=...
+NEO4J_URI=neo4j://localhost:7687
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=...
+NEO4J_DATABASE=neo4j
+```
+
+Run:
+
+```bash
+cd backend
+set -a
+source .env
+set +a
+.venv310/bin/python -m uvicorn app.main:app --reload
+```
+
+Backend: `http://127.0.0.1:8000`
+
+### Frontend
+
+```bash
+cd frontend
 npm install
+VITE_ALIGNMENT_API_BASE_URL=http://127.0.0.1:8000 npm run dev
 ```
 
-### Development
+Frontend: `http://127.0.0.1:5173`
+
+## Docker
+
+Docker environment variables directly control backend runtime behavior. In practice, LLM settings affect ontology draft generation, extraction, and natural-language-to-Cypher translation.
+
+### Local Full Stack
+
+Included services:
+
+- `frontend` on `http://localhost:8080`
+- `backend` on `http://localhost:8000`
+- `neo4j` on `http://localhost:7474` and `localhost:7687`
+
+Run:
 
 ```bash
+cp .env.docker.example .env
+docker compose up --build
+```
+
+The default `.env.docker.example` assumes:
+
+- `ALIGNMENT_EXTRACTION_MODE=auto`
+- `ALIGNMENT_LLM_PROVIDER=auto`
+- local containerized Neo4j
+- OpenAI or Azure OpenAI credentials supplied by the operator
+
+Recommended setup order:
+
+1. `cp .env.docker.example .env`
+2. Decide whether you want OpenAI or Azure OpenAI.
+3. Fill only the relevant credential block.
+4. Run `docker compose up --build`
+
+Check:
+
+- frontend: `http://localhost:8080`
+- backend health: `http://localhost:8000/health`
+- Neo4j Browser: `http://localhost:7474`
+
+OpenAI example:
+
+```env
+ALIGNMENT_LLM_PROVIDER=openai
+ALIGNMENT_OPENAI_API_KEY=<openai-api-key>
+ALIGNMENT_OPENAI_MODEL=gpt-5.4
+```
+
+Azure OpenAI example:
+
+```env
+ALIGNMENT_LLM_PROVIDER=azure_openai
+AZURE_OPENAI_KEY=<azure-openai-key>
+AZURE_OPENAI_ENDPOINT=https://<resource>.openai.azure.com/openai/v1
+AZURE_OPENAI_DEPLOYMENT=<deployment-name>
+```
+
+### Company Neo4j Deployment
+
+Use [docker-compose.company.yml](docker-compose.company.yml) when the backend should connect directly to an external Neo4j instance instead of starting a local Neo4j container.
+
+Required assets:
+
+- Docker image tar archive
+- [docker-compose.company.yml](docker-compose.company.yml)
+- `.env`
+- Recommended: `frontend/library/`
+
+`.env` example:
+
+```env
+NEO4J_URI=bolt://<company-neo4j-host>:7687
+NEO4J_USERNAME=<username>
+NEO4J_PASSWORD=<password>
+NEO4J_DATABASE=neo4j
+ALIGNMENT_LLM_PROVIDER=azure_openai
+AZURE_OPENAI_KEY=...
+AZURE_OPENAI_ENDPOINT=https://<resource>.openai.azure.com/openai/v1
+AZURE_OPENAI_DEPLOYMENT=<deployment-name>
+```
+
+Run:
+
+```bash
+docker compose -f docker-compose.company.yml up -d
+```
+
+## LLM Behavior
+
+### What does `ALIGNMENT_LLM_PROVIDER=auto` actually do?
+
+`auto` does not choose based on latency, quality, or connection tests. It chooses based on environment variables only.
+
+If all three Azure settings are present:
+
+- `AZURE_OPENAI_KEY` or `AZURE_OPENAI_API_KEY`
+- `AZURE_OPENAI_ENDPOINT`
+- `AZURE_OPENAI_DEPLOYMENT`
+
+then the backend resolves `auto -> azure_openai`.
+
+If any of those are missing, it resolves `auto -> openai`.
+For OpenAI, the backend uses `ALIGNMENT_OPENAI_API_KEY` or `OPENAI_API_KEY`.
+
+So `auto` means "prefer Azure when Azure is fully configured, otherwise use OpenAI", not "pick whichever works best right now".
+
+### Which feature uses which path?
+
+- Ontology draft generation:
+  `POST /api/ontology/generate-draft`
+  Uses OpenAI Responses API with strict JSON schema output.
+- Run extraction:
+  `POST /api/graph/generate`
+  Normalizes the ontology and produces an extraction review queue.
+- Natural language to Cypher:
+  `POST /api/query/translate-cypher`
+  Uses strict JSON schema output for `{ cypher, summary, warnings }`.
+- Cypher execution:
+  `POST /api/query/neo4j`
+  Runs directly against Neo4j. This step does not use OpenAI.
+
+### `ALIGNMENT_EXTRACTION_MODE`
+
+- `neo4j_graphrag`
+  Forces LLM-based extraction. If runtime dependencies, credentials, endpoint, or deployment are missing, the request fails clearly.
+- `auto`
+  Default mode.
+  If the `neo4j-graphrag` runtime and the selected provider configuration are both ready, LLM extraction is used.
+  Otherwise the backend falls back to heuristic/schema-guided extraction.
+
+This makes `auto` the safer mode for mixed local environments, while `neo4j_graphrag` is better when you explicitly want strict LLM extraction behavior.
+
+### Debugging Tips
+
+- Draft generation fails:
+  Check the `/api/ontology/generate-draft` response body and `details.error` in the browser Network tab.
+- Extraction looks too simple:
+  Verify `ALIGNMENT_EXTRACTION_MODE` and the selected provider credentials.
+- Natural-language to Cypher fails:
+  Check `/api/query/translate-cypher` and inspect `details.error`.
+- Cypher execution fails:
+  Verify `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`, and `NEO4J_DATABASE`.
+
+## Docker Image Transfer
+
+### 1. Build Linux `amd64` Images
+
+If the target server is a typical x86 Linux host, `linux/amd64` is the safest target platform.
+
+```bash
+docker buildx build --platform linux/amd64 -t oh-tology-frontend:latest -f frontend/Dockerfile . --load
+docker buildx build --platform linux/amd64 -t oh-tology-backend:latest -f backend/Dockerfile . --load
+docker save -o oh-tology-images-linux-amd64.tar oh-tology-frontend:latest oh-tology-backend:latest
+```
+
+Check:
+
+```bash
+docker image inspect oh-tology-frontend:latest --format '{{.Architecture}}/{{.Os}}'
+docker image inspect oh-tology-backend:latest --format '{{.Architecture}}/{{.Os}}'
+```
+
+### 2. Files to Transfer
+
+For runtime only:
+
+- `oh-tology-images-linux-amd64.tar`
+- [docker-compose.company.yml](docker-compose.company.yml)
+- `.env`
+
+To keep existing library data as well:
+
+- `frontend/library/`
+
+### 3. Run on the Target Server
+
+If containers already exist, stop them first.
+
+```bash
+docker compose -f docker-compose.company.yml down
+docker load -i oh-tology-images-linux-amd64.tar
+mkdir -p frontend/library/ontologies frontend/library/graphs
+docker compose -f docker-compose.company.yml up -d
+```
+
+Check:
+
+```bash
+docker compose -f docker-compose.company.yml ps
+curl http://localhost:8000/health
+```
+
+### 4. `scp` Example
+
+```bash
+scp oh-tology-images-linux-amd64.tar user@host:/path/to/deploy/
+scp docker-compose.company.yml user@host:/path/to/deploy/
+scp .env user@host:/path/to/deploy/
+rsync -av frontend/library/ user@host:/path/to/deploy/frontend/library/
+```
+
+## Useful Commands
+
+### Frontend
+
+```bash
+cd frontend
 npm run dev
-```
-
-Visit http://localhost:5173
-
-### Production Build
-
-```bash
+npm test
 npm run build
+npm run lint
 ```
 
-The build pipeline compiles the catalogue, compiles learning content markdown,
-type-checks, bundles the app, and builds the embed widget. Output is in
-`build/`.
-
-### Running Tests
+### Backend
 
 ```bash
-npm test            # single run
-npm run test:watch  # watch mode
+cd backend
+.venv310/bin/pytest tests/test_api.py -q
 ```
 
-## Deployment
+## Key Environment Variables
 
-### Azure Static Web Apps (primary)
+### Frontend
 
-The repo ships with a GitHub Actions workflow that deploys to Azure SWA on every
-push to `main`.
+| Variable | Description |
+| --- | --- |
+| `VITE_ALIGNMENT_API_BASE_URL` | FastAPI backend base URL |
+| `VITE_ENABLE_AI_BUILDER` | AI ontology draft UI toggle |
+| `VITE_BASE_PATH` | Vite base path |
+| `VITE_GITHUB_CLIENT_ID` | GitHub OAuth client id |
+| `VITE_GITHUB_OAUTH_BASE` | External OAuth proxy base |
 
-1. Create a Static Web App in the Azure Portal
-2. Connect to your GitHub repository
-3. Copy the deployment token and add it as the GitHub secret
-   `AZURE_STATIC_WEB_APPS_API_TOKEN_GREEN_PLANT_0BB1D2910`
-4. Push to `main` — the workflow at
-   `.github/workflows/azure-static-web-apps-green-plant-0bb1d2910.yml` handles
-   the rest
-5. PR preview environments are created automatically for pull requests
+### Backend
 
-### GitHub Pages (for forks)
+| Variable | Description |
+| --- | --- |
+| `ALIGNMENT_EXTRACTION_MODE` | `auto` or `neo4j_graphrag`; `auto` uses LLM extraction only when runtime and provider config are ready |
+| `ALIGNMENT_NEO4J_GRAPHRAG_SRC` | Optional source override |
+| `ALIGNMENT_LLM_PROVIDER` | `auto`, `openai`, `azure_openai`; `auto` prefers Azure only when all Azure env vars are present |
+| `ALIGNMENT_OPENAI_API_KEY` | OpenAI API key |
+| `OPENAI_API_KEY` | OpenAI fallback env |
+| `ALIGNMENT_OPENAI_MODEL` | OpenAI model |
+| `ALIGNMENT_OPENAI_BASE_URL` | Optional OpenAI-compatible base URL |
+| `ALIGNMENT_OPENAI_ORGANIZATION` | Optional OpenAI org |
+| `ALIGNMENT_OPENAI_PROJECT` | Optional OpenAI project |
+| `AZURE_OPENAI_KEY` | Azure OpenAI key |
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI key alias |
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI OpenAI-compatible base URL, ideally ending with `/openai/v1` |
+| `AZURE_OPENAI_DEPLOYMENT` | Azure deployment name |
+| `ALIGNMENT_OPENAI_TIMEOUT_SECONDS` | LLM request timeout in seconds |
+| `ALIGNMENT_LLM_TEMPERATURE` | Extraction temperature |
+| `ALIGNMENT_EXTRACTION_MAX_CONCURRENCY` | Extraction concurrency |
+| `NEO4J_URI` | Neo4j URI |
+| `NEO4J_USERNAME` | Neo4j username |
+| `NEO4J_PASSWORD` | Neo4j password |
+| `NEO4J_DATABASE` | Neo4j database |
 
-A separate workflow deploys to GitHub Pages, ideal for forks:
+## References
 
-1. Fork this repo
-2. Go to **Settings → Pages → Source** and select **GitHub Actions**
-3. Push to `main` — the workflow at `.github/workflows/deploy-ghpages.yml`
-   builds and deploys to `https://<username>.github.io/<repo-name>/`
+- [RUNNING.md](RUNNING.md)
+- [backend/README.md](backend/README.md)
+- [frontend/README.md](frontend/README.md)
 
-The `VITE_BASE_PATH` env var is set automatically to `/<repo-name>/` during the
-GitHub Pages build so asset paths resolve correctly.
+## Vendored Dependency
 
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `VITE_ENABLE_AI_BUILDER` | `false` | Enable the Azure OpenAI ontology builder |
-| `VITE_ENABLE_LEGACY_FORMATS` | `false` | Enable JSON/YAML/CSV import/export formats |
-| `VITE_BASE_PATH` | `/` | Base path for the app (set automatically for GitHub Pages) |
-| `VITE_GITHUB_CLIENT_ID` | *(empty)* | GitHub OAuth App client ID for one-click catalogue PRs ([setup guide](docs/github-oauth-setup.md)) |
-| `VITE_GITHUB_OAUTH_BASE` | *(empty)* | External OAuth proxy URL for GitHub Pages deployments (e.g. Cloudflare Worker URL) |
-
-## Project Structure
-
-```
-Ontology-Playground/
-├── src/
-│   ├── components/       # React components (graph, designer, modals, learn page)
-│   ├── data/             # Ontology model, query engine, quest definitions
-│   ├── lib/              # Router, RDF parser/serializer, catalogue helpers
-│   ├── store/            # Zustand stores (app state, designer state)
-│   ├── styles/           # CSS (Microsoft Fluent-inspired dark/light themes)
-│   └── types/            # TypeScript type definitions
-├── catalogue/            # Official + community ontology RDF files
-├── content/learn/        # Course directories with markdown articles, quizzes, and metadata
-├── scripts/              # Build-time compilers (catalogue, learning content)
-├── api/                  # Azure Functions backend (optional, for AI builder)
-├── docs/                 # Guides and documentation
-├── public/               # Static assets (compiled catalogue.json, learn.json)
-└── .github/workflows/    # CI/CD (Azure SWA + GitHub Pages)
-```
-
-## Documentation
-
-| Guide | Description |
-|-------|-------------|
-| [Ontology Authoring Guide](docs/authoring-guide.md) | How to create ontologies that work well in the Playground — field-by-field reference, best practices, and a step-by-step walkthrough |
-| [Embedding Guide](docs/embed-guide.md) | How to embed interactive ontology widgets on any web page |
-| [GitHub OAuth Setup](docs/github-oauth-setup.md) | How to configure GitHub OAuth for one-click catalogue PRs |
-| [Embed Security](docs/embed-security.md) | Security model for the embeddable widget |
-| [Learning Content Guide](docs/learn-content-guide.md) | How to author courses, articles, quizzes, and ontology embeds for the Ontology School |
-| [Ontology School Review Workflow](docs/ontology-school-review-workflow.md) | Human review and approval flow for school lesson content |
-
-## AI Agent Quickstart
-
-This repository includes Copilot customization files so agents can reliably:
-
-- import customer RDF/OWL into catalogue-ready format
-- generate progressive Ontology School modules
-- route lesson content through human review workflows
-
-Included assets:
-
-- Skills:
-   - `.github/skills/ontology-catalog-import/`
-   - `.github/skills/ontology-school-path-generator/`
-- RDF intake instruction:
-   - `.github/instructions/rdf-intake.instructions.md`
-- Reusable prompts:
-   - `.github/prompts/import-rdf-to-catalog.prompt.md`
-   - `.github/prompts/generate-ontology-school-module.prompt.md`
-
-Recommended validation before merge:
-
-```bash
-npm run qa:tutorial-content
-npm run build
-```
-
-## Technologies
-
-- **React 19** + TypeScript 5
-- **Cytoscape.js** — Graph visualization (fcose layout)
-- **Zustand** — State management
-- **Vite** — Build tool
-- **Framer Motion** — Animations
-- **Lucide Icons** — Icon library
-- **marked** — Markdown compilation (build-time)
-
-## Learn More
-
-- [Microsoft Fabric IQ Ontology Documentation](https://learn.microsoft.com/en-us/fabric/iq/ontology/overview)
-- [Azure Static Web Apps](https://docs.microsoft.com/azure/static-web-apps/)
-
-## License
-
-MIT
-
-## Trademark Notice
-
-Trademarks This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow Microsoft’s Trademark & Brand Guidelines. Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party’s policies.
+`vendor/oh-graph-rag/` is a vendored copy of the extraction runtime. Preserve license and notice files when updating it.

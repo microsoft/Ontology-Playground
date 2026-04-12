@@ -1,0 +1,819 @@
+{
+  "name": "Basketball Player Evaluation Ontology",
+  "description": "A practical ontology draft for modeling basketball players, their physical profiles, tactical roles, skill assessments, performance metrics, contracts, awards, injuries, and commercial relationships.",
+  "entityTypes": [
+    {
+      "id": "player",
+      "name": "Player",
+      "description": "A basketball player as the core person entity being evaluated across physical, tactical, performance, economic, and narrative dimensions.",
+      "properties": [
+        {
+          "name": "playerId",
+          "type": "string",
+          "isIdentifier": true,
+          "unit": null,
+          "values": null,
+          "description": "Unique identifier for the player."
+        },
+        {
+          "name": "fullName",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Player full name."
+        },
+        {
+          "name": "nationality",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Player nationality or national team identity."
+        },
+        {
+          "name": "heightCm",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": "cm",
+          "values": null,
+          "description": "Player height."
+        },
+        {
+          "name": "weightKg",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": "kg",
+          "values": null,
+          "description": "Player weight."
+        },
+        {
+          "name": "wingspanCm",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": "cm",
+          "values": null,
+          "description": "Player wingspan."
+        },
+        {
+          "name": "standingReachCm",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": "cm",
+          "values": null,
+          "description": "Player standing reach."
+        },
+        {
+          "name": "verticalLeapCm",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": "cm",
+          "values": null,
+          "description": "Vertical jump measurement."
+        },
+        {
+          "name": "agilityScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Agility rating or test result."
+        },
+        {
+          "name": "sprintSpeedMps",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": "m/s",
+          "values": null,
+          "description": "Sprint speed measurement."
+        },
+        {
+          "name": "coreStrengthScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Core strength rating."
+        },
+        {
+          "name": "durabilityScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Derived durability rating influenced by injury history."
+        },
+        {
+          "name": "socialFollowers",
+          "type": "integer",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Approximate social media follower count."
+        },
+        {
+          "name": "jerseySalesRank",
+          "type": "integer",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Jersey sales ranking in the relevant market."
+        }
+      ],
+      "icon": "👤",
+      "color": "#2563EB"
+    },
+    {
+      "id": "team",
+      "name": "Team",
+      "description": "A basketball team or franchise associated with players through contracts, draft events, and season performance.",
+      "properties": [
+        {
+          "name": "teamId",
+          "type": "string",
+          "isIdentifier": true,
+          "unit": null,
+          "values": null,
+          "description": "Unique identifier for the team."
+        },
+        {
+          "name": "teamName",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Official team name."
+        },
+        {
+          "name": "teamAbbreviation",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Short team code or abbreviation."
+        },
+        {
+          "name": "league",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "League in which the team competes."
+        }
+      ],
+      "icon": "🛡️",
+      "color": "#D97706"
+    },
+    {
+      "id": "skill-assessment",
+      "name": "SkillAssessment",
+      "description": "A scouting or analytical assessment of a player's role, archetype, and basketball skill proficiency at a point in time.",
+      "properties": [
+        {
+          "name": "assessmentId",
+          "type": "string",
+          "isIdentifier": true,
+          "unit": null,
+          "values": null,
+          "description": "Unique identifier for the skill assessment."
+        },
+        {
+          "name": "assessmentDate",
+          "type": "date",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Date of the assessment."
+        },
+        {
+          "name": "primaryTraditionalPosition",
+          "type": "enum",
+          "isIdentifier": false,
+          "unit": null,
+          "values": [
+            "PG",
+            "SG",
+            "SF",
+            "PF",
+            "C"
+          ],
+          "description": "Primary traditional basketball position."
+        },
+        {
+          "name": "primaryArchetype",
+          "type": "enum",
+          "isIdentifier": false,
+          "unit": null,
+          "values": [
+            "3&D",
+            "Slasher",
+            "Stretch Big",
+            "Playmaking Hub",
+            "Other"
+          ],
+          "description": "Primary modern role-based archetype."
+        },
+        {
+          "name": "spotUpShootingScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Spot-up shooting proficiency."
+        },
+        {
+          "name": "pullUpShootingScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Pull-up shooting proficiency."
+        },
+        {
+          "name": "offScreenShootingScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Off-screen shooting proficiency."
+        },
+        {
+          "name": "ballHandlingScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Ball handling proficiency."
+        },
+        {
+          "name": "postUpScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Post-up skill proficiency."
+        },
+        {
+          "name": "passingSenseScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Passing sense and creation ability."
+        },
+        {
+          "name": "onBallDefenseScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "On-ball defense proficiency."
+        },
+        {
+          "name": "offBallDefenseScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Off-ball or help defense proficiency."
+        },
+        {
+          "name": "switchDefenseScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Ability to defend switches across matchups."
+        },
+        {
+          "name": "boxOutReboundingScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Box-out and rebounding technique proficiency."
+        },
+        {
+          "name": "basketballIqScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Basketball IQ rating."
+        },
+        {
+          "name": "courtVisionScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Court vision rating."
+        },
+        {
+          "name": "clutchFocusScore",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Concentration and composure in clutch situations."
+        },
+        {
+          "name": "roleNotes",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Optional notes about role fit or tactical usage."
+        }
+      ],
+      "icon": "📦",
+      "color": "#10B981"
+    },
+    {
+      "id": "injury-record",
+      "name": "InjuryRecord",
+      "description": "A record of a player's injury event, affected body part, severity, and missed time.",
+      "properties": [
+        {
+          "name": "injuryId",
+          "type": "string",
+          "isIdentifier": true,
+          "unit": null,
+          "values": null,
+          "description": "Unique identifier for the injury record."
+        },
+        {
+          "name": "bodyPart",
+          "type": "enum",
+          "isIdentifier": false,
+          "unit": null,
+          "values": [
+            "Knee",
+            "Ankle",
+            "Foot",
+            "Hamstring",
+            "Back",
+            "Shoulder",
+            "Wrist",
+            "Hand",
+            "Other"
+          ],
+          "description": "Primary body part affected."
+        },
+        {
+          "name": "injuryType",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Type or diagnosis of the injury."
+        },
+        {
+          "name": "severityLevel",
+          "type": "enum",
+          "isIdentifier": false,
+          "unit": null,
+          "values": [
+            "Minor",
+            "Moderate",
+            "Major",
+            "Season-ending"
+          ],
+          "description": "Severity classification of the injury."
+        },
+        {
+          "name": "injuryStartDate",
+          "type": "date",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Date the injury period began."
+        },
+        {
+          "name": "injuryEndDate",
+          "type": "date",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Date the injury period ended."
+        },
+        {
+          "name": "gamesMissed",
+          "type": "integer",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Number of games missed due to the injury."
+        }
+      ],
+      "icon": "🩺",
+      "color": "#EF4444"
+    },
+    {
+      "id": "season-performance",
+      "name": "SeasonPerformance",
+      "description": "A season-level record of a player's box score and advanced performance metrics.",
+      "properties": [
+        {
+          "name": "performanceId",
+          "type": "string",
+          "isIdentifier": true,
+          "unit": null,
+          "values": null,
+          "description": "Unique identifier for the performance record."
+        },
+        {
+          "name": "seasonLabel",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Season label such as 2024-25."
+        },
+        {
+          "name": "gamesPlayed",
+          "type": "integer",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Games played in the season or team stint."
+        },
+        {
+          "name": "pointsPerGame",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Average points per game."
+        },
+        {
+          "name": "reboundsPerGame",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Average rebounds per game."
+        },
+        {
+          "name": "assistsPerGame",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Average assists per game."
+        },
+        {
+          "name": "stealsPerGame",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Average steals per game."
+        },
+        {
+          "name": "blocksPerGame",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Average blocks per game."
+        },
+        {
+          "name": "playerEfficiencyRating",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Player Efficiency Rating (PER)."
+        },
+        {
+          "name": "trueShootingPct",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": "%",
+          "values": null,
+          "description": "True Shooting Percentage."
+        },
+        {
+          "name": "usageRatePct",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": "%",
+          "values": null,
+          "description": "Usage rate percentage."
+        },
+        {
+          "name": "winShares",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Win Shares contribution."
+        },
+        {
+          "name": "onOffMargin",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "On-off court point margin impact."
+        }
+      ],
+      "icon": "📊",
+      "color": "#8B5CF6"
+    },
+    {
+      "id": "contract",
+      "name": "Contract",
+      "description": "A player contract record containing salary, duration, and option structure.",
+      "properties": [
+        {
+          "name": "contractId",
+          "type": "string",
+          "isIdentifier": true,
+          "unit": null,
+          "values": null,
+          "description": "Unique identifier for the contract."
+        },
+        {
+          "name": "salaryAmount",
+          "type": "decimal",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Salary amount for the contract or contract year."
+        },
+        {
+          "name": "currency",
+          "type": "enum",
+          "isIdentifier": false,
+          "unit": null,
+          "values": [
+            "USD",
+            "EUR",
+            "KRW",
+            "Other"
+          ],
+          "description": "Currency used for the salary amount."
+        },
+        {
+          "name": "startDate",
+          "type": "date",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Contract start date."
+        },
+        {
+          "name": "endDate",
+          "type": "date",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Contract end date."
+        },
+        {
+          "name": "optionType",
+          "type": "enum",
+          "isIdentifier": false,
+          "unit": null,
+          "values": [
+            "None",
+            "Player",
+            "Team",
+            "Mutual"
+          ],
+          "description": "Contract option structure."
+        },
+        {
+          "name": "optionYear",
+          "type": "integer",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Year in which the contract option applies, if any."
+        },
+        {
+          "name": "isActive",
+          "type": "boolean",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Whether the contract is currently active."
+        }
+      ],
+      "icon": "📄",
+      "color": "#06B6D4"
+    },
+    {
+      "id": "award",
+      "name": "Award",
+      "description": "An accolade or achievement record associated with a player for a season or event.",
+      "properties": [
+        {
+          "name": "awardId",
+          "type": "string",
+          "isIdentifier": true,
+          "unit": null,
+          "values": null,
+          "description": "Unique identifier for the award record."
+        },
+        {
+          "name": "awardType",
+          "type": "enum",
+          "isIdentifier": false,
+          "unit": null,
+          "values": [
+            "MVP",
+            "All-NBA",
+            "All-Star",
+            "Championship",
+            "Defensive Player of the Year",
+            "Sixth Man",
+            "Most Improved",
+            "Other"
+          ],
+          "description": "Type of accolade or achievement."
+        },
+        {
+          "name": "seasonLabel",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Season or year associated with the award."
+        },
+        {
+          "name": "awardDate",
+          "type": "date",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Date the award was granted, if known."
+        },
+        {
+          "name": "awardDetail",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Additional detail such as All-NBA team or championship context."
+        }
+      ],
+      "icon": "🏆",
+      "color": "#EAB308"
+    },
+    {
+      "id": "brand",
+      "name": "Brand",
+      "description": "A commercial brand associated with a player through sponsorship or endorsement.",
+      "properties": [
+        {
+          "name": "brandId",
+          "type": "string",
+          "isIdentifier": true,
+          "unit": null,
+          "values": null,
+          "description": "Unique identifier for the brand."
+        },
+        {
+          "name": "brandName",
+          "type": "string",
+          "isIdentifier": false,
+          "unit": null,
+          "values": null,
+          "description": "Commercial brand name."
+        },
+        {
+          "name": "category",
+          "type": "enum",
+          "isIdentifier": false,
+          "unit": null,
+          "values": [
+            "Shoe",
+            "Apparel",
+            "Beverage",
+            "Technology",
+            "Other"
+          ],
+          "description": "Primary brand category."
+        }
+      ],
+      "icon": "📦",
+      "color": "#EC4899"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "player-has-skill-assessment",
+      "name": "hasSkillAssessment",
+      "from": "player",
+      "to": "skill-assessment",
+      "cardinality": "one-to-many",
+      "description": "A player can have multiple skill assessments over time.",
+      "attributes": null
+    },
+    {
+      "id": "player-has-injury-record",
+      "name": "hasInjuryRecord",
+      "from": "player",
+      "to": "injury-record",
+      "cardinality": "one-to-many",
+      "description": "A player can have multiple injury records across a career.",
+      "attributes": null
+    },
+    {
+      "id": "player-has-season-performance",
+      "name": "hasSeasonPerformance",
+      "from": "player",
+      "to": "season-performance",
+      "cardinality": "one-to-many",
+      "description": "A player can have multiple season performance records.",
+      "attributes": null
+    },
+    {
+      "id": "season-performance-for-team",
+      "name": "forTeam",
+      "from": "season-performance",
+      "to": "team",
+      "cardinality": "many-to-one",
+      "description": "A season performance record is associated with a specific team stint.",
+      "attributes": null
+    },
+    {
+      "id": "player-has-contract",
+      "name": "hasContract",
+      "from": "player",
+      "to": "contract",
+      "cardinality": "one-to-many",
+      "description": "A player can sign multiple contracts over time.",
+      "attributes": null
+    },
+    {
+      "id": "contract-with-team",
+      "name": "withTeam",
+      "from": "contract",
+      "to": "team",
+      "cardinality": "many-to-one",
+      "description": "A contract is signed with a specific team.",
+      "attributes": null
+    },
+    {
+      "id": "player-received-award",
+      "name": "receivedAward",
+      "from": "player",
+      "to": "award",
+      "cardinality": "one-to-many",
+      "description": "A player can receive multiple awards or accolades.",
+      "attributes": null
+    },
+    {
+      "id": "player-sponsored-by",
+      "name": "sponsoredBy",
+      "from": "player",
+      "to": "brand",
+      "cardinality": "many-to-many",
+      "description": "A player may have one or more sponsorship or endorsement relationships with brands.",
+      "attributes": [
+        {
+          "name": "sponsorshipType",
+          "type": "string"
+        },
+        {
+          "name": "startDate",
+          "type": "date"
+        },
+        {
+          "name": "endDate",
+          "type": "date"
+        },
+        {
+          "name": "isSignatureLine",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "id": "player-drafted-by",
+      "name": "draftedBy",
+      "from": "player",
+      "to": "team",
+      "cardinality": "many-to-one",
+      "description": "A player is drafted by a team, with draft rank and narrative context stored on the relationship.",
+      "attributes": [
+        {
+          "name": "draftYear",
+          "type": "integer"
+        },
+        {
+          "name": "draftPick",
+          "type": "integer"
+        },
+        {
+          "name": "prospectTier",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

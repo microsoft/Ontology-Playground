@@ -1,0 +1,40 @@
+name: Ontology School Lesson Review
+description: Request human review for an Ontology School lesson and optionally trigger approval automation.
+title: "[Ontology School Review] <course>/<lesson>"
+labels:
+  - ontology-school-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this issue to track human content review for Ontology School lessons.
+
+        When approved, add label `ontology-school-approved` and close the issue.
+        A workflow will open a PR that removes the `reviewStatus: under-human-review` marker from the lesson frontmatter.
+
+  - type: input
+    id: lesson_path
+    attributes:
+      label: Lesson Path
+      description: Path to the lesson markdown file under content/learn/
+      placeholder: content/learn/fibo-loans-lab/03-collateral-and-schedules.md
+    validations:
+      required: true
+
+  - type: input
+    id: pr_link
+    attributes:
+      label: Source Pull Request
+      description: PR with the lesson changes to review
+      placeholder: https://github.com/<org>/<repo>/pull/<number>
+    validations:
+      required: true
+
+  - type: textarea
+    id: review_notes
+    attributes:
+      label: Reviewer Notes
+      description: Required content fixes or approval rationale.
+      placeholder: List factual issues, pedagogy concerns, and final approval notes.
+    validations:
+      required: true

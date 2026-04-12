@@ -1,0 +1,63 @@
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from app.models.contracts import OntologyDraftGenerationRequest, ReferenceTextInput
+from app.services.ontology_generation_service import OntologyGenerationService
+
+TEXT = """1. 신체적 및 생체적 프로필 (Physical & Biometric Profile)
+선수의 물리적 하드웨어를 정의하는 가장 기초적인 데이터 레이어입니다.
+• 신체 지표(Physical Specs): 신장(Height), 체중(Weight), 윙스팬(Wingspan), 스탠딩 리치(Standing Reach).
+◦ 비고: 최근에는 윙스팬이 신장보다 수비 범위 및 슛 블록 능력과의 상관관계가 높아 핵심 엔터티로 다뤄집니다.
+• 운동 능력(Athleticism): 수직 점프력, 민첩성(Agility), 질주 속도, 코어 힘.
+• 부상 이력(Injury History): 특정 신체 부위(무릎, 발목 등)와 부상 유형, 결장 기간을 연결하여 선수의 '내구성' 속성을 정의합니다.
+2. 전술적 역할과 아키타입 (Tactical Roles & Archetypes)
+전통적인 1~5번 포지션 구분을 넘어, 현대 농구의 '역할 기반(Role-based)' 분류가 온톨로지의 핵심입니다.
+• 전통적 포지션: 포인트 가드(PG), 슈팅 가드(SG), 스몰 포워드(SF), 파워 포워드(PF), 센터(C).
+• 현대적 아키타입(Archetypes):
+◦ 3&D: 외곽슛(3pt)과 대인 수비(Defense)에 특화된 롤 플레이어.
+◦ 슬래셔(Slasher): 강력한 돌파로 페인트존을 공략하는 공격수.
+◦ 스트레치 빅맨(Stretch Big): 외곽슛 능력을 갖춰 상대 수비를 끌어내는 센터/포워드.
+◦ 플레이메이킹 허브: 포지션에 상관없이 공격을 조립하는 조율사 (예: 포인트 포워드, 컨트롤 타워 센터).
+3. 기술적 숙련도 및 스킬셋 (Skills & Proficiency)
+선수의 동작(Action)과 관련된 질적 지표입니다.
+• 공격(Offense): 슛 셀렉션(Spot-up, Pull-up, Off-screen), 핸들링, 포스트업 기술, 패스 센스.
+• 수비(Defense): 대인 수비(On-ball), 도움 수비(Off-ball), 스위치 수비 능력, 리바운딩 박스아웃.
+• 비인지적 기술: BQ(Basketball IQ), 코트 비전, 클러치 상황에서의 집중력.
+4. 커리어 데이터 및 성과 (Career & Performance Metrics)
+선수의 가치를 증명하는 정량적 결과물입니다.
+• 기본 기록(Box Score): 득점(PTS), 리바운드(REB), 어시스트(AST), 스틸(STL), 블록(BLK).
+• 고급 통계(Advanced Stats): * Efficiency: PER(Player Efficiency Rating), TS%(True Shooting Percentage).
+◦ Impact: USG%(공격 점유율), Win Shares(승리 기여도), On-Off 코트 마진.
+• 수상 실적(Accolades): MVP, All-NBA 팀 선정 횟수, 우승 반지 수, 올스타 선정 여부.
+5. 경제적 및 상업적 엔터티 (Economic & Social Identity)
+글로벌 시장에서의 영향력을 평가하는 지표로, 컨텐츠 제작 시 매우 중요한 데이터입니다.
+• 계약 정보: 소속팀, 연봉(Salary), 계약 기간, 옵션(플레이어/팀).
+• 브랜드 파워: 스폰서십(신발 브랜드 등), SNS 팔로워 수, 유니폼 판매 순위.
+• 서사적 요소(Narrative): 라이벌 관계, 드래프트 순위(Underdog vs Blue Chip), 국적(Global Appeal)."""
+
+
+def main() -> None:
+    service = OntologyGenerationService()
+    response = service.generate_draft(
+        OntologyDraftGenerationRequest(
+            prompt="Generate a basketball player ontology draft for content analysis and scouting.",
+            references=[
+                ReferenceTextInput(
+                    reference_name="basketball-notes.txt",
+                    text=TEXT,
+                )
+            ],
+        )
+    )
+    print(json.dumps(response.model_dump(), ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()

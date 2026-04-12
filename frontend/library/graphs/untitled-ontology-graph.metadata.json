@@ -1,0 +1,9 @@
+{
+  "slug": "untitled-ontology-graph",
+  "name": "Untitled Ontology Graph",
+  "description": "Saved instance graph snapshot",
+  "updated_at": "2026-04-09T06:56:12.017768+00:00",
+  "graph_filename": "untitled-ontology-graph.graph.json",
+  "source_ontology_name": "Untitled Ontology",
+  "total_facts": 140
+}

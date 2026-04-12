@@ -1,0 +1,33 @@
+[project]
+name = "alignment-api"
+version = "0.1.0"
+description = "Phase 1 FastAPI backend for ontology alignment review workflows"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "pydantic>=2.7,<3.0",
+    "uvicorn>=0.30,<1.0",
+    "python-dotenv>=1.0,<2.0",
+    "openai>=1.51,<2.0",
+    "neo4j>=5.17,<7.0",
+    "pypdf>=6.0,<7.0",
+    "neo4j-graphrag[openai]>=1.13.1,<2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx>=0.27,<1.0",
+    "pytest>=8.0,<9.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

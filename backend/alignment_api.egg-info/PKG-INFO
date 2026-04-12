@@ -1,0 +1,75 @@
+Metadata-Version: 2.4
+Name: alignment-api
+Version: 0.1.0
+Summary: Phase 1 FastAPI backend for ontology alignment review workflows
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi<1.0,>=0.115
+Requires-Dist: pydantic<3.0,>=2.7
+Requires-Dist: uvicorn<1.0,>=0.30
+Requires-Dist: python-dotenv<2.0,>=1.0
+Requires-Dist: openai<2.0,>=1.51
+Requires-Dist: neo4j<7.0,>=5.17
+Requires-Dist: pypdf<7.0,>=6.0
+Requires-Dist: neo4j-graphrag[openai]<2.0,>=1.13.1
+Provides-Extra: dev
+Requires-Dist: httpx<1.0,>=0.27; extra == "dev"
+Requires-Dist: pytest<9.0,>=8.0; extra == "dev"
+
+# Alignment API
+
+Standalone FastAPI service for Phase 1 of the ontology alignment workflow.
+
+Scope:
+- graph generation from user-authored ontology drafts
+- schema version lookup
+- schema draft save
+- queue retrieval
+- candidate lock
+- review submission
+
+Current implementation:
+- uses an in-memory mock repository
+- persists state only for the running process
+- prioritizes workflow correctness over infrastructure integration
+- projects the submitted ontology into a graph payload plus review queue
+- supports phased extraction modes:
+  - default `auto` / heuristic path for local development
+  - explicit `neo4j_graphrag` mode, which currently validates runtime readiness and fails clearly until the package/runtime is wired
+
+Run locally:
+
+```bash
+cd backend
+python -m venv .venv310
+.venv310/bin/pip install -e .
+set -a
+source .env
+set +a
+.venv310/bin/python -m uvicorn app.main:app --reload
+```
+
+Primary routes:
+- `POST /api/graph/generate`
+- `GET /api/schema/versions/{schema_version_id}`
+- `POST /api/schema/drafts`
+- `GET /api/queue`
+- `POST /api/queue/{candidate_id}/lock`
+- `POST /api/reviews`
+
+Extraction mode env vars:
+- `ALIGNMENT_EXTRACTION_MODE=auto|neo4j_graphrag`
+- `ALIGNMENT_NEO4J_GRAPHRAG_SRC=/abs/path/to/vendor/oh-graph-rag/src`
+- `ALIGNMENT_LLM_PROVIDER=auto|openai|azure_openai`
+- OpenAI mode:
+  `ALIGNMENT_OPENAI_API_KEY` or standard `OPENAI_API_KEY`
+- `ALIGNMENT_OPENAI_MODEL` default: `gpt-5`
+- `ALIGNMENT_OPENAI_BASE_URL` optional
+- `ALIGNMENT_OPENAI_ORGANIZATION` optional
+- `ALIGNMENT_OPENAI_PROJECT` optional
+- Azure OpenAI mode:
+  `AZURE_OPENAI_KEY` or `AZURE_OPENAI_API_KEY`
+- `AZURE_OPENAI_ENDPOINT`
+- `AZURE_OPENAI_DEPLOYMENT`
+- `ALIGNMENT_LLM_TEMPERATURE` default: `0`
+- `ALIGNMENT_EXTRACTION_MAX_CONCURRENCY` default: `4`
