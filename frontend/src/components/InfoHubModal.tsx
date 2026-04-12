@@ -45,7 +45,7 @@ export function InfoHubModal({ onClose }: InfoHubModalProps) {
           </button>
         </div>
 
-        <div className="info-hub-body">
+        <div className="info-hub-body is-scrollable">
           <HomeSettingsPanel />
         </div>
       </motion.div>

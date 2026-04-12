@@ -2,6 +2,32 @@
 
 # Oh-tology
 
+## Live Preview
+
+**Use the test deployment here:**
+
+**https://oh-tology-3jch-git-feature-tran-14bc44-woonsangb-5664s-projects.vercel.app/**
+
+This preview is intended to be usable right now.
+
+Important:
+
+- The Settings tab now defaults `Alignment API Base URL` to `https://oh-tology.onrender.com`.
+- AI features still require your own LLM API key configuration.
+- Open **Settings** before testing AI features.
+- Choose `OpenAI` or `Azure OpenAI` in `Global LLM Mode`.
+- If the backend does not already have credentials for that provider, enter your key in the temporary credentials fields.
+- Temporary credentials and temporary backend URL overrides are kept only for the current tab session and are cleared on refresh.
+
+Quick start:
+
+1. Open the preview link above.
+2. Open `Settings`.
+3. Confirm `Alignment API Base URL` is `https://oh-tology.onrender.com`.
+4. Select `OpenAI` or `Azure OpenAI`.
+5. Enter the required API key details.
+6. Run the diagnostic test or try ontology generation.
+
 Oh-tology is a local workspace for designing ontologies, reviewing document-grounded extraction results, approving them into a graph, publishing to Neo4j, and querying the published graph.
 
 [![Oh-tology workspace](docs/images/main_graph.png)](docs/images/main_graph.png)

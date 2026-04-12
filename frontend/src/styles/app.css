@@ -2630,6 +2630,9 @@ body {
   width: min(94vw, 1100px);
   max-width: 1100px;
   padding: 24px;
+  max-height: min(88vh, 920px);
+  display: flex;
+  flex-direction: column;
 }
 
 .info-hub-header {
@@ -2656,6 +2659,7 @@ body {
 
 .info-hub-body {
   min-height: 0;
+  flex: 1;
 }
 
 .info-hub-body.is-scrollable {

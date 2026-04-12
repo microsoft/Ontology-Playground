@@ -10,6 +10,8 @@ import type {
   LlmMode,
 } from '../types/llm';
 
+const DEFAULT_ALIGNMENT_API_BASE_URL = 'https://oh-tology.onrender.com';
+
 function getInitialDarkMode(): boolean {
   if (typeof window === 'undefined' || !('localStorage' in window)) {
     return true;
@@ -139,7 +141,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   showDataBindings: false,
   darkMode: getInitialDarkMode(),
   languageMode: getInitialLanguageMode(),
-  alignmentApiBaseUrl: '',
+  alignmentApiBaseUrl: DEFAULT_ALIGNMENT_API_BASE_URL,
   llmChatMode: getInitialLlmChatMode(),
   llmConfigurationStatus: null,
   llmCredentialInputs: emptyLlmCredentialInputs(),

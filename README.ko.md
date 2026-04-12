@@ -2,6 +2,32 @@
 
 # Oh-tology
 
+## 라이브 테스트
+
+**아래 테스트 배포 링크에서 바로 사용하면 됩니다:**
+
+**https://oh-tology-3jch-git-feature-tran-14bc44-woonsangb-5664s-projects.vercel.app/**
+
+이 프리뷰는 지금 바로 테스트 가능한 용도로 열어둔 주소입니다.
+
+중요:
+
+- `Settings` 탭의 `Alignment API Base URL` 기본값은 `https://oh-tology.onrender.com` 입니다.
+- AI 기능을 쓰려면 **반드시 API 키 설정이 필요합니다.**
+- 테스트 전에 먼저 `Settings`를 열어주세요.
+- `Global LLM Mode`에서 `OpenAI` 또는 `Azure OpenAI`를 선택하세요.
+- 해당 provider 자격증명이 backend에 이미 없으면, 아래 임시 credential 입력칸에 직접 API 키를 넣어야 합니다.
+- 임시 credential과 임시 backend URL은 현재 탭 세션 메모리에만 유지되며, 새로고침하면 사라집니다.
+
+빠른 사용 순서:
+
+1. 위 테스트 링크를 엽니다.
+2. `Settings`를 엽니다.
+3. `Alignment API Base URL`이 `https://oh-tology.onrender.com` 인지 확인합니다.
+4. `OpenAI` 또는 `Azure OpenAI`를 선택합니다.
+5. 필요한 API 키 정보를 입력합니다.
+6. Diagnostic test 또는 ontology generation을 실행합니다.
+
 로컬에서 온톨로지를 설계하고, 문서 기반 추출 결과를 검토해 그래프로 승인하고, Neo4j에 게시하고 질의할 수 있는 워크스페이스입니다.
 
 [![Oh-tology workspace](docs/images/main_graph.png)](docs/images/main_graph.png)
