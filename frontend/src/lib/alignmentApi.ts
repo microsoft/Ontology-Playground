@@ -16,9 +16,8 @@ import type {
   SourceDocumentInput,
 } from '../types/alignment';
 import type { LlmCredentialInputs, LlmMode } from '../types/llm';
+import { getAlignmentApiBaseUrl } from './alignmentApiConfig';
 
-const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
-const useLiveAlignmentApi = Boolean(alignmentApiBaseUrl);
 let fallbackRuntime: OntologyGraphBuildResponse | null = null;
 
 function wait(ms: number): Promise<void> {
@@ -26,6 +25,7 @@ function wait(ms: number): Promise<void> {
 }
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const alignmentApiBaseUrl = getAlignmentApiBaseUrl();
   if (!alignmentApiBaseUrl) {
     throw new Error('Alignment API base URL is not configured.');
   }
@@ -152,7 +152,7 @@ function buildFallbackGraphRun(
 }
 
 export async function fetchSchemaVersion(schemaVersionId: string): Promise<SchemaSummary> {
-  if (useLiveAlignmentApi) {
+  if (getAlignmentApiBaseUrl()) {
     return requestJson<SchemaSummary>(`/api/schema/versions/${schemaVersionId}`);
   }
   await wait(120);
@@ -166,7 +166,7 @@ export async function fetchSchemaVersion(schemaVersionId: string): Promise<Schem
 }
 
 export async function fetchQueue(page = 1, pageSize = 20): Promise<QueuePageResponse> {
-  if (useLiveAlignmentApi) {
+  if (getAlignmentApiBaseUrl()) {
     return requestJson<QueuePageResponse>(`/api/queue?page=${page}&page_size=${pageSize}`);
   }
   await wait(160);
@@ -202,7 +202,7 @@ export async function buildGraphFromOntology(
     llm_credentials: llmCredentials ?? null,
   };
 
-  if (useLiveAlignmentApi) {
+  if (getAlignmentApiBaseUrl()) {
     return requestJson<OntologyGraphBuildResponse>('/api/graph/generate', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -219,7 +219,7 @@ export async function lockCandidate(
   candidateId: string,
   request: CandidateLockRequest,
 ): Promise<CandidateLockResponse> {
-  if (useLiveAlignmentApi) {
+  if (getAlignmentApiBaseUrl()) {
     return requestJson<CandidateLockResponse>(`/api/queue/${candidateId}/lock`, {
       method: 'POST',
       body: JSON.stringify(request),
@@ -262,7 +262,7 @@ export async function lockCandidate(
 export async function submitReview(
   request: ReviewDecisionRequest,
 ): Promise<ReviewDecisionResponse> {
-  if (useLiveAlignmentApi) {
+  if (getAlignmentApiBaseUrl()) {
     return requestJson<ReviewDecisionResponse>('/api/reviews', {
       method: 'POST',
       body: JSON.stringify(request),
@@ -293,7 +293,7 @@ export async function submitReview(
 }
 
 export async function fetchApprovedFacts(): Promise<ApprovedFactsResponse> {
-  if (useLiveAlignmentApi) {
+  if (getAlignmentApiBaseUrl()) {
     return requestJson<ApprovedFactsResponse>('/api/reviews/approved-facts');
   }
 
@@ -327,7 +327,7 @@ export async function fetchApprovedFacts(): Promise<ApprovedFactsResponse> {
 }
 
 export async function fetchInstanceGraph(): Promise<InstanceGraphResponse> {
-  if (useLiveAlignmentApi) {
+  if (getAlignmentApiBaseUrl()) {
     return requestJson<InstanceGraphResponse>('/api/reviews/instance-graph');
   }
 

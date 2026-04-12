@@ -1,6 +1,5 @@
 import type { LlmConfigurationStatusResponse, LlmCredentialInputs, LlmMode } from '../types/llm';
-
-const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
+import { getAlignmentApiBaseUrl } from './alignmentApiConfig';
 
 export interface LlmDiagnosticChatResponse {
   provider: string;
@@ -13,6 +12,7 @@ export async function sendDiagnosticChat(payload: {
   llm_provider_override?: LlmMode;
   llm_credentials?: Partial<LlmCredentialInputs> | null;
 }): Promise<LlmDiagnosticChatResponse> {
+  const alignmentApiBaseUrl = getAlignmentApiBaseUrl();
   if (!alignmentApiBaseUrl) {
     throw new Error('Alignment API base URL is not configured.');
   }
@@ -40,6 +40,7 @@ export async function sendDiagnosticChat(payload: {
 }
 
 export async function fetchLlmConfigurationStatus(): Promise<LlmConfigurationStatusResponse | null> {
+  const alignmentApiBaseUrl = getAlignmentApiBaseUrl();
   if (!alignmentApiBaseUrl) {
     return null;
   }

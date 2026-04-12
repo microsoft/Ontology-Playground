@@ -53,6 +53,10 @@ function getInitialLanguageMode(): 'ko' | 'en' {
   }
 }
 
+function normalizeAlignmentApiBaseUrl(value: string): string {
+  return value.trim().replace(/\/+$/, '');
+}
+
 interface AppState {
   // Ontology State
   currentOntology: Ontology;
@@ -66,6 +70,7 @@ interface AppState {
   showDataBindings: boolean;
   darkMode: boolean;
   languageMode: 'ko' | 'en';
+  alignmentApiBaseUrl: string;
   llmChatMode: LlmMode;
   llmConfigurationStatus: LlmConfigurationStatusResponse | null;
   llmCredentialInputs: LlmCredentialInputs;
@@ -97,6 +102,7 @@ interface AppState {
   toggleDataBindings: () => void;
   toggleDarkMode: () => void;
   setLanguageMode: (mode: 'ko' | 'en') => void;
+  setAlignmentApiBaseUrl: (value: string) => void;
   setLlmChatMode: (mode: LlmMode) => void;
   setLlmConfigurationStatus: (status: LlmConfigurationStatusResponse | null) => void;
   updateLlmCredentialInput: (field: keyof LlmCredentialInputs, value: string) => void;
@@ -133,6 +139,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   showDataBindings: false,
   darkMode: getInitialDarkMode(),
   languageMode: getInitialLanguageMode(),
+  alignmentApiBaseUrl: '',
   llmChatMode: getInitialLlmChatMode(),
   llmConfigurationStatus: null,
   llmCredentialInputs: emptyLlmCredentialInputs(),
@@ -220,6 +227,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     set({ languageMode: mode });
   },
+  setAlignmentApiBaseUrl: (value) =>
+    set({ alignmentApiBaseUrl: normalizeAlignmentApiBaseUrl(value) ?? '' }),
   setLlmChatMode: (mode) => {
     try {
       localStorage.setItem('llmChatMode', mode);

@@ -1,7 +1,6 @@
 import type { Ontology } from '../data/ontology';
 import type { LlmCredentialInputs, LlmMode } from '../types/llm';
-
-const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
+import { getAlignmentApiBaseUrl } from './alignmentApiConfig';
 
 export interface ReferenceTextInput {
   reference_name: string;
@@ -35,6 +34,7 @@ interface ApiErrorPayload {
 export async function generateOntologyDraft(
   request: OntologyDraftGenerationRequest,
 ): Promise<OntologyDraftGenerationResponse> {
+  const alignmentApiBaseUrl = getAlignmentApiBaseUrl();
   if (!alignmentApiBaseUrl) {
     throw new Error('Alignment API base URL is not configured. Set VITE_ALIGNMENT_API_BASE_URL before using AI ontology generation.');
   }

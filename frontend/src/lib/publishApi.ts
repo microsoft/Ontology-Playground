@@ -1,6 +1,8 @@
-const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
+import { getAlignmentApiBaseUrl } from './alignmentApiConfig';
+import type { InstanceGraphResponse } from '../types/alignment';
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const alignmentApiBaseUrl = getAlignmentApiBaseUrl();
   if (!alignmentApiBaseUrl) {
     throw new Error('Alignment API base URL is not configured.');
   }
@@ -64,4 +66,3 @@ export async function publishNeo4j(
     body: JSON.stringify({ ingest_run_id: ingestRunId, graph }),
   });
 }
-import type { InstanceGraphResponse } from '../types/alignment';

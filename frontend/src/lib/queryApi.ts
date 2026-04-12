@@ -1,9 +1,9 @@
 import type { Ontology } from '../data/ontology';
 import type { LlmCredentialInputs, LlmMode } from '../types/llm';
-
-const alignmentApiBaseUrl = import.meta.env.VITE_ALIGNMENT_API_BASE_URL?.trim();
+import { getAlignmentApiBaseUrl } from './alignmentApiConfig';
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const alignmentApiBaseUrl = getAlignmentApiBaseUrl();
   if (!alignmentApiBaseUrl) {
     throw new Error('Alignment API base URL is not configured.');
   }

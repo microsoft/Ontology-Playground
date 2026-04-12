@@ -27,6 +27,7 @@ import { useDesignerStore } from './store/designerStore';
 import { useRoute } from './hooks/useRoute';
 import { navigate } from './lib/router';
 import { decodeSharePayload } from './lib/shareCodec';
+import { getAlignmentApiBaseUrl } from './lib/alignmentApiConfig';
 import { fetchLlmConfigurationStatus } from './lib/diagnosticApi';
 import type { Catalogue } from './types/catalogue';
 import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Sun, Moon, FileText } from 'lucide-react';
@@ -54,7 +55,7 @@ function App() {
   const [toast] = useState<{ message: string; icon: string } | null>(null);
   const [mobilePanel, setMobilePanel] = useState<'graph' | 'quests' | 'inspector' | 'query'>('graph');
   const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const { darkMode, loadOntology, toggleDarkMode, languageMode, setLlmConfigurationStatus } = useAppStore();
+  const { darkMode, loadOntology, toggleDarkMode, languageMode, alignmentApiBaseUrl, setLlmConfigurationStatus } = useAppStore();
 
   // Deep-link: /#/catalogue/<id> — load a specific ontology from the catalogue
   useEffect(() => {
@@ -83,6 +84,11 @@ function App() {
   }, [route, loadOntology]);
 
   useEffect(() => {
+    if (!getAlignmentApiBaseUrl()) {
+      setLlmConfigurationStatus(null);
+      return;
+    }
+
     fetchLlmConfigurationStatus()
       .then((status) => {
         setLlmConfigurationStatus(status);
@@ -90,7 +96,7 @@ function App() {
       .catch(() => {
         setLlmConfigurationStatus(null);
       });
-  }, [setLlmConfigurationStatus]);
+  }, [alignmentApiBaseUrl, setLlmConfigurationStatus]);
 
   // Deep-link: /#/share/<data> — decode an inline-shared ontology
   useEffect(() => {
