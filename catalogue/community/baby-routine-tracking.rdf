@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/baby-routine-tracking/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/baby-routine-tracking/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/baby-routine-tracking/">
+        <rdfs:label>Baby Routine Tracking</rdfs:label>
+        <rdfs:comment>Models a baby’s daily routine by capturing caregiver-logged activities (sleep, feeding, diaper changes), associated observations, and emerging patterns to enable structured tracking and insights into the baby’s behavior.</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-16">
+        <rdfs:label>DiaperChange</rdfs:label>
+        <rdfs:comment>Represents a diaper change event, recording the type and condition of the diaper.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#008272</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-15">
+        <rdfs:label>feeding</rdfs:label>
+        <rdfs:comment>Represents a feeding event, including details such as type of feed (milk/solid) and quantity consumed.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#E81123</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-14">
+        <rdfs:label>sleep</rdfs:label>
+        <rdfs:comment>Represents a sleep event, capturing the duration and timing of the baby’s sleep</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#FFB900</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-12">
+        <rdfs:label>Routine_Pattern</rdfs:label>
+        <rdfs:comment>Represents a routine pattern summary that can be derived from the observations</rdfs:comment>
+        <ont:icon>📋</ont:icon>
+        <ont:color>#D83B01</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-11">
+        <rdfs:label>Baby</rdfs:label>
+        <rdfs:comment>Represents the infant whose daily routine activities (sleep, feeding, diaper changes) are being tracked and analyzed.</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-10">
+        <rdfs:label>Care_Giver</rdfs:label>
+        <rdfs:comment>Represents the individual (parent or guardian) responsible for logging activities and monitoring the baby’s routine.</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#FFB900</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-8">
+        <rdfs:label>Obeservation</rdfs:label>
+        <rdfs:comment>Represents qualitative insights recorded during or after an activity, such as the baby’s mood (happy, irritated, stimulated etc) or other behaviors.</rdfs:comment>
+        <ont:icon>📝</ont:icon>
+        <ont:color>#00A9E0</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-3">
+        <rdfs:label>Activity</rdfs:label>
+        <rdfs:comment>Represents any routine event performed for the baby, serving as the central entity for tracking sleep, feeding, and diaper-related activities.</rdfs:comment>
+        <ont:icon>📈</ont:icon>
+        <ont:color>#107C10</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-16_diaperchange_id">
+        <rdfs:label>diaperchange_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-16"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-16_diaper_type">
+        <rdfs:label>diaper_type</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-16"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-16_chnage_time">
+        <rdfs:label>chnage_time</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-16"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-15_feeding_id">
+        <rdfs:label>feeding_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-15"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-15_feeding_type">
+        <rdfs:label>feeding_type</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-15"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-15_Feeding_quantity">
+        <rdfs:label>Feeding_quantity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-15"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-14_sleep_start_time">
+        <rdfs:label>sleep_start_time</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-14"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-14_sleep_end_time">
+        <rdfs:label>sleep_end_time</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-14"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-14_sleep_id">
+        <rdfs:label>sleep_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-14"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-12_pattern_id">
+        <rdfs:label>pattern_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-12"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-12_summary">
+        <rdfs:label>summary</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-12"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-11_baby_id">
+        <rdfs:label>baby_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-11_baby_name">
+        <rdfs:label>baby_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-11_age_months">
+        <rdfs:label>age_months</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-10_caregiver_id">
+        <rdfs:label>caregiver_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-10_caregiver_name">
+        <rdfs:label>caregiver_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-8_mood">
+        <rdfs:label>mood</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-8_observation_id">
+        <rdfs:label>observation_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-8_notes">
+        <rdfs:label>notes</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-3_activity_id">
+        <rdfs:label>activity_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-3_duration">
+        <rdfs:label>duration</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-3_activity_type">
+        <rdfs:label>activity_type</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/baby-routine-tracking/rel-relates-to-18">
+        <rdfs:label>is_an</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-14"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:comment>Sleep is a sub-activity</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-14</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/baby-routine-tracking/rel-relates-to-17">
+        <rdfs:label>is_an</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-16"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:comment>Diaper Change is a sub-activity</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-16</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/baby-routine-tracking/rel-relates-to-16">
+        <rdfs:label>is_a</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-15"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:comment>Feeding is a sub-activity</rdfs:comment>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-15</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/baby-routine-tracking/rel-relates-to-15">
+        <rdfs:label>derived_from</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-12"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:comment>Routine can be derived from the activities that are logged</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-12</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/baby-routine-tracking/rel-relates-to-14">
+        <rdfs:label>monitors</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-10"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-11"/>
+        <rdfs:comment>Care giver monitors the infant</rdfs:comment>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-10</ont:fromEntityId>
+        <ont:toEntityId>new-entity-11</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/baby-routine-tracking/rel-relates-to-13">
+        <rdfs:label>has_observation</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-8"/>
+        <rdfs:comment>Each activity has certain observations</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-3</ont:fromEntityId>
+        <ont:toEntityId>new-entity-8</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/baby-routine-tracking/rel-relates-to-11">
+        <rdfs:label>performed_for</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-11"/>
+        <rdfs:comment>Activities (eg diaper change, feeding, putting to sleep) are performed for baby </rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-3</ont:fromEntityId>
+        <ont:toEntityId>new-entity-11</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/baby-routine-tracking/rel-relates-to-9">
+        <rdfs:label>logs</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-10"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
+        <rdfs:comment>Caregive logs all the activities.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-10</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>
