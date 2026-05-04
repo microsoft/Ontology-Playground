@@ -152,6 +152,12 @@ into a static JSON file.
   validate specific files via `npm run validate -- path/to/file.rdf`.
   Wire it into the PR validation workflow so invalid ontologies are
   rejected before merge.
+- [ ] **Contribution CTA link** — Add a "Want to contribute? See
+  CONTRIBUTING.md" button/link in the gallery or footer that points
+  directly to the GitHub repo fork/PR flow. Link should be:
+  `https://github.com/microsoft/Ontology-Playground/fork` (for forking)
+  or the CONTRIBUTING.md file, so contributors can start the process
+  without manual navigation.
 
 ### 3.4 Catalogue UI (upgrade GalleryModal)
 - [x] Refactor `GalleryModal` to load from `catalogue.json` instead of
@@ -235,6 +241,10 @@ These enhance the overall experience for a community learning resource.
   - `/#/catalogue/<ontology-id>` — loads and displays a specific ontology
   - `/#/embed/<ontology-id>` — full-page embed view (useful for iframes)
 - [x] Shareable URLs: loading the app with a route pre-selects the ontology
+- [ ] Persist catalogue category filter in URL: when user selects a category
+  filter in the gallery, the selection should be saved in the URL query
+  params (e.g., `/#/catalogue?category=healthcare`) so that navigating
+  away and back (or sharing a link) preserves the filter state
 
 ### 5.2 Ontology diffing
 - [ ] When loading a new ontology, optionally show a diff view:

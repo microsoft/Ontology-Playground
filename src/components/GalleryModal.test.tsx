@@ -106,6 +106,7 @@ describe('GalleryModal', () => {
   beforeEach(() => {
     onClose.mockClear();
     useAppStore.getState().resetToDefault();
+    window.location.hash = '#/catalogue';
   });
 
   afterEach(() => {

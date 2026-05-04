@@ -22,7 +22,7 @@
     },
     "category": {
       "type": "string",
-      "enum": ["retail", "healthcare", "finance", "manufacturing", "education", "food", "media", "events", "general", "school"],
+      "enum": ["retail", "healthcare", "finance", "manufacturing", "education", "food", "media", "events", "general", "school", "fibo"],
       "description": "Domain category"
     },
     "tags": {

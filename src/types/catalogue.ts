@@ -30,6 +30,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   events: 'Events & Entertainment',
   general: 'General',
   school: 'Ontology School: Get Started',
+  fibo: 'FIBO (EDM Council)',
 };
 
 export const CATEGORY_COLORS: Record<string, string> = {
@@ -43,4 +44,5 @@ export const CATEGORY_COLORS: Record<string, string> = {
   events: '#00A9E0',
   general: '#6B7280',
   school: '#E67E22',
+  fibo: '#1A5276',
 };

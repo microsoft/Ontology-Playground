@@ -1,0 +1,19 @@
+{
+  "name": "FIBO Loan Classification",
+  "description": "Loan types with Basel risk weights, collateral categories with recovery expectations, and OCC/FDIC concentration buckets — adapted from EDM Council FIBO debt and classification modules.",
+  "icon": "💰",
+  "category": "fibo",
+  "tags": [
+    "fibo",
+    "finance",
+    "loan",
+    "basel",
+    "risk-weight",
+    "classification",
+    "external",
+    "adapted"
+  ],
+  "author": "EDM Council FIBO (adapted by ontology-quest)",
+  "license": "MIT",
+  "sourceUrl": "https://github.com/edmcouncil/fibo"
+}

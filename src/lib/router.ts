@@ -17,7 +17,7 @@
 
 export type Route =
   | { page: 'home' }
-  | { page: 'catalogue'; ontologyId?: string }
+  | { page: 'catalogue'; ontologyId?: string; category?: string; source?: string }
   | { page: 'embed'; ontologyId: string }
   | { page: 'designer'; ontologyId?: string }
   | { page: 'learn'; courseSlug?: string; articleSlug?: string }
@@ -49,18 +49,33 @@ function sanitizeOntologyId(raw: string): string | undefined {
   return trimmed;
 }
 
-/** Parse a hash string (e.g. "#/catalogue/official/cosmic-coffee") into a Route. */
+/** Parse a hash string (e.g. "#/catalogue/official/cosmic-coffee?category=healthcare") into a Route. */
 export function parseHash(hash: string): Route {
-  // Strip leading "#" and optional leading "/", then strip query params (e.g. ?slide=3)
+  // Extract query params before stripping them
+  const queryMatch = hash.match(/\?(.*)$/);
+  const queryString = queryMatch ? queryMatch[1] : '';
+  const queryParams = new URLSearchParams(queryString);
+  const category = queryParams.get('category') || undefined;
+  const source = queryParams.get('source') || undefined;
+  
+  // Strip leading "#" and optional leading "/", then strip query params
   const path = hash.replace(/^#\/?/, '').replace(/\?.*$/, '');
   const segments = path.split('/').filter(Boolean);
 
   if (segments[0] === 'catalogue') {
     // Everything after "catalogue/" is the ontologyId (may be multi-segment)
     const rest = segments.slice(1);
-    if (rest.length === 0) return { page: 'catalogue' };
+    if (rest.length === 0) {
+      const route: Route = { page: 'catalogue' };
+      if (category) route.category = category;
+      if (source) route.source = source;
+      return route;
+    }
     const id = sanitizeOntologyId(rest.join('/'));
-    return { page: 'catalogue', ontologyId: id };
+    const route: Route = { page: 'catalogue', ontologyId: id };
+    if (category) route.category = category;
+    if (source) route.source = source;
+    return route;
   }
   if (segments[0] === 'embed' && segments.length > 1) {
     const id = sanitizeOntologyId(segments.slice(1).join('/'));
@@ -96,9 +111,14 @@ export function parseHash(hash: string): Route {
 export function routeToHash(route: Route): string {
   switch (route.page) {
     case 'catalogue':
-      return route.ontologyId
+      const hash = route.ontologyId
         ? `#/catalogue/${route.ontologyId}`
         : '#/catalogue';
+      const queryParams = new URLSearchParams();
+      if (route.category) queryParams.set('category', route.category);
+      if (route.source) queryParams.set('source', route.source);
+      const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
+      return hash + query;
     case 'embed':
       return `#/embed/${route.ontologyId}`;
     case 'designer':

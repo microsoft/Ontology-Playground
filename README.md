@@ -242,6 +242,33 @@ Ontology-Playground/
 | [GitHub OAuth Setup](docs/github-oauth-setup.md) | How to configure GitHub OAuth for one-click catalogue PRs |
 | [Embed Security](docs/embed-security.md) | Security model for the embeddable widget |
 | [Learning Content Guide](docs/learn-content-guide.md) | How to author courses, articles, quizzes, and ontology embeds for the Ontology School |
+| [Ontology School Review Workflow](docs/ontology-school-review-workflow.md) | Human review and approval flow for school lesson content |
+
+## AI Agent Quickstart
+
+This repository includes Copilot customization files so agents can reliably:
+
+- import customer RDF/OWL into catalogue-ready format
+- generate progressive Ontology School modules
+- route lesson content through human review workflows
+
+Included assets:
+
+- Skills:
+   - `.github/skills/ontology-catalog-import/`
+   - `.github/skills/ontology-school-path-generator/`
+- RDF intake instruction:
+   - `.github/instructions/rdf-intake.instructions.md`
+- Reusable prompts:
+   - `.github/prompts/import-rdf-to-catalog.prompt.md`
+   - `.github/prompts/generate-ontology-school-module.prompt.md`
+
+Recommended validation before merge:
+
+```bash
+npm run qa:tutorial-content
+npm run build
+```
 
 ## Technologies
 

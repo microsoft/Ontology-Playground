@@ -160,6 +160,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
           id: `step-4-${propSteps.length + 1}`,
           instruction: `Find the identifier property '${identifierProp.name}' in ${entity.name}`,
           targetType: 'property',
+          targetId: identifierProp.name,
           hint: `Look for the key icon 🔑 marking the identifier`
         });
       }
@@ -202,11 +203,15 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
 
   if (relationships.length > 0) {
     const rel = relationships[0];
+    const fromEntity = entities.find(e => e.id === rel.from);
+    const toEntity = entities.find(e => e.id === rel.to);
     querySteps.push({
       id: "step-5-3",
-      instruction: `Try a traversal query: "Show me all ${rel.name} connections"`,
+      instruction: fromEntity && toEntity
+        ? `Try a traversal query: "How does ${fromEntity.name} connect to ${toEntity.name}?"`
+        : `Try a traversal query about the "${rel.name}" relationship`,
       targetType: 'query',
-      hint: "This follows the relationship path"
+      hint: `This follows the "${rel.name}" relationship path`
     });
   }
 

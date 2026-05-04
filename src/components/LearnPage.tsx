@@ -170,6 +170,9 @@ function CourseDetail({ course }: { course: LearnCourse }) {
               {course.type === 'lab' ? (a.order === 1 ? 'Overview' : `Step ${a.order - 1}`) : a.order}
             </span>
             <h2>{a.title}</h2>
+            {a.reviewStatus === 'under-human-review' && (
+              <span className="learn-card-review-badge">🔍 Under human review</span>
+            )}
             <p>{a.description}</p>
             <span className="learn-card-cta">
               {course.type === 'lab' ? 'Open step' : 'Read article'} <ChevronRight size={16} />

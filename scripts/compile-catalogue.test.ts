@@ -23,8 +23,8 @@ describe('catalogue compilation (end-to-end)', () => {
     expect(result).toContain('official/ecommerce');
 
     const output = readCatalogue();
-    expect(output.count).toBe(36);
-    expect(output.entries).toHaveLength(36);
+    expect(output.count).toBe(51);
+    expect(output.entries).toHaveLength(51);
     expect(output.generatedAt).toBeTruthy();
   });
 
@@ -63,7 +63,7 @@ describe('catalogue compilation (end-to-end)', () => {
 
 describe('catalogue metadata validation', () => {
   it('all entries reference valid categories', () => {
-    const validCats = ['retail', 'healthcare', 'finance', 'manufacturing', 'education', 'general', 'food', 'media', 'events', 'iq-lab', 'school'];
+    const validCats = ['retail', 'healthcare', 'finance', 'manufacturing', 'education', 'general', 'food', 'media', 'events', 'iq-lab', 'school', 'fibo'];
     for (const entry of readCatalogue().entries) {
       expect(validCats).toContain(entry.category);
     }

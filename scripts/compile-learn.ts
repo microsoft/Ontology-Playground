@@ -218,6 +218,7 @@ function compile(): LearnManifest {
           description: meta['description'],
           order,
           embed: meta['embed'] || undefined,
+          reviewStatus: meta['reviewStatus'] || undefined,
           html,
         });
 

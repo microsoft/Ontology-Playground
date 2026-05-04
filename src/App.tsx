@@ -12,6 +12,7 @@ import {
   HelpModal,
   DataSourcesModal,
   ImportExportModal,
+  FabricExportModal,
   GalleryModal,
   OntologySummaryModal,
   OntologyDesigner,
@@ -48,6 +49,7 @@ function App() {
   const [showDataSources, setShowDataSources] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
   const [showNLBuilder, setShowNLBuilder] = useState(false);
+  const [showFabricExport, setShowFabricExport] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [toast, setToast] = useState<{ message: string; icon: string } | null>(null);
   const [mobilePanel, setMobilePanel] = useState<'graph' | 'quests' | 'inspector' | 'query'>('graph');
@@ -250,7 +252,11 @@ function App() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showImportExport && <ImportExportModal onClose={() => setShowImportExport(false)} />}
+        {showImportExport && <ImportExportModal onClose={() => setShowImportExport(false)} onFabricPush={() => { setShowImportExport(false); setShowFabricExport(true); }} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showFabricExport && <FabricExportModal onClose={() => setShowFabricExport(false)} />}
       </AnimatePresence>
 
       <AnimatePresence>

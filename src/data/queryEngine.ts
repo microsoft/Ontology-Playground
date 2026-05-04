@@ -8,6 +8,14 @@ export interface QueryResponse {
   interpretation?: string;
 }
 
+function stripLeadingArticle(text: string): string {
+  return text.replace(/^(a|an|the)\s+/, '').trim();
+}
+
+function singularize(text: string): string {
+  return text.endsWith('s') ? text.slice(0, -1) : text;
+}
+
 // Generate dynamic query suggestions based on the current ontology
 export function generateQuerySuggestions(ontology: Ontology): string[] {
   const suggestions: string[] = [];
@@ -56,6 +64,7 @@ export function generateQuerySuggestions(ontology: Ontology): string[] {
 // Process a natural language query against the ontology
 export function processQuery(query: string, ontology: Ontology): QueryResponse {
   const normalizedQuery = query.toLowerCase().trim();
+  const normalizedNoPunctuation = normalizedQuery.replace(/[?!.:,;]+/g, '').trim();
   const entities = ontology.entityTypes;
   const relationships = ontology.relationships;
 
@@ -90,6 +99,36 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
     };
   }
 
+  // Entity definition queries: "What is a Customer?"
+  if (normalizedNoPunctuation.startsWith('what is ')) {
+    const subjectRaw = normalizedNoPunctuation.slice('what is '.length).trim();
+    const subject = stripLeadingArticle(subjectRaw);
+
+    for (const entity of entities) {
+      const entityNameLower = entity.name.toLowerCase();
+      const entityNameSingular = entityNameLower.endsWith('s') ? entityNameLower.slice(0, -1) : entityNameLower;
+
+      if (
+        subject === entityNameLower ||
+        subject === entityNameSingular ||
+        singularize(subject) === entityNameSingular
+      ) {
+        const propList = entity.properties
+          .slice(0, 4)
+          .map(p => `• **${p.name}** (${p.type})${p.isIdentifier ? ' 🔑' : ''}`)
+          .join('\n');
+
+        return {
+          query,
+          result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**Properties:**\n${propList}`,
+          highlightEntities: [entity.id],
+          highlightRelationships: [],
+          interpretation: `Detected: definition query for ${entity.name}`
+        };
+      }
+    }
+  }
+
   // Entity listing queries
   for (const entity of entities) {
     const entityNameLower = entity.name.toLowerCase();
@@ -119,6 +158,25 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   }
 
   // Relationship/connection queries
+  for (const rel of relationships) {
+    const relationNameNormalized = rel.name.toLowerCase().trim().replace(/\s+/g, ' ');
+    const fromEntity = entities.find(e => e.id === rel.from);
+    const toEntity = entities.find(e => e.id === rel.to);
+
+    if (
+      normalizedNoPunctuation.includes(relationNameNormalized) &&
+      (normalizedNoPunctuation.includes('connection') || normalizedNoPunctuation.includes('connections') || normalizedNoPunctuation.includes('relationship'))
+    ) {
+      return {
+        query,
+        result: `**${rel.name}** connects **${fromEntity?.name ?? rel.from}** to **${toEntity?.name ?? rel.to}** (${rel.cardinality}).${rel.description ? `\n\n${rel.description}` : ''}`,
+        highlightEntities: [rel.from, rel.to],
+        highlightRelationships: [rel.id],
+        interpretation: `Detected: relationship-name query for ${rel.name}`
+      };
+    }
+  }
+
   for (const entity of entities) {
     const entityNameLower = entity.name.toLowerCase();
     
@@ -194,7 +252,7 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   const suggestions = generateQuerySuggestions(ontology).slice(0, 3);
   return {
     query,
-    result: `I couldn't interpret "${query}" for the **${ontology.name}** ontology.\n\nTry asking:\n${suggestions.map(s => `• "${s}"`).join('\n')}\n\nOr click on graph elements to explore the ontology visually.`,
+    result: `I couldn't interpret "${query}" for **${ontology.name}**.\n\nTry asking:\n${suggestions.map(s => `• "${s}"`).join('\n')}\n\nOr click on graph elements to explore the ontology visually.`,
     highlightEntities: [],
     highlightRelationships: [],
     interpretation: undefined

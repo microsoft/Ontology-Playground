@@ -39,7 +39,7 @@ interface CatalogueMetadata {
 // ------------------------------------------------------------------
 
 const REQUIRED_METADATA_FIELDS = ['name', 'description', 'category'] as const;
-const VALID_CATEGORIES = ['retail', 'healthcare', 'finance', 'manufacturing', 'education', 'food', 'media', 'events', 'general', 'iq-lab', 'school'];
+const VALID_CATEGORIES = ['retail', 'healthcare', 'finance', 'manufacturing', 'education', 'food', 'media', 'events', 'general', 'iq-lab', 'school', 'fibo'];
 
 function validateMetadata(meta: unknown, filePath: string): CatalogueMetadata {
   if (typeof meta !== 'object' || meta === null) {

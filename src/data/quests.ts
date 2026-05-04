@@ -185,6 +185,7 @@ export const quests: Quest[] = [
         id: "step-5-2",
         instruction: "Examine how Customer properties map to lakehouse columns",
         targetType: "property",
+        targetId: "name",
         hint: "Notice how 'name' maps to 'full_name' in the source"
       },
       {

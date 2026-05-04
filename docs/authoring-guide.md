@@ -238,7 +238,7 @@ Every catalogue ontology needs a `metadata.json` alongside the `.rdf` file:
 |-------|----------|-------|
 | `name` | Yes | Same as the ontology's `name` field |
 | `description` | Yes | Short description for the gallery card |
-| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `general` |
+| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `general`, `fibo` |
 | `icon` | No | Emoji for the gallery card. Defaults to a generic icon |
 | `tags` | No | Array of strings for filtering. Keep them lowercase |
 | `author` | No | Your GitHub username. Shown in the gallery |

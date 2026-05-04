@@ -5,6 +5,19 @@ import type { Ontology, DataBinding } from '../data/ontology';
 import { cosmicCoffeeOntology, sampleBindings } from '../data/ontology';
 import { generateQuestsForOntology } from '../data/questGenerator';
 
+function getInitialDarkMode(): boolean {
+  if (typeof window === 'undefined' || !('localStorage' in window)) {
+    return true;
+  }
+  try {
+    const stored = window.localStorage.getItem('darkMode');
+    if (stored === 'false') return false;
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 interface AppState {
   // Ontology State
   currentOntology: Ontology;
@@ -66,7 +79,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   highlightedEntities: [],
   highlightedRelationships: [],
   showDataBindings: false,
-  darkMode: true,
+  darkMode: getInitialDarkMode(),
   
   // Initial Quest State - use default quests for Cosmic Coffee
   availableQuests: defaultQuests,
@@ -132,7 +145,15 @@ export const useAppStore = create<AppState>((set, get) => ({
   setHighlightedRelationships: (ids) => set({ highlightedRelationships: ids }),
   
   toggleDataBindings: () => set((state) => ({ showDataBindings: !state.showDataBindings })),
-  toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+  toggleDarkMode: () => set((state) => {
+    const next = !state.darkMode;
+    try {
+      localStorage.setItem('darkMode', String(next));
+    } catch {
+      // Ignore persistence errors; still update in-memory state
+    }
+    return { darkMode: next };
+  }),
   
   // Quest Actions
   startQuest: (questId) => {

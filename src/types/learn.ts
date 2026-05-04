@@ -6,6 +6,8 @@ export interface LearnArticle {
   order: number;
   /** Catalogue ontology ID to embed, e.g. "official/cosmic-coffee" */
   embed?: string;
+  /** Human review status, e.g. "under-human-review" */
+  reviewStatus?: string;
   /** HTML content rendered from Markdown */
   html: string;
 }

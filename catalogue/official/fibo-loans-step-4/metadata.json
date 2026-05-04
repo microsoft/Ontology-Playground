@@ -1,0 +1,10 @@
+{
+  "name": "FIBO Loans Lab — Step 4: Risk Classifiers",
+  "description": "Lien position and ownership interest classifiers for risk and underwriting — adapted from FIBO FBC/DebtAndEquities.",
+  "icon": "🏅",
+  "category": "school",
+  "tags": ["fibo", "loan", "school", "step-4"],
+  "author": "EDM Council FIBO (adapted by ontology-quest)",
+  "license": "MIT",
+  "sourceUrl": "https://github.com/edmcouncil/fibo"
+}

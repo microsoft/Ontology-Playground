@@ -2,7 +2,7 @@ import { useAppStore } from '../store/appStore';
 import { Database, ArrowRight, Key, Link2, Layers, Box, GitBranch } from 'lucide-react';
 
 export function InspectorPanel() {
-  const { currentOntology, dataBindings, selectedEntityId, selectedRelationshipId, showDataBindings } = useAppStore();
+  const { currentOntology, dataBindings, selectedEntityId, selectedRelationshipId, showDataBindings, activeQuest, currentStepIndex, advanceQuestStep } = useAppStore();
 
   if (!selectedEntityId && !selectedRelationshipId) {
     return (
@@ -121,7 +121,14 @@ export function InspectorPanel() {
           </div>
           <div className="property-list">
             {entity.properties.map(prop => (
-              <div key={prop.name} className="property-item">
+              <div key={prop.name} className="property-item" style={{ cursor: 'pointer' }} onClick={() => {
+                if (activeQuest) {
+                  const currentStep = activeQuest.steps[currentStepIndex];
+                  if (currentStep.targetType === 'property' && currentStep.targetId === prop.name) {
+                    advanceQuestStep();
+                  }
+                }
+              }}>
                 <div>
                   <span className="property-name">{prop.name}</span>
                   {prop.isIdentifier && <span className="property-identifier">ID</span>}
