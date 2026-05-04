@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/incident-management/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/incident-management/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/incident-management/">
+        <rdfs:label>Incident Management</rdfs:label>
+        <rdfs:comment>Models the people, systems, and artifacts in an enterprise incident management workflow.</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-12">
+        <rdfs:label>ChangeRequest</rdfs:label>
+        <rdfs:comment>The governed deployment vehicle through which a resolution is released to a controlled environment. Provides the audit trail, approval, and scheduled window required by enterprise change-management processes.</rdfs:comment>
+        <ont:icon>🏷️</ont:icon>
+        <ont:color>#008272</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-11">
+        <rdfs:label>Resolution</rdfs:label>
+        <rdfs:comment>The fix or workaround applied to close the incident. May be a permanent code fix, a configuration change, a rollback to a previous version, or a temporary workaround pending a longer-term solution.</rdfs:comment>
+        <ont:icon>🔧</ont:icon>
+        <ont:color>#107C10</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-10">
+        <rdfs:label>RootCause</rdfs:label>
+        <rdfs:comment>The underlying defect or condition that produced the incident. Categorized by type (code, configuration, data, or infrastructure) to support trend analysis and prevention.</rdfs:comment>
+        <ont:icon>🎯</ont:icon>
+        <ont:color>#107C10</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-9">
+        <rdfs:label>BusinessOwner</rdfs:label>
+        <rdfs:comment>The accountable owner of the affected application or business process. Reports the real-world impact, signs off on the resolution, and is the final stakeholder informed when the incident is closed.</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-8">
+        <rdfs:label>Tester</rdfs:label>
+        <rdfs:comment>Validates the proposed fix in lower environments before it is released. Confirms that the resolution actually solves the original incident and does not introduce regressions.</rdfs:comment>
+        <ont:icon>🔧</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-7">
+        <rdfs:label>BusinessAnalyst</rdfs:label>
+        <rdfs:comment>Translates technical incident details into business impact and vice versa. Helps the technical team understand what business processes are affected and helps the business understand what is being done about it.</rdfs:comment>
+        <ont:icon>📊</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-6">
+        <rdfs:label>ScrumMaster</rdfs:label>
+        <rdfs:comment>The team coordinator who runs the incident response process. Removes blockers, manages communication, runs the war room or bridge call, and ensures the right people are engaged at the right time.</rdfs:comment>
+        <ont:icon>📋</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-5">
+        <rdfs:label>SMEArchitect</rdfs:label>
+        <rdfs:comment>A subject-matter expert or architect with deep domain or technical knowledge. Consulted when an incident requires authority beyond a single developer, such as cross-system design decisions or complex root-cause analysis.</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-4">
+        <rdfs:label>Developer</rdfs:label>
+        <rdfs:comment>The engineer assigned to investigate and fix the incident. Owns the technical debugging, code or configuration change, and works with other roles to drive the incident to resolution.</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-3">
+        <rdfs:label>Environment</rdfs:label>
+        <rdfs:comment>The deployment context where an incident occurs, such as Production, UAT, or Development. Distinguishing the environment is essential because the same defect can have very different business impact depending on where it surfaces.</rdfs:comment>
+        <ont:icon>🏢</ont:icon>
+        <ont:color>#00A9E0</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-2">
+        <rdfs:label>Application</rdfs:label>
+        <rdfs:comment>A software service or system that delivers business functionality. The application is the subject of an incident — what is broken, slow, or behaving unexpectedly.</rdfs:comment>
+        <ont:icon>🌐</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/incident-management/New-entity-1">
+        <rdfs:label>Incident</rdfs:label>
+        <rdfs:comment>An unplanned disruption or degradation of a service that requires investigation and resolution. Tracked by severity, status, and SLA target from the moment it is reported until it is closed.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#E81123</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-12_crNumber">
+        <rdfs:label>crNumber</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-12"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-12_approver">
+        <rdfs:label>approver</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-12"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-12_plannedWindow">
+        <rdfs:label>plannedWindow</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-12"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-12_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-12"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-11_resolutionId">
+        <rdfs:label>resolutionId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-11_type">
+        <rdfs:label>type</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-11_appliedAt">
+        <rdfs:label>appliedAt</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-10_rootCauseId">
+        <rdfs:label>rootCauseId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-10_category">
+        <rdfs:label>category</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-10_description">
+        <rdfs:label>description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-9_ownerId">
+        <rdfs:label>ownerId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-9_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-9_businessUnit">
+        <rdfs:label>businessUnit</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-8_testerId">
+        <rdfs:label>testerId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-8_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-8_coverageArea">
+        <rdfs:label>coverageArea</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-7_baId">
+        <rdfs:label>baId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-7_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-7_businessArea">
+        <rdfs:label>businessArea</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-6_scrumMasterId">
+        <rdfs:label>scrumMasterId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-6"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-6_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-6"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-6_team">
+        <rdfs:label>team</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-6"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-5_smeId">
+        <rdfs:label>smeId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-5_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-5_expertiseArea">
+        <rdfs:label>expertiseArea</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-4_developerId">
+        <rdfs:label>developerId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-4_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-4_team">
+        <rdfs:label>team</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-4_onCallStatus">
+        <rdfs:label>onCallStatus</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-3_environmentId">
+        <rdfs:label>environmentId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-3_type">
+        <rdfs:label>type</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-3_region">
+        <rdfs:label>region</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-2_applicationId">
+        <rdfs:label>applicationId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-2_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-2_criticalityTier">
+        <rdfs:label>criticalityTier</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-2_techStack">
+        <rdfs:label>techStack</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-1_incidentId">
+        <rdfs:label>incidentId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-1_severity">
+        <rdfs:label>severity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-1_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-1_openedAt">
+        <rdfs:label>openedAt</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-1_slaTarget">
+        <rdfs:label>slaTarget</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/incident-management/new-entity-1_source">
+        <rdfs:label>source</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-15">
+        <rdfs:label>affects</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-2"/>
+        <rdfs:comment>An incident affects a specific application — the system that is broken or degraded.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>new-entity-2</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-14">
+        <rdfs:label>occursIn</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-3"/>
+        <rdfs:comment>Identifies which environment the incident surfaced in (Production, UAT, Dev).</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-13">
+        <rdfs:label>assignedTo</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-4"/>
+        <rdfs:comment>When an incident requires deeper expertise, it escalates to a subject-matter expert or architect.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>new-entity-4</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-12">
+        <rdfs:label>escalatesTo</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-5"/>
+        <rdfs:comment>When an incident requires deeper expertise, it escalates to a subject-matter expert or architect.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>new-entity-5</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-11">
+        <rdfs:label>coordinatedBy</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-6"/>
+        <rdfs:comment>The scrum master who coordinates the response, runs the war room, and removes blockers.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>new-entity-6</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-10">
+        <rdfs:label>consults</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-4"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-7"/>
+        <rdfs:comment>The developer consults the business analyst to understand business impact and clarify requirements.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-4</ont:fromEntityId>
+        <ont:toEntityId>new-entity-7</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-9">
+        <rdfs:label>notifies</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-7"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-9"/>
+        <rdfs:comment>The business analyst notifies the affected business owner about incident impact and progress.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-7</ont:fromEntityId>
+        <ont:toEntityId>new-entity-9</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-8">
+        <rdfs:label>identifies</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-4"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-10"/>
+        <rdfs:comment>The developer identifies the underlying defect or condition that caused the incident.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-4</ont:fromEntityId>
+        <ont:toEntityId>new-entity-10</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-7">
+        <rdfs:label>leadsTo</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-10"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-11"/>
+        <rdfs:comment>The root cause leads to a resolution - the fix or workaround that closes the incident.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-10</ont:fromEntityId>
+        <ont:toEntityId>new-entity-11</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-6">
+        <rdfs:label>validatedBy</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-11"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-8"/>
+        <rdfs:comment>The resolution is deployed to production through a governed change request, providing the audit trail.</rdfs:comment>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-11</ont:fromEntityId>
+        <ont:toEntityId>new-entity-8</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/incident-management/rel-relates-to-5">
+        <rdfs:label>deployedVia</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/incident-management/New-entity-11"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/incident-management/New-entity-12"/>
+        <rdfs:comment>The resolution is deployed to production through a governed change request, providing the audit trail.</rdfs:comment>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-11</ont:fromEntityId>
+        <ont:toEntityId>new-entity-12</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>
