@@ -31,3 +31,7 @@ release-review/
 data/codemind*.db
 **/codemind*.db
 .codemind/
+
+# Local secrets
+.env
+

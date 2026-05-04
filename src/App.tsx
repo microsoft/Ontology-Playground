@@ -29,8 +29,9 @@ import { useDesignerStore } from './store/designerStore';
 import { useRoute } from './hooks/useRoute';
 import { navigate } from './lib/router';
 import { decodeSharePayload } from './lib/shareCodec';
+import { hasPendingDeployIntent, clearDeployIntent } from './lib/msalAuth';
 import type { Catalogue } from './types/catalogue';
-import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Database, Sun, Moon, FileText } from 'lucide-react';
+import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Database, Sun, Moon, FileText, Rocket } from 'lucide-react';
 import './styles/app.css';
 
 const AI_BUILDER_ENABLED = import.meta.env.VITE_ENABLE_AI_BUILDER === 'true';
@@ -50,6 +51,13 @@ function App() {
   const [showImportExport, setShowImportExport] = useState(false);
   const [showNLBuilder, setShowNLBuilder] = useState(false);
   const [showFabricExport, setShowFabricExport] = useState(false);
+
+  // Auto-open push modal if returning from redirect-based auth
+  useEffect(() => {
+    if (hasPendingDeployIntent()) {
+      setShowFabricExport(true);
+    }
+  }, []);
   const [showSummary, setShowSummary] = useState(false);
   const [toast, setToast] = useState<{ message: string; icon: string } | null>(null);
   const [mobilePanel, setMobilePanel] = useState<'graph' | 'quests' | 'inspector' | 'query'>('graph');
@@ -164,6 +172,7 @@ function App() {
     { id: 'designer', label: 'Open Designer', icon: <PenTool size={18} />, action: openDesigner },
     { id: 'learn', label: 'Open Ontology School', icon: <BookOpen size={18} />, action: openLearn },
     { id: 'import-export', label: 'Import / Export', icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
+    { id: 'deploy-fabric', label: 'Push to Fabric', icon: <Rocket size={18} />, action: () => setShowFabricExport(true) },
     { id: 'summary', label: 'View Summary', icon: <FileText size={18} />, action: () => setShowSummary(true) },
     { id: 'about', label: 'About & Trademark Notice', icon: <Info size={18} />, action: () => setShowAbout(true) },
     { id: 'help', label: 'Help', icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
@@ -191,6 +200,7 @@ function App() {
         onLearnClick={openLearn}
         onNLBuilderClick={AI_BUILDER_ENABLED ? () => setShowNLBuilder(true) : undefined}
         onSummaryClick={() => setShowSummary(true)}
+        onDeployClick={() => setShowFabricExport(true)}
       />
       <QuestPanel />
       <OntologyGraph />
@@ -256,7 +266,7 @@ function App() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showFabricExport && <FabricExportModal onClose={() => setShowFabricExport(false)} />}
+        {showFabricExport && <FabricExportModal onClose={() => { clearDeployIntent(); setShowFabricExport(false); }} />}
       </AnimatePresence>
 
       <AnimatePresence>
