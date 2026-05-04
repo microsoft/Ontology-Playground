@@ -143,7 +143,7 @@ function compile(): Catalogue {
 
       // Derive a stable ID from the filesystem path: <source>/<slug>
       // For community ontologies the path is deeper: community/<user>/<slug>
-      const relPath = dir.slice(tierDir.length + 1); // e.g. "cosmic-coffee" or "alice/my-ontology"
+      const relPath = dir.slice(tierDir.length + 1).replace(/\\/g, '/'); // e.g. "cosmic-coffee" or "alice/my-ontology"
       const entryId = `${source}/${relPath}`;
 
       if (seenIds.has(entryId)) {

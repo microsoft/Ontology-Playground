@@ -1,0 +1,8 @@
+{
+  "name": "HR System",
+  "description": "Human resources ontology covering employees, departments, positions, assignments, and performance reviews.",
+  "icon": "👥",
+  "category": "general",
+  "tags": ["hr", "workforce", "payroll", "organization", "performance"],
+  "author": "ravi-chandu"
+}
