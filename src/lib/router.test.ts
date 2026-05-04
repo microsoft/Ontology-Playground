@@ -21,6 +21,21 @@ describe('parseHash', () => {
   it('parses catalogue route without id', () => {
     expect(parseHash('#/catalogue')).toEqual({ page: 'catalogue', ontologyId: undefined });
   });
+  
+  it('parses catalogue source query param', () => {
+    expect(parseHash('#/catalogue?source=community')).toEqual({
+      page: 'catalogue',
+      source: 'community',
+    });
+  });
+  
+  it('parses catalogue source + category query params', () => {
+    expect(parseHash('#/catalogue?source=official&category=finance')).toEqual({
+      page: 'catalogue',
+      source: 'official',
+      category: 'finance',
+    });
+  });
 
   it('parses catalogue route with single-segment id', () => {
     expect(parseHash('#/catalogue/cosmic-coffee')).toEqual({
@@ -213,6 +228,16 @@ describe('routeToHash', () => {
   it('converts catalogue route without id', () => {
     expect(routeToHash({ page: 'catalogue' })).toBe('#/catalogue');
   });
+  
+  it('serializes catalogue route with source query param', () => {
+    expect(routeToHash({ page: 'catalogue', source: 'community' })).toBe('#/catalogue?source=community');
+  });
+  
+  it('serializes catalogue route with source + category query params', () => {
+    expect(routeToHash({ page: 'catalogue', source: 'official', category: 'finance' })).toBe(
+      '#/catalogue?category=finance&source=official',
+    );
+  });
 
   it('converts catalogue route with path-based id', () => {
     expect(routeToHash({ page: 'catalogue', ontologyId: 'official/cosmic-coffee' })).toBe(
@@ -263,6 +288,8 @@ describe('roundtrip', () => {
   const routes = [
     { page: 'home' as const },
     { page: 'catalogue' as const },
+    { page: 'catalogue' as const, source: 'community' },
+    { page: 'catalogue' as const, source: 'official', category: 'healthcare' },
     { page: 'catalogue' as const, ontologyId: 'official/healthcare' },
     { page: 'catalogue' as const, ontologyId: 'community/alice/finance-ledger' },
     { page: 'embed' as const, ontologyId: 'official/finance' },

@@ -29,12 +29,18 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
   const [visibleCount, setVisibleCount] = useState(12);
   const [copiedEmbedId, setCopiedEmbedId] = useState<string | null>(null);
 
-  // Initialize category from URL query param on mount
+  // Keep filters in sync with URL query params (including page refresh + hash navigation)
   useEffect(() => {
-    const route = parseHash(window.location.hash);
-    if (route.page === 'catalogue' && route.category) {
-      setCategoryFilter(route.category);
-    }
+    const syncFiltersFromHash = () => {
+      const route = parseHash(window.location.hash);
+      if (route.page !== 'catalogue') return;
+      setCategoryFilter(route.category ?? 'all');
+      setSourceFilter((route.source as SourceFilter) ?? 'all');
+    };
+
+    syncFiltersFromHash();
+    window.addEventListener('hashchange', syncFiltersFromHash);
+    return () => window.removeEventListener('hashchange', syncFiltersFromHash);
   }, []);
 
   // Load catalogue.json
@@ -98,7 +104,12 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
   const handleLoadOntology = (entry: CatalogueEntry) => {
     loadOntology(entry.ontology, entry.bindings);
     // Navigate to the ontology deep link so the URL is shareable
-    navigate({ page: 'catalogue', ontologyId: entry.id });
+    navigate({
+      page: 'catalogue',
+      ontologyId: entry.id,
+      category: categoryFilter !== 'all' ? categoryFilter : undefined,
+      source: sourceFilter !== 'all' ? sourceFilter : undefined,
+    });
   };
 
   const handleViewRdf = (entry: CatalogueEntry) => {
@@ -165,7 +176,15 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
           </div>
           <select
             value={sourceFilter}
-            onChange={(e) => setSourceFilter(e.target.value as SourceFilter)}
+            onChange={(e) => {
+              const newSource = e.target.value as SourceFilter;
+              setSourceFilter(newSource);
+              navigate({
+                page: 'catalogue',
+                source: newSource !== 'all' ? newSource : undefined,
+                category: categoryFilter !== 'all' ? categoryFilter : undefined,
+              });
+            }}
             style={{
               padding: '8px 12px',
               borderRadius: 'var(--radius-md)',
@@ -185,12 +204,11 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
             onChange={(e) => {
               const newCategory = e.target.value;
               setCategoryFilter(newCategory);
-              // Update URL with category param
-              if (newCategory !== 'all') {
-                navigate({ page: 'catalogue', category: newCategory });
-              } else {
-                navigate({ page: 'catalogue' });
-              }
+              navigate({
+                page: 'catalogue',
+                category: newCategory !== 'all' ? newCategory : undefined,
+                source: sourceFilter !== 'all' ? sourceFilter : undefined,
+              });
             }}
             style={{
               padding: '8px 12px',

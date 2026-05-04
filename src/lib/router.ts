@@ -17,7 +17,7 @@
 
 export type Route =
   | { page: 'home' }
-  | { page: 'catalogue'; ontologyId?: string; category?: string }
+  | { page: 'catalogue'; ontologyId?: string; category?: string; source?: string }
   | { page: 'embed'; ontologyId: string }
   | { page: 'designer'; ontologyId?: string }
   | { page: 'learn'; courseSlug?: string; articleSlug?: string }
@@ -56,6 +56,7 @@ export function parseHash(hash: string): Route {
   const queryString = queryMatch ? queryMatch[1] : '';
   const queryParams = new URLSearchParams(queryString);
   const category = queryParams.get('category') || undefined;
+  const source = queryParams.get('source') || undefined;
   
   // Strip leading "#" and optional leading "/", then strip query params
   const path = hash.replace(/^#\/?/, '').replace(/\?.*$/, '');
@@ -64,9 +65,17 @@ export function parseHash(hash: string): Route {
   if (segments[0] === 'catalogue') {
     // Everything after "catalogue/" is the ontologyId (may be multi-segment)
     const rest = segments.slice(1);
-    if (rest.length === 0) return { page: 'catalogue', category };
+    if (rest.length === 0) {
+      const route: Route = { page: 'catalogue' };
+      if (category) route.category = category;
+      if (source) route.source = source;
+      return route;
+    }
     const id = sanitizeOntologyId(rest.join('/'));
-    return { page: 'catalogue', ontologyId: id, category };
+    const route: Route = { page: 'catalogue', ontologyId: id };
+    if (category) route.category = category;
+    if (source) route.source = source;
+    return route;
   }
   if (segments[0] === 'embed' && segments.length > 1) {
     const id = sanitizeOntologyId(segments.slice(1).join('/'));
@@ -105,7 +114,10 @@ export function routeToHash(route: Route): string {
       const hash = route.ontologyId
         ? `#/catalogue/${route.ontologyId}`
         : '#/catalogue';
-      const query = route.category ? `?category=${encodeURIComponent(route.category)}` : '';
+      const queryParams = new URLSearchParams();
+      if (route.category) queryParams.set('category', route.category);
+      if (route.source) queryParams.set('source', route.source);
+      const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
       return hash + query;
     case 'embed':
       return `#/embed/${route.ontologyId}`;
