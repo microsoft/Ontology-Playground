@@ -8,7 +8,7 @@
     "prestart": "npm run build"
   },
   "dependencies": {
-    "@azure/functions": "^3.5.0"
+    "@azure/functions": "^4.14.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
