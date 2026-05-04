@@ -5,7 +5,7 @@ import { useDesignerStore } from '../store/designerStore';
 import { useAppStore } from '../store/appStore';
 import { serializeToRDF } from '../lib/rdf/serializer';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rdf/highlighter';
-import { navigate } from '../lib/router';
+import { navigate, parseHash } from '../lib/router';
 import type { CatalogueEntry, Catalogue } from '../types/catalogue';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../types/catalogue';
 
@@ -28,6 +28,14 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
   const [rdfViewId, setRdfViewId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(12);
   const [copiedEmbedId, setCopiedEmbedId] = useState<string | null>(null);
+
+  // Initialize category from URL query param on mount
+  useEffect(() => {
+    const route = parseHash(window.location.hash);
+    if (route.page === 'catalogue' && route.category) {
+      setCategoryFilter(route.category);
+    }
+  }, []);
 
   // Load catalogue.json
   useEffect(() => {
@@ -174,7 +182,16 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
           </select>
           <select
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            onChange={(e) => {
+              const newCategory = e.target.value;
+              setCategoryFilter(newCategory);
+              // Update URL with category param
+              if (newCategory !== 'all') {
+                navigate({ page: 'catalogue', category: newCategory });
+              } else {
+                navigate({ page: 'catalogue' });
+              }
+            }}
             style={{
               padding: '8px 12px',
               borderRadius: 'var(--radius-md)',
@@ -479,8 +496,32 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         >
           <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
             Want to contribute? See{' '}
-            <strong>CONTRIBUTING.md</strong> — add your ontology as an RDF file
-            and open a PR.
+            <a
+              href="https://github.com/microsoft/Ontology-Playground/blob/main/CONTRIBUTING.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: 'var(--ms-blue, #0078D4)',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
+            >
+              <strong>CONTRIBUTING.md</strong>
+            </a>
+            {' '}— add your ontology as an RDF file and{' '}
+            <a
+              href="https://github.com/microsoft/Ontology-Playground/fork"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: 'var(--ms-blue, #0078D4)',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
+            >
+              open a PR
+            </a>
+            .
           </p>
         </div>
 
