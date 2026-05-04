@@ -59,7 +59,7 @@
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/baby-routine-tracking/New-entity-8">
-        <rdfs:label>Obeservation</rdfs:label>
+        <rdfs:label>Observation</rdfs:label>
         <rdfs:comment>Represents qualitative insights recorded during or after an activity, such as the baby’s mood (happy, irritated, stimulated etc) or other behaviors.</rdfs:comment>
         <ont:icon>📝</ont:icon>
         <ont:color>#00A9E0</ont:color>
@@ -91,8 +91,8 @@
         <ont:propertyType>string</ont:propertyType>
     </owl:DatatypeProperty>
 
-    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-16_chnage_time">
-        <rdfs:label>chnage_time</rdfs:label>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-16_change_time">
+        <rdfs:label>change_time</rdfs:label>
         <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-16"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
         <ont:propertyType>datetime</ont:propertyType>
@@ -113,8 +113,8 @@
         <ont:propertyType>string</ont:propertyType>
     </owl:DatatypeProperty>
 
-    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-15_Feeding_quantity">
-        <rdfs:label>Feeding_quantity</rdfs:label>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/baby-routine-tracking/new-entity-15_feeding_quantity">
+        <rdfs:label>feeding_quantity</rdfs:label>
         <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-15"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <ont:propertyType>integer</ont:propertyType>
@@ -316,7 +316,7 @@
         <rdfs:label>logs</rdfs:label>
         <rdfs:domain rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-10"/>
         <rdfs:range rdf:resource="http://example.org/ontology/baby-routine-tracking/New-entity-3"/>
-        <rdfs:comment>Caregive logs all the activities.</rdfs:comment>
+        <rdfs:comment>Caregiver logs all the activities.</rdfs:comment>
         <ont:cardinality>one-to-many</ont:cardinality>
         <ont:fromEntityId>new-entity-10</ont:fromEntityId>
         <ont:toEntityId>new-entity-3</ont:toEntityId>
