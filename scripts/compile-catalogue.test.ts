@@ -23,8 +23,8 @@ describe('catalogue compilation (end-to-end)', () => {
     expect(result).toContain('official/ecommerce');
 
     const output = readCatalogue();
-    expect(output.count).toBe(52);
-    expect(output.entries).toHaveLength(52);
+    expect(output.count).toBe(53);
+    expect(output.entries).toHaveLength(53);
     expect(output.generatedAt).toBeTruthy();
   });
 
