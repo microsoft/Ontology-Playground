@@ -12,8 +12,8 @@ reviewStatus: under-human-review
 After origination, loans enter servicing operations. FIBO models this transition across two modules:
 
 - **Servicer** — the organization collecting and processing payments (adapted from `fibo-loan-ln-ln:Servicer` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans))
-- **PaymentHistory** — the aggregate payment record (adapted from concepts in [FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts))
-- **PaymentTransaction** — atomic payment events (adapted from `fibo-fbc-pas-caa:IndividualTransaction`)
+- **PaymentHistory** — the aggregate payment record (adapted from `fibo-loan-ln-ln:PaymentHistory` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans), which extends transaction-record patterns from [FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts))
+- **PaymentTransaction** — atomic payment events (adapted from `fibo-loan-ln-ln:IndividualPaymentTransaction`, itself based on `fibo-fbc-pas-caa:IndividualTransaction`)
 
 This mirrors how real lending platforms separate contractual intent from execution logs.
 
@@ -54,7 +54,7 @@ With these links, you can trace a clear path through the model:
 
 This path supports audit queries, delinquency analysis, and servicing quality metrics — exactly the kind of graph traversal that makes ontology-driven data integration valuable.
 
-> **FIBO reference**: In production FIBO, servicing concepts connect to broader account management patterns including `fibo-fbc-pas-caa:Account` and `fibo-fbc-pas-caa:AccountProvider`. Our simplified model captures the core payment tracking pattern. See the [FBC ontology module](https://github.com/edmcouncil/fibo/tree/master/FBC).
+> **FIBO reference**: In production FIBO, loan servicing and payment-history patterns bridge LOAN and FBC modules: `Loan` relates to a loan-specific account, payment history is modeled as a transaction record, and individual payment transactions capture event-level facts. Our simplified model captures this core pattern. See [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) and [FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts).
 
 ## Step 3 graph (diff from Step 2)
 

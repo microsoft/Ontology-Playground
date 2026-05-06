@@ -11,8 +11,8 @@ reviewStatus: under-human-review
 
 FIBO relies heavily on explicit classifiers — entities whose primary role is to categorize other entities. In this final step, we add two concepts critical to mortgage and secured lending risk analysis:
 
-- **OwnershipInterest** — classifies the legal ownership type of collateral (adapted from `fibo-fnd-oac-own:OwnershipInterest` in [FND/OwnershipAndControl](https://github.com/edmcouncil/fibo/tree/master/FND/OwnershipAndControl))
-- **LenderLienPosition** — classifies lender claim seniority over collateral assets (adapted from concepts in [FBC/DebtAndEquities/Debt](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt))
+- **OwnershipInterest** — classifies the legal ownership type of collateral (adapted from `fibo-loan-ln-ln:OwnershipInterest` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans), grounded in `fibo-fnd-oac-own:Ownership`)
+- **LenderLienPosition** — classifies lender claim seniority over collateral assets (adapted from `fibo-loan-ln-ln:LenderLienPosition` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans))
 
 ## Why classifiers matter
 
@@ -23,7 +23,7 @@ In the FIBO Mortgages module ([LOAN/RealEstateLoans/Mortgages](https://github.co
 - Portfolio risk aggregation
 - Regulatory capital calculations
 
-> **FIBO reference**: The actual FIBO Mortgages ontology uses `owl:Restriction` blocks to constrain relationships. For example, a `LoanSecuredByRealEstate` class uses `owl:someValuesFrom` restrictions to require that its collateral is `RealProperty` and must reference a `SecurityAgreement`. See the [full Mortgages ontology on GitHub](https://github.com/edmcouncil/fibo/blob/master/LOAN/RealEstateLoans/Mortgages.rdf).
+> **FIBO reference**: The FIBO Mortgages ontology uses `owl:Restriction` blocks to constrain real-estate collateral and contract semantics. In the LOAN ontology, `SecurityAgreement` and `Loan` are further constrained by classifier usage such as `LenderLienPosition` and `OwnershipInterest`. See [LOAN/RealEstateLoans/Mortgages.rdf](https://github.com/edmcouncil/fibo/blob/master/LOAN/RealEstateLoans/Mortgages.rdf) and [LOAN/LoansGeneral/Loans.rdf](https://github.com/edmcouncil/fibo/blob/master/LOAN/LoansGeneral/Loans.rdf).
 
 ## New relationships
 
@@ -50,8 +50,8 @@ You now have a progressive, FIBO-inspired loan ontology covering:
 |---|---|---|
 | Contract actors | Loan, Borrower, Lender | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) |
 | Security & schedule | Collateral, LoanPaymentSchedule | [FBC/DebtAndEquities/Debt](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt) |
-| Servicing operations | Servicer, PaymentHistory, PaymentTransaction | [FBC/ProductsAndServices](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices) |
-| Risk classifiers | OwnershipInterest, LenderLienPosition | [FND/OwnershipAndControl](https://github.com/edmcouncil/fibo/tree/master/FND/OwnershipAndControl) |
+| Servicing operations | Servicer, PaymentHistory, PaymentTransaction | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) + [FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts) |
+| Risk classifiers | OwnershipInterest, LenderLienPosition | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) + [FND/OwnershipAndControl/Ownership](https://github.com/edmcouncil/fibo/tree/master/FND/OwnershipAndControl) |
 
 This is a strong foundation for expanding into domain-specific modules — mortgage types, HELOC products, auto lending, or small business lending.
 
@@ -59,16 +59,17 @@ This is a strong foundation for expanding into domain-specific modules — mortg
 
 - **FIBO GitHub**: [github.com/edmcouncil/fibo](https://github.com/edmcouncil/fibo)
 - **FIBO specification**: [spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)
-- **FIBO viewer** (class browser): [spec.edmcouncil.org/fibo/ontology](https://spec.edmcouncil.org/fibo/ontology)
 - **EDM Council**: [edmcouncil.org](https://edmcouncil.org/)
 - **FIBO Loans module**: [LOAN/LoansGeneral/Loans source](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)
 - **FIBO Mortgages module**: [LOAN/RealEstateLoans/Mortgages source](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)
+- **FIBO Debt module**: [FBC/DebtAndEquities/Debt source](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt)
+- **FIBO Clients and Accounts module**: [FBC/ProductsAndServices/ClientsAndAccounts source](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts)
 
 ## Licensing
 
 All FIBO ontology content referenced in this lab is:
 
-- **Copyright** (c) 2016-2025 EDM Council, Inc. and Object Management Group, Inc.
+- **Copyright** EDM Council, Inc. and Object Management Group, Inc. (see module headers for exact year ranges)
 - **Licensed** under the [MIT License](https://opensource.org/licenses/MIT)
 
 The MIT License permits use, modification, and redistribution of the ontology files, including for commercial purposes, provided the copyright notice is retained. The ontology files in this lab are adapted subsets created for educational purposes.

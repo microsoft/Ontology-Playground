@@ -9,13 +9,14 @@ reviewStatus: under-human-review
 
 ## The contractual core
 
-Every lending system starts with three concepts from FIBO's `LOAN/LoansGeneral/Loans` module ([source](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)):
+Every lending system starts with three core concepts from FIBO loan and debt modules:
 
-- **Loan** — the debt instrument and contract envelope
-- **Borrower** — the obligated repayment party
-- **Lender** — the originating funding party
+- **Loan** — the debt instrument and contract envelope (`LOAN/LoansGeneral/Loans`)
+- **Borrower** — the obligated repayment party role (`FBC/DebtAndEquities/Debt`)
+- **Lender** — the originating funding party role (`FBC/DebtAndEquities/Debt`)
 
-In FIBO's OWL ontology, these are modeled as `fibo-loan-ln-ln:Loan`, `fibo-loan-ln-ln:Borrower`, and `fibo-loan-ln-ln:Lender`. We simplify the class hierarchy but preserve the core semantics.
+In FIBO's OWL ontologies, these are modeled as `fibo-loan-ln-ln:Loan`, `fibo-fbc-dae-dbt:Borrower`, and `fibo-fbc-dae-dbt:Lender`.
+The LOAN module imports and constrains these party-role concepts for loan-specific use. We simplify the class hierarchy but preserve the core semantics.
 
 ## Key properties
 
@@ -50,7 +51,7 @@ FIBO models loan party roles as relationships from the contract object to the pa
 - **owedBy**: `Loan` → `Borrower` (`many-to-one`) — a loan is owed by exactly one borrower, but a borrower can hold multiple loans
 - **originatedBy**: `Loan` → `Lender` (`many-to-one`) — a loan is originated by one lender, but a lender can originate many loans
 
-> **FIBO reference**: In the full FIBO model, party roles are more granular — a Borrower is a `PartyInRole` with a `BorrowerRole`. We use the simplified direct-entity model for clarity. See [FIBO Party module](https://github.com/edmcouncil/fibo/tree/master/FND/Parties).
+> **FIBO reference**: In the full FIBO model, borrower and lender are contract-party role concepts used through debt and loan ontologies, with role semantics grounded in party and contract patterns. We use the simplified direct-entity model for clarity. See [FBC Debt](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt), [LOAN LoansGeneral](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans), and [FND Parties](https://github.com/edmcouncil/fibo/tree/master/FND/Parties).
 
 ## Step 1 graph
 
