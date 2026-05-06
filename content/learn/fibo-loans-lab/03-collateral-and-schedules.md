@@ -25,7 +25,7 @@ These additions capture two core FIBO concerns: **security agreements** and **te
 | `assetType` | string | Identifier — the kind of asset (e.g., "real property", "vehicle", "securities") |
 | `appraisedValue` | decimal (USD) | Market value at time of appraisal |
 
-> **FIBO reference**: In the full ontology, collateral connects to `fibo-fnd-plc-rp:RealProperty` for mortgages and to abstract `Asset` classes for other secured lending. The FIBO Mortgages module ([LOAN/RealEstateLoans/Mortgages](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)) adds lien-specific restrictions via `owl:Restriction` blocks.
+> **FIBO reference**: In the full ontology, debt collateral is modeled as `fibo-fbc-dae-dbt:Collateral`, which can represent physical and non-physical pledged assets. In the FIBO Mortgages module ([LOAN/RealEstateLoans/Mortgages](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)), `LoanSecuredByRealEstate` constrains collateral to `fibo-fnd-plc-rp:RealProperty` and links to `SecurityAgreement` via `owl:Restriction` blocks.
 
 ### LoanPaymentSchedule
 
