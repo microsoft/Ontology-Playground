@@ -4,7 +4,7 @@ import { useRoute } from '../hooks/useRoute';
 import { routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
-import { Moon, Sun, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info } from 'lucide-react';
+import { Moon, Sun, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info, Rocket } from 'lucide-react';
 
 interface HeaderProps {
   onAboutClick: () => void;
@@ -16,9 +16,10 @@ interface HeaderProps {
   onLearnClick: () => void;
   onNLBuilderClick?: () => void;
   onSummaryClick: () => void;
+  onDeployClick?: () => void;
 }
 
-export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImportExportClick, onGalleryClick, onDesignerClick, onLearnClick, onNLBuilderClick, onSummaryClick }: HeaderProps) {
+export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImportExportClick, onGalleryClick, onDesignerClick, onLearnClick, onNLBuilderClick, onSummaryClick, onDeployClick }: HeaderProps) {
   const { darkMode, toggleDarkMode, totalPoints, earnedBadges, currentOntology, dataBindings } = useAppStore();
   const route = useRoute();
   const [shareStatus, setShareStatus] = useState<'idle' | 'copying' | 'copied' | 'downloaded'>('idle');
@@ -86,16 +87,18 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
   return (
     <header className="header">
       <div className="header-logo">
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="32" height="32" rx="4" fill="#0078D4"/>
-          <path d="M8 8H15V15H8V8Z" fill="white"/>
-          <path d="M17 8H24V15H17V8Z" fill="white" opacity="0.7"/>
-          <path d="M8 17H15V24H8V17Z" fill="white" opacity="0.7"/>
-          <path d="M17 17H24V24H17V17Z" fill="white" opacity="0.5"/>
-        </svg>
+        <img
+          src="https://www.vattenfall.se/Static/img/logo/VF_logo.svg"
+          alt="Vattenfall"
+          style={{ height: 32, width: 'auto' }}
+          onError={(e) => {
+            // Fallback: hide the image if CDN is unreachable
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+        />
         <div>
           <span className="header-title">
-            Ontology Playground <span className="header-title-preview">(Preview)</span>
+            Ontology Playground
           </span>
           <span className="header-context">{ontologyDisplayName}</span>
         </div>
@@ -119,7 +122,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
           className="header-text-btn"
           onClick={handleShare}
           title={shareableId ? 'Copy shareable link to this ontology' : 'Share this ontology via link'}
-          style={shareStatus === 'copied' ? { color: 'var(--ms-green, #107C10)' } : shareStatus === 'downloaded' ? { color: 'var(--ms-blue, #0078D4)' } : undefined}
+          style={shareStatus === 'copied' ? { color: 'var(--ms-green, #107C10)' } : shareStatus === 'downloaded' ? { color: 'var(--ms-blue, #0066B3)' } : undefined}
         >
           {shareStatus === 'downloaded' ? <Download size={16} /> : <Share2 size={16} />}
           <span>{shareLabel}</span>
@@ -142,6 +145,12 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         <button className="icon-btn" onClick={onLearnClick} data-tooltip="Ontology School" aria-label="Ontology School">
           <BookOpen size={20} />
         </button>
+        {onDeployClick && (
+          <button className="header-text-btn" onClick={onDeployClick} data-tooltip="Push to Fabric" aria-label="Push to Fabric" style={{ color: 'var(--ms-green, #107C10)' }}>
+            <Rocket size={16} />
+            <span>Push</span>
+          </button>
+        )}
         <button className="icon-btn" onClick={onImportExportClick} data-tooltip="Import / Export" aria-label="Import / Export">
           <FileJson size={20} />
         </button>
@@ -195,6 +204,11 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
             <button className="mobile-menu-item" onClick={menuAction(onLearnClick)}>
               <BookOpen size={18} /> Ontology School
             </button>
+            {onDeployClick && (
+              <button className="mobile-menu-item" onClick={menuAction(onDeployClick)}>
+                <Rocket size={18} /> Push to Fabric
+              </button>
+            )}
             <button className="mobile-menu-item" onClick={menuAction(onImportExportClick)}>
               <FileJson size={18} /> Import / Export
             </button>
