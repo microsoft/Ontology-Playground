@@ -1,0 +1,14 @@
+{
+  "name": "Telecom Customer Ontology",
+  "description": "Ontology for telecom customer behavior, offers, and analytics relationships.",
+  "icon": "📊",
+  "category": "telecom",
+  "tags": [
+    "telecom",
+    "analytics",
+    "customer",
+    "knowledge-graph",
+    "ontology"
+  ],
+  "author": "Alaa Ali"
+}
