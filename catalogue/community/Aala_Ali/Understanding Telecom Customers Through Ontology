@@ -1,0 +1,19 @@
+{
+"name": "Understanding Telecom Customers Through Ontology",
+"description": "This ontology models how telecom companies understand customer behavior, usage patterns, churn risk, offers, campaigns, and revenue relationships to support customer-centric decision making and AI-driven insights.",
+"icon": "📶",
+"category": "telecommunications",
+"tags": [
+"telecom",
+"customer-behavior",
+"offers",
+"campaigns",
+"churn-risk",
+"revenue",
+"ontology",
+"fabric-iq",
+"knowledge-graph"
+],
+"author": "Alaa Ali",
+"share_link": "https://microsoft.github.io/Ontology-Playground/#/share/eJy1l82O2zYQx1_FYK4y4I_98PrW7CZATinSzSlYCDQ1komlSHU4cios9gXaQ5Cktx4KFEX7AHmxPEIgybYYm5Q3xu7Ntv4z_PvH4XB0x4wmo0xWsfkd0zwHNmdvdQJoietE6mxwDQqEyQeXpSWTA9rB9RJNmS0HrzehEUvACpQFSaPZnLGIgSZJ1XVVgGXzd3dMJmzONLwftg-GMxZtlruClRTgSyJF8-nr33_-zyImjDLI5uzZaDSbnE9YxAo0BSDJ9RrrfEmTL5YJixhVRf2TJZQ6qzPaV0ntIJWAbE5Ywn20G9jE7IY6Mg303uBtLHjBF1JJqvrUNudIxdJoiFPFs066MEYB1-z-plbv8jnv-LyBFeiyH9Dn311AL2bj8WQaBIRtwiMIbSJ5bkpNXXQCQuZcMY-UEPT-Oh5hASjNg5TWlCg8W-QFedaBvFyWqN9Ie9uL8tMXF-XLl88vRqMwSmlvj-FYhylYger9v7UKgVujD8qsMAieDfEyOXWY8LzgMtO9SP769P3x--niRRiJWGc8Ass2tPne85e3wszwXoRboVhyrftxW-JIccLJ5Vh_czSgE6_Ci_mkw_zW8gzinzkRYD_rz3-4rE8vJ1cX4yDrsklbtGmPAL6JPMQ74cTjdrGDVbsydRN9oLiVpQi_lqBFbyNtpYF24uU_7fi_TlPAXu4f_nG5X82mz0dh7qZOdwTvNu4Q7VZ16BpacSUTSVWc8Mp2QqkJMkBXWaAUvt7glLWSmWzvshhL9dDeOukA_wJZDs2VEEb88V8X8Xh0fjkOtxHbJjwC8ibyEOaNzjXcJy-gGYgOF3WB0mCNcke53RovzLHTlNejVn-j-O_7pnw-uzoJN-V1xmOa8ib0UEES6BIhzo2mZX9BKpmCqISC2BLPepMqU3FFVS2k0snqTE83EUNQvEZkl7Jw5k0ENWwegR2SGY6dhrz-OSbDIpaiyfdbN5n9kUxwTKTmzdA3Z0ZDnTfn2jMDb_d414VzaniagiDrtTDzWDh5JAtOrUmdqrr3gt_F9AlBjDoXxDGDAAifhcmehXrtH_dw8TALp09owXkTKtDkhgI74fMwfSQPztsGocwyQL-HM4-H08ephjO3JBMpeIiD72ieBTkY7XlxCnlw5uIMNGDQw_jpToXTo2y5qEMW4Tbl8_FYNeFMT_DbUi5k4Gz4POz3qeM8OH1qAcrozA5-gET4hPqr4uY-YgvZXPL1JXJz_w3ClcQa"
+}
