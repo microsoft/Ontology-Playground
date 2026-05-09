@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/cruise-company-operations/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/cruise-company-operations/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/cruise-company-operations/">
+        <rdfs:label>Cruise Company Operations</rdfs:label>
+        <rdfs:comment>Cruise line operations &amp; guest experience.</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-9">
+        <rdfs:label>LoyaltyTier</rdfs:label>
+        <rdfs:comment>Loyalty program levels (Silver, Gold, Platinum, Diamond).</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-8">
+        <rdfs:label>Department</rdfs:label>
+        <rdfs:comment>Organizational unit (Hotel, Deck, Engine, Food &amp; Beverage, Entertainment, etc.).</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-7">
+        <rdfs:label>CrewMember</rdfs:label>
+        <rdfs:comment>Employee working on the ship.</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-6">
+        <rdfs:label>OnboardService</rdfs:label>
+        <rdfs:comment>Any paid or complimentary service consumed onboard.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-5">
+        <rdfs:label>Excursion</rdfs:label>
+        <rdfs:comment>Shore excursion or tour.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-4">
+        <rdfs:label>Port</rdfs:label>
+        <rdfs:comment>Destination port / city.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-3">
+        <rdfs:label>Itinerary</rdfs:label>
+        <rdfs:comment>Route and sequence of ports.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-2">
+        <rdfs:label>Cabin</rdfs:label>
+        <rdfs:comment>Individual stateroom or suite.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/New-entity-1">
+        <rdfs:label>Ship</rdfs:label>
+        <rdfs:comment>Physical vessel (e.g. Fabric Dream, Fabric Adventure)</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/Customer">
+        <rdfs:label>Guest</rdfs:label>
+        <rdfs:comment>Individual passenger (includes loyalty members).</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/Product">
+        <rdfs:label>Booking</rdfs:label>
+        <rdfs:comment>Reservation / booking record.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/cruise-company-operations/Order">
+        <rdfs:label>Sailing</rdfs:label>
+        <rdfs:comment>Specific departure of a ship (e.g. 7-night Mediterranean on July 15).</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-9_tierName">
+        <rdfs:label>tierName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-9_minimumPoints">
+        <rdfs:label>minimumPoints</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-9_benefits">
+        <rdfs:label>benefits</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-8_departmentName">
+        <rdfs:label>departmentName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-8_headOfDepartment">
+        <rdfs:label>headOfDepartment</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-8_budgetAllocation">
+        <rdfs:label>budgetAllocation</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-7_crewId">
+        <rdfs:label>crewId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-7_fullName">
+        <rdfs:label>fullName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-7_position">
+        <rdfs:label>position</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-7_department">
+        <rdfs:label>department</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-7_nationality">
+        <rdfs:label>nationality</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-7_contractStart">
+        <rdfs:label>contractStart</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-7_contractEnd">
+        <rdfs:label>contractEnd</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-7_certifications">
+        <rdfs:label>certifications</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-6_serviceId">
+        <rdfs:label>serviceId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-6"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-6_category">
+        <rdfs:label>category</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-6"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-6_priceType">
+        <rdfs:label>priceType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-6"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-5_excursionId">
+        <rdfs:label>excursionId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-5_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-5_pricePerPerson">
+        <rdfs:label>pricePerPerson</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-5_durationHours">
+        <rdfs:label>durationHours</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-5_difficultyLevel">
+        <rdfs:label>difficultyLevel</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-5_maxParticipants">
+        <rdfs:label>maxParticipants</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-5_languageOptions">
+        <rdfs:label>languageOptions</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-4_portCode">
+        <rdfs:label>portCode</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-4_portName">
+        <rdfs:label>portName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-4_country">
+        <rdfs:label>country</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-4_arrivalTime">
+        <rdfs:label>arrivalTime</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-4_departureTime">
+        <rdfs:label>departureTime</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-4_dockingType">
+        <rdfs:label>dockingType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-3_itineraryId">
+        <rdfs:label>itineraryId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-3_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-3_routeType">
+        <rdfs:label>routeType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-2_cabinNumber">
+        <rdfs:label>cabinNumber</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-2_cabinType">
+        <rdfs:label>cabinType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-2_deck">
+        <rdfs:label>deck</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-2_maxOccupancy">
+        <rdfs:label>maxOccupancy</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-2_basePrice">
+        <rdfs:label>basePrice</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-2_currentStatus">
+        <rdfs:label>currentStatus</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-1_shipId">
+        <rdfs:label>shipId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-1_shipName">
+        <rdfs:label>shipName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-1_buildYear">
+        <rdfs:label>buildYear</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-1_grossTonnage">
+        <rdfs:label>grossTonnage</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-1_passengerCapacity">
+        <rdfs:label>passengerCapacity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-1_crewCapacity">
+        <rdfs:label>crewCapacity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-1_currentLocation">
+        <rdfs:label>currentLocation</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/new-entity-1_maintenanceStatus">
+        <rdfs:label>maintenanceStatus</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_guestId">
+        <rdfs:label>guestId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_fullName">
+        <rdfs:label>fullName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_dateOfBirth">
+        <rdfs:label>dateOfBirth</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_nationality">
+        <rdfs:label>nationality</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_email">
+        <rdfs:label>email</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_phone">
+        <rdfs:label>phone</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_loyaltyNumber">
+        <rdfs:label>loyaltyNumber</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_loyaltyTier">
+        <rdfs:label>loyaltyTier</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_totalCruisesTaken">
+        <rdfs:label>totalCruisesTaken</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/customer_lifetimeSpend">
+        <rdfs:label>lifetimeSpend</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/product_bookingId">
+        <rdfs:label>bookingId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/product_bookingDate">
+        <rdfs:label>bookingDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/product_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/product_totalAmount">
+        <rdfs:label>totalAmount</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/product_depositPaid">
+        <rdfs:label>depositPaid</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/product_finalPaymentDate">
+        <rdfs:label>finalPaymentDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/product_numberOfGuests">
+        <rdfs:label>numberOfGuests</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/product_currency">
+        <rdfs:label>currency</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/order_sailingId">
+        <rdfs:label>sailingId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/order_departureDate">
+        <rdfs:label>departureDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/order_returnDate">
+        <rdfs:label>returnDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/order_durationNights">
+        <rdfs:label>durationNights</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/order_occupancyRate">
+        <rdfs:label>occupancyRate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/cruise-company-operations/order_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-10">
+        <rdfs:label>books</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:comment>Guests book excursions during a sailing (N:N).</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>customer</ont:fromEntityId>
+        <ont:toEntityId>new-entity-5</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-9">
+        <rdfs:label>is assigned to</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:comment>A crew member is assigned to a sailing (N:N).</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-7</ont:fromEntityId>
+        <ont:toEntityId>order</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-8">
+        <rdfs:label>reserves</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-2"/>
+        <rdfs:comment>Booking reserves a cabin on a specific sailing (N:1).</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>product</ont:fromEntityId>
+        <ont:toEntityId>new-entity-2</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-7">
+        <rdfs:label>belongs to</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-9"/>
+        <rdfs:comment>Guest belongs to a Loyalty Tier (N:1).</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>customer</ont:fromEntityId>
+        <ont:toEntityId>new-entity-9</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-6">
+        <rdfs:label>belongs to</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-2"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:comment>Cabin belongs to a ship (N:1).</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-2</ont:fromEntityId>
+        <ont:toEntityId>new-entity-1</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-5">
+        <rdfs:label>works in </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-7"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-8"/>
+        <rdfs:comment>The crew members work in one department (N:1).</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-7</ont:fromEntityId>
+        <ont:toEntityId>new-entity-8</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-4">
+        <rdfs:label>consumes</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-6"/>
+        <rdfs:comment>Guests consume onboard services (N:N, with date, amount spent, location on ship).</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>customer</ont:fromEntityId>
+        <ont:toEntityId>new-entity-6</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-3">
+        <rdfs:label>take place in</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-5"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-4"/>
+        <rdfs:comment>Excursions take place in a port (N:1).</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-5</ont:fromEntityId>
+        <ont:toEntityId>new-entity-4</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-2">
+        <rdfs:label>visits</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-3"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-4"/>
+        <rdfs:comment>Itinerary visits ports (1:N, with sequence number and times).</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-3</ont:fromEntityId>
+        <ont:toEntityId>new-entity-4</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/rel-relates-to-1">
+        <rdfs:label>follows a</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-3"/>
+        <rdfs:comment>Sailing follows a Itinerary.</rdfs:comment>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>order</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/r-places">
+        <rdfs:label>makes</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Customer"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/Product"/>
+        <rdfs:comment>Guest makes booking.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>customer</ont:fromEntityId>
+        <ont:toEntityId>product</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/cruise-company-operations/r-contains">
+        <rdfs:label>is operated by</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/cruise-company-operations/Order"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/cruise-company-operations/New-entity-1"/>
+        <rdfs:comment>Sailing is operated by a ship.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>order</ont:fromEntityId>
+        <ont:toEntityId>new-entity-1</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>

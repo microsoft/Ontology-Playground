@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/star-wars-galaxy/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/star-wars-galaxy/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/star-wars-galaxy/">
+        <rdfs:label>Star Wars Galaxy</rdfs:label>
+        <rdfs:comment>The balance of the Force and galactic conflict</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/star-wars-galaxy/New-entity-5">
+        <rdfs:label>Species</rdfs:label>
+        <rdfs:comment>Human, Wookiee, Twi’lek, Zabrak…</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/star-wars-galaxy/New-entity-4">
+        <rdfs:label>Starship</rdfs:label>
+        <rdfs:comment>Millennium Falcon, X-Wing, Star Destroyer…</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/star-wars-galaxy/New-entity-3">
+        <rdfs:label>Event</rdfs:label>
+        <rdfs:comment>Order 66, Battle of Yavin, Duel on Mustafar…</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/star-wars-galaxy/New-entity-2">
+        <rdfs:label>Artifact</rdfs:label>
+        <rdfs:comment>Lightsaber, Holocron, Death Star, Kyber Crystal…</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/star-wars-galaxy/New-entity-1">
+        <rdfs:label>Planet</rdfs:label>
+        <rdfs:comment>Planet or StarSystem (Tatooine, Coruscant, Dagobah, Mustafar, Endor…).</rdfs:comment>
+        <ont:icon>🌐</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/star-wars-galaxy/Device">
+        <rdfs:label>forceSensitiveBeing</rdfs:label>
+        <rdfs:comment>This is the base entity for anyone who can use the Force (Jedi, Sith, Padawan, Master, Inquisitor, etc.).</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/star-wars-galaxy/Sensor">
+        <rdfs:label>Character</rdfs:label>
+        <rdfs:comment>A sentient being who exists and acts within the Star Wars galaxy, serving as the primary agent of stories, conflicts, and destiny. Examples: Luke Skywalker (Jedi hero), Darth Vader (fallen Sith), Han Solo (smuggler turned rebel), Yoda (ancient Jedi Master), Princess Leia (senator and leader).</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/star-wars-galaxy/Reading">
+        <rdfs:label>Faction</rdfs:label>
+        <rdfs:comment>Galactic Republic, Galactic Empire, Rebel Alliance, Jedi Order, Sith Order, Bounty Hunter Guild, etc.</rdfs:comment>
+        <ont:icon>⚡</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-5_speciesId">
+        <rdfs:label>speciesId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-5_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-5_averageHeight">
+        <rdfs:label>averageHeight</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-5_averageLifespan">
+        <rdfs:label>averageLifespan</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-5_homeworld">
+        <rdfs:label>homeworld</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-5_forceSensitivityPotential">
+        <rdfs:label>forceSensitivityPotential</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-5_physicalTraits">
+        <rdfs:label>physicalTraits</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-5_language">
+        <rdfs:label>language</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_starshipId">
+        <rdfs:label>starshipId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_shipClass">
+        <rdfs:label>shipClass</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_manufacturer">
+        <rdfs:label>manufacturer</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_crewCapacity">
+        <rdfs:label>crewCapacity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_hyperdriveRating">
+        <rdfs:label>hyperdriveRating</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_affiliation">
+        <rdfs:label>affiliation</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_isDestroyed">
+        <rdfs:label>isDestroyed</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-4_notableFeature">
+        <rdfs:label>notableFeature</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_eventId">
+        <rdfs:label>eventId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_eventType">
+        <rdfs:label>eventType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_startYear">
+        <rdfs:label>startYear</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_location">
+        <rdfs:label>location</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_outcome">
+        <rdfs:label>outcome</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_forceImpact">
+        <rdfs:label>forceImpact</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_keyParticipants">
+        <rdfs:label>keyParticipants</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-3_isCanon">
+        <rdfs:label>isCanon</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_artifactId">
+        <rdfs:label>artifactId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_artifactType">
+        <rdfs:label>artifactType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_powerSource">
+        <rdfs:label>powerSource</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_alignment">
+        <rdfs:label>alignment</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_currentOwner">
+        <rdfs:label>currentOwner</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_isDestroyed">
+        <rdfs:label>isDestroyed</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_creationEra">
+        <rdfs:label>creationEra</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-2_significance">
+        <rdfs:label>significance</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_planetId">
+        <rdfs:label>planetId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_climate">
+        <rdfs:label>climate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_terrain">
+        <rdfs:label>terrain</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_population">
+        <rdfs:label>population</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_politicalAllegiance">
+        <rdfs:label>politicalAllegiance</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_strategicImportance">
+        <rdfs:label>strategicImportance</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_hasForceNexus">
+        <rdfs:label>hasForceNexus</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_gravityLevel">
+        <rdfs:label>gravityLevel</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/new-entity-1_dayLength">
+        <rdfs:label>dayLength</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_fsbId">
+        <rdfs:label>fsbId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_species">
+        <rdfs:label>species</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_birthYear">
+        <rdfs:label>birthYear</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_forceAlignment">
+        <rdfs:label>forceAlignment</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_forceLevel">
+        <rdfs:label>forceLevel</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_currentTitle">
+        <rdfs:label>currentTitle</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_isAlive">
+        <rdfs:label>isAlive</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_midichlorianCount">
+        <rdfs:label>midichlorianCount</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/device_mentality">
+        <rdfs:label>mentality</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_characterId">
+        <rdfs:label>characterId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_species">
+        <rdfs:label>species</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>Temperature,Humidity,Pressure,Motion</ont:enumValues>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_gender">
+        <rdfs:label>gender</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_age">
+        <rdfs:label>age</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_homeworld">
+        <rdfs:label>homeworld</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_occupation">
+        <rdfs:label>occupation</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_affiliation">
+        <rdfs:label>affiliation</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/sensor_isForceSensitive">
+        <rdfs:label>isForceSensitive</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_factionId">
+        <rdfs:label>factionId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_ideology">
+        <rdfs:label>ideology</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_foundingYear">
+        <rdfs:label>foundingYear</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_currentLeader">
+        <rdfs:label>currentLeader</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_primaryGoal">
+        <rdfs:label>primaryGoal</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_headquarters">
+        <rdfs:label>headquarters</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/star-wars-galaxy/reading_militaryStrength">
+        <rdfs:label>militaryStrength</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/rel-relates-to-8">
+        <rdfs:label>isWieldedBy</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:comment>An artifact is primarily wielded by one character.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-2</ont:fromEntityId>
+        <ont:toEntityId>sensor</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/rel-relates-to-7">
+        <rdfs:label>controlsA</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:comment>A Faction controls a Planet or System.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>reading</ont:fromEntityId>
+        <ont:toEntityId>new-entity-1</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/rel-relates-to-6">
+        <rdfs:label>isHomeworldOf</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:comment>A planet is the birthplace/homeworld of characters.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>sensor</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/rel-relates-to-5">
+        <rdfs:label>participatesIn</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:comment>A character participates in a historical event.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>sensor</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/rel-relates-to-4">
+        <rdfs:label>isHomeworldOf</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-5"/>
+        <rdfs:comment>A planet is the homeworld of one or more species.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>new-entity-5</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/rel-relates-to-3">
+        <rdfs:label>pilots</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-4"/>
+        <rdfs:comment>A character pilots one or more starships (Han Solo pilots the Millennium Falcon).</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>sensor</ont:fromEntityId>
+        <ont:toEntityId>new-entity-4</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/rel-relates-to-2">
+        <rdfs:label>uses</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-2"/>
+        <rdfs:comment>A character uses one or more artifacts (Luke uses a Lightsaber</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>sensor</ont:fromEntityId>
+        <ont:toEntityId>new-entity-2</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/rel-relates-to-1">
+        <rdfs:label>occursOn</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-3"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/New-entity-1"/>
+        <rdfs:comment>An event takes place on a specific planet (Battle of Yavin occursOn Yavin 4).</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-3</ont:fromEntityId>
+        <ont:toEntityId>new-entity-1</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/r-has-sensor">
+        <rdfs:label>isMemberOf</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Sensor"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:comment>A character belongs to one primary faction or organization at a given time (e.g., Luke isMemberOf Rebel Alliance)</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>sensor</ont:fromEntityId>
+        <ont:toEntityId>reading</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/star-wars-galaxy/r-produces">
+        <rdfs:label>isMemberOf</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/star-wars-galaxy/Device"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/star-wars-galaxy/Reading"/>
+        <rdfs:comment>A Force user belongs to an Order or faction (Jedi Order, Sith Order, etc.).</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>device</ont:fromEntityId>
+        <ont:toEntityId>reading</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>
