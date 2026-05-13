@@ -1,0 +1,8 @@
+{
+  "name": "NAUClassSearchOntology",
+  "description": "Grounded ontology for the NAU Class Search Data Agent. Internal RDF identifiers are kept stable so the ontology playground preserves the graph connections, while entity display titles use underscores and relationship labels read as natural language. The model separates Course from Course_Offering, models Course_Offering as subject plus catalog number, places prerequisites and requisites on Course_Offering, separates Term from Session, models multiple Sessions per Term with week lengths, connects Buildings to Campus and Campus to College, and models Class_Section enrollment through Academic_Policy and Reserve_Capacity_Rule.",
+  "icon": "📦",
+  "category": "other",
+  "tags": [],
+  "author": ""
+}

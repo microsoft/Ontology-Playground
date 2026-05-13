@@ -1,0 +1,1288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/nauclasssearchontology/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/nauclasssearchontology/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/nauclasssearchontology/">
+        <rdfs:label>NAUClassSearchOntology</rdfs:label>
+        <rdfs:comment>Grounded ontology for the NAU Class Search Data Agent. Internal RDF identifiers are kept stable so the ontology playground preserves the graph connections, while entity display titles use underscores and relationship labels read as natural language. The model separates Course from Course_Offering, models Course_Offering as subject plus catalog number, places prerequisites and requisites on Course_Offering, separates Term from Session, models multiple Sessions per Term with week lengths, connects Buildings to Campus and Campus to College, and models Class_Section enrollment through Academic_Policy and Reserve_Capacity_Rule.</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/Course">
+        <rdfs:label>Course</rdfs:label>
+        <rdfs:comment>Catalog-level academic course concept grounded in course catalog data. A Course represents the stable academic idea, including title, units, career, level, and long catalog description text. Specific offerable variants, subject/catalog-number combinations, course_offer_number, and requisite logic are modeled through Course_Offering.</rdfs:comment>
+        <ont:icon>🎓</ont:icon>
+        <ont:color>#2F80ED</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/CourseOffering">
+        <rdfs:label>Course_Offering</rdfs:label>
+        <rdfs:comment>Offerable course concept grounded in the PeopleSoft course_id + course_offer_number pattern. A Course_Offering is made up of a Subject and catalog_number, belongs to a parent Course, can be scheduled as Class_Sections, and is the correct place to attach prerequisite, co-requisite, placement, equivalency, and recommended preparation rules.</rdfs:comment>
+        <ont:icon>🧾</ont:icon>
+        <ont:color>#6C63FF</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/Subject">
+        <rdfs:label>Subject</rdfs:label>
+        <rdfs:comment>Academic subject code such as CS, BIO, MATH, PSY, or EE. A Subject is mapped to an Academic_Organization and College so class search can reason from subject area to academic ownership.</rdfs:comment>
+        <ont:icon>🔤</ont:icon>
+        <ont:color>#1ABC9C</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/College">
+        <rdfs:label>College</rdfs:label>
+        <rdfs:comment>College-level academic grouping. A College can contain multiple Academic_Organizations and can own or be associated with Subjects.</rdfs:comment>
+        <ont:icon>🏫</ont:icon>
+        <ont:color>#F2A541</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/ClassSection">
+        <rdfs:label>Class_Section</rdfs:label>
+        <rdfs:comment>Scheduled class section grounded in class scheduling data. A Class_Section is the student-facing scheduled instance of a Course_Offering in a specific Session, with enrollment, capacity, status, delivery mode, class number, multiple Meeting_Patterns, instructors, Reserve_Capacity_Rules, and Academic_Policy controls for add, drop, and waitlist timing.</rdfs:comment>
+        <ont:icon>🗓️</ont:icon>
+        <ont:color>#00A6ED</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/Term">
+        <rdfs:label>Term</rdfs:label>
+        <rdfs:comment>Academic term such as Fall, Spring, or Summer. A Term is measured in number of weeks and can contain multiple Sessions. For example, a Summer Term may be 12 weeks while it contains multiple 5-week summer sessions.</rdfs:comment>
+        <ont:icon>📅</ont:icon>
+        <ont:color>#00B894</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/Session">
+        <rdfs:label>Session</rdfs:label>
+        <rdfs:comment>Session within a Term, such as a 12-week summer session, 5-week summer session 1, 5-week summer session 2, or 5-week summer session 3. Each Session is measured in number of weeks and can contain multiple Class_Sections.</rdfs:comment>
+        <ont:icon>⏱️</ont:icon>
+        <ont:color>#20C997</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule">
+        <rdfs:label>Academic_Policy</rdfs:label>
+        <rdfs:comment>Academic policy governing Class_Section enrollment timing and rules, including open enrollment, add/drop periods, waitlist policy, withdrawal deadlines, and related session or section-specific controls.</rdfs:comment>
+        <ont:icon>🚦</ont:icon>
+        <ont:color>#FF8C42</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/ProfessorInstructor">
+        <rdfs:label>Instructor</rdfs:label>
+        <rdfs:comment>Professor or instructor assigned to teach a Class_Section. Uses EMPLID or another person identifier as the stable natural key and instructor_name as the display value.</rdfs:comment>
+        <ont:icon>👩‍🏫</ont:icon>
+        <ont:color>#9B51E0</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/AcademicOrganization">
+        <rdfs:label>Academic_Organization</rdfs:label>
+        <rdfs:comment>Academic owner such as college, division, department, school, or academic organization. Supports questions by organization, subject ownership, class ownership, and program ownership.</rdfs:comment>
+        <ont:icon>🏛️</ont:icon>
+        <ont:color>#F2994A</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/MeetingPattern">
+        <rdfs:label>Meeting_Pattern</rdfs:label>
+        <rdfs:comment>Meeting days, meeting times, and location pattern for a Class_Section. A Class_Section can have multiple Meeting_Patterns for lecture, lab, fieldwork, or other components.</rdfs:comment>
+        <ont:icon>🕒</ont:icon>
+        <ont:color>#27AE60</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/FacilityRoom">
+        <rdfs:label>Room</rdfs:label>
+        <rdfs:comment>Physical room or facility where a Meeting_Pattern occurs. A Facility_Room is located in a Building.</rdfs:comment>
+        <ont:icon>🚪</ont:icon>
+        <ont:color>#56CCF2</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/Building">
+        <rdfs:label>Building</rdfs:label>
+        <rdfs:comment>Campus building that contains one or more Facility_Rooms. A Building is located on a Campus.</rdfs:comment>
+        <ont:icon>🏢</ont:icon>
+        <ont:color>#828282</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/Campus">
+        <rdfs:label>Campus</rdfs:label>
+        <rdfs:comment>Campus or location context for Buildings and Class_Sections, such as the Flagstaff Mountain Campus. A Campus belongs to a College in this ontology design.</rdfs:comment>
+        <ont:icon>🌲</ont:icon>
+        <ont:color>#145A32</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule">
+        <rdfs:label>Reserve_Capacity_Rule</rdfs:label>
+        <rdfs:comment>Reserve capacity rule that allows eligible student populations to enroll in a Class_Section. A Class_Section can have multiple Reserve_Capacity_Rules with reserved seats, eligible populations, consent requirements, and enrollment counts.</rdfs:comment>
+        <ont:icon>🔐</ont:icon>
+        <ont:color>#EB5757</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/ClassAttribute">
+        <rdfs:label>Class_Attribute</rdfs:label>
+        <rdfs:comment>Attribute attached to a Class_Section or Course_Offering, such as Liberal Studies, CCAT, component, lecture, lab, fieldwork, or other designations.</rdfs:comment>
+        <ont:icon>🏷️</ont:icon>
+        <ont:color>#F2C94C</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/RequisiteRule">
+        <rdfs:label>Requisite_Rule</rdfs:label>
+        <rdfs:comment>Prerequisite, co-requisite, equivalency, placement, or recommended preparation rule. Requisite_Rules attach to Course_Offerings and point to prerequisite Course_Offerings, which avoids a direct Course-to-Course loop.</rdfs:comment>
+        <ont:icon>🔗</ont:icon>
+        <ont:color>#BB6BD9</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/AcademicProgram">
+        <rdfs:label>Academic_Program</rdfs:label>
+        <rdfs:comment>Degree, plan, certificate, or academic program that contains Academic_Requirements and may require Courses or Course_Offerings.</rdfs:comment>
+        <ont:icon>🎯</ont:icon>
+        <ont:color>#219653</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/nauclasssearchontology/AcademicRequirement">
+        <rdfs:label>Academic_Requirement</rdfs:label>
+        <rdfs:comment>Requirement inside an Academic_Program, such as capstone, lab science, Liberal Studies, major requirement, or prerequisite-ready pathway. Requirements may be satisfied by Courses or Course_Offerings.</rdfs:comment>
+        <ont:icon>✅</ont:icon>
+        <ont:color>#2D9CDB</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_course_id">
+        <rdfs:label>course_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>PeopleSoft COURSE_ID or durable course identifier.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_course_title">
+        <rdfs:label>course_title</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Course title.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_course_description">
+        <rdfs:label>course_description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Long catalog description text used for text-based AI search and retrieval.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_academic_career">
+        <rdfs:label>academic_career</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Academic career such as UGRD or GRAD.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_academic_level">
+        <rdfs:label>academic_level</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Academic level such as undergraduate or graduate.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_units">
+        <rdfs:label>units</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Credit hours or course units.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/courseOffering_course_offering_key">
+        <rdfs:label>course_offering_key</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Business identifier for a Course_Offering, normally course_id + course_offer_number.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/courseOffering_course_id">
+        <rdfs:label>course_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>PeopleSoft COURSE_ID inherited from the parent Course.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/courseOffering_course_offer_number">
+        <rdfs:label>course_offer_number</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>PeopleSoft COURSE_OFFER_NUMBER. This belongs to Course_Offering, not the generic Course concept.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/courseOffering_subject_code">
+        <rdfs:label>subject_code</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Subject code that forms the first part of the class offering, such as CS, BIO, MATH, PSY, or EE.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/courseOffering_catalog_number">
+        <rdfs:label>catalog_number</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Catalog number that forms the second part of the class offering, such as 101, 238, or 310.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/courseOffering_course_code">
+        <rdfs:label>course_code</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Combined subject + catalog number display code such as CS 310 or MATH 238.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/courseOffering_offering_status">
+        <rdfs:label>offering_status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Whether the Course_Offering is active, inactive, or otherwise available to schedule.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/subject_subject_code">
+        <rdfs:label>subject_code</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Subject"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Subject code, such as CS, BIO, MATH, PSY, or EE.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/subject_subject_description">
+        <rdfs:label>subject_description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Subject"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Full subject description.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/college_college_code">
+        <rdfs:label>college_code</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/College"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>College code or identifier.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/college_college_name">
+        <rdfs:label>college_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/College"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>College name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_class_section_sk">
+        <rdfs:label>class_section_sk</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Surrogate key for the Class_Section.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_class_section_business_key">
+        <rdfs:label>class_section_business_key</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Composite business key for a section, generally course_id + course_offer_number + term_id + session_id + class_section_id.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_term_id">
+        <rdfs:label>term_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Term code for the Class_Section.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_session_id">
+        <rdfs:label>session_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Session code for the Class_Section.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_class_section_id">
+        <rdfs:label>class_section_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>PeopleSoft CLASS_SECTION or section identifier.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_class_number">
+        <rdfs:label>class_number</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Student-facing class number.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_delivery_mode">
+        <rdfs:label>delivery_mode</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Delivery mode such as in-person, online, hybrid, or blended.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_enrollment_status">
+        <rdfs:label>enrollment_status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Enrollment status such as open, closed, cancelled, waitlist, or tentatively scheduled.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_enrollment_capacity">
+        <rdfs:label>enrollment_capacity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Maximum enrollment capacity.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_students_enrolled">
+        <rdfs:label>students_enrolled</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Current number of enrolled students.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_open_seats">
+        <rdfs:label>open_seats</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Calculated seats available for enrollment.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_waitlist_capacity">
+        <rdfs:label>waitlist_capacity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Maximum waitlist capacity.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_students_on_waitlist">
+        <rdfs:label>students_on_waitlist</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Current number of students on the waitlist.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_class_start_date">
+        <rdfs:label>class_start_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Class_Section start date.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_class_end_date">
+        <rdfs:label>class_end_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Class_Section end date.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_class_length_in_weeks">
+        <rdfs:label>class_length_in_weeks</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Length of the Class_Section in weeks when calculated or available.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classSection_dynamically_dated">
+        <rdfs:label>dynamically_dated</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment>Whether the Class_Section uses dynamically dated add, drop, or enrollment dates.</rdfs:comment>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/term_term_id">
+        <rdfs:label>term_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Term"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Term code such as 1257 or 1264.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/term_term_description">
+        <rdfs:label>term_description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Term"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Term description such as Fall 2026, Spring 2027, or Summer 2027.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/term_term_begin_date">
+        <rdfs:label>term_begin_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Term"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Term begin date.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/term_term_end_date">
+        <rdfs:label>term_end_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Term"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Term end date.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/term_term_length_in_weeks">
+        <rdfs:label>term_length_in_weeks</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Term"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Length of the Term in weeks. Example: a Summer Term may be 12 weeks.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/session_session_key">
+        <rdfs:label>session_key</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Unique Session key, normally term_id + session_id.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/session_session_id">
+        <rdfs:label>session_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Session code such as 12W, 5W1, 5W2, 5W3, M16, N5A, N5B, N10, N12, or dynamically dated session code.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/session_session_description">
+        <rdfs:label>session_description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Session description such as Summer 5-week Session 1.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/session_session_begin_date">
+        <rdfs:label>session_begin_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Session begin date.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/session_session_end_date">
+        <rdfs:label>session_end_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Session end date.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/session_session_length_in_weeks">
+        <rdfs:label>session_length_in_weeks</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>Length of the Session in weeks. Example: Summer sessions may be 5 weeks within a 12-week Summer Term.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_academic_policy_id">
+        <rdfs:label>academic_policy_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Identifier for an enrollment date control rule.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_open_enrollment_start_date">
+        <rdfs:label>open_enrollment_start_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date when enrollment opens.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_open_enrollment_end_date">
+        <rdfs:label>open_enrollment_end_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date when open enrollment closes or changes.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_add_start_date">
+        <rdfs:label>add_start_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date when students may begin adding a Class_Section.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_add_end_date">
+        <rdfs:label>add_end_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Last date to add a Class_Section.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_drop_start_date">
+        <rdfs:label>drop_start_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date when students may begin dropping a Class_Section.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_drop_end_date">
+        <rdfs:label>drop_end_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Last date to drop a Class_Section without the relevant penalty.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_withdrawal_deadline">
+        <rdfs:label>withdrawal_deadline</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Withdrawal deadline when available.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/enrollmentDateRule_policy_source">
+        <rdfs:label>policy_source</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Whether the date rule is derived from term, session, class section, dynamic dating, or another registrar rule source.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/professorInstructor_instructor_sk">
+        <rdfs:label>instructor_sk</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ProfessorInstructor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Surrogate key for the instructor.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/professorInstructor_emplid">
+        <rdfs:label>emplid</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ProfessorInstructor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Employee or person identifier for the instructor.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/professorInstructor_instructor_name">
+        <rdfs:label>instructor_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ProfessorInstructor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Instructor display name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/professorInstructor_instructor_role">
+        <rdfs:label>instructor_role</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ProfessorInstructor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Instructor role such as primary instructor, secondary instructor, or teaching assistant.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicOrganization_academic_org_sk">
+        <rdfs:label>academic_org_sk</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Surrogate or business key for the academic organization.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicOrganization_academic_owner_id">
+        <rdfs:label>academic_owner_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Academic owner identifier when available.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicOrganization_academic_org_name">
+        <rdfs:label>academic_org_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Academic organization name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicOrganization_organization_type">
+        <rdfs:label>organization_type</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Organization type such as college, division, department, school, or program-owning unit.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicOrganization_department">
+        <rdfs:label>department</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Department name when applicable.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicOrganization_division">
+        <rdfs:label>division</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Division name when applicable.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/meetingPattern_meeting_pattern_sk">
+        <rdfs:label>meeting_pattern_sk</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/MeetingPattern"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Surrogate key for the Meeting_Pattern.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/meetingPattern_meeting_pattern_number">
+        <rdfs:label>meeting_pattern_number</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/MeetingPattern"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Meeting pattern number or sequence.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/meetingPattern_meeting_days">
+        <rdfs:label>meeting_days</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/MeetingPattern"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Meeting days such as MWF, TuTh, or Online.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/meetingPattern_meeting_start_time">
+        <rdfs:label>meeting_start_time</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/MeetingPattern"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Meeting start time.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/meetingPattern_meeting_end_time">
+        <rdfs:label>meeting_end_time</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/MeetingPattern"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Meeting end time.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/facilityRoom_facility_id">
+        <rdfs:label>facility_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/FacilityRoom"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Facility or room identifier.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/facilityRoom_room_number">
+        <rdfs:label>room_number</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/FacilityRoom"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Room number.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/facilityRoom_room_description">
+        <rdfs:label>room_description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/FacilityRoom"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Room description or display name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/building_building_id">
+        <rdfs:label>building_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Building"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Building identifier.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/building_building_name">
+        <rdfs:label>building_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Building"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Building name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/campus_campus_code">
+        <rdfs:label>campus_code</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Campus"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Campus or location code.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/campus_campus_name">
+        <rdfs:label>campus_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Campus"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Campus name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_reserve_sk">
+        <rdfs:label>reserve_sk</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Surrogate key for the reserve capacity rule.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_reserve_capacity_id">
+        <rdfs:label>reserve_capacity_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Reserve capacity rule identifier.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_reserve_start_date">
+        <rdfs:label>reserve_start_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Date when the reserve capacity rule begins.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_reserve_group_description">
+        <rdfs:label>reserve_group_description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Description of the student group eligible for the reserved seats.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_eligible_population">
+        <rdfs:label>eligible_population</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Population allowed to enroll through this reserve rule, such as plan, campus, cohort, career, or student group.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_enrollment_consent">
+        <rdfs:label>enrollment_consent</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Enrollment consent requirement if the reserve rule requires permission.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_reserve_capacity">
+        <rdfs:label>reserve_capacity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Number of seats reserved for the eligible population.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_reserve_enrolled">
+        <rdfs:label>reserve_enrolled</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Number of students enrolled against the reserve capacity.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserveCapacityRule_reserve_open_seats">
+        <rdfs:label>reserve_open_seats</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Available seats under the reserve capacity rule.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classAttribute_attribute_sk">
+        <rdfs:label>attribute_sk</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassAttribute"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Surrogate key for the Class_Attribute.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classAttribute_attribute_id">
+        <rdfs:label>attribute_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassAttribute"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Attribute code.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classAttribute_attribute_value_id">
+        <rdfs:label>attribute_value_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassAttribute"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Attribute value code.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classAttribute_attribute_description">
+        <rdfs:label>attribute_description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassAttribute"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Attribute description.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/classAttribute_value_description">
+        <rdfs:label>value_description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassAttribute"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Attribute value description.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/requisiteRule_requisite_rule_id">
+        <rdfs:label>requisite_rule_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/RequisiteRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Identifier for the prerequisite, co-requisite, equivalency, placement, or recommended preparation rule.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/requisiteRule_requisite_type">
+        <rdfs:label>requisite_type</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/RequisiteRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Type such as prerequisite, co-requisite, equivalency, placement, or recommended preparation.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/requisiteRule_rule_text">
+        <rdfs:label>rule_text</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/RequisiteRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Human-readable requisite text.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/requisiteRule_effective_date">
+        <rdfs:label>effective_date</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/RequisiteRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <rdfs:comment>Effective date for the rule.</rdfs:comment>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/requisiteRule_minimum_grade">
+        <rdfs:label>minimum_grade</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/RequisiteRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Minimum required grade when applicable.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/requisiteRule_logical_operator">
+        <rdfs:label>logical_operator</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/RequisiteRule"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Logical operator such as AND, OR, concurrent, minimum score, or minimum grade grouping.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicProgram_program_code">
+        <rdfs:label>program_code</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicProgram"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Academic program or plan code.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicProgram_program_name">
+        <rdfs:label>program_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicProgram"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Academic program name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicProgram_degree">
+        <rdfs:label>degree</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicProgram"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Degree type or award.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicProgram_catalog_code">
+        <rdfs:label>catalog_code</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicProgram"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Catalog requirement code or catalog year when available.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicRequirement_requirement_code">
+        <rdfs:label>requirement_code</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicRequirement"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Requirement identifier.</rdfs:comment>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicRequirement_requirement_name">
+        <rdfs:label>requirement_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicRequirement"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Requirement name.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academicRequirement_requirement_type">
+        <rdfs:label>requirement_type</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicRequirement"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Requirement type such as capstone, lab science, Liberal Studies, prerequisite, or major requirement.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_has_course_offering">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:comment>A catalog-level Course can have one or more Course_Offerings. This separates the stable course concept from PeopleSoft course_offer_number and offering-specific requisite rules.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>course</ont:fromEntityId>
+        <ont:toEntityId>courseOffering</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_offering_for_course">
+        <rdfs:label>of</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:comment>A Course_Offering belongs to one parent Course.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>courseOffering</ont:fromEntityId>
+        <ont:toEntityId>course</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_offering_has_subject">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/Subject"/>
+        <rdfs:comment>A Course_Offering is made up of a Subject and catalog_number.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>courseOffering</ont:fromEntityId>
+        <ont:toEntityId>subject</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/subject_mapped_to_academic_organization">
+        <rdfs:label>owned by</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Subject"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:comment>A Subject is mapped to the Academic_Organization that owns or administers that subject area.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>subject</ont:fromEntityId>
+        <ont:toEntityId>academicOrganization</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/college_has_academic_organization">
+        <rdfs:label>owns</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/College"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:comment>A College can contain multiple Academic_Organizations such as divisions, schools, or departments.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>college</ont:fromEntityId>
+        <ont:toEntityId>academicOrganization</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_offering_has_section">
+        <rdfs:label>schedules</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:comment>A Course_Offering can be scheduled as many Class_Sections across Terms and Sessions.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>courseOffering</ont:fromEntityId>
+        <ont:toEntityId>classSection</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/class_section_for_course_offering">
+        <rdfs:label>of</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:comment>A Class_Section is the scheduled instance of one Course_Offering, joined by course_id and course_offer_number plus term, session, and section identifiers.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>classSection</ont:fromEntityId>
+        <ont:toEntityId>courseOffering</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/term_has_session">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Term"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:comment>A Term can have multiple Sessions, and each Session is measured in number of weeks. For example, a 12-week Summer Term may contain 5-week summer sessions 1, 2, and 3.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>term</ont:fromEntityId>
+        <ont:toEntityId>session</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/session_part_of_term">
+        <rdfs:label>in</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/Term"/>
+        <rdfs:comment>A Session belongs to one Term.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>session</ont:fromEntityId>
+        <ont:toEntityId>term</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/class_section_offered_in_session">
+        <rdfs:label>in</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:comment>A Class_Section is offered in one Session, and the Session belongs to a Term.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>classSection</ont:fromEntityId>
+        <ont:toEntityId>session</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/session_has_class_section">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Session"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:comment>A Session can include many Class_Sections.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>session</ont:fromEntityId>
+        <ont:toEntityId>classSection</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/class_section_has_enrollment_date_rule">
+        <rdfs:label>governed by</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/EnrollmentDateRule"/>
+        <rdfs:comment>A Class_Section is controlled by an Academic_Policy for open enrollment, add/drop dates, waitlist dates, and withdrawal deadlines.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>classSection</ont:fromEntityId>
+        <ont:toEntityId>enrollmentDateRule</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/class_section_taught_by">
+        <rdfs:label>taught by</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/ProfessorInstructor"/>
+        <rdfs:comment>A Class_Section is taught by a Professor_Instructor.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>classSection</ont:fromEntityId>
+        <ont:toEntityId>professorInstructor</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/professor_instructor_teaches_class_section">
+        <rdfs:label>teaches</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ProfessorInstructor"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:comment>A Professor_Instructor teaches one or more Class_Sections.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>professorInstructor</ont:fromEntityId>
+        <ont:toEntityId>classSection</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/professor_instructor_affiliated_with">
+        <rdfs:label>affiliated with</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ProfessorInstructor"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:comment>A Professor_Instructor may be affiliated with an Academic_Organization.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>professorInstructor</ont:fromEntityId>
+        <ont:toEntityId>academicOrganization</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/class_section_has_meeting_pattern">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/MeetingPattern"/>
+        <rdfs:comment>A Class_Section can have multiple Meeting_Patterns for lecture, lab, fieldwork, discussion, or other scheduled components.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>classSection</ont:fromEntityId>
+        <ont:toEntityId>meetingPattern</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/meeting_pattern_occurs_in_facility_room">
+        <rdfs:label>occur in</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/MeetingPattern"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/FacilityRoom"/>
+        <rdfs:comment>A Meeting_Pattern occurs in a specific Facility_Room.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>meetingPattern</ont:fromEntityId>
+        <ont:toEntityId>facilityRoom</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/facility_room_located_in_building">
+        <rdfs:label>in </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/FacilityRoom"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/Building"/>
+        <rdfs:comment>A Facility_Room is located in a Building.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>facilityRoom</ont:fromEntityId>
+        <ont:toEntityId>building</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/building_located_on_campus">
+        <rdfs:label>on </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Building"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/Campus"/>
+        <rdfs:comment>A Building is located on a Campus.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>building</ont:fromEntityId>
+        <ont:toEntityId>campus</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/campus_belongs_to_academic_organization">
+        <rdfs:label>belongs to </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/Campus"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/College"/>
+        <rdfs:comment>A Campus belongs to a College.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>campus</ont:fromEntityId>
+        <ont:toEntityId>college</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/class_section_has_reserve_capacity_rule">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:comment>A Class_Section can have multiple Reserve_Capacity_Rules that allow eligible student populations to enroll in the section.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>classSection</ont:fromEntityId>
+        <ont:toEntityId>reserveCapacityRule</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/reserve_capacity_rule_allows_enrollment_in_class_section">
+        <rdfs:label>applies to</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ReserveCapacityRule"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:comment>A Reserve_Capacity_Rule allows students in an eligible population to enroll in a Class_Section when seats are reserved for them.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>reserveCapacityRule</ont:fromEntityId>
+        <ont:toEntityId>classSection</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/class_section_has_attribute">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassSection"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/ClassAttribute"/>
+        <rdfs:comment>A Class_Section can carry Liberal Studies, CCAT, component, modality, lecture, lab, fieldwork, or other attributes.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>classSection</ont:fromEntityId>
+        <ont:toEntityId>classAttribute</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/course_offering_has_requisite_rule">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/RequisiteRule"/>
+        <rdfs:comment>A Course_Offering can have prerequisite, co-requisite, placement, equivalency, or recommended preparation rules that must be evaluated before a student takes a Class_Section of that offering.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>courseOffering</ont:fromEntityId>
+        <ont:toEntityId>requisiteRule</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/requisite_rule_applies_to_course_offering">
+        <rdfs:label>applies to</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/RequisiteRule"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/CourseOffering"/>
+        <rdfs:comment>The target Course_Offering the student wants to take. This is the offering whose Class_Sections are blocked or conditioned by the Requisite_Rule.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>requisiteRule</ont:fromEntityId>
+        <ont:toEntityId>courseOffering</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academic_program_has_requirement">
+        <rdfs:label>has</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicProgram"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicRequirement"/>
+        <rdfs:comment>An Academic_Program has one or more Academic_Requirements.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>academicProgram</ont:fromEntityId>
+        <ont:toEntityId>academicRequirement</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academic_requirement_satisfied_by_course">
+        <rdfs:label>satisfied by </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicRequirement"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/Course"/>
+        <rdfs:comment>An Academic_Requirement may be satisfied by one or more Courses.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>academicRequirement</ont:fromEntityId>
+        <ont:toEntityId>course</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/nauclasssearchontology/academic_program_owned_by_academic_organization">
+        <rdfs:label>owned by </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicProgram"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/nauclasssearchontology/AcademicOrganization"/>
+        <rdfs:comment>An Academic_Program is owned by an Academic_Organization.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>academicProgram</ont:fromEntityId>
+        <ont:toEntityId>academicOrganization</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>
