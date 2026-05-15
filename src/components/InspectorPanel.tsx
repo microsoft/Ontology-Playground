@@ -1,12 +1,20 @@
+import { useRef, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { Database, ArrowRight, Key, Link2, Layers, Box, GitBranch } from 'lucide-react';
 
 export function InspectorPanel() {
   const { currentOntology, dataBindings, selectedEntityId, selectedRelationshipId, showDataBindings, activeQuest, currentStepIndex, advanceQuestStep } = useAppStore();
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if ((selectedEntityId || selectedRelationshipId) && panelRef.current) {
+      panelRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [selectedEntityId, selectedRelationshipId]);
 
   if (!selectedEntityId && !selectedRelationshipId) {
     return (
-      <div className="inspector-panel">
+      <div ref={panelRef} className="inspector-panel">
         <div className="panel-header">
           <h3 className="panel-title">Inspector</h3>
         </div>
@@ -29,7 +37,7 @@ export function InspectorPanel() {
     const toEntity = currentOntology.entityTypes.find(e => e.id === relationship.to);
 
     return (
-      <div className="inspector-panel">
+      <div ref={panelRef} className="inspector-panel">
         <div className="panel-header">
           <h3 className="panel-title">Relationship</h3>
         </div>
@@ -99,7 +107,7 @@ export function InspectorPanel() {
   );
 
   return (
-    <div className="inspector-panel">
+    <div ref={panelRef} className="inspector-panel">
       <div className="panel-header">
         <h3 className="panel-title">Entity Type</h3>
       </div>
@@ -152,23 +160,23 @@ export function InspectorPanel() {
               const otherEntity = currentOntology.entityTypes.find(e => e.id === otherEntityId);
               
               return (
-                <div key={rel.id} className="property-item">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div key={rel.id} className="property-item rel-item">
+                  <div className="rel-item-row">
                     {isOutgoing ? (
                       <>
                         <span className="property-name">{rel.name}</span>
-                        <ArrowRight size={14} style={{ color: 'var(--ms-blue)' }} />
-                        <span>{otherEntity?.icon} {otherEntity?.name}</span>
+                        <ArrowRight size={12} className="rel-item-arrow" />
+                        <span className="rel-item-entity">{otherEntity?.icon} {otherEntity?.name}</span>
                       </>
                     ) : (
                       <>
-                        <span>{otherEntity?.icon} {otherEntity?.name}</span>
-                        <ArrowRight size={14} style={{ color: 'var(--ms-blue)' }} />
+                        <span className="rel-item-entity">{otherEntity?.icon} {otherEntity?.name}</span>
+                        <ArrowRight size={12} className="rel-item-arrow" />
                         <span className="property-name">{rel.name}</span>
                       </>
                     )}
                   </div>
-                  <span className="property-type">{rel.cardinality}</span>
+                  <div className="rel-item-cardinality">{rel.cardinality}</div>
                 </div>
               );
             })}

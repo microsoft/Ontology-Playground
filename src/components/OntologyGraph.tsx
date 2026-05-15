@@ -1,9 +1,9 @@
-import { useEffect, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
 import type { Core, EventObject, LayoutOptions } from 'cytoscape';
 import { useAppStore } from '../store/appStore';
-import { ZoomIn, ZoomOut, Maximize2, RotateCcw } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, RotateCcw, Download, Crosshair } from 'lucide-react';
 
 // Register fcose layout
 cytoscape.use(fcose);
@@ -12,6 +12,8 @@ export function OntologyGraph() {
   const cyRef = useRef<Core | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const mountedRef = useRef(true);
+  const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
+  const focusNodeIdRef = useRef<string | null>(null);
   
   // Helper to safely get cytoscape instance - returns null if destroyed
   const getCy = useCallback(() => {
@@ -156,11 +158,17 @@ export function OntologyGraph() {
           selector: 'edge',
           style: {
             'label': 'data(label)',
-            'font-size': '12px',
+            'font-size': '11px',
             'font-family': 'Segoe UI, sans-serif',
             'color': initialThemeColors.current.edgeText,
             'text-rotation': 'autorotate',
             'text-margin-y': -10,
+            'text-wrap': 'ellipsis',
+            'text-max-width': '120px',
+            'text-background-color': initialThemeColors.current.nodeText === '#B3B3B3' ? '#1a1a2e' : '#f5f5f5',
+            'text-background-opacity': 0.75,
+            'text-background-padding': '2px',
+            'text-background-shape': 'roundrectangle',
             'width': 3,
             'line-color': initialThemeColors.current.edgeColor,
             'target-arrow-color': initialThemeColors.current.edgeColor,
@@ -258,8 +266,34 @@ export function OntologyGraph() {
 
     cy.on('tap', (evt: EventObject) => {
       if (evt.target === cy) {
+        // Exit focus mode BEFORE clearing selection so the selection effect
+        // doesn't see a stale focusNodeIdRef and skip its dimmed cleanup
+        if (focusNodeIdRef.current !== null) {
+          focusNodeIdRef.current = null;
+          setFocusNodeId(null);
+          getCy()?.elements().removeClass('dimmed focus-hidden');
+        }
         selectEntity(null);
         selectRelationship(null);
+      }
+    });
+
+    cy.on('dbltap', 'node', (evt: EventObject) => {
+      const nodeId = evt.target.id();
+      const alreadyFocused = focusNodeIdRef.current === nodeId;
+
+      if (alreadyFocused) {
+        // Toggle off
+        focusNodeIdRef.current = null;
+        setFocusNodeId(null);
+        cy.elements().removeClass('dimmed focus-hidden');
+      } else {
+        focusNodeIdRef.current = nodeId;
+        setFocusNodeId(nodeId);
+        const node = cy.getElementById(nodeId);
+        const neighbourhood = node.closedNeighborhood();
+        cy.elements().addClass('dimmed');
+        neighbourhood.removeClass('dimmed');
       }
     });
 
@@ -289,31 +323,60 @@ export function OntologyGraph() {
     };
   }, [buildElements, selectEntity, selectRelationship]);
 
+  // Keep focusNodeIdRef in sync with state
+  useEffect(() => {
+    focusNodeIdRef.current = focusNodeId;
+  }, [focusNodeId]);
+
+  // Re-apply focus neighbourhood when focusNodeId changes
+  useEffect(() => {
+    const cy = getCy();
+    if (!cy) return;
+    if (focusNodeId === null) {
+      cy.elements().removeClass('dimmed');
+    } else {
+      const node = cy.getElementById(focusNodeId);
+      if (node.length) {
+        cy.elements().addClass('dimmed');
+        node.closedNeighborhood().removeClass('dimmed');
+      }
+    }
+  }, [focusNodeId, getCy]);
+
   // Update graph colors when theme changes (without recreating graph)
   useEffect(() => {
     const cy = getCy();
     if (!cy) return;
 
     try {
-      cy.style()
-        .selector('node')
-        .style({ 'color': themeColors.nodeText })
-        .selector('edge')
-        .style({
-          'color': themeColors.edgeText,
-          'line-color': themeColors.edgeColor,
-          'target-arrow-color': themeColors.edgeColor
-        })
-        .update();
+      // Apply text-color update to ALL edges/nodes (text colors don't affect highlight line-color)
+      cy.$('node').style({ 'color': themeColors.nodeText });
+      cy.$('edge').style({ 'color': themeColors.edgeText, 'text-background-color': darkMode ? '#1a1a2e' : '#f5f5f5' });
+      // Line/arrow colors: only update non-highlighted edges so path-finder highlights survive
+      cy.edges().not('.highlighted').style({
+        'line-color': themeColors.edgeColor,
+        'target-arrow-color': themeColors.edgeColor,
+      });
     } catch {
       // Graph may have been destroyed
     }
-  }, [themeColors, getCy]);
+  }, [themeColors, darkMode, getCy]);
 
   // Handle selection changes
   useEffect(() => {
     const cy = getCy();
     if (!cy) return;
+
+    // If focus mode is active, let the focus effect manage dimming
+    if (focusNodeIdRef.current !== null) {
+      // Just update selection highlight without touching dimmed
+      try {
+        cy.elements().unselect();
+        if (selectedEntityId) cy.getElementById(selectedEntityId).select();
+        if (selectedRelationshipId) cy.getElementById(selectedRelationshipId).select();
+      } catch { /* ignore */ }
+      return;
+    }
 
     try {
       cy.elements().removeClass('highlighted dimmed');
@@ -354,6 +417,11 @@ export function OntologyGraph() {
     if (!cy) return;
 
     try {
+      // Clear previous highlights and restore theme line colors on previously-highlighted edges
+      cy.$('edge.highlighted').style({
+        'line-color': themeColors.edgeColor,
+        'target-arrow-color': themeColors.edgeColor,
+      });
       cy.elements().removeClass('highlighted');
 
       highlightedEntities.forEach(id => {
@@ -361,12 +429,15 @@ export function OntologyGraph() {
       });
 
       highlightedRelationships.forEach(id => {
-        cy.getElementById(id).addClass('highlighted');
+        const el = cy.getElementById(id);
+        el.addClass('highlighted');
+        // Force bypass so it overrides any theme update residue
+        el.style({ 'line-color': '#FFB900', 'target-arrow-color': '#FFB900' });
       });
     } catch {
       // Graph may have been destroyed
     }
-  }, [highlightedEntities, highlightedRelationships, getCy]);
+  }, [highlightedEntities, highlightedRelationships, themeColors, getCy]);
 
   // Graph controls
   const handleZoomIn = () => {
@@ -420,9 +491,40 @@ export function OntologyGraph() {
     }
   };
 
+  const handleDownload = () => {
+    const cy = getCy();
+    if (!cy) return;
+    try {
+      const bg = darkMode ? '#1E1E1E' : '#F5F5F5';
+      const pngData = cy.png({ scale: 2, full: true, bg });
+      const link = document.createElement('a');
+      link.href = pngData;
+      const safeName = (currentOntology.name || 'ontology').toLowerCase().replace(/\s+/g, '-');
+      link.download = `${safeName}-graph.png`;
+      link.click();
+    } catch { /* ignore */ }
+  };
+
   return (
     <div className="graph-container">
       <div ref={containerRef} className="graph-canvas" />
+
+      {focusNodeId && (
+        <div className="graph-focus-badge">
+          <Crosshair size={13} />
+          <span>Focus mode</span>
+          <button
+            className="graph-focus-exit"
+            onClick={() => {
+              setFocusNodeId(null);
+              const cy = getCy();
+              if (cy) cy.elements().removeClass('dimmed');
+            }}
+          >
+            Click background or ✕ to exit
+          </button>
+        </div>
+      )}
       
       <div className="graph-controls">
         <button className="graph-control-btn" onClick={handleZoomIn} title="Zoom In">
@@ -436,6 +538,9 @@ export function OntologyGraph() {
         </button>
         <button className="graph-control-btn" onClick={handleReset} title="Reset Layout">
           <RotateCcw size={18} />
+        </button>
+        <button className="graph-control-btn" onClick={handleDownload} title="Download Graph as PNG">
+          <Download size={18} />
         </button>
       </div>
 

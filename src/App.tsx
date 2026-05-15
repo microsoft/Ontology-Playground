@@ -21,7 +21,9 @@ import {
   CommandPalette,
   GuidedTour,
   isTourDismissed,
-  AppFooter
+  AppFooter,
+  OntologyStatsPanel,
+  PathFinderPanel
 } from './components';
 import type { CommandItem } from './components';
 import { useAppStore } from './store/appStore';
@@ -195,6 +197,8 @@ function App() {
       <QuestPanel />
       <OntologyGraph />
       <div className="right-sidebar">
+        <OntologyStatsPanel />
+        <PathFinderPanel />
         <SearchFilter />
         <InspectorPanel />
         <QueryPlayground />

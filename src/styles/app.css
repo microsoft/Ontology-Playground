@@ -547,6 +547,42 @@ body {
   border-color: var(--ms-blue);
 }
 
+/* Focus mode badge */
+.graph-focus-badge {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0, 120, 212, 0.92);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.graph-focus-exit {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  font-size: 11px;
+  font-family: inherit;
+  padding: 2px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.graph-focus-exit:hover {
+  background: rgba(255,255,255,0.35);
+}
+
 .graph-legend {
   position: absolute;
   bottom: 24px;
@@ -585,7 +621,7 @@ body {
 .right-sidebar {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
   background: var(--bg-secondary);
   border-left: 1px solid var(--border-color);
 }
@@ -599,12 +635,10 @@ body {
 
 /* Right Panel - Inspector */
 .inspector-panel {
-  flex: 1;
-  min-height: 0;
+  flex-shrink: 0;
   background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   color: var(--text-primary);
 }
 
@@ -637,8 +671,6 @@ body {
 }
 
 .inspector-content {
-  flex: 1;
-  overflow-y: auto;
   padding: 20px;
 }
 
@@ -703,6 +735,39 @@ body {
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
+}
+
+/* Two-line relationship layout */
+.rel-item {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rel-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.rel-item-arrow {
+  color: var(--ms-blue);
+  flex-shrink: 0;
+}
+
+.rel-item-entity {
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rel-item-cardinality {
+  font-size: 11px;
+  color: var(--ms-blue);
+  font-family: var(--font-mono);
 }
 
 .property-name {
@@ -3524,6 +3589,256 @@ body {
   flex-shrink: 0;
 }
 
+/* ── Ontology Stats Panel ─────────────────────────────────────── */
+.stats-panel {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.stats-panel-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--transition-fast);
+}
+
+.stats-panel-header:hover {
+  background: var(--bg-tertiary);
+}
+
+.stats-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.stats-panel-body {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Metric cards grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stat-card {
+  border-radius: var(--radius-md);
+  padding: 10px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+}
+
+.stat-card--blue {
+  background: rgba(0, 120, 212, 0.12);
+  border-color: rgba(0, 120, 212, 0.25);
+}
+
+.stat-card--purple {
+  background: rgba(92, 45, 145, 0.12);
+  border-color: rgba(92, 45, 145, 0.25);
+}
+
+.stat-card--green {
+  background: rgba(16, 124, 16, 0.12);
+  border-color: rgba(16, 124, 16, 0.25);
+}
+
+.stat-card-icon {
+  opacity: 0.7;
+}
+
+.stat-card--blue .stat-card-icon { color: var(--ms-blue); }
+.stat-card--purple .stat-card-icon { color: #8a52d4; }
+.stat-card--green .stat-card-icon { color: var(--ms-green-light); }
+
+.stat-card-value {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-card--blue .stat-card-value { color: var(--ms-blue); }
+.stat-card--purple .stat-card-value { color: #8a52d4; }
+.stat-card--green .stat-card-value { color: var(--ms-green-light); }
+
+.stat-card-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Connectivity progress bar */
+.stats-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stats-metric-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.stats-metric-header svg {
+  flex-shrink: 0;
+  color: var(--ms-yellow);
+}
+
+.stats-metric-value {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--ms-yellow);
+}
+
+.stats-progress-track {
+  height: 5px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.stats-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ms-blue), var(--ms-purple));
+  border-radius: 3px;
+  transition: width var(--transition-normal);
+}
+
+/* Highlight rows (most connected, avg properties) */
+.stats-highlight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 5px 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+}
+
+.stats-highlight svg {
+  flex-shrink: 0;
+  color: var(--ms-yellow);
+}
+
+.stats-highlight-label {
+  flex-shrink: 0;
+}
+
+.stats-highlight-value {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stats-highlight-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ms-blue);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 1px 6px;
+  min-width: 20px;
+}
+
+/* Property type distribution */
+.stats-type-dist {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stats-type-dist-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 2px;
+}
+
+.stats-type-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.stats-type-name {
+  width: 55px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+}
+
+.stats-type-bar-track {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.stats-type-bar-fill {
+  height: 100%;
+  background: var(--ms-blue);
+  border-radius: 2px;
+  min-width: 2px;
+  transition: width var(--transition-normal);
+}
+
+.stats-type-count {
+  width: 20px;
+  text-align: right;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+/* Light theme adjustments for stat cards */
+.light-theme .stat-card--blue {
+  background: rgba(0, 120, 212, 0.08);
+}
+.light-theme .stat-card--purple {
+  background: rgba(92, 45, 145, 0.08);
+}
+.light-theme .stat-card--green {
+  background: rgba(16, 124, 16, 0.08);
+}
+.light-theme .stats-highlight {
+  background: var(--bg-tertiary);
+}
+
 .command-palette-input {
   flex: 1;
   background: transparent;
@@ -3969,4 +4284,250 @@ body {
   .learn-article-nav {
     flex-direction: column;
   }
+}
+
+/* ── Path Finder Panel ────────────────────────────────────────── */
+.pathfinder-panel {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.pathfinder-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--transition-fast);
+}
+
+.pathfinder-header:hover {
+  background: var(--bg-tertiary);
+}
+
+.pathfinder-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.pathfinder-body {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* From / To selects row */
+.pathfinder-selects {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.pathfinder-select-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pathfinder-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+}
+
+.pathfinder-select {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pathfinder-select:focus {
+  outline: none;
+  border-color: var(--ms-blue);
+}
+
+.pathfinder-arrow-icon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+/* Action buttons */
+.pathfinder-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.pathfinder-btn-find {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 12px;
+  background: var(--ms-blue);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.pathfinder-btn-find:hover:not(:disabled) {
+  background: var(--ms-blue-dark);
+}
+
+.pathfinder-btn-find:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pathfinder-btn-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 10px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.pathfinder-btn-clear:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* Messages */
+.pathfinder-message {
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.pathfinder-message--warn {
+  background: rgba(255, 185, 0, 0.1);
+  border: 1px solid rgba(255, 185, 0, 0.3);
+  color: var(--ms-yellow);
+}
+
+/* Result chain */
+.pathfinder-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pathfinder-result-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.pathfinder-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pathfinder-chain-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Relationship connector */
+.pathfinder-chain-rel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0 2px 20px;
+}
+
+.pathfinder-chain-rel-arrow {
+  width: 1px;
+  height: 16px;
+  background: var(--ms-blue);
+  position: relative;
+}
+
+.pathfinder-chain-rel-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -3px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--ms-blue);
+}
+
+.pathfinder-chain-rel-name {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--ms-blue);
+  font-weight: 500;
+}
+
+/* Entity node in chain */
+.pathfinder-chain-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  width: 100%;
+}
+
+.pathfinder-chain-node--start {
+  border-color: var(--ms-green);
+  background: rgba(16, 124, 16, 0.1);
+}
+
+.pathfinder-chain-node--end {
+  border-color: var(--ms-orange);
+  background: rgba(216, 59, 1, 0.1);
+}
+
+.pathfinder-chain-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.pathfinder-chain-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
 }

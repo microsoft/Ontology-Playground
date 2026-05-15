@@ -45,14 +45,12 @@ export function SearchFilter() {
     setHighlightedEntities([entityId]);
     setHighlightedRelationships([]);
     selectEntity(entityId);
-    selectRelationship(null);
   };
 
   const handleRelationshipClick = (relationshipId: string) => {
     setHighlightedRelationships([relationshipId]);
     setHighlightedEntities([]);
     selectRelationship(relationshipId);
-    selectEntity(null);
   };
 
   const handleClear = () => {

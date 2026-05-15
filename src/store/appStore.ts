@@ -53,6 +53,7 @@ interface AppState {
   selectRelationship: (id: string | null) => void;
   setHighlightedEntities: (ids: string[]) => void;
   setHighlightedRelationships: (ids: string[]) => void;
+  setHighlights: (entityIds: string[], relIds: string[]) => void;
   toggleDataBindings: () => void;
   toggleDarkMode: () => void;
   
@@ -143,6 +144,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   
   setHighlightedEntities: (ids) => set({ highlightedEntities: ids }),
   setHighlightedRelationships: (ids) => set({ highlightedRelationships: ids }),
+  setHighlights: (entityIds, relIds) => set({ highlightedEntities: entityIds, highlightedRelationships: relIds }),
   
   toggleDataBindings: () => set((state) => ({ showDataBindings: !state.showDataBindings })),
   toggleDarkMode: () => set((state) => {

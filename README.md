@@ -238,6 +238,9 @@ Ontology-Playground/
 | Guide | Description |
 |-------|-------------|
 | [Ontology Authoring Guide](docs/authoring-guide.md) | How to create ontologies that work well in the Playground — field-by-field reference, best practices, and a step-by-step walkthrough |
+| [Contribute an Ontology: From Design to GitHub](docs/contributing-ontology-from-design-to-github.md) | End-to-end contributor workflow: design, RDF export, metadata, local validation, and pull request |
+| [Playground Feature Demo Guide](docs/playground-features-demo-guide.md) | Step-by-step demo script to showcase key Playground capabilities and connect them to Fabric IQ and Real-Time Intelligence |
+| [Ontology School Demo Guide](docs/ontology-school-demo-guide.md) | Step-by-step live demo plan for courses, embeds, quizzes, presentation mode, and learning workflow |
 | [Embedding Guide](docs/embed-guide.md) | How to embed interactive ontology widgets on any web page |
 | [GitHub OAuth Setup](docs/github-oauth-setup.md) | How to configure GitHub OAuth for one-click catalogue PRs |
 | [Embed Security](docs/embed-security.md) | Security model for the embeddable widget |
@@ -255,8 +258,9 @@ This repository includes Copilot customization files so agents can reliably:
 Included assets:
 
 - Skills:
-   - `.github/skills/ontology-catalog-import/`
-   - `.github/skills/ontology-school-path-generator/`
+   - `.github/skills/ontology-catalog-import/` — import external/customer RDF/OWL into catalogue format
+   - `.github/skills/ontology-school-path-generator/` — generate progressive Ontology School modules
+   - `.github/skills/community-ontology-contribution/` — add a contributor ontology under `catalogue/community/` with the correct directory structure, metadata, and validation
 - RDF intake instruction:
    - `.github/instructions/rdf-intake.instructions.md`
 - Reusable prompts:
