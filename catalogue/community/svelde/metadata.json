@@ -1,0 +1,8 @@
+{
+  "name": "Productionline Ontology Sample",
+  "description": "A sample IoT domain with devices, sensors, and readings.",
+  "icon": "📦",
+  "category": "IoT",
+  "tags": ["iot", "device", "sensor", "productionline", "operator", "technician"],
+  "author": "svelde"
+}
