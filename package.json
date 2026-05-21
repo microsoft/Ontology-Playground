@@ -19,6 +19,7 @@
     "validate": "tsx scripts/validate-rdf.ts"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.6.3",
     "@types/cytoscape": "^3.21.9",
     "@types/sanitize-html": "^2.16.0",
     "cytoscape": "^3.33.1",
