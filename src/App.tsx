@@ -37,6 +37,7 @@ import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, Fi
 import './styles/app.css';
 
 const AI_BUILDER_ENABLED = import.meta.env.VITE_ENABLE_AI_BUILDER === 'true';
+const FABRIC_DEPLOY_ENABLED = import.meta.env.VITE_ENABLE_FABRIC_DEPLOY === 'true';
 
 const NLBuilderModal = AI_BUILDER_ENABLED
   ? lazy(() => import('./components/NLBuilderModal').then(m => ({ default: m.NLBuilderModal })))
@@ -56,7 +57,7 @@ function App() {
 
   // Auto-open push modal if returning from redirect-based auth
   useEffect(() => {
-    if (hasPendingDeployIntent()) {
+    if (FABRIC_DEPLOY_ENABLED && hasPendingDeployIntent()) {
       setShowFabricExport(true);
     }
   }, []);
@@ -174,7 +175,9 @@ function App() {
     { id: 'designer', label: 'Open Designer', icon: <PenTool size={18} />, action: openDesigner },
     { id: 'learn', label: 'Open Ontology School', icon: <BookOpen size={18} />, action: openLearn },
     { id: 'import-export', label: 'Import / Export', icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
-    { id: 'deploy-fabric', label: 'Push to Fabric', icon: <Rocket size={18} />, action: () => setShowFabricExport(true) },
+    ...(FABRIC_DEPLOY_ENABLED
+      ? [{ id: 'deploy-fabric', label: 'Push to Fabric', icon: <Rocket size={18} />, action: () => setShowFabricExport(true) }]
+      : []),
     { id: 'summary', label: 'View Summary', icon: <FileText size={18} />, action: () => setShowSummary(true) },
     { id: 'about', label: 'About & Trademark Notice', icon: <Info size={18} />, action: () => setShowAbout(true) },
     { id: 'help', label: 'Help', icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
@@ -202,7 +205,7 @@ function App() {
         onLearnClick={openLearn}
         onNLBuilderClick={AI_BUILDER_ENABLED ? () => setShowNLBuilder(true) : undefined}
         onSummaryClick={() => setShowSummary(true)}
-        onDeployClick={() => setShowFabricExport(true)}
+        onDeployClick={FABRIC_DEPLOY_ENABLED ? () => setShowFabricExport(true) : undefined}
       />
       <QuestPanel />
       <OntologyGraph />
@@ -266,11 +269,16 @@ function App() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showImportExport && <ImportExportModal onClose={() => setShowImportExport(false)} onFabricPush={() => { setShowImportExport(false); setShowFabricExport(true); }} />}
+        {showImportExport && (
+          <ImportExportModal
+            onClose={() => setShowImportExport(false)}
+            onFabricPush={FABRIC_DEPLOY_ENABLED ? () => { setShowImportExport(false); setShowFabricExport(true); } : undefined}
+          />
+        )}
       </AnimatePresence>
 
       <AnimatePresence>
-        {showFabricExport && <FabricExportModal onClose={() => { clearDeployIntent(); setShowFabricExport(false); }} />}
+        {FABRIC_DEPLOY_ENABLED && showFabricExport && <FabricExportModal onClose={() => { clearDeployIntent(); setShowFabricExport(false); }} />}
       </AnimatePresence>
 
       <AnimatePresence>
