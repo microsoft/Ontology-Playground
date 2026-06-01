@@ -26,11 +26,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --ignore-scripts
 
       - name: Add approved label and close issue (comment trigger)
         if: github.event_name == 'issue_comment'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const issue_number = context.issue.number;
@@ -49,7 +56,7 @@ jobs:
 
       - name: Extract lesson path from issue body
         id: extract
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const body = context.payload.issue.body || '';
@@ -87,7 +94,7 @@ jobs:
         run: npx tsx scripts/compile-learn.ts
 
       - name: Create approval PR
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6
         with:
           branch: chore/ontology-school-approve-${{ github.event.issue.number }}
           title: "chore: approve ontology school lesson ${{ steps.extract.outputs.lesson_path }}"
