@@ -156,7 +156,7 @@ export const quests: Quest[] = [
       },
       {
         id: "step-4-3",
-        instruction: "Try a traversal query: 'What orders did Alex Rivera place?'",
+        instruction: "Try a traversal query: 'What orders did Arif Ramadhan place?'",
         targetType: "query",
         hint: "This follows the Customer → Order relationship"
       }
@@ -217,7 +217,7 @@ export const nlQueryResponses: QueryResponse[] = [
   {
     query: "show me all gold tier customers",
     matches: ["gold tier", "gold customers", "customers gold"],
-    result: "Found 1 Gold tier customer:\n• Alex Rivera (CUST-001) - Gold tier since 2024",
+    result: "Found 1 Gold tier customer:\n• Arif Ramadhan (CUST-001) - Gold tier since 2024",
     highlightEntities: ["customer"],
     highlightRelationships: []
   },
@@ -229,9 +229,9 @@ export const nlQueryResponses: QueryResponse[] = [
     highlightRelationships: ["product_sourced_from_supplier"]
   },
   {
-    query: "what orders did alex rivera place",
-    matches: ["orders alex", "alex rivera orders", "alex placed"],
-    result: "Alex Rivera's orders:\n• ORD-2025-001 - $12.50 (Completed)\n  Items: Ethiopian Single Origin x2, Cosmic Latte x1\n  Store: Downtown Seattle",
+    query: "what orders did arif ramadhan place",
+    matches: ["orders arif", "arif ramadhan orders", "arif placed"],
+    result: "Arif Ramadhan's orders:\n• ORD-2025-001 - $12.50 (Completed)\n  Items: Ethiopian Single Origin x2, Cosmic Latte x1\n  Store: Downtown Seattle",
     highlightEntities: ["customer", "order", "store"],
     highlightRelationships: ["customer_places_order", "order_processed_at_store"]
   },
@@ -266,7 +266,7 @@ export const nlQueryResponses: QueryResponse[] = [
   {
     query: "show me platinum customers",
     matches: ["platinum", "platinum customers", "customers platinum"],
-    result: "Found 1 Platinum tier customer:\n• Jordan Chen (CUST-002) - Platinum tier\n  Total spend: $3,420.00\n  Member since: Jan 2023",
+    result: "Found 1 Platinum tier customer:\n• Jaroslav Cerny (CUST-002) - Platinum tier\n  Total spend: $3,420.00\n  Member since: Jan 2023",
     highlightEntities: ["customer"],
     highlightRelationships: []
   },

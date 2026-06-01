@@ -216,9 +216,9 @@ export const cosmicCoffeeOntology: Ontology = {
 // Sample entity instances for demonstration
 export const sampleInstances: EntityInstance[] = [
   // Customers
-  { id: "cust-001", entityTypeId: "customer", values: { customerId: "CUST-001", name: "Alex Rivera", email: "alex@email.com", loyaltyTier: "Gold", joinDate: "2024-03-15", totalSpend: 1245.50 }},
-  { id: "cust-002", entityTypeId: "customer", values: { customerId: "CUST-002", name: "Jordan Chen", email: "jordan@email.com", loyaltyTier: "Platinum", joinDate: "2023-01-20", totalSpend: 3420.00 }},
-  { id: "cust-003", entityTypeId: "customer", values: { customerId: "CUST-003", name: "Sam Williams", email: "sam@email.com", loyaltyTier: "Bronze", joinDate: "2025-11-01", totalSpend: 89.00 }},
+  { id: "cust-001", entityTypeId: "customer", values: { customerId: "CUST-001", name: "Arif Ramadhan", email: "customer001@example.com", loyaltyTier: "Gold", joinDate: "2024-03-15", totalSpend: 1245.50 }},
+  { id: "cust-002", entityTypeId: "customer", values: { customerId: "CUST-002", name: "Jaroslav Cerny", email: "customer002@example.com", loyaltyTier: "Platinum", joinDate: "2023-01-20", totalSpend: 3420.00 }},
+  { id: "cust-003", entityTypeId: "customer", values: { customerId: "CUST-003", name: "Sumber Agvaan", email: "customer003@example.com", loyaltyTier: "Bronze", joinDate: "2025-11-01", totalSpend: 89.00 }},
   
   // Products
   { id: "prod-001", entityTypeId: "product", values: { productId: "PROD-001", name: "Ethiopian Single Origin", category: "Brewed", price: 4.50, origin: "Ethiopia", isOrganic: true }},

@@ -1,4 +1,5 @@
 import type { Ontology } from './ontology';
+import { nlQueryResponses } from './quests';
 
 export interface QueryResponse {
   query: string;
@@ -14,6 +15,10 @@ function stripLeadingArticle(text: string): string {
 
 function singularize(text: string): string {
   return text.endsWith('s') ? text.slice(0, -1) : text;
+}
+
+function matchesDemoQuery(normalizedQuery: string, demoQuery: string, matches: string[]): boolean {
+  return normalizedQuery === demoQuery || matches.some(match => normalizedQuery.includes(match));
 }
 
 // Generate dynamic query suggestions based on the current ontology
@@ -67,6 +72,22 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   const normalizedNoPunctuation = normalizedQuery.replace(/[?!.:,;]+/g, '').trim();
   const entities = ontology.entityTypes;
   const relationships = ontology.relationships;
+
+  if (ontology.name === 'Cosmic Coffee Company') {
+    const demoResponse = nlQueryResponses.find(response =>
+      matchesDemoQuery(normalizedNoPunctuation, response.query, response.matches)
+    );
+
+    if (demoResponse) {
+      return {
+        query,
+        result: demoResponse.result,
+        highlightEntities: demoResponse.highlightEntities,
+        highlightRelationships: demoResponse.highlightRelationships,
+        interpretation: 'Detected: Cosmic Coffee sample query'
+      };
+    }
+  }
 
   // Conceptual queries (work for any ontology)
   if (normalizedQuery.includes('what is') && (normalizedQuery.includes('entity') || normalizedQuery.includes('ontology'))) {

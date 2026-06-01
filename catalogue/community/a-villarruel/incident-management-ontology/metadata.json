@@ -1,6 +1,6 @@
 {
   "name": "Incident Management",
-  "description": "Incident Management domain. It aligns with ITIL 4 best practices.",
+  "description": "Incident management model for ITIL-aligned services, incidents, problems, configuration items, and support ownership.",
   "icon": "📦",
   "category": "general",
   "tags": [],
