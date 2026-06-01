@@ -1,0 +1,8 @@
+{
+  "name": "Production Line Ontology Sample",
+  "description": "Production line operations model with operators, technicians, schedules, work orders, sensors, and line status tracking.",
+  "icon": "📦",
+  "category": "manufacturing",
+  "tags": ["manufacturing", "iot", "sensor", "production-line", "operator", "technician"],
+  "author": "sandervandevelde"
+}

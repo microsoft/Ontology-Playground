@@ -235,6 +235,8 @@ Ontology-Playground/
 
 ## Documentation
 
+The table below lists the main end-user and contributor guides. Internal planning notes (for example, `docs/TODO-*.md`) are intentionally not part of the published documentation set.
+
 | Guide | Description |
 |-------|-------------|
 | [Ontology Authoring Guide](docs/authoring-guide.md) | How to create ontologies that work well in the Playground — field-by-field reference, best practices, and a step-by-step walkthrough |

@@ -1,0 +1,14 @@
+{
+  "name": "Zava Grove-to-Shelf — Step 2: Harvest & Quality",
+  "description": "Add HarvestLot and QualityCheck to capture every harvest event and the four-stage quality regime.",
+  "icon": "🔍",
+  "category": "school",
+  "tags": [
+    "zava",
+    "food",
+    "supply-chain",
+    "lab",
+    "step-2"
+  ],
+  "author": "ontology-quest"
+}

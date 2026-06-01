@@ -1,0 +1,14 @@
+{
+  "name": "Zava Grove-to-Shelf — Step 3: Cold-Chain Logistics",
+  "description": "Add Shipment and ColdChainSensor to model perishable logistics and live temperature telemetry.",
+  "icon": "🚛",
+  "category": "school",
+  "tags": [
+    "zava",
+    "food",
+    "supply-chain",
+    "lab",
+    "step-3"
+  ],
+  "author": "ontology-quest"
+}
