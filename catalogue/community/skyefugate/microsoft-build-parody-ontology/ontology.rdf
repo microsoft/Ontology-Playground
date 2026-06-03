@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/microsoft-build-parody-ontology/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/microsoft-build-parody-ontology/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/">
+        <rdfs:label>Microsoft Build Parody Ontology</rdfs:label>
+        <rdfs:comment>
+            An unofficial, lighthearted parody ontology inspired by common Microsoft Build themes:
+            agents, copilots, demos, sessions, tokens, conference swag, and architecture questions.
+        </rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/Attendee">
+        <rdfs:label>Attendee</rdfs:label>
+        <rdfs:comment>A conference participant navigating sessions, demos, hallway conversations, and battery levels.</rdfs:comment>
+        <ont:icon>🧍‍♀️</ont:icon>
+        <ont:color>#3498DB</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/Copilot">
+        <rdfs:label>Copilot</rdfs:label>
+        <rdfs:comment>A branded AI assistant concept often discussed in productivity, development, and enterprise workflows.</rdfs:comment>
+        <ont:icon>🛸</ont:icon>
+        <ont:color>#7F52FF</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/Agent">
+        <rdfs:label>Agent</rdfs:label>
+        <rdfs:comment>A task-oriented AI component with goals, tools, context, and governance considerations.</rdfs:comment>
+        <ont:icon>🤖</ont:icon>
+        <ont:color>#2ECC71</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/Demo">
+        <rdfs:label>Demo</rdfs:label>
+        <rdfs:comment>A live or recorded product walkthrough, ideally supported by excellent Wi-Fi and friendly sample data.</rdfs:comment>
+        <ont:icon>🎭</ont:icon>
+        <ont:color>#F39C12</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/Session">
+        <rdfs:label>Session</rdfs:label>
+        <rdfs:comment>A scheduled conference block where roadmap themes, technical patterns, and practical questions meet.</rdfs:comment>
+        <ont:icon>📽️</ont:icon>
+        <ont:color>#9B59B6</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/Token">
+        <rdfs:label>Token</rdfs:label>
+        <rdfs:comment>A unit of model usage that turns curiosity, context, and automation into measurable consumption.</rdfs:comment>
+        <ont:icon>🪙</ont:icon>
+        <ont:color>#F1C40F</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/EnterpriseArchitect">
+        <rdfs:label>EnterpriseArchitect</rdfs:label>
+        <rdfs:comment>A person focused on reliability, security, governance, cost, operations, and how ideas work in production.</rdfs:comment>
+        <ont:icon>🏗️</ont:icon>
+        <ont:color>#E74C3C</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/Swag">
+        <rdfs:label>Swag</rdfs:label>
+        <rdfs:comment>A small conference artifact collected from booths, sessions, and memorable conversations.</rdfs:comment>
+        <ont:icon>🧦</ont:icon>
+        <ont:color>#1ABC9C</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/Keynote">
+        <rdfs:label>Keynote</rdfs:label>
+        <rdfs:comment>A major conference presentation where themes, announcements, and platform direction are introduced.</rdfs:comment>
+        <ont:icon>🎤</ont:icon>
+        <ont:color>#34495E</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/attendee_badgeId">
+        <rdfs:label>badgeId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Attendee"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/attendee_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Attendee"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/attendee_batteryPercent">
+        <rdfs:label>batteryPercent</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Attendee"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>A practical conference survival metric.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/attendee_vibeState">
+        <rdfs:label>vibeState</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Attendee"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>LockedIn,Caffeinated,Overstimulated,HallwayTrackMode,QuestionQueueRegular</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/copilot_copilotId">
+        <rdfs:label>copilotId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Copilot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/copilot_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Copilot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/copilot_confidence">
+        <rdfs:label>confidence</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Copilot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>A simplified confidence signal for parody modeling purposes.</rdfs:comment>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/agent_agentId">
+        <rdfs:label>agentId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Agent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/agent_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Agent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/agent_autonomyLevel">
+        <rdfs:label>autonomyLevel</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Agent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>SuggestOnly,AskBeforeDoing,HighAutonomy,RequiresRBAC,GovernanceReview</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/agent_hallucinationRisk">
+        <rdfs:label>hallucinationRisk</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Agent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>Low,Medium,Elevated,NeedsValidation,HighVisibilityDemo</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/demo_demoId">
+        <rdfs:label>demoId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Demo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/demo_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Demo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/demo_demoRisk">
+        <rdfs:label>demoRisk</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Demo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>Recorded,Live,NetworkDependent,TokenLimitAware,PortalDependent</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/session_sessionCode">
+        <rdfs:label>sessionCode</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/session_title">
+        <rdfs:label>title</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/session_topic">
+        <rdfs:label>topic</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>Copilot,Agents,Foundry,GitHub,Azure,Security,Observability,LocalAI,MCP</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/token_tokenId">
+        <rdfs:label>tokenId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Token"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/token_tokenCount">
+        <rdfs:label>tokenCount</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Token"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>A count of model usage units associated with a workflow or agent interaction.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/token_costCenterPanic">
+        <rdfs:label>costCenterPanic</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Token"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>None,Contained,ManagerAsked,FinOpsReview,CostReviewNeeded</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/enterpriseArchitect_architectId">
+        <rdfs:label>architectId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/EnterpriseArchitect"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/enterpriseArchitect_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/EnterpriseArchitect"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/enterpriseArchitect_question">
+        <rdfs:label>question</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/EnterpriseArchitect"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A practical architecture question about production readiness, governance, reliability, or cost.</rdfs:comment>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/swag_swagId">
+        <rdfs:label>swagId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Swag"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/swag_swagType">
+        <rdfs:label>swagType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Swag"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>Sticker,Socks,ToteBag,WaterBottle,Lanyard,Notebook</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/swag_vendorVibe">
+        <rdfs:label>vendorVibe</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Swag"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>BoothEnergy,DemoStation,BadgeScan,ProductConversation,WhitepaperAvailable</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/keynote_keynoteId">
+        <rdfs:label>keynoteId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Keynote"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/keynote_title">
+        <rdfs:label>title</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Keynote"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/keynote_agenticMentions">
+        <rdfs:label>agenticMentions</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Keynote"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>A playful counter for how often agentic themes appear.</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-attends-session">
+        <rdfs:label>attendsSession</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Attendee"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Session"/>
+        <rdfs:comment>Attendee participates in a conference session.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>attendee</ont:fromEntityId>
+        <ont:toEntityId>session</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-session-contains-demo">
+        <rdfs:label>containsDemo</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Session"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Demo"/>
+        <rdfs:comment>Session includes one or more demos.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>session</ont:fromEntityId>
+        <ont:toEntityId>demo</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-copilot-summons-agent">
+        <rdfs:label>summonsAgent</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Copilot"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Agent"/>
+        <rdfs:comment>Copilot is associated with an agent-style workflow.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>copilot</ont:fromEntityId>
+        <ont:toEntityId>agent</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-agent-consumes-token">
+        <rdfs:label>consumesToken</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Agent"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Token"/>
+        <rdfs:comment>Agent workflow consumes model tokens.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>agent</ont:fromEntityId>
+        <ont:toEntityId>token</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-attendee-collects-swag">
+        <rdfs:label>collectsSwag</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Attendee"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Swag"/>
+        <rdfs:comment>Attendee collects conference swag.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>attendee</ont:fromEntityId>
+        <ont:toEntityId>swag</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-architect-questions-agent">
+        <rdfs:label>questionsAgent</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/EnterpriseArchitect"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Agent"/>
+        <rdfs:comment>Architect evaluates an agent for production readiness.</rdfs:comment>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>enterpriseArchitect</ont:fromEntityId>
+        <ont:toEntityId>agent</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-keynote-announces-copilot">
+        <rdfs:label>announcesCopilot</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Keynote"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Copilot"/>
+        <rdfs:comment>Keynote introduces or discusses a Copilot-related concept.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>keynote</ont:fromEntityId>
+        <ont:toEntityId>copilot</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-keynote-contains-session">
+        <rdfs:label>containsSession</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Keynote"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Session"/>
+        <rdfs:comment>Keynote contains or references session-level topics.</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>keynote</ont:fromEntityId>
+        <ont:toEntityId>session</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/microsoft-build-parody-ontology/r-demo-uses-copilot">
+        <rdfs:label>usesCopilot</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Demo"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/microsoft-build-parody-ontology/Copilot"/>
+        <rdfs:comment>Demo uses or references a Copilot-style capability.</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>demo</ont:fromEntityId>
+        <ont:toEntityId>copilot</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>
