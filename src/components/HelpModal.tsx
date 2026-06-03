@@ -70,7 +70,7 @@ export function HelpModal({ onClose }: HelpModalProps) {
             </div>
             <p className="feature-text">
               When you select an entity type, the inspector shows how ontology properties map to real data sources in OneLake, 
-              including lakehouse tables and Power BI semantic models.
+              including lakehouse tables and semantic models.
             </p>
           </div>
 

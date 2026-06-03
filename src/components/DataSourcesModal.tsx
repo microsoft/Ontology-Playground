@@ -72,8 +72,9 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
             const entity = currentOntology.entityTypes.find(e => e.id === binding.entityTypeId);
             if (!entity) return null;
 
-            const isLakehouse = binding.source === 'OneLake';
-            const isPowerBI = binding.source === 'PowerBI';
+            const sourceNormalized = binding.source.toLowerCase();
+            const isLakehouse = sourceNormalized.includes('onelake') || binding.table.startsWith('lakehouse.');
+            const isSemanticModel = sourceNormalized.includes('semantic') || binding.table.startsWith('semantic_model.');
 
             return (
               <div key={binding.entityTypeId} className="binding-card" style={{ margin: 0 }}>
@@ -109,8 +110,8 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                     fontWeight: 600,
                     color: isLakehouse ? 'var(--ms-blue)' : 'var(--ms-yellow)'
                   }}>
-                    {isLakehouse ? <Table size={14} /> : <BarChart3 size={14} />}
-                    {isPowerBI ? 'Power BI' : 'Lakehouse'}
+                    {isSemanticModel ? <BarChart3 size={14} /> : <Table size={14} />}
+                    {isSemanticModel ? 'Semantic model' : 'Lakehouse'}
                   </div>
                 </div>
 

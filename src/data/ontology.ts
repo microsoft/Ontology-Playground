@@ -270,7 +270,7 @@ export const sampleBindings: DataBinding[] = [
   },
   {
     entityTypeId: "product",
-    source: "PowerBI",
+    source: "Semantic model",
     table: "semantic_model.Products",
     columnMappings: {
       productId: "ProductKey",
