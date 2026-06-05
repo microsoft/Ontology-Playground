@@ -17,7 +17,7 @@ FIBO is:
 - **Published as OWL ontologies** at [spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)
 - **Developed since 2012** with contributions from major financial institutions, regulators, and standards bodies
 
-> **Source**: All concepts in this lab are adapted from the FIBO ontology modules under `LOAN/LoansGeneral/Loans` and `FBC/DebtAndEquities/Debt`. See the [FIBO GitHub repository](https://github.com/edmcouncil/fibo) for the full source.
+> **Source**: Concepts in this lab are adapted primarily from `LOAN/LoansGeneral/Loans`, with supporting concepts from `FBC/DebtAndEquities/Debt`, `FBC/ProductsAndServices/ClientsAndAccounts`, and `FND/OwnershipAndControl/Ownership`. See the [FIBO GitHub repository](https://github.com/edmcouncil/fibo) for full source modules.
 
 ## Why this lab
 
@@ -25,11 +25,11 @@ FIBO is large — hundreds of ontology modules covering securities, derivatives,
 
 | FIBO Module | What it covers |
 |---|---|
-| `LOAN/LoansGeneral/Loans` | Core loan contracts, borrower/lender parties, servicing |
-| `LOAN/RealEstateLoans/Mortgages` | Mortgage types, liens, real property collateral |
-| `FBC/DebtAndEquities/Debt` | Collateral, security agreements, debt instruments |
-| `FBC/ProductsAndServices/ClientsAndAccounts` | Payment processing, account management |
-| `FND/Agreements/Contracts` | Contract elements, effective dates, provisions |
+| `LOAN/LoansGeneral/Loans` | Loan lifecycle concepts (loan, servicing, payment history, lien and ownership classifiers) |
+| `FBC/DebtAndEquities/Debt` | Borrower/lender roles, collateral, security agreements, debt terms |
+| `FBC/ProductsAndServices/ClientsAndAccounts` | Transaction records and individual transactions used by payment history |
+| `LOAN/RealEstateLoans/Mortgages` | Real-estate-specific constraints (real property collateral and mortgage constructs) |
+| `FND/OwnershipAndControl/Ownership` | Ownership semantics reused by loan ownership classifiers |
 
 *(Source: [FIBO ontology structure](https://github.com/edmcouncil/fibo/tree/master/LOAN))*
 
@@ -55,7 +55,7 @@ Over four progressive steps, we'll model a **Loans ontology** with 10 entity typ
 
 This lab is adapted from the EDM Council FIBO ontology:
 
-- **Copyright**: (c) 2016-2025 EDM Council, Inc. and Object Management Group, Inc.
+- **Copyright**: EDM Council, Inc. and Object Management Group, Inc. (see module headers for exact year ranges)
 - **License**: [MIT License](https://opensource.org/licenses/MIT)
 - **Source repository**: [github.com/edmcouncil/fibo](https://github.com/edmcouncil/fibo)
 - **Specification**: [spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)
