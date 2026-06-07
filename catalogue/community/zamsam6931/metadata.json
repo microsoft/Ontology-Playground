@@ -1,0 +1,20 @@
+{
+  "name": "Clinical Supply Chain Ontology",
+  "description": "Models the clinical trial operations, pharmaceutical supply chain, patient enrollment lifecycle, manufacturing processes, inventory management, and global logistics involved in enterprise clinical study execution. The ontology connects studies, patients, compounds, manufacturing, depots, shipments, inventory, and geographic regions to enable semantic intelligence, operational visibility, and AI-driven clinical supply chain analytics.",
+  "category": "healthcare",
+  "tags": [
+    "clinical-trials",
+    "pharmaceutical",
+    "supply-chain",
+    "healthcare",
+    "knowledge-graph",
+    "ontology",
+    "clinical-operations",
+    "manufacturing",
+    "inventory",
+    "logistics",
+    "semantic-model",
+    "microsoft-fabric"
+  ],
+  "author": "Samrin Zaman"
+}
