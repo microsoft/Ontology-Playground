@@ -24,7 +24,7 @@
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/sales-analytics-that-speaks-businessusing-fabric-iq-ontology/CustomerAddress">
-        <rdfs:label>Customer_Address</rdfs:label>
+        <rdfs:label>Customer Address</rdfs:label>
         <rdfs:comment>A physical or mailing location associated with a customer, used for billing and delivery.</rdfs:comment>
         <ont:icon>🏠</ont:icon>
         <ont:color>#FFB900</ont:color>
@@ -52,7 +52,7 @@
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/sales-analytics-that-speaks-businessusing-fabric-iq-ontology/SalesPerson">
-        <rdfs:label>Sales_Person</rdfs:label>
+        <rdfs:label>Sales Person</rdfs:label>
         <rdfs:comment>An employee who handles customer orders, sells items, works within a department, and is evaluated through sales performance.</rdfs:comment>
         <ont:icon>💼</ont:icon>
         <ont:color>#0078D4</ont:color>
@@ -87,14 +87,14 @@
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/sales-analytics-that-speaks-businessusing-fabric-iq-ontology/CustomerBalance">
-        <rdfs:label>Customer_Balance</rdfs:label>
+        <rdfs:label>Customer Balance</rdfs:label>
         <rdfs:comment>The current outstanding monetary amount owed by, or credit held for, a customer at a given point in time.</rdfs:comment>
         <ont:icon>📊</ont:icon>
         <ont:color>#D83B01</ont:color>
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/sales-analytics-that-speaks-businessusing-fabric-iq-ontology/SalesPerformance">
-        <rdfs:label>Sales_Performance</rdfs:label>
+        <rdfs:label>Sales Performance</rdfs:label>
         <rdfs:comment>A measure of a sales person&apos;s effectiveness over a period, evaluated in terms of revenue achieved.</rdfs:comment>
         <ont:icon>📈</ont:icon>
         <ont:color>#D83B01</ont:color>
@@ -108,7 +108,7 @@
     </owl:Class>
 
     <owl:Class rdf:about="http://example.org/ontology/sales-analytics-that-speaks-businessusing-fabric-iq-ontology/PointOfSales">
-        <rdfs:label>Point_of_Sales</rdfs:label>
+        <rdfs:label>Point of Sales</rdfs:label>
         <rdfs:comment>A location or terminal where sales transactions are completed and recorded. Operated by the company and generates revenue.</rdfs:comment>
         <ont:icon>💰</ont:icon>
         <ont:color>#FFB900</ont:color>
