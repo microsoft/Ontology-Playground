@@ -25,6 +25,11 @@ dist-ssr
 build
 api/local.settings.json
 public/catalogue.json
+ontology-preview/
+ontology-preview-artifact/
+ontology-preview-assets/
+ontology-preview-publish/
+ontology-preview-comment.md
 internal-docs/
 .vite
 release-review/

@@ -1,0 +1,8 @@
+{
+  "name": "Service Order Management",
+  "description": "Service order management ontology covering customers, service orders, parts, shipments, payments, warehouses, and field service engineers.",
+  "icon": "🔧",
+  "category": "general",
+  "tags": ["service", "orders", "field-service", "operations"],
+  "author": "Marshall3366"
+}

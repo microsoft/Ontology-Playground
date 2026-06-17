@@ -22,7 +22,7 @@ That's it! The widget loads the ontology from the catalogue and renders an inter
 
 | Catalogue ID | Name | Entities | Relationships |
 |---|---|---|---|
-| `official/cosmic-coffee` | Cosmic Coffee Company | 6 | 7 |
+| `official/cosmic-coffee` | Fourth Coffee | 6 | 7 |
 | `official/ecommerce` | E-Commerce Platform | 5 | 6 |
 | `official/finance` | Banking & Finance | 5 | 6 |
 | `official/healthcare` | Healthcare System | 5 | 6 |

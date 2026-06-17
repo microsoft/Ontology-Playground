@@ -6,6 +6,14 @@ export function InspectorPanel() {
   const { currentOntology, dataBindings, selectedEntityId, selectedRelationshipId, showDataBindings, activeQuest, currentStepIndex, advanceQuestStep } = useAppStore();
   const panelRef = useRef<HTMLDivElement>(null);
 
+  const tryAdvancePropertyQuestStep = (propertyName: string) => {
+    if (!activeQuest) return;
+    const currentStep = activeQuest.steps[currentStepIndex];
+    if (currentStep.targetType === 'property' && currentStep.targetId === propertyName) {
+      advanceQuestStep();
+    }
+  };
+
   useEffect(() => {
     if ((selectedEntityId || selectedRelationshipId) && panelRef.current) {
       panelRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -129,14 +137,7 @@ export function InspectorPanel() {
           </div>
           <div className="property-list">
             {entity.properties.map(prop => (
-              <div key={prop.name} className="property-item" style={{ cursor: 'pointer' }} onClick={() => {
-                if (activeQuest) {
-                  const currentStep = activeQuest.steps[currentStepIndex];
-                  if (currentStep.targetType === 'property' && currentStep.targetId === prop.name) {
-                    advanceQuestStep();
-                  }
-                }
-              }}>
+              <div key={prop.name} className="property-item" style={{ cursor: 'pointer' }} onClick={() => tryAdvancePropertyQuestStep(prop.name)}>
                 <div>
                   <span className="property-name">{prop.name}</span>
                   {prop.isIdentifier && <span className="property-identifier">ID</span>}
@@ -201,7 +202,12 @@ export function InspectorPanel() {
               </div>
               <div>
                 {Object.entries(binding.columnMappings).map(([prop, column]) => (
-                  <div key={prop} className="column-mapping">
+                  <div
+                    key={prop}
+                    className="column-mapping"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => tryAdvancePropertyQuestStep(prop)}
+                  >
                     <span className="column-property">{prop}</span>
                     <span className="column-arrow">→</span>
                     <span className="column-source">{column}</span>

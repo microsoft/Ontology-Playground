@@ -25,7 +25,7 @@ An ontology in this project has four parts:
 
 ```
 Ontology
-├── name            "Cosmic Coffee Company"
+├── name            "Fourth Coffee"
 ├── description     "A coffee shop chain with suppliers, products, stores…"
 ├── entityTypes[]   The concepts in your domain
 └── relationships[] How those concepts connect
@@ -225,7 +225,7 @@ Every catalogue ontology needs a `metadata.json` alongside the `.rdf` file:
 
 ```json
 {
-  "name": "Cosmic Coffee Company",
+  "name": "Fourth Coffee",
   "description": "A sample ontology representing a coffee shop chain with suppliers, products, stores, customers, and orders.",
   "icon": "☕",
   "category": "retail",
@@ -238,7 +238,7 @@ Every catalogue ontology needs a `metadata.json` alongside the `.rdf` file:
 |-------|----------|-------|
 | `name` | Yes | Same as the ontology's `name` field |
 | `description` | Yes | Short description for the gallery card |
-| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `general`, `fibo` |
+| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `technology`, `general`, `fibo` |
 | `icon` | No | Emoji for the gallery card. Defaults to a generic icon |
 | `tags` | No | Array of strings for filtering. Keep them lowercase |
 | `author` | No | Your GitHub username. Shown in the gallery |

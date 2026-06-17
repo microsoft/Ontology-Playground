@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/zava-grove-to-shelf-step-4/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/zava-grove-to-shelf-step-4/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/">
+        <rdfs:label>Zava Grove-to-Shelf — Step 4: Retail Fulfillment</rdfs:label>
+        <rdfs:comment>Add RetailDC, Store, and Order to connect the supply chain to retail partners and revenue.</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- Entity Types -->
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Grower">
+        <rdfs:label>Grower</rdfs:label>
+        <rdfs:comment>A partner producer</rdfs:comment>
+        <ont:icon>👨‍🌾</ont:icon>
+        <ont:color>#498205</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Farm">
+        <rdfs:label>Farm</rdfs:label>
+        <rdfs:comment>A geographic site owned or contracted by a grower</rdfs:comment>
+        <ont:icon>🌾</ont:icon>
+        <ont:color>#6EAA1F</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Plot">
+        <rdfs:label>Plot</rdfs:label>
+        <rdfs:comment>A managed parcel within a farm</rdfs:comment>
+        <ont:icon>🌱</ont:icon>
+        <ont:color>#107C10</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Fruitvariety">
+        <rdfs:label>FruitVariety</rdfs:label>
+        <rdfs:comment>A commercial fruit or vegetable variety</rdfs:comment>
+        <ont:icon>🍊</ont:icon>
+        <ont:color>#FFB900</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Harvestlot">
+        <rdfs:label>HarvestLot</rdfs:label>
+        <rdfs:comment>A traceable harvest event</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#D83B01</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Qualitycheck">
+        <rdfs:label>QualityCheck</rdfs:label>
+        <rdfs:comment>One of the four-stage quality inspections</rdfs:comment>
+        <ont:icon>🔍</ont:icon>
+        <ont:color>#C239B3</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Shipment">
+        <rdfs:label>Shipment</rdfs:label>
+        <rdfs:comment>A reefer container or truck</rdfs:comment>
+        <ont:icon>🚛</ont:icon>
+        <ont:color>#0099BC</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Coldchainsensor">
+        <rdfs:label>ColdChainSensor</rdfs:label>
+        <rdfs:comment>Temperature and humidity sensor on a shipment</rdfs:comment>
+        <ont:icon>🌡️</ont:icon>
+        <ont:color>#005A9E</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Retaildc">
+        <rdfs:label>RetailDC</rdfs:label>
+        <rdfs:comment>A retailer's distribution centre receiving shipments</rdfs:comment>
+        <ont:icon>🏬</ont:icon>
+        <ont:color>#2D7D9A</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Store">
+        <rdfs:label>Store</rdfs:label>
+        <rdfs:comment>A retailer storefront supplied by a DC</rdfs:comment>
+        <ont:icon>🏪</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/Order">
+        <rdfs:label>Order</rdfs:label>
+        <rdfs:comment>A purchase order placed by a store for a fruit variety</rdfs:comment>
+        <ont:icon>📋</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <!-- Carry-forward properties (minimal set for graph context) -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/grower_growerId">
+        <rdfs:label>growerId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Grower"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/grower_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Grower"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/farm_farmId">
+        <rdfs:label>farmId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Farm"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/farm_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Farm"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/plot_plotId">
+        <rdfs:label>plotId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/fruitvariety_varietyId">
+        <rdfs:label>varietyId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Fruitvariety"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/fruitvariety_commercialName">
+        <rdfs:label>commercialName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Fruitvariety"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/fruitvariety_maxStorageTempC">
+        <rdfs:label>maxStorageTempC</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Fruitvariety"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>°C</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/harvestlot_lotId">
+        <rdfs:label>lotId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Harvestlot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/harvestlot_kilograms">
+        <rdfs:label>kilograms</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Harvestlot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>kg</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/harvestlot_qcGrade">
+        <rdfs:label>qcGrade</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Harvestlot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/qualitycheck_checkId">
+        <rdfs:label>checkId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Qualitycheck"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/qualitycheck_stage">
+        <rdfs:label>stage</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Qualitycheck"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/shipment_shipmentId">
+        <rdfs:label>shipmentId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Shipment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/shipment_modality">
+        <rdfs:label>modality</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Shipment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/coldchainsensor_sensorId">
+        <rdfs:label>sensorId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Coldchainsensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/coldchainsensor_temperatureC">
+        <rdfs:label>temperatureC</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Coldchainsensor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>°C</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- RetailDC properties -->
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/retaildc_dcId">
+        <rdfs:label>dcId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Retaildc"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/retaildc_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Retaildc"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/retaildc_country">
+        <rdfs:label>country</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Retaildc"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/retaildc_city">
+        <rdfs:label>city</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Retaildc"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/retaildc_retailerCode">
+        <rdfs:label>retailerCode</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Retaildc"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- Store properties -->
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/store_storeId">
+        <rdfs:label>storeId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Store"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/store_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Store"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/store_retailerName">
+        <rdfs:label>retailerName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Store"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/store_country">
+        <rdfs:label>country</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Store"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/store_city">
+        <rdfs:label>city</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Store"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- Order properties -->
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/order_orderId">
+        <rdfs:label>orderId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/order_kilograms">
+        <rdfs:label>kilograms</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>kg</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/order_orderDate">
+        <rdfs:label>orderDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/order_deliveryDate">
+        <rdfs:label>deliveryDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/order_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/order_unitPriceEur">
+        <rdfs:label>unitPriceEur</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/zava-grove-to-shelf-step-4/Order"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>EUR</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- Object Properties (cumulative) -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/grower-owns-farm">
+        <rdfs:label>GrowerOwnsFarm</rdfs:label>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>grower</ont:fromEntityId>
+        <ont:toEntityId>farm</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/farm-contains-plot">
+        <rdfs:label>FarmContainsPlot</rdfs:label>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>farm</ont:fromEntityId>
+        <ont:toEntityId>plot</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/plot-grows-fruitvariety">
+        <rdfs:label>PlotGrowsFruitVariety</rdfs:label>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>plot</ont:fromEntityId>
+        <ont:toEntityId>fruitvariety</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/harvestlot-fromplot-plot">
+        <rdfs:label>HarvestLotFromPlot</rdfs:label>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>harvestlot</ont:fromEntityId>
+        <ont:toEntityId>plot</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/harvestlot-ofvariety-fruitvariety">
+        <rdfs:label>HarvestLotOfVariety</rdfs:label>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>harvestlot</ont:fromEntityId>
+        <ont:toEntityId>fruitvariety</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/qualitycheck-checks-harvestlot">
+        <rdfs:label>QualityCheckChecksHarvestLot</rdfs:label>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>qualitycheck</ont:fromEntityId>
+        <ont:toEntityId>harvestlot</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/shipment-carries-harvestlot">
+        <rdfs:label>ShipmentCarriesHarvestLot</rdfs:label>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>shipment</ont:fromEntityId>
+        <ont:toEntityId>harvestlot</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/shipment-monitoredby-coldchainsensor">
+        <rdfs:label>ShipmentMonitoredBySensor</rdfs:label>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>shipment</ont:fromEntityId>
+        <ont:toEntityId>coldchainsensor</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <!-- New in step 4 -->
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/shipment-deliveredto-retaildc">
+        <rdfs:label>ShipmentDeliveredToRetailDC</rdfs:label>
+        <rdfs:comment>A shipment is delivered to one retail DC</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>shipment</ont:fromEntityId>
+        <ont:toEntityId>retaildc</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/retaildc-supplies-store">
+        <rdfs:label>RetailDCSuppliesStore</rdfs:label>
+        <rdfs:comment>A DC supplies many retailer stores</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>retaildc</ont:fromEntityId>
+        <ont:toEntityId>store</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/store-places-order">
+        <rdfs:label>StorePlacesOrder</rdfs:label>
+        <rdfs:comment>A store places one or more orders</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>store</ont:fromEntityId>
+        <ont:toEntityId>order</ont:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/zava-grove-to-shelf-step-4/order-forvariety-fruitvariety">
+        <rdfs:label>OrderForVariety</rdfs:label>
+        <rdfs:comment>Each order is for a specific fruit variety</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>order</ont:fromEntityId>
+        <ont:toEntityId>fruitvariety</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>

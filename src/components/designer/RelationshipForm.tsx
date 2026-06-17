@@ -29,8 +29,12 @@ export function RelationshipForm() {
   const entities = ontology.entityTypes;
 
   const handleAdd = () => {
-    if (entities.length < 2) return;
-    addRelationship(entities[0].id, entities[1].id);
+    if (entities.length < 1) return;
+    // Default the target to a second entity when one exists; otherwise create a
+    // self-referencing relationship on the only entity (Fabric supports these).
+    const from = entities[0].id;
+    const to = entities[1]?.id ?? entities[0].id;
+    addRelationship(from, to);
   };
 
   return (
@@ -40,8 +44,8 @@ export function RelationshipForm() {
         <button
           className="designer-add-btn"
           onClick={handleAdd}
-          disabled={entities.length < 2}
-          title={entities.length < 2 ? 'Need at least 2 entities to create a relationship' : 'Add relationship'}
+          disabled={entities.length < 1}
+          title={entities.length < 1 ? 'Create at least one entity to add a relationship' : 'Add relationship'}
         >
           <Plus size={14} /> Add
         </button>
@@ -49,8 +53,8 @@ export function RelationshipForm() {
 
       {ontology.relationships.length === 0 && (
         <div className="designer-empty">
-          {entities.length < 2
-            ? 'Create at least two entities first.'
+          {entities.length < 1
+            ? 'Create at least one entity first.'
             : 'No relationships yet. Click "Add" to create one.'}
         </div>
       )}
@@ -83,11 +87,6 @@ export function RelationshipForm() {
 
             {isSelected && (
               <div className="designer-rel-body">
-                {rel.from === rel.to && (
-                  <div className="designer-field-hint error" style={{ marginBottom: 8 }}>
-                    ⚠️ Self-referencing relationship — Fabric IQ requires source and target entity types to be different.
-                  </div>
-                )}
                 {/* Name */}
                 <label className="designer-field">
                   <span>Name</span>

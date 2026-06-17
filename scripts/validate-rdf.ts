@@ -79,7 +79,7 @@ if (args.length > 0) {
   // --- Mode: validate all built-in + catalogue ontologies ---
 
   // 1. Built-in TS ontology objects
-  report('Cosmic Coffee (built-in)', validateOntology(cosmicCoffeeOntology));
+  report('Fourth Coffee (built-in)', validateOntology(cosmicCoffeeOntology));
   for (const s of sampleOntologies) {
     report(`${s.name} (built-in)`, validateOntology(s.ontology));
   }

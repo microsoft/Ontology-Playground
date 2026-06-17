@@ -30,8 +30,8 @@ describe('escapeXml', () => {
 
 describe('deriveBaseUri', () => {
   it('converts name to lowercase slug', () => {
-    expect(deriveBaseUri('Cosmic Coffee Company')).toBe(
-      'http://example.org/ontology/cosmic-coffee-company/',
+    expect(deriveBaseUri('Fourth Coffee')).toBe(
+      'http://example.org/ontology/fourth-coffee/',
     );
   });
 
@@ -251,14 +251,14 @@ describe('serializeToRDF', () => {
     const bindings: DataBinding[] = [
       {
         entityTypeId: 'customer',
-        source: 'OneLake',
+        source: 'Data Lakehouse',
         table: 'lakehouse.bronze.customers',
         columnMappings: { name: 'full_name', email: 'email_address' },
       },
     ];
     const rdf = serializeToRDF(ontology, bindings);
     expect(rdf).toContain('ont:DataBinding');
-    expect(rdf).toContain('<ont:source>OneLake</ont:source>');
+    expect(rdf).toContain('<ont:source>Data Lakehouse</ont:source>');
     expect(rdf).toContain('<ont:table>lakehouse.bronze.customers</ont:table>');
     expect(rdf).toContain('<ont:columnMapping>name=full_name</ont:columnMapping>');
     expect(rdf).toContain('<ont:columnMapping>email=email_address</ont:columnMapping>');

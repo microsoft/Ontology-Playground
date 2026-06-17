@@ -8,7 +8,7 @@
     xmlns:ont="http://example.org/ontology/cosmic-coffee-company/">
 
     <owl:Ontology rdf:about="http://example.org/ontology/cosmic-coffee-company/">
-        <rdfs:label>Cosmic Coffee Company</rdfs:label>
+        <rdfs:label>Fourth Coffee</rdfs:label>
         <rdfs:comment>A sample ontology representing a modern coffee shop chain with suppliers, products, stores, customers, and orders.</rdfs:comment>
     </owl:Ontology>
 
@@ -444,7 +444,7 @@
     <ont:DataBinding rdf:about="http://example.org/ontology/cosmic-coffee-company/binding_customer">
         <ont:boundClass rdf:resource="http://example.org/ontology/cosmic-coffee-company/Customer"/>
         <ont:boundEntityId>customer</ont:boundEntityId>
-        <ont:source>OneLake</ont:source>
+        <ont:source>Data Lakehouse</ont:source>
         <ont:table>lakehouse.bronze.customers</ont:table>
         <ont:columnMapping>customerId=customer_id</ont:columnMapping>
         <ont:columnMapping>name=full_name</ont:columnMapping>
@@ -457,7 +457,7 @@
     <ont:DataBinding rdf:about="http://example.org/ontology/cosmic-coffee-company/binding_order">
         <ont:boundClass rdf:resource="http://example.org/ontology/cosmic-coffee-company/Order"/>
         <ont:boundEntityId>order</ont:boundEntityId>
-        <ont:source>OneLake</ont:source>
+        <ont:source>Data Lakehouse</ont:source>
         <ont:table>lakehouse.silver.orders</ont:table>
         <ont:columnMapping>orderId=order_id</ont:columnMapping>
         <ont:columnMapping>timestamp=order_timestamp</ont:columnMapping>
@@ -469,7 +469,7 @@
     <ont:DataBinding rdf:about="http://example.org/ontology/cosmic-coffee-company/binding_product">
         <ont:boundClass rdf:resource="http://example.org/ontology/cosmic-coffee-company/Product"/>
         <ont:boundEntityId>product</ont:boundEntityId>
-        <ont:source>PowerBI</ont:source>
+        <ont:source>Semantic model</ont:source>
         <ont:table>semantic_model.Products</ont:table>
         <ont:columnMapping>productId=ProductKey</ont:columnMapping>
         <ont:columnMapping>name=ProductName</ont:columnMapping>

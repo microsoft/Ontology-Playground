@@ -1,4 +1,4 @@
-// Cosmic Coffee Company - Sample Ontology for Microsoft Fabric IQ Demo
+// Fourth Coffee - Sample Ontology for Microsoft Fabric IQ Demo
 
 export interface Property {
   name: string;
@@ -53,9 +53,9 @@ export interface DataBinding {
   columnMappings: Record<string, string>;
 }
 
-// The Cosmic Coffee Company Ontology
+// The Fourth Coffee Ontology
 export const cosmicCoffeeOntology: Ontology = {
-  name: "Cosmic Coffee Company",
+  name: "Fourth Coffee",
   description: "A sample ontology representing a modern coffee shop chain with suppliers, products, stores, customers, and orders.",
   entityTypes: [
     {
@@ -216,18 +216,18 @@ export const cosmicCoffeeOntology: Ontology = {
 // Sample entity instances for demonstration
 export const sampleInstances: EntityInstance[] = [
   // Customers
-  { id: "cust-001", entityTypeId: "customer", values: { customerId: "CUST-001", name: "Alex Rivera", email: "alex@email.com", loyaltyTier: "Gold", joinDate: "2024-03-15", totalSpend: 1245.50 }},
-  { id: "cust-002", entityTypeId: "customer", values: { customerId: "CUST-002", name: "Jordan Chen", email: "jordan@email.com", loyaltyTier: "Platinum", joinDate: "2023-01-20", totalSpend: 3420.00 }},
-  { id: "cust-003", entityTypeId: "customer", values: { customerId: "CUST-003", name: "Sam Williams", email: "sam@email.com", loyaltyTier: "Bronze", joinDate: "2025-11-01", totalSpend: 89.00 }},
+  { id: "cust-001", entityTypeId: "customer", values: { customerId: "CUST-001", name: "Arif Ramadhan", email: "customer001@example.com", loyaltyTier: "Gold", joinDate: "2024-03-15", totalSpend: 1245.50 }},
+  { id: "cust-002", entityTypeId: "customer", values: { customerId: "CUST-002", name: "Jaroslav Cerny", email: "customer002@example.com", loyaltyTier: "Platinum", joinDate: "2023-01-20", totalSpend: 3420.00 }},
+  { id: "cust-003", entityTypeId: "customer", values: { customerId: "CUST-003", name: "Sumber Agvaan", email: "customer003@example.com", loyaltyTier: "Bronze", joinDate: "2025-11-01", totalSpend: 89.00 }},
   
   // Products
   { id: "prod-001", entityTypeId: "product", values: { productId: "PROD-001", name: "Ethiopian Single Origin", category: "Brewed", price: 4.50, origin: "Ethiopia", isOrganic: true }},
-  { id: "prod-002", entityTypeId: "product", values: { productId: "PROD-002", name: "Cosmic Latte", category: "Espresso", price: 5.75, origin: "Colombia", isOrganic: false }},
+  { id: "prod-002", entityTypeId: "product", values: { productId: "PROD-002", name: "Colombian Latte", category: "Espresso", price: 5.75, origin: "Colombia", isOrganic: false }},
   { id: "prod-003", entityTypeId: "product", values: { productId: "PROD-003", name: "Nebula Cold Brew", category: "Cold Brew", price: 5.25, origin: "Guatemala", isOrganic: true }},
   
   // Stores
-  { id: "store-001", entityTypeId: "store", values: { storeId: "STORE-001", name: "Cosmic Coffee - Downtown Seattle", city: "Seattle", state: "WA", openDate: "2022-06-15", capacity: 45 }},
-  { id: "store-002", entityTypeId: "store", values: { storeId: "STORE-002", name: "Cosmic Coffee - Capitol Hill", city: "Seattle", state: "WA", openDate: "2023-02-28", capacity: 32 }},
+  { id: "store-001", entityTypeId: "store", values: { storeId: "STORE-001", name: "Fourth Coffee - Downtown Seattle", city: "Seattle", state: "WA", openDate: "2022-06-15", capacity: 45 }},
+  { id: "store-002", entityTypeId: "store", values: { storeId: "STORE-002", name: "Fourth Coffee - Capitol Hill", city: "Seattle", state: "WA", openDate: "2023-02-28", capacity: 32 }},
   
   // Suppliers
   { id: "supp-001", entityTypeId: "supplier", values: { supplierId: "SUPP-001", name: "Ethiopia Highlands Farm", country: "Ethiopia", certification: "Fair Trade", rating: 4.8 }},
@@ -241,11 +241,11 @@ export const sampleInstances: EntityInstance[] = [
   { id: "ship-001", entityTypeId: "shipment", values: { shipmentId: "SHIP-001", dispatchDate: "2025-01-20", arrivalDate: "2025-01-27", status: "Delivered", weight: 250.5 }},
 ];
 
-// Sample data bindings showing connection to OneLake
+// Sample data bindings showing connection to a data lakehouse platform
 export const sampleBindings: DataBinding[] = [
   {
     entityTypeId: "customer",
-    source: "OneLake",
+    source: "Data Lakehouse",
     table: "lakehouse.bronze.customers",
     columnMappings: {
       customerId: "customer_id",
@@ -258,7 +258,7 @@ export const sampleBindings: DataBinding[] = [
   },
   {
     entityTypeId: "order",
-    source: "OneLake",
+    source: "Data Lakehouse",
     table: "lakehouse.silver.orders",
     columnMappings: {
       orderId: "order_id",
@@ -270,7 +270,7 @@ export const sampleBindings: DataBinding[] = [
   },
   {
     entityTypeId: "product",
-    source: "PowerBI",
+    source: "Semantic model",
     table: "semantic_model.Products",
     columnMappings: {
       productId: "ProductKey",

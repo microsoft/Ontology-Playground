@@ -28,6 +28,21 @@ Generate a complete Ontology School course with progressive ontology steps.
 6. Add `<ontology-embed>` + `diff` for progressive steps.
 7. Include at least one quiz per article.
 
+## Person Names
+
+If the course, step ontologies, examples, sample data, quests, quiz text, or docs
+need any person names, first use the `name-generator` skill. Do not invent
+customer, employee, patient, student, instructor, reviewer, or other human names.
+
+All generated person names must come from:
+
+```text
+data/reference/FNF-2026-06-01-01002-0268.csv
+```
+
+Use the CSV `FullName` column by default, and keep selected names consistent
+across source markdown, RDF/OWL examples, generated catalogue data, and tests.
+
 ## Validate
 
 - `npm run qa:tutorial-content`
@@ -44,4 +59,6 @@ If lesson content is not yet approved:
 
 - Course renders in `/#/learn`
 - Step ontologies are isolated in School category
+- Any person names introduced by the lesson or sample data came from the
+  `name-generator` skill / approved CSV fixture
 - Builds and validators pass

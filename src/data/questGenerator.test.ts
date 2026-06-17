@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { generateQuestsForOntology } from './questGenerator';
 import type { Ontology } from './ontology';
 import { validateQueryQuestSteps } from './questQueryValidator';
+import { cosmicCoffeeOntology } from './ontology';
+import { quests as defaultQuests } from './quests';
 
 const ontology: Ontology = {
   name: 'Incident Management',
@@ -36,6 +38,12 @@ const ontology: Ontology = {
 };
 
 describe('generateQuestsForOntology', () => {
+  it('keeps default Fourth Coffee query quests executable in the live query engine', () => {
+    const issues = validateQueryQuestSteps(defaultQuests, cosmicCoffeeOntology);
+
+    expect(issues).toEqual([]);
+  });
+
   it('generates query quest steps that resolve meaningfully in the NL engine', () => {
     const quests = generateQuestsForOntology(ontology);
     const issues = validateQueryQuestSteps(quests, ontology);

@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { convertToFabricParts } from './fabric';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  convertToFabricParts,
+  createOntology,
+  updateOntologyDefinition,
+  listOntologies,
+  FabricApiError,
+} from './fabric';
 import type { Ontology } from '../data/ontology';
 
 function decode(base64: string): unknown {
@@ -272,5 +278,192 @@ describe('convertToFabricParts', () => {
 
     expect(entity.properties).toHaveLength(0);
     expect(entity.entityIdParts).toHaveLength(0);
+  });
+});
+
+// ─── Network layer (issue #68) ──────────────────────────────────────────────
+
+interface MockResponseInit {
+  status?: number;
+  ok?: boolean;
+  body?: string;
+  headers?: Record<string, string>;
+}
+
+/**
+ * Build a minimal stand-in for a fetch Response. Mirrors the real Response in
+ * the way that matters for #68: json() throws on an empty body, while text()
+ * returns the raw string.
+ */
+function mockResponse({ status = 200, ok, body = '', headers = {} }: MockResponseInit = {}): Response {
+  const lower: Record<string, string> = {};
+  for (const [k, v] of Object.entries(headers)) lower[k.toLowerCase()] = v;
+  return {
+    status,
+    ok: ok ?? (status >= 200 && status < 300),
+    statusText: 'Mock Status',
+    headers: { get: (name: string) => lower[name.toLowerCase()] ?? null },
+    text: async () => body,
+    json: async () => JSON.parse(body),
+  } as unknown as Response;
+}
+
+describe('Fabric REST client (issue #68: empty JSON response)', () => {
+  const workspaceId = '11111111-1111-1111-1111-111111111111';
+  const token = 'fake-token';
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('updateOntologyDefinition resolves on a 200 with an empty body (regression for #68)', async () => {
+    fetchMock.mockResolvedValueOnce(mockResponse({ status: 200, body: '' }));
+
+    await expect(
+      updateOntologyDefinition(workspaceId, 'ont-1', token, minimalOntology),
+    ).resolves.toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('updateOntologyDefinition resolves on a 200 with a whitespace-only body', async () => {
+    fetchMock.mockResolvedValueOnce(mockResponse({ status: 200, body: '   \n  ' }));
+
+    await expect(
+      updateOntologyDefinition(workspaceId, 'ont-1', token, minimalOntology),
+    ).resolves.toBeUndefined();
+  });
+
+  it('updateOntologyDefinition resolves on a 204 No Content', async () => {
+    fetchMock.mockResolvedValueOnce(mockResponse({ status: 204, body: '' }));
+
+    await expect(
+      updateOntologyDefinition(workspaceId, 'ont-1', token, minimalOntology),
+    ).resolves.toBeUndefined();
+  });
+
+  it('surfaces a FabricApiError with the message from a JSON error body', async () => {
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({
+        status: 403,
+        body: JSON.stringify({ errorCode: 'InsufficientPrivileges', message: 'No access to workspace' }),
+      }),
+    );
+
+    await expect(
+      updateOntologyDefinition(workspaceId, 'ont-1', token, minimalOntology),
+    ).rejects.toMatchObject({
+      name: 'FabricApiError',
+      status: 403,
+      errorCode: 'InsufficientPrivileges',
+      message: 'No access to workspace',
+    });
+  });
+
+  it('throws a FabricApiError with a default message when the error body is empty', async () => {
+    fetchMock.mockResolvedValueOnce(mockResponse({ status: 500, body: '' }));
+
+    const error = await updateOntologyDefinition(workspaceId, 'ont-1', token, minimalOntology).catch(
+      (e: unknown) => e,
+    );
+    expect(error).toBeInstanceOf(FabricApiError);
+    expect((error as FabricApiError).status).toBe(500);
+  });
+
+  it('listOntologies parses the value array from a JSON body', async () => {
+    fetchMock.mockResolvedValueOnce(
+      mockResponse({
+        status: 200,
+        body: JSON.stringify({
+          value: [
+            { id: 'o1', displayName: 'Alpha', description: '', type: 'Ontology', workspaceId },
+            { id: 'o2', displayName: 'Beta', description: '', type: 'Ontology', workspaceId },
+          ],
+        }),
+      }),
+    );
+
+    const list = await listOntologies(workspaceId, token);
+    expect(list.map(o => o.id)).toEqual(['o1', 'o2']);
+  });
+
+  it('listOntologies returns an empty array when the body is empty', async () => {
+    fetchMock.mockResolvedValueOnce(mockResponse({ status: 200, body: '' }));
+
+    await expect(listOntologies(workspaceId, token)).resolves.toEqual([]);
+  });
+
+  it('createOntology returns the created ontology from a 201 JSON body', async () => {
+    const created = {
+      id: 'new-1',
+      displayName: 'Test_Ontology',
+      description: '',
+      type: 'Ontology',
+      workspaceId,
+    };
+    fetchMock.mockResolvedValueOnce(mockResponse({ status: 201, body: JSON.stringify(created) }));
+
+    await expect(createOntology(workspaceId, token, minimalOntology)).resolves.toMatchObject({ id: 'new-1' });
+  });
+
+  it('updateOntologyDefinition polls a 202 long-running operation to completion', async () => {
+    vi.useFakeTimers();
+    fetchMock
+      .mockResolvedValueOnce(mockResponse({ status: 202, headers: { 'x-ms-operation-id': 'op-1' } }))
+      .mockResolvedValueOnce(mockResponse({ status: 200, body: JSON.stringify({ status: 'Succeeded' }) }));
+
+    const promise = updateOntologyDefinition(workspaceId, 'ont-1', token, minimalOntology);
+    await vi.advanceTimersByTimeAsync(2000);
+
+    await expect(promise).resolves.toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('createOntology polls a 202 operation, then resolves the created item from the list', async () => {
+    vi.useFakeTimers();
+    const created = {
+      id: 'made-1',
+      displayName: 'Test_Ontology',
+      description: '',
+      type: 'Ontology',
+      workspaceId,
+    };
+    fetchMock
+      .mockResolvedValueOnce(mockResponse({ status: 202, headers: { 'x-ms-operation-id': 'op-2' } }))
+      .mockResolvedValueOnce(mockResponse({ status: 200, body: JSON.stringify({ status: 'Succeeded' }) }))
+      .mockResolvedValueOnce(mockResponse({ status: 200, body: JSON.stringify({ value: [created] }) }));
+
+    const promise = createOntology(workspaceId, token, minimalOntology);
+    await vi.advanceTimersByTimeAsync(2000);
+
+    await expect(promise).resolves.toMatchObject({ id: 'made-1' });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('propagates a FabricApiError when the long-running operation fails', async () => {
+    vi.useFakeTimers();
+    fetchMock
+      .mockResolvedValueOnce(mockResponse({ status: 202, headers: { 'x-ms-operation-id': 'op-3' } }))
+      .mockResolvedValueOnce(
+        mockResponse({
+          status: 200,
+          body: JSON.stringify({ status: 'Failed', error: { message: 'boom', errorCode: 'BadDefinition' } }),
+        }),
+      );
+
+    const settled = updateOntologyDefinition(workspaceId, 'ont-1', token, minimalOntology).catch(
+      (e: unknown) => e,
+    );
+    await vi.advanceTimersByTimeAsync(2000);
+
+    const error = await settled;
+    expect(error).toBeInstanceOf(FabricApiError);
+    expect((error as FabricApiError).message).toBe('boom');
   });
 });

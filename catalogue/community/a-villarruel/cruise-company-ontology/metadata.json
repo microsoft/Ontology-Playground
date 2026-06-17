@@ -1,0 +1,8 @@
+{
+  "name": "Cruise Company",
+  "description": "Cruise line operations and guest experience ontology covering ships, sailings, bookings, cabins, ports, excursions, crew, and loyalty tiers.",
+  "icon": "🚢",
+  "category": "general",
+  "tags": ["cruise", "travel", "operations", "hospitality"],
+  "author": "a-villarruel"
+}

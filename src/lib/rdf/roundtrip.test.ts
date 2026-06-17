@@ -73,13 +73,13 @@ function expectBindingsEqual(actual: DataBinding[], expected: DataBinding[]) {
 }
 
 describe('RDF round-trip tests', () => {
-  it('round-trips the Cosmic Coffee Company ontology', () => {
+  it('round-trips the Fourth Coffee ontology', () => {
     const rdf = serializeToRDF(cosmicCoffeeOntology);
     const { ontology } = parseRDF(rdf);
     expectOntologiesEqual(ontology, cosmicCoffeeOntology);
   });
 
-  it('round-trips the Cosmic Coffee Company ontology with bindings', () => {
+  it('round-trips the Fourth Coffee ontology with bindings', () => {
     const rdf = serializeToRDF(cosmicCoffeeOntology, sampleBindings);
     const { ontology, bindings } = parseRDF(rdf);
     expectOntologiesEqual(ontology, cosmicCoffeeOntology);

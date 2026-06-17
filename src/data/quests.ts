@@ -26,7 +26,7 @@ export const quests: Quest[] = [
   {
     id: "quest-1",
     title: "Meet the Entities",
-    description: "Discover the core building blocks of the Cosmic Coffee ontology by exploring entity types.",
+    description: "Discover the core building blocks of the Fourth Coffee ontology by exploring entity types.",
     difficulty: "beginner",
     category: "exploration",
     steps: [
@@ -156,7 +156,7 @@ export const quests: Quest[] = [
       },
       {
         id: "step-4-3",
-        instruction: "Try a traversal query: 'What orders did Alex Rivera place?'",
+        instruction: "Try a traversal query: 'What orders did Arif Ramadhan place?'",
         targetType: "query",
         hint: "This follows the Customer → Order relationship"
       }
@@ -170,7 +170,7 @@ export const quests: Quest[] = [
   {
     id: "quest-5",
     title: "Data Binding Discovery",
-    description: "Learn how ontology concepts connect to real data sources in OneLake.",
+    description: "Learn how ontology concepts connect to real data platform sources.",
     difficulty: "advanced",
     category: "exploration",
     steps: [
@@ -183,17 +183,17 @@ export const quests: Quest[] = [
       },
       {
         id: "step-5-2",
-        instruction: "Examine how Customer properties map to lakehouse columns",
+        instruction: "Examine how Customer properties map to source columns",
         targetType: "property",
         targetId: "name",
         hint: "Notice how 'name' maps to 'full_name' in the source"
       },
       {
         id: "step-5-3",
-        instruction: "Check the Product entity's binding to see Power BI semantic model connection",
+        instruction: "Check the Product entity's binding and note the source and table",
         targetType: "entity",
         targetId: "product",
-        hint: "Products connect to a Power BI semantic model"
+        hint: "Look at the Data Bindings card under Product"
       }
     ],
     reward: {
@@ -217,7 +217,7 @@ export const nlQueryResponses: QueryResponse[] = [
   {
     query: "show me all gold tier customers",
     matches: ["gold tier", "gold customers", "customers gold"],
-    result: "Found 1 Gold tier customer:\n• Alex Rivera (CUST-001) - Gold tier since 2024",
+    result: "Found 1 Gold tier customer:\n• Arif Ramadhan (CUST-001) - Gold tier since 2024",
     highlightEntities: ["customer"],
     highlightRelationships: []
   },
@@ -229,23 +229,23 @@ export const nlQueryResponses: QueryResponse[] = [
     highlightRelationships: ["product_sourced_from_supplier"]
   },
   {
-    query: "what orders did alex rivera place",
-    matches: ["orders alex", "alex rivera orders", "alex placed"],
-    result: "Alex Rivera's orders:\n• ORD-2025-001 - $12.50 (Completed)\n  Items: Ethiopian Single Origin x2, Cosmic Latte x1\n  Store: Downtown Seattle",
+    query: "what orders did arif ramadhan place",
+    matches: ["orders arif", "arif ramadhan orders", "arif placed"],
+    result: "Arif Ramadhan's orders:\n• ORD-2025-001 - $12.50 (Completed)\n  Items: Ethiopian Single Origin x2, Colombian Latte x1\n  Store: Downtown Seattle",
     highlightEntities: ["customer", "order", "store"],
     highlightRelationships: ["customer_places_order", "order_processed_at_store"]
   },
   {
     query: "how many stores are in seattle",
     matches: ["stores seattle", "seattle stores", "how many stores"],
-    result: "Found 2 stores in Seattle:\n• Cosmic Coffee - Downtown Seattle (45 seats)\n• Cosmic Coffee - Capitol Hill (32 seats)",
+    result: "Found 2 stores in Seattle:\n• Fourth Coffee - Downtown Seattle (45 seats)\n• Fourth Coffee - Capitol Hill (32 seats)",
     highlightEntities: ["store"],
     highlightRelationships: []
   },
   {
-    query: "show supply chain for cosmic latte",
-    matches: ["supply chain", "cosmic latte", "where does cosmic latte come from"],
-    result: "Supply chain for Cosmic Latte:\n• Bean Origin: Colombia 🇨🇴\n• Supplier: Colombian Mountain Roasters\n• Certification: Rainforest Alliance 🌿\n• Latest Shipment: SHIP-001 (Delivered Jan 27)",
+    query: "show supply chain for colombian latte",
+    matches: ["supply chain", "colombian latte", "where does colombian latte come from"],
+    result: "Supply chain for Colombian Latte:\n• Bean Origin: Colombia 🇨🇴\n• Supplier: Colombian Mountain Roasters\n• Certification: Rainforest Alliance 🌿\n• Latest Shipment: SHIP-001 (Delivered Jan 27)",
     highlightEntities: ["product", "supplier", "shipment"],
     highlightRelationships: ["product_sourced_from_supplier", "shipment_from_supplier"]
   },
@@ -266,7 +266,7 @@ export const nlQueryResponses: QueryResponse[] = [
   {
     query: "show me platinum customers",
     matches: ["platinum", "platinum customers", "customers platinum"],
-    result: "Found 1 Platinum tier customer:\n• Jordan Chen (CUST-002) - Platinum tier\n  Total spend: $3,420.00\n  Member since: Jan 2023",
+    result: "Found 1 Platinum tier customer:\n• Jaroslav Cerny (CUST-002) - Platinum tier\n  Total spend: $3,420.00\n  Member since: Jan 2023",
     highlightEntities: ["customer"],
     highlightRelationships: []
   },

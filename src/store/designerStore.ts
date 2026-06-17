@@ -43,7 +43,6 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
   }
 
   const entityIds = new Set<string>();
-  const entityNameById = new Map<string, string>();
 
   // Cross-entity property name → type map for uniqueness check (§7.2)
   const propNameTypeMap = new Map<string, { type: string; entityName: string }>();
@@ -56,7 +55,6 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
       errors.push({ message: `Two entities share the same ID "${e.id}". Rename one of them.`, entityId: e.id });
     } else {
       entityIds.add(e.id);
-      entityNameById.set(e.id, label);
     }
     if (!e.name) {
       errors.push({ message: 'One of your entities has no name. Give it a name.', entityId: e.id });
@@ -126,15 +124,6 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
       const toLabel = r.to || '(none)';
       errors.push({
         message: `"${label}" points to "${toLabel}" which doesn't exist. Pick a valid target entity.`,
-        relationshipId: r.id,
-      });
-    }
-
-    // §7.3 — Self-referencing relationship warning
-    if (r.from && r.to && r.from === r.to) {
-      const entityLabel = entityNameById.get(r.from) || r.from;
-      errors.push({
-        message: `"${label}" is a self-referencing relationship on "${entityLabel}". Fabric IQ requires source and target entity types to be different.`,
         relationshipId: r.id,
       });
     }

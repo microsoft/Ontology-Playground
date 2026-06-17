@@ -11,7 +11,7 @@ export interface QuestQueryValidationIssue {
   result?: string;
 }
 
-const QUOTED_QUERY_RE = /["“]([^"”]+)["”]/;
+const QUOTED_QUERY_RE = /["“']([^"”']+)["”']/;
 
 export function extractQueryFromInstruction(instruction: string): string | null {
   const match = instruction.match(QUOTED_QUERY_RE);

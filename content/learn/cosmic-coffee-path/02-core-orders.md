@@ -14,7 +14,7 @@ Every commerce system starts with three core concepts:
 - **Order** — what transaction happened?
 - **Product** — what was purchased?
 
-These three entity types form the heart of the Cosmic Coffee ontology. Everything we add later connects back to them.
+These three entity types form the heart of the Fourth Coffee ontology. Everything we add later connects back to them.
 
 ## Defining the entities
 

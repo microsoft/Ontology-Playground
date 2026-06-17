@@ -23,7 +23,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
           <div className="modal-logo">☕</div>
           <h1 className="modal-title">Welcome to Ontology Playground (Preview)</h1>
           <p className="modal-subtitle">
-            Explore Microsoft Fabric IQ Ontology through the lens of Cosmic Coffee Company
+            Explore Microsoft Fabric IQ Ontology through the lens of Fourth Coffee
           </p>
         </div>
 
@@ -54,7 +54,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
             </div>
             <div className="feature-title">Data Bindings</div>
             <div className="feature-text">
-              Connect ontology concepts to real OneLake data sources
+              Connect ontology concepts to real data platform sources
             </div>
           </div>
 

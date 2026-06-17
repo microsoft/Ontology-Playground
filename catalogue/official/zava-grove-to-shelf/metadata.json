@@ -1,0 +1,15 @@
+{
+  "name": "Zava Grove-to-Shelf",
+  "description": "Zava's complete grove-to-shelf ontology — multi-origin sourcing, four-stage QC, cold-chain logistics, retail orders, and sustainability — in 12 entities and 13 relationships.",
+  "icon": "🌾",
+  "category": "food",
+  "tags": [
+    "zava",
+    "supply-chain",
+    "cold-chain",
+    "fresh-produce",
+    "sustainability",
+    "demo"
+  ],
+  "author": "ontology-quest"
+}

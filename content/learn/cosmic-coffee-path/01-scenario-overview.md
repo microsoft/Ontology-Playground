@@ -1,13 +1,13 @@
 ---
 title: "Scenario Overview"
 slug: scenario-overview
-description: "Meet the Cosmic Coffee Company — a modern coffee chain that needs an ontology to unify data across stores, suppliers, and orders."
+description: "Meet Fourth Coffee — a modern coffee chain that needs an ontology to unify data across stores, suppliers, and orders."
 order: 1
 ---
 
 ## The scenario
 
-You are designing the data model for **Cosmic Coffee Company**, a specialty coffee chain with stores across multiple cities. The company tracks:
+You are designing the data model for **Fourth Coffee**, a specialty coffee chain with stores across multiple cities. The company tracks:
 
 - **Customers** who visit stores and place orders
 - **Orders** containing coffee products and food items
@@ -28,7 +28,7 @@ With an ontology, the question maps directly to a graph traversal:
 
 ## What we'll build
 
-Over three steps, we'll progressively construct the complete Cosmic Coffee ontology:
+Over three steps, we'll progressively construct the complete Fourth Coffee ontology:
 
 | Step | Entities | What you'll learn |
 |---|---|---|

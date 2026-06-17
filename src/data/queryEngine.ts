@@ -1,4 +1,5 @@
 import type { Ontology } from './ontology';
+import { nlQueryResponses } from './quests';
 
 export interface QueryResponse {
   query: string;
@@ -14,6 +15,10 @@ function stripLeadingArticle(text: string): string {
 
 function singularize(text: string): string {
   return text.endsWith('s') ? text.slice(0, -1) : text;
+}
+
+function matchesDemoQuery(normalizedQuery: string, demoQuery: string, matches: string[]): boolean {
+  return normalizedQuery === demoQuery || matches.some(match => normalizedQuery.includes(match));
 }
 
 // Generate dynamic query suggestions based on the current ontology
@@ -68,6 +73,22 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   const entities = ontology.entityTypes;
   const relationships = ontology.relationships;
 
+  if (ontology.name === 'Fourth Coffee') {
+    const demoResponse = nlQueryResponses.find(response =>
+      matchesDemoQuery(normalizedNoPunctuation, response.query, response.matches)
+    );
+
+    if (demoResponse) {
+      return {
+        query,
+        result: demoResponse.result,
+        highlightEntities: demoResponse.highlightEntities,
+        highlightRelationships: demoResponse.highlightRelationships,
+        interpretation: 'Detected: Fourth Coffee sample query'
+      };
+    }
+  }
+
   // Conceptual queries (work for any ontology)
   if (normalizedQuery.includes('what is') && (normalizedQuery.includes('entity') || normalizedQuery.includes('ontology'))) {
     return {
@@ -92,7 +113,7 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   if (normalizedQuery.includes('how') && (normalizedQuery.includes('ontology') || normalizedQuery.includes('work'))) {
     return {
       query,
-      result: `The **${ontology.name}** ontology has:\n\n• **${entities.length} Entity Types** - ${entities.map(e => e.name).join(', ')}\n• **${relationships.length} Relationships** - Connecting entities together\n\nThe ontology acts as a semantic layer that binds to your OneLake data sources, enabling natural language queries that understand your business concepts.`,
+      result: `The **${ontology.name}** ontology has:\n\n• **${entities.length} Entity Types** - ${entities.map(e => e.name).join(', ')}\n• **${relationships.length} Relationships** - Connecting entities together\n\nThe ontology acts as a semantic layer that binds to your data platform sources, enabling natural language queries that understand your business concepts.`,
       highlightEntities: entities.map(e => e.id),
       highlightRelationships: [],
       interpretation: "Detected: question about ontology structure"
@@ -149,7 +170,7 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
       
       return {
         query,
-        result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**Properties:**\n${propList}\n\n_In a real deployment, this would query OneLake for actual ${entityNameLower} records._`,
+        result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**Properties:**\n${propList}\n\n_In a real deployment, this would query the data platform for actual ${entityNameLower} records._`,
         highlightEntities: [entity.id],
         highlightRelationships: [],
         interpretation: `Detected: query for ${entity.name} entities`
@@ -227,7 +248,7 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
       if (normalizedQuery.includes(entity.name.toLowerCase())) {
         return {
           query,
-          result: `The ontology defines the **${entity.name}** entity type.\n\n_In production, this query would count actual ${entity.name.toLowerCase()} records from OneLake._\n\nExample: "SELECT COUNT(*) FROM ${entity.name.toLowerCase()}s"`,
+          result: `The ontology defines the **${entity.name}** entity type.\n\n_In production, this query would count actual ${entity.name.toLowerCase()} records from the data platform._\n\nExample: "SELECT COUNT(*) FROM ${entity.name.toLowerCase()}s"`,
           highlightEntities: [entity.id],
           highlightRelationships: [],
           interpretation: `Detected: count query for ${entity.name}`

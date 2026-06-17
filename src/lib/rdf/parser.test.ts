@@ -338,7 +338,7 @@ describe('parseRDF', () => {
     <ont:DataBinding rdf:about="http://example.org/ontology/test/binding_customer">
         <ont:boundClass rdf:resource="http://example.org/ontology/test/Customer"/>
         <ont:boundEntityId>customer</ont:boundEntityId>
-        <ont:source>OneLake</ont:source>
+        <ont:source>Data Lakehouse</ont:source>
         <ont:table>lakehouse.bronze.customers</ont:table>
         <ont:columnMapping>name=full_name</ont:columnMapping>
         <ont:columnMapping>email=email_address</ont:columnMapping>
@@ -347,7 +347,7 @@ describe('parseRDF', () => {
       const { bindings } = parseRDF(rdf);
       expect(bindings).toHaveLength(1);
       expect(bindings[0].entityTypeId).toBe('customer');
-      expect(bindings[0].source).toBe('OneLake');
+      expect(bindings[0].source).toBe('Data Lakehouse');
       expect(bindings[0].table).toBe('lakehouse.bronze.customers');
       expect(bindings[0].columnMappings).toEqual({
         name: 'full_name',

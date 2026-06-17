@@ -1,0 +1,95 @@
+name: Ontology Preview Comment
+
+on:
+  workflow_run:
+    workflows: ['Ontology Preview Render']
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  comment:
+    if: github.repository == 'microsoft/Ontology-Playground' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ontology-preview
+          path: ontology-preview-artifact
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check out preview assets branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          remote_url="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if git ls-remote --exit-code origin refs/heads/ontology-preview-assets >/dev/null 2>&1; then
+            git clone --depth=1 --branch ontology-preview-assets "$remote_url" ontology-preview-assets
+          else
+            mkdir ontology-preview-assets
+            cd ontology-preview-assets
+            git init
+            git checkout -b ontology-preview-assets
+            git remote add origin "$remote_url"
+          fi
+
+      - name: Prepare preview assets and comment body
+        run: >-
+          npx tsx scripts/prepare-ontology-preview-assets.ts
+          --manifest ontology-preview-artifact/manifest.json
+          --artifact-dir ontology-preview-artifact
+          --publish-dir ontology-preview-assets
+          --comment ontology-preview-comment.md
+          --branch ontology-preview-assets
+
+      - name: Publish preview assets
+        working-directory: ontology-preview-assets
+        run: |
+          set -euo pipefail
+          git add .
+          if git diff --cached --quiet; then
+            echo "No preview asset changes to publish."
+          else
+            git commit -m "chore: update ontology preview assets"
+            git push origin ontology-preview-assets
+          fi
+
+      - name: Upsert PR preview comment
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        with:
+          script: |
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('ontology-preview-artifact/manifest.json', 'utf8'));
+            const body = fs.readFileSync('ontology-preview-comment.md', 'utf8');
+            const marker = '<!-- ontology-preview-render -->';
+            const { owner, repo } = context.repo;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: manifest.prNumber,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.user?.type === 'Bot' && comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: manifest.prNumber, body });
+            }

@@ -22,7 +22,7 @@ interface Metadata {
   author: string;
 }
 
-// Cosmic Coffee — the default/hero ontology (has bindings)
+// Fourth Coffee — the default/hero ontology (has bindings)
 const entries: { slug: string; rdf: string; metadata: Metadata }[] = [
   {
     slug: 'cosmic-coffee',

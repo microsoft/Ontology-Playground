@@ -265,11 +265,13 @@ Fabric IQ enforces strict naming rules that the Playground currently ignores.
 - [x] Show a clear error message explaining the cross-entity constraint
 
 ### 7.3 Relationship type constraints
-- [x] Source and target entity types must be **distinct** (no self-referencing
-  relationships in Fabric IQ)
-- [x] Validate in the designer when creating a relationship
-- [ ] Show a warning when importing an RDF file with self-referencing
-  relationships
+- [x] ~~Source and target entity types must be **distinct** (no self-referencing
+  relationships in Fabric IQ)~~ **Reverted (#64):** Fabric Ontology *does*
+  support self-referencing relationships (e.g., `Employee reportsTo Employee`),
+  so the designer now allows `source == target`.
+- [x] Self-referencing relationships render as graph self-loops (Cytoscape)
+- [x] "Add relationship" works with a single entity type (defaults to a
+  self-reference)
 
 ---
 

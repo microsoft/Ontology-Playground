@@ -113,9 +113,9 @@ describe('ImportExportModal integration', () => {
       expect(screen.getByText(/RDF parse error/)).toBeTruthy();
     });
 
-    // Store should remain unchanged (still default Cosmic Coffee)
+    // Store should remain unchanged (still default Fourth Coffee)
     const state = useAppStore.getState();
-    expect(state.currentOntology.name).toBe('Cosmic Coffee Company');
+    expect(state.currentOntology.name).toBe('Fourth Coffee');
   });
 
   it('shows an error for unsupported file extensions', async () => {
@@ -135,7 +135,7 @@ describe('ImportExportModal integration', () => {
 
     // Store should remain unchanged
     const state = useAppStore.getState();
-    expect(state.currentOntology.name).toBe('Cosmic Coffee Company');
+    expect(state.currentOntology.name).toBe('Fourth Coffee');
   });
 
   it('uses parser default name when RDF has no ontology label', async () => {

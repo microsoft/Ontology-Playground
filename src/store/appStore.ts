@@ -82,7 +82,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   showDataBindings: false,
   darkMode: getInitialDarkMode(),
   
-  // Initial Quest State - use default quests for Cosmic Coffee
+  // Initial Quest State - use default quests for Fourth Coffee
   availableQuests: defaultQuests,
   activeQuest: null,
   currentStepIndex: 0,

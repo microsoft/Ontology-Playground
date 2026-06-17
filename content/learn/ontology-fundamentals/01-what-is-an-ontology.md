@@ -32,7 +32,7 @@ This is the foundation of **semantic data models**: instead of writing SQL by ha
 
 <ontology-embed id="official/cosmic-coffee" height="400px"></ontology-embed>
 
-*The Cosmic Coffee Company ontology above models a coffee shop chain. Click any node to inspect its properties, or click an edge to see the relationship details.*
+*The Fourth Coffee ontology above models a coffee shop chain. Click any node to inspect its properties, or click an edge to see the relationship details.*
 
 ## From concept to code
 

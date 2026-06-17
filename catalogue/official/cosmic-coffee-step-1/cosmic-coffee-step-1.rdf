@@ -8,7 +8,7 @@
     xmlns:ont="http://example.org/ontology/cosmic-coffee-step-1/">
 
     <owl:Ontology rdf:about="http://example.org/ontology/cosmic-coffee-step-1/">
-        <rdfs:label>Cosmic Coffee – Step 1</rdfs:label>
+        <rdfs:label>Fourth Coffee – Step 1</rdfs:label>
         <rdfs:comment>Core customer ordering model: Customer, Order, and Product with basic relationships.</rdfs:comment>
     </owl:Ontology>
 

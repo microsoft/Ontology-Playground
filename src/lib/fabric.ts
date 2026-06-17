@@ -298,8 +298,17 @@ async function fabricFetch<T>(
   }
 
   if (res.status === 204) return { data: null };
-  const data = await res.json() as T;
-  return { data };
+
+  // Some Fabric endpoints (e.g. updateDefinition) return a 2xx with an empty
+  // body. Calling res.json() on an empty body throws "Unexpected end of JSON
+  // input" (#68), so read the body as text and parse it defensively.
+  const text = await res.text();
+  if (!text.trim()) return { data: null };
+  try {
+    return { data: JSON.parse(text) as T };
+  } catch {
+    return { data: null };
+  }
 }
 
 /**

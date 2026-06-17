@@ -72,7 +72,7 @@ Click the **RDF** tab in the preview pane. You'll see the live RDF/OWL output wi
 
 <ontology-embed id="official/cosmic-coffee" height="400px"></ontology-embed>
 
-*The Cosmic Coffee ontology was built using the same workflow. Your Library ontology will look similar — entities as colourful nodes, relationships as directed edges.*
+*The Fourth Coffee ontology was built using the same workflow. Your Library ontology will look similar — entities as colourful nodes, relationships as directed edges.*
 
 ## Step 6: Export
 

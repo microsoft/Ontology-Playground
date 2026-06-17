@@ -8,7 +8,7 @@ embed: official/cosmic-coffee-step-2
 
 ## Where orders happen
 
-So far, we know *who* orders *what* — but not *where*. The Cosmic Coffee Company operates stores across multiple cities, and each order is processed at a specific store.
+So far, we know *who* orders *what* — but not *where*. Fourth Coffee operates stores across multiple cities, and each order is processed at a specific store.
 
 Adding the **Store** entity lets us answer location-based questions like:
 - "Which store has the most orders?"

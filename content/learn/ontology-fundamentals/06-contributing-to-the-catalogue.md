@@ -51,7 +51,7 @@ If you prefer working with Git directly:
 |-------|----------|-------------|
 | `name` | Yes | Display name for the catalogue |
 | `description` | Yes | One-sentence summary |
-| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `general` |
+| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `technology`, `general` |
 | `icon` | No | Single emoji for the card |
 | `tags` | No | Array of lowercase keywords for search |
 | `author` | No | GitHub username (auto-filled by the one-click flow) |

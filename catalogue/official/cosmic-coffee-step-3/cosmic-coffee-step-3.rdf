@@ -8,7 +8,7 @@
     xmlns:ont="http://example.org/ontology/cosmic-coffee-step-3/">
 
     <owl:Ontology rdf:about="http://example.org/ontology/cosmic-coffee-step-3/">
-        <rdfs:label>Cosmic Coffee – Step 3</rdfs:label>
+        <rdfs:label>Fourth Coffee – Step 3</rdfs:label>
         <rdfs:comment>Full supply-chain model adding Supplier and Shipment to complete the bean-to-cup journey.</rdfs:comment>
     </owl:Ontology>
 

@@ -36,6 +36,19 @@ Ask user:
 - `metadata.json` with required fields
 - Valid category value for catalogue compiler
 
+## Person Names
+
+If import cleanup, metadata examples, sample instances, generated RDF/OWL, docs,
+or optional Ontology School content need person names, first use the
+`name-generator` skill. Do not invent customer, employee, patient, student,
+instructor, reviewer, or other human names.
+
+All new person names must come from the `FullName` column in:
+
+```text
+data/reference/FNF-2026-06-01-01002-0268.csv
+```
+
 ## Validate
 
 Run:
@@ -48,3 +61,5 @@ Run:
 - Entry appears in `public/catalogue.json`
 - No compile or validation errors
 - Metadata is complete and user-readable
+- Any new person names introduced during import came from the `name-generator`
+  skill / approved CSV fixture

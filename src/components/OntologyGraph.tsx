@@ -8,6 +8,12 @@ import { ZoomIn, ZoomOut, Maximize2, RotateCcw, Download, Crosshair } from 'luci
 // Register fcose layout
 cytoscape.use(fcose);
 
+declare global {
+  interface Window {
+    __ONTOLOGY_PREVIEW_CY__?: Core;
+  }
+}
+
 export function OntologyGraph() {
   const cyRef = useRef<Core | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -298,6 +304,7 @@ export function OntologyGraph() {
     });
 
     cyRef.current = cy;
+    window.__ONTOLOGY_PREVIEW_CY__ = cy;
     mountedRef.current = true;
 
     // Run layout explicitly after initialization for better results
@@ -318,6 +325,9 @@ export function OntologyGraph() {
 
     return () => {
       mountedRef.current = false;
+      if (window.__ONTOLOGY_PREVIEW_CY__ === cy) {
+        delete window.__ONTOLOGY_PREVIEW_CY__;
+      }
       cy.destroy();
       cyRef.current = null;
     };
@@ -507,7 +517,7 @@ export function OntologyGraph() {
 
   return (
     <div className="graph-container">
-      <div ref={containerRef} className="graph-canvas" />
+      <div ref={containerRef} className="graph-canvas" data-testid="ontology-graph-canvas" />
 
       {focusNodeId && (
         <div className="graph-focus-badge">
@@ -539,7 +549,7 @@ export function OntologyGraph() {
         <button className="graph-control-btn" onClick={handleReset} title="Reset Layout">
           <RotateCcw size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleDownload} title="Download Graph as PNG">
+        <button className="graph-control-btn" onClick={handleDownload} title="Download Graph as PNG" data-testid="download-ontology-png">
           <Download size={18} />
         </button>
       </div>

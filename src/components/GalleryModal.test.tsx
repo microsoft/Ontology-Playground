@@ -50,14 +50,14 @@ const fakeCatalogue: Catalogue = {
   entries: [
     {
       id: 'official/cosmic-coffee',
-      name: 'Cosmic Coffee',
+      name: 'Fourth Coffee',
       description: 'Coffee supply chain ontology',
       icon: '☕',
       category: 'retail',
       tags: ['coffee', 'supply-chain'],
       author: 'Ontology Playground',
       source: 'official',
-      ontology: makeOntology('Cosmic Coffee', 3, 2),
+      ontology: makeOntology('Fourth Coffee', 3, 2),
       bindings: [],
     },
     {
@@ -122,7 +122,7 @@ describe('GalleryModal', () => {
 
     // Entries appear after fetch
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
     expect(screen.getByText('Hospital Network')).toBeTruthy();
     expect(screen.getByText('Finance Ledger')).toBeTruthy();
@@ -144,13 +144,13 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
     const searchInput = screen.getByPlaceholderText(/Search by name/);
     await user.type(searchInput, 'hospital');
 
-    expect(screen.queryByText('Cosmic Coffee')).toBeNull();
+    expect(screen.queryByText('Fourth Coffee')).toBeNull();
     expect(screen.getByText('Hospital Network')).toBeTruthy();
     expect(screen.queryByText('Finance Ledger')).toBeNull();
   });
@@ -161,13 +161,13 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
     const searchInput = screen.getByPlaceholderText(/Search by name/);
     await user.type(searchInput, 'ledger');
 
-    expect(screen.queryByText('Cosmic Coffee')).toBeNull();
+    expect(screen.queryByText('Fourth Coffee')).toBeNull();
     expect(screen.queryByText('Hospital Network')).toBeNull();
     expect(screen.getByText('Finance Ledger')).toBeTruthy();
   });
@@ -178,14 +178,14 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
     // Select healthcare category
     const categorySelect = screen.getByDisplayValue('All categories');
     await user.selectOptions(categorySelect, 'healthcare');
 
-    expect(screen.queryByText('Cosmic Coffee')).toBeNull();
+    expect(screen.queryByText('Fourth Coffee')).toBeNull();
     expect(screen.getByText('Hospital Network')).toBeTruthy();
     expect(screen.queryByText('Finance Ledger')).toBeNull();
   });
@@ -196,13 +196,13 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
     const sourceSelect = screen.getByDisplayValue('All sources');
     await user.selectOptions(sourceSelect, 'community');
 
-    expect(screen.queryByText('Cosmic Coffee')).toBeNull();
+    expect(screen.queryByText('Fourth Coffee')).toBeNull();
     expect(screen.getByText('Hospital Network')).toBeTruthy();
     expect(screen.queryByText('Finance Ledger')).toBeNull();
   });
@@ -213,7 +213,7 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
     const searchInput = screen.getByPlaceholderText(/Search by name/);
@@ -228,18 +228,18 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
-    // Click the "Load" button for Cosmic Coffee
+    // Click the first non-active ontology's "Load" button.
     const loadButtons = screen.getAllByText('Load');
     await user.click(loadButtons[0]);
 
     const state = useAppStore.getState();
-    expect(state.currentOntology.name).toBe('Cosmic Coffee');
-    expect(state.currentOntology.entityTypes).toHaveLength(3);
+    expect(state.currentOntology.name).toBe('Hospital Network');
+    expect(state.currentOntology.entityTypes).toHaveLength(4);
     // Now navigates to deep link instead of calling onClose
-    expect(window.location.hash).toBe('#/catalogue/official/cosmic-coffee');
+    expect(window.location.hash).toBe('#/catalogue/community/drsmith/hospital-net');
   });
 
   it('shows "Community" badge only on community entries', async () => {
@@ -247,7 +247,7 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
     // "Community" appears in the source filter dropdown AND as a badge.
@@ -266,10 +266,10 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
-    // Cosmic Coffee: 3 entities, 2 relationships
+    // Fourth Coffee: 3 entities, 2 relationships
     expect(screen.getByText('3 entities')).toBeTruthy();
     expect(screen.getByText('2 relationships')).toBeTruthy();
     // Hospital Network: 4 entities, 3 relationships
@@ -283,7 +283,7 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Cosmic Coffee')).toBeTruthy();
+      expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
     // Click the "Edit in Designer" pencil button for the first entry
@@ -293,13 +293,13 @@ describe('GalleryModal', () => {
 
     // The designer store should have the ontology loaded
     const designerState = useDesignerStore.getState();
-    expect(designerState.ontology.name).toBe('Cosmic Coffee');
+    expect(designerState.ontology.name).toBe('Fourth Coffee');
     expect(designerState.ontology.entityTypes).toHaveLength(3);
     expect(designerState.ontology.relationships).toHaveLength(2);
 
     // The app store (playground) should also have the ontology loaded
     const appState = useAppStore.getState();
-    expect(appState.currentOntology.name).toBe('Cosmic Coffee');
+    expect(appState.currentOntology.name).toBe('Fourth Coffee');
     expect(appState.currentOntology.entityTypes).toHaveLength(3);
 
     // Should navigate to designer, NOT to home

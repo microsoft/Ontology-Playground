@@ -1,14 +1,14 @@
 ---
 title: "Complete Supply Chain"
 slug: complete-supply-chain
-description: "Add Supplier and Shipment to complete the Cosmic Coffee ontology — connecting sourcing, logistics, and retail."
+description: "Add Supplier and Shipment to complete the Fourth Coffee ontology — connecting sourcing, logistics, and retail."
 order: 4
 embed: official/cosmic-coffee-step-3
 ---
 
 ## Completing the picture
 
-The Cosmic Coffee Company doesn't just sell coffee — it sources beans from suppliers around the world, receives shipments at its stores, and tracks the entire supply chain. Adding **Supplier** and **Shipment** closes the loop.
+Fourth Coffee doesn't just sell coffee — it sources beans from suppliers around the world, receives shipments at its stores, and tracks the entire supply chain. Adding **Supplier** and **Shipment** closes the loop.
 
 ## Supplier
 
@@ -56,7 +56,7 @@ Four new relationships complete the supply chain:
 
 <ontology-embed id="official/cosmic-coffee-step-3" diff="official/cosmic-coffee-step-2" height="500px"></ontology-embed>
 
-*The complete Cosmic Coffee ontology: 6 entity types, 7 relationships. Shipment acts as a hub connecting Supplier, Store, and Product.*
+*The complete Fourth Coffee ontology: 6 entity types, 7 relationships. Shipment acts as a hub connecting Supplier, Store, and Product.*
 
 ## What the complete model enables
 
@@ -102,4 +102,4 @@ Q: Why is Shipment considered a "hub entity" in this ontology?
 > Shipment is a hub because it has relationships to Supplier (sentBy), Store (deliveredTo), and Product (carries) — bridging the sourcing, logistics, and retail domains in a single entity.
 ```
 
-You've completed the Cosmic Coffee Company learning path! Load any step from the [catalogue](#/catalogue) to explore it interactively.
+You've completed the Fourth Coffee learning path! Load any step from the [catalogue](#/catalogue) to explore it interactively.

@@ -381,6 +381,17 @@ export interface QuizData { question: string; options: QuizOption[]; explanation
 
 const LETTERS = 'ABCDEFGHIJ';
 
+// Render plain text with inline `code` spans. Escapes HTML, then converts
+// backtick-wrapped runs into <code>…</code>.
+function renderInlineCode(text: string): { __html: string } {
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  const html = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+  return { __html: html };
+}
+
 export function QuizSlide({ quiz }: { quiz: QuizData }) {
   const [answered, setAnswered] = useState<number | null>(null);
   const chose = answered !== null;
@@ -392,7 +403,7 @@ export function QuizSlide({ quiz }: { quiz: QuizData }) {
         <span className="quiz-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </span>
-        <span className="quiz-question">{quiz.question}</span>
+        <span className="quiz-question" dangerouslySetInnerHTML={renderInlineCode(quiz.question)} />
       </div>
       <div className="quiz-options">
         {quiz.options.map((opt, i) => {
@@ -410,7 +421,7 @@ export function QuizSlide({ quiz }: { quiz: QuizData }) {
               onClick={() => setAnswered(i)}
             >
               <span className="quiz-option-letter">{LETTERS[i]}</span>
-              <span className="quiz-option-text">{opt.text}</span>
+              <span className="quiz-option-text" dangerouslySetInnerHTML={renderInlineCode(opt.text)} />
             </button>
           );
         })}
@@ -423,7 +434,7 @@ export function QuizSlide({ quiz }: { quiz: QuizData }) {
         </div>
       )}
       {chose && quiz.explanation && (
-        <div className="quiz-explanation">{quiz.explanation}</div>
+        <div className="quiz-explanation" dangerouslySetInnerHTML={renderInlineCode(quiz.explanation)} />
       )}
     </div>
   );

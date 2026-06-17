@@ -16,7 +16,10 @@
     "secrets:scan": "gitleaks detect --source . --redact --config .gitleaks.toml",
     "test": "vitest run",
     "test:watch": "vitest",
-    "validate": "tsx scripts/validate-rdf.ts"
+    "validate": "tsx scripts/validate-rdf.ts",
+    "preview:ontology:list": "tsx scripts/list-changed-catalogue-entries.ts",
+    "preview:ontology:render": "tsx scripts/render-ontology-previews.ts",
+    "preview:ontology:prepare": "tsx scripts/prepare-ontology-preview-assets.ts"
   },
   "dependencies": {
     "@types/cytoscape": "^3.21.9",
@@ -32,23 +35,24 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.60.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
+    "@vitejs/plugin-react": "^5.2.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "jsdom": "^28.0.0",
     "marked": "^17.0.2",
-    "tsx": "^4.21.0",
+    "tsx": "^4.22.4",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.3.2",
+    "vite": "^8.0.16",
     "vitest": "^4.0.18"
   }
 }

@@ -156,20 +156,68 @@ describe('validateOntology', () => {
     expect(validateOntology(ontology).some((e) => e.message.includes('must be string or integer'))).toBe(true);
   });
 
-  // §7.3 — Self-referencing relationship
-  it('reports self-referencing relationships', () => {
+  // §7.3 — Self-referencing relationships are allowed (issue #64)
+  it('allows self-referencing relationships (no validation error)', () => {
     const ontology: Ontology = {
       name: 'Test',
       description: '',
       entityTypes: [
-        { id: 'e1', name: 'Foo', description: '', icon: '📦', color: '#000',
+        { id: 'e1', name: 'Employee', description: '', icon: '📦', color: '#000',
           properties: [{ name: 'id', type: 'string', isIdentifier: true }] },
       ],
       relationships: [
-        { id: 'r1', name: 'selfRef', from: 'e1', to: 'e1', cardinality: 'one-to-many' },
+        { id: 'r1', name: 'reportsTo', from: 'e1', to: 'e1', cardinality: 'many-to-one' },
       ],
     };
-    expect(validateOntology(ontology).some((e) => e.message.includes('self-referencing'))).toBe(true);
+    const errors = validateOntology(ontology);
+    expect(errors.some((e) => e.message.includes('self-referencing'))).toBe(false);
+    expect(errors.some((e) => e.message.includes('source and target'))).toBe(false);
+  });
+
+  it('passes for a valid ontology containing a self-referencing relationship', () => {
+    const ontology: Ontology = {
+      name: 'Org',
+      description: 'An org chart',
+      entityTypes: [
+        { id: 'e1', name: 'Employee', description: '', icon: '👤', color: '#0078D4',
+          properties: [{ name: 'id', type: 'string', isIdentifier: true }] },
+      ],
+      relationships: [
+        { id: 'r1', name: 'reportsTo', from: 'e1', to: 'e1', cardinality: 'many-to-one' },
+      ],
+    };
+    expect(validateOntology(ontology)).toEqual([]);
+  });
+
+  it('still flags a self-referencing relationship that points to a missing entity', () => {
+    const ontology: Ontology = {
+      name: 'Test',
+      description: '',
+      entityTypes: [
+        { id: 'e1', name: 'Employee', description: '', icon: '📦', color: '#000',
+          properties: [{ name: 'id', type: 'string', isIdentifier: true }] },
+      ],
+      relationships: [
+        { id: 'r1', name: 'reportsTo', from: 'ghost', to: 'ghost', cardinality: 'one-to-many' },
+      ],
+    };
+    expect(validateOntology(ontology).some((e) => e.message.includes("doesn't exist"))).toBe(true);
+  });
+
+  it('allows multiple self-referencing relationships on the same entity', () => {
+    const ontology: Ontology = {
+      name: 'Test',
+      description: '',
+      entityTypes: [
+        { id: 'e1', name: 'Person', description: '', icon: '👤', color: '#0078D4',
+          properties: [{ name: 'id', type: 'string', isIdentifier: true }] },
+      ],
+      relationships: [
+        { id: 'r1', name: 'manages', from: 'e1', to: 'e1', cardinality: 'one-to-many' },
+        { id: 'r2', name: 'mentors', from: 'e1', to: 'e1', cardinality: 'one-to-many' },
+      ],
+    };
+    expect(validateOntology(ontology)).toEqual([]);
   });
 });
 
@@ -286,6 +334,16 @@ describe('useDesignerStore actions', () => {
     expect(rel.from).toBe(e1);
     expect(rel.to).toBe(e2);
     expect(rel.cardinality).toBe('one-to-many');
+  });
+
+  it('addRelationship can create a self-referencing relationship', () => {
+    useDesignerStore.getState().addEntity();
+    const e1 = useDesignerStore.getState().ontology.entityTypes[0].id;
+    useDesignerStore.getState().addRelationship(e1, e1);
+    const rel = useDesignerStore.getState().ontology.relationships[0];
+    expect(rel.from).toBe(e1);
+    expect(rel.to).toBe(e1);
+    expect(validateOntology(useDesignerStore.getState().ontology).some((e) => e.message.includes('self-referencing'))).toBe(false);
   });
 
   it('updateRelationship updates fields', () => {
