@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/clinical-supply-chain-management/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/clinical-supply-chain-management/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/clinical-supply-chain-management/">
+        <rdfs:label>Clinical Supply Chain Management</rdfs:label>
+        <rdfs:comment>            Enterprise Clinical Supply Chain Knowledge Graph  for Microsoft Fabric Ontology Playground        </rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Study">
+        <rdfs:label>Study</rdfs:label>
+        <rdfs:comment>Represents a clinical trial or research study.</rdfs:comment>
+        <ont:icon>📝</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Site">
+        <rdfs:label>Site</rdfs:label>
+        <rdfs:comment>Represents a clinical research center or hospital.</rdfs:comment>
+        <ont:icon>🏢</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Patient">
+        <rdfs:label>Patient</rdfs:label>
+        <rdfs:comment>Represents a participant enrolled in a study.</rdfs:comment>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#FFB900</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Enrollment">
+        <rdfs:label>Enrollment</rdfs:label>
+        <rdfs:comment>Tracks patient recruitment and enrollment metrics.</rdfs:comment>
+        <ont:icon>📋</ont:icon>
+        <ont:color>#107C10</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Visit">
+        <rdfs:label>Visit</rdfs:label>
+        <rdfs:comment>Represents a patient interaction or treatment visit.</rdfs:comment>
+        <ont:icon>🔗</ont:icon>
+        <ont:color>#008272</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Compound">
+        <rdfs:label>Compound</rdfs:label>
+        <rdfs:comment>Represents investigational drug products.</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#D83B01</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Manufacturing">
+        <rdfs:label>Manufacturing</rdfs:label>
+        <rdfs:comment>Represents manufacturing operations and production batches.</rdfs:comment>
+        <ont:icon>🔧</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Demand">
+        <rdfs:label>Demand</rdfs:label>
+        <rdfs:comment>Represents forecasted clinical supply demand.</rdfs:comment>
+        <ont:icon>📈</ont:icon>
+        <ont:color>#E81123</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Depot">
+        <rdfs:label>Depot</rdfs:label>
+        <rdfs:comment>Regional supply storage center</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#107C10</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Shipment">
+        <rdfs:label>Shipment</rdfs:label>
+        <rdfs:comment>Represents movement of inventory between locations.</rdfs:comment>
+        <ont:icon>🛒</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Inventory">
+        <rdfs:label>Inventory</rdfs:label>
+        <rdfs:comment>Represents available stock of clinical supplies.</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#008272</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Country">
+        <rdfs:label>Country</rdfs:label>
+        <rdfs:comment>Country geographic entity</rdfs:comment>
+        <ont:icon>🌐</ont:icon>
+        <ont:color>#D83B01</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/clinical-supply-chain-management/Region">
+        <rdfs:label>Region</rdfs:label>
+        <rdfs:comment>Geographic region</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#0078D4</ont:color>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/study_studyId">
+        <rdfs:label>studyId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Study"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/study_studyName">
+        <rdfs:label>studyName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Study"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/study_studyPhase">
+        <rdfs:label>studyPhase</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Study"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/site_siteId">
+        <rdfs:label>siteId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Site"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/site_siteName">
+        <rdfs:label>siteName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Site"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/patient_patientId">
+        <rdfs:label>patientId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/patient_gender">
+        <rdfs:label>gender</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/patient_age">
+        <rdfs:label>age</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/patient_patient_status">
+        <rdfs:label>patient_status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Patient"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/enrollment_enrollment_id">
+        <rdfs:label>enrollment_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Enrollment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/enrollment_study_id">
+        <rdfs:label>study_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Enrollment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/enrollment_site_id">
+        <rdfs:label>site_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Enrollment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/visit_visit_id">
+        <rdfs:label>visit_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Visit"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/compound_compound_id">
+        <rdfs:label>compound_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/compound_compound_name">
+        <rdfs:label>compound_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/manufacturing_manufacturing_id">
+        <rdfs:label>manufacturing_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Manufacturing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/manufacturing_produced_quantity">
+        <rdfs:label>produced_quantity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Manufacturing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/demand_demand_id">
+        <rdfs:label>demand_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Demand"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/demand_study_id">
+        <rdfs:label>study_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Demand"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/depot_depot_id">
+        <rdfs:label>depot_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Depot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/depot_depot_name">
+        <rdfs:label>depot_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Depot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/shipment_shipmentStatus">
+        <rdfs:label>shipmentStatus</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Shipment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/shipment_shipment_id">
+        <rdfs:label>shipment_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Shipment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/shipment_shipment_quantity">
+        <rdfs:label>shipment_quantity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Shipment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/inventory_quantity">
+        <rdfs:label>quantity</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Inventory"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/inventory_inventory_id">
+        <rdfs:label>inventory_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Inventory"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/inventory_inventory_status">
+        <rdfs:label>inventory_status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Inventory"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/country_country_id">
+        <rdfs:label>country_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Country"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/country_country_name">
+        <rdfs:label>country_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Country"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/region_region_id">
+        <rdfs:label>region_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Region"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/region_region_name">
+        <rdfs:label>region_name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Region"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/rel-relates-to-2">
+        <rdfs:label>has demand</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Patient"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Demand"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>patient</ont:fromEntityId>
+        <ont:toEntityId>demand</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/hasSite">
+        <rdfs:label>has site</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Study"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Site"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>study</ont:fromEntityId>
+        <ont:toEntityId>site</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/usesCompound">
+        <rdfs:label>uses compound</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Study"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Compound"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>study</ont:fromEntityId>
+        <ont:toEntityId>compound</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/hasEnrollment">
+        <rdfs:label>has enrollment</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Study"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Enrollment"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>study</ont:fromEntityId>
+        <ont:toEntityId>enrollment</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/enrolledAt">
+        <rdfs:label>enrolled at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Patient"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Site"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>patient</ont:fromEntityId>
+        <ont:toEntityId>site</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/participatesIn">
+        <rdfs:label>participates in</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Patient"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Study"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>patient</ont:fromEntityId>
+        <ont:toEntityId>study</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/hasVisit">
+        <rdfs:label>has visit</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Patient"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Visit"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>patient</ont:fromEntityId>
+        <ont:toEntityId>visit</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/occursAt">
+        <rdfs:label>occurs at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Enrollment"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Site"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>enrollment</ont:fromEntityId>
+        <ont:toEntityId>site</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/manufactures">
+        <rdfs:label>manufactures</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Manufacturing"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Compound"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>manufacturing</ont:fromEntityId>
+        <ont:toEntityId>compound</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/drivesManufacturing">
+        <rdfs:label>drives manufacturing</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Demand"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Manufacturing"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>demand</ont:fromEntityId>
+        <ont:toEntityId>manufacturing</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/storesInventory">
+        <rdfs:label>stores inventory</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Depot"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Inventory"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>depot</ont:fromEntityId>
+        <ont:toEntityId>inventory</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/shipsTo">
+        <rdfs:label>ships to</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Depot"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Site"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>depot</ont:fromEntityId>
+        <ont:toEntityId>site</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/deliversInventory">
+        <rdfs:label>delivers </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Shipment"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Inventory"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>shipment</ont:fromEntityId>
+        <ont:toEntityId>inventory</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/siteStoresInventory">
+        <rdfs:label>site stores </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Site"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Inventory"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>site</ont:fromEntityId>
+        <ont:toEntityId>inventory</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/locatedIn">
+        <rdfs:label>located in</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Site"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Country"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>site</ont:fromEntityId>
+        <ont:toEntityId>country</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/clinical-supply-chain-management/belongsToRegion">
+        <rdfs:label>belongs to </rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Country"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/clinical-supply-chain-management/Region"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>country</ont:fromEntityId>
+        <ont:toEntityId>region</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>
