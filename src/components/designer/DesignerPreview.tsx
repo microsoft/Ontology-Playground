@@ -76,8 +76,9 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
     const cssVars = getComputedStyle(containerRef.current);
     const themeColors = {
       nodeText: cssVars.getPropertyValue('--graph-node-text').trim() || '#B3B3B3',
-      edgeColor: cssVars.getPropertyValue('--graph-edge-color').trim() || '#505050',
-      edgeText: cssVars.getPropertyValue('--graph-edge-text').trim() || '#808080',
+      edgeColor: cssVars.getPropertyValue('--graph-edge-color').trim() || '#6E6E6E',
+      edgeText: cssVars.getPropertyValue('--graph-edge-text').trim() || '#9CA0A8',
+      edgeLabelBg: cssVars.getPropertyValue('--graph-edge-label-bg').trim() || '#15161D',
     };
     const cy = cytoscape({
       container: containerRef.current,
@@ -111,6 +112,10 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
             color: themeColors.edgeText,
             'text-rotation': 'autorotate',
             'text-margin-y': -8,
+            'text-background-color': themeColors.edgeLabelBg,
+            'text-background-opacity': 1,
+            'text-background-padding': '2px',
+            'text-background-shape': 'roundrectangle',
             width: 2,
             'line-color': themeColors.edgeColor,
             'target-arrow-color': themeColors.edgeColor,

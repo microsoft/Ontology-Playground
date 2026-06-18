@@ -20,9 +20,11 @@
   --bg-elevated: #323232;
   --text-primary: #FFFFFF;
   --text-secondary: #B3B3B3;
-  --text-tertiary: #808080;
+  --text-tertiary: #A0A0A0;
   --border-color: #404040;
   --border-subtle: #333333;
+  /* Foreground for accent-colored fills (e.g. buttons on var(--ms-blue)) */
+  --on-accent: #FFFFFF;
   
   /* Semantic Colors */
   --success: #107C10;
@@ -54,8 +56,9 @@
   /* Graph-specific dark mode colors */
   --graph-bg: #1E1E1E;
   --graph-node-text: #B3B3B3;
-  --graph-edge-color: #505050;
-  --graph-edge-text: #808080;
+  --graph-edge-color: #6E6E6E;
+  --graph-edge-text: #9CA0A8;
+  --graph-edge-label-bg: #15161D;
   
   /* Chess board pattern colors for dark mode - futuristic theme */
   --chess-square-dark: rgba(20, 30, 50, 0.85);
@@ -84,6 +87,7 @@
   --graph-node-text: #2A2A2A;
   --graph-edge-color: #888888;
   --graph-edge-text: #555555;
+  --graph-edge-label-bg: #F2F2F2;
   
   /* Chess board pattern colors for light mode - futuristic theme */
   --chess-square-dark: rgba(220, 230, 245, 0.8);
@@ -106,9 +110,12 @@
   --bg-elevated: #173E37;
   --text-primary: #EAFBF6;
   --text-secondary: #A6D2C8;
-  --text-tertiary: #779E95;
+  --text-tertiary: #8AB0A6;
   --border-color: #265C53;
   --border-subtle: #1C4640;
+  /* Aurora's accent is mint (#2AAA92); white text on it fails AA, so accent
+     fills use a deep teal foreground instead. */
+  --on-accent: #08221D;
 
   --shadow-glow: 0 0 20px rgba(42, 170, 146, 0.35);
 
@@ -116,6 +123,7 @@
   --graph-node-text: #C2E6DC;
   --graph-edge-color: #4F8C7F;
   --graph-edge-text: #8FBDB2;
+  --graph-edge-label-bg: #0C2622;
 
   --chess-square-dark: rgba(8, 40, 36, 0.85);
   --chess-square-light: rgba(16, 64, 58, 0.6);
@@ -136,7 +144,7 @@
   --bg-elevated: #FFFFFF;
   --text-primary: #1B1F24;
   --text-secondary: #495057;
-  --text-tertiary: #6C757D;
+  --text-tertiary: #656D75;
   --border-color: #D6DAE0;
   --border-subtle: #E3E6EA;
 
@@ -144,8 +152,9 @@
 
   --graph-bg: #FFFFFF;
   --graph-node-text: #1B1F24;
-  --graph-edge-color: #ADB5BD;
-  --graph-edge-text: #6C757D;
+  --graph-edge-color: #8A9198;
+  --graph-edge-text: #646B72;
+  --graph-edge-label-bg: #FBF7F8;
 
   /* Opaque light base so the canvas reads light (the dark body must not show
      through); faint crimson squares keep the branded checker pattern. */
@@ -414,7 +423,7 @@ body {
 .header-text-btn:hover {
   background: var(--ms-blue);
   border-color: var(--ms-blue);
-  color: white;
+  color: var(--on-accent);
 }
 
 /* Left Panel - Quest Panel */
@@ -614,7 +623,7 @@ body {
 
 .btn-primary {
   background: var(--ms-blue);
-  color: white;
+  color: var(--on-accent);
 }
 
 .btn-primary:hover {
@@ -684,7 +693,7 @@ body {
 
 .graph-control-btn:hover {
   background: var(--ms-blue);
-  color: white;
+  color: var(--on-accent);
   border-color: var(--ms-blue);
 }
 
@@ -1032,7 +1041,7 @@ body {
   justify-content: center;
   background: var(--ms-blue);
   border-radius: var(--radius-sm);
-  color: white;
+  color: var(--on-accent);
   font-size: 16px;
 }
 
@@ -2196,7 +2205,7 @@ body {
   gap: 4px;
   padding: 4px 10px;
   background: var(--ms-blue);
-  color: white;
+  color: var(--on-accent);
   border: none;
   border-radius: var(--radius-sm);
   font-size: 12px;
@@ -2531,7 +2540,7 @@ body {
 }
 .designer-toolbar-btn:hover {
   background: var(--ms-blue);
-  color: white;
+  color: var(--on-accent);
   border-color: var(--ms-blue);
 }
 .designer-toolbar-btn:disabled {
@@ -2626,7 +2635,7 @@ body {
 }
 .designer-action-btn.primary {
   background: var(--ms-blue);
-  color: white;
+  color: var(--on-accent);
 }
 .designer-action-btn.primary:hover { background: var(--ms-blue-dark); }
 .designer-action-btn.secondary {
@@ -2986,7 +2995,7 @@ body {
   border-radius: 14px;
   padding: 0 10px;
   background: var(--ms-blue);
-  color: #fff;
+  color: var(--on-accent);
   font: 700 12px/1 var(--font-primary);
   margin-bottom: 12px;
   white-space: nowrap;
@@ -3281,7 +3290,7 @@ body {
 .learn-present-btn:hover {
   border-color: var(--ms-blue);
   background: var(--ms-blue);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 /* --- Presentation overlay --- */
@@ -3905,7 +3914,7 @@ body {
   align-items: center;
   justify-content: center;
   background: var(--ms-blue);
-  color: white;
+  color: var(--on-accent);
   font-size: 10px;
   font-weight: 700;
   border-radius: 10px;
@@ -4175,7 +4184,7 @@ body {
 
 .tour-btn-primary {
   background: var(--ms-blue);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .tour-btn-primary:hover {
@@ -4528,7 +4537,7 @@ body {
   gap: 5px;
   padding: 7px 12px;
   background: var(--ms-blue);
-  color: white;
+  color: var(--on-accent);
   border: none;
   border-radius: var(--radius-sm);
   font-family: inherit;

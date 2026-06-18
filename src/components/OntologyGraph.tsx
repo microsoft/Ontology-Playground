@@ -14,14 +14,14 @@ declare global {
   }
 }
 
-type GraphColors = { nodeText: string; edgeColor: string; edgeText: string };
+type GraphColors = { nodeText: string; edgeColor: string; edgeText: string; edgeLabelBg: string };
 
 // Read graph colors from the active theme's CSS custom properties, falling
 // back to the dark/light defaults when the variables can't be resolved yet.
 function readGraphColors(darkMode: boolean, el?: HTMLElement | null): GraphColors {
   const fallback: GraphColors = darkMode
-    ? { nodeText: '#B3B3B3', edgeColor: '#505050', edgeText: '#808080' }
-    : { nodeText: '#2A2A2A', edgeColor: '#888888', edgeText: '#555555' };
+    ? { nodeText: '#B3B3B3', edgeColor: '#6E6E6E', edgeText: '#9CA0A8', edgeLabelBg: '#15161D' }
+    : { nodeText: '#2A2A2A', edgeColor: '#888888', edgeText: '#555555', edgeLabelBg: '#F2F2F2' };
   const source = el ?? (typeof document !== 'undefined' ? document.querySelector<HTMLElement>('.app-container') : null);
   if (!source) return fallback;
   const cs = getComputedStyle(source);
@@ -29,6 +29,7 @@ function readGraphColors(darkMode: boolean, el?: HTMLElement | null): GraphColor
     nodeText: cs.getPropertyValue('--graph-node-text').trim() || fallback.nodeText,
     edgeColor: cs.getPropertyValue('--graph-edge-color').trim() || fallback.edgeColor,
     edgeText: cs.getPropertyValue('--graph-edge-text').trim() || fallback.edgeText,
+    edgeLabelBg: cs.getPropertyValue('--graph-edge-label-bg').trim() || fallback.edgeLabelBg,
   };
 }
 
@@ -191,8 +192,8 @@ export function OntologyGraph() {
             'text-margin-y': -10,
             'text-wrap': 'ellipsis',
             'text-max-width': '120px',
-            'text-background-color': initialThemeColors.current.nodeText === '#B3B3B3' ? '#1a1a2e' : '#f5f5f5',
-            'text-background-opacity': 0.75,
+            'text-background-color': initialThemeColors.current.edgeLabelBg,
+            'text-background-opacity': 1,
             'text-background-padding': '2px',
             'text-background-shape': 'roundrectangle',
             'width': 3,
@@ -381,7 +382,7 @@ export function OntologyGraph() {
     try {
       // Apply text-color update to ALL edges/nodes (text colors don't affect highlight line-color)
       cy.$('node').style({ 'color': themeColors.nodeText });
-      cy.$('edge').style({ 'color': themeColors.edgeText, 'text-background-color': darkMode ? '#1a1a2e' : '#f5f5f5' });
+      cy.$('edge').style({ 'color': themeColors.edgeText, 'text-background-color': themeColors.edgeLabelBg, 'text-background-opacity': 1 });
       // Line/arrow colors: only update non-highlighted edges so path-finder highlights survive
       cy.edges().not('.highlighted').style({
         'line-color': themeColors.edgeColor,
