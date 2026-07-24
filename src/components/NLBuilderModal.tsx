@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Sparkles, Send, Loader2, Check, AlertCircle, Edit3, Mic, MicOff } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
+import { validateOntology } from '../store/designerStore';
+import type { ValidationError } from '../store/designerStore';
 import type { Ontology } from '../data/ontology';
 
 // Web Speech API types
@@ -52,6 +54,15 @@ interface NLBuilderModalProps {
 }
 
 type Step = 'input' | 'loading' | 'preview' | 'error';
+
+const MAX_DISPLAYED_VALIDATION_ERRORS = 5;
+
+function formatValidationErrors(errors: ValidationError[]): string {
+  const shown = errors.slice(0, MAX_DISPLAYED_VALIDATION_ERRORS).map((e) => `• ${e.message}`);
+  const remaining = errors.length - shown.length;
+  const suffix = remaining > 0 ? `\n…and ${remaining} more` : '';
+  return `Generated ontology failed validation:\n${shown.join('\n')}${suffix}`;
+}
 
 export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   const [description, setDescription] = useState('');
@@ -213,6 +224,13 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         color: entity.color || defaultColors[index % defaultColors.length]
       }));
       
+      // Run the same Fabric IQ rule set the designer uses (issue #84):
+      // consistent attribute types, identifier type restrictions, required identifiers.
+      const validationErrors = validateOntology(ontology);
+      if (validationErrors.length > 0) {
+        throw new Error(formatValidationErrors(validationErrors));
+      }
+      
       setGeneratedOntology(ontology);
       setEditedJson(JSON.stringify(ontology, null, 2));
       setStep('preview');
@@ -227,6 +245,11 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
     
     try {
       const ontologyToApply = editMode ? JSON.parse(editedJson) : generatedOntology;
+      const validationErrors = validateOntology(ontologyToApply);
+      if (validationErrors.length > 0) {
+        setError(formatValidationErrors(validationErrors));
+        return;
+      }
       loadOntology(ontologyToApply);
       handleClose();
     } catch {
