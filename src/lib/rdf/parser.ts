@@ -125,6 +125,41 @@ const RDF_NS = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 const RDFS_NS = 'http://www.w3.org/2000/01/rdf-schema#';
 const OWL_NS = 'http://www.w3.org/2002/07/owl#';
 
+/**
+ * Collect all elements declaring a resource of the given type, supporting both
+ * RDF/XML syntaxes:
+ *
+ *  1. Typed node elements:       `<owl:Class rdf:about="...">`
+ *  2. rdf:Description elements:  `<rdf:Description rdf:about="...">`
+ *                                `  <rdf:type rdf:resource=".../owl#Class"/>`
+ *
+ * Many serializers (e.g. Python's rdflib, used by Brick and other published
+ * ontologies) emit only the second form, which we previously ignored (#85).
+ */
+function getTypedElements(root: Element, namespace: string, localName: string): Element[] {
+  const results: Element[] = Array.from(root.getElementsByTagNameNS(namespace, localName));
+  const typeUri = namespace + localName;
+
+  // Snapshot the live collection: indexed access on live collections is
+  // expensive in some DOM implementations (quadratic in jsdom).
+  const descEls = Array.from(root.getElementsByTagNameNS(RDF_NS, 'Description'));
+  for (let i = 0; i < descEls.length; i++) {
+    const el = descEls[i];
+    for (let j = 0; j < el.children.length; j++) {
+      const child = el.children[j];
+      const childLocal = child.localName || child.tagName.split(':').pop();
+      if (childLocal !== 'type') continue;
+      const resource =
+        child.getAttribute('rdf:resource') || child.getAttributeNS(RDF_NS, 'resource');
+      if (resource === typeUri) {
+        results.push(el);
+        break;
+      }
+    }
+  }
+  return results;
+}
+
 interface ParsedDatatypeProperty {
   about: string;
   label: string;
@@ -143,6 +178,15 @@ interface ParsedDatatypeProperty {
  * Parse an RDF/XML (OWL) string into an Ontology and optional DataBindings.
  */
 export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBinding[] } {
+  // Give Turtle input a clear, actionable error instead of an XML parse error.
+  const sniff = rdfXml.trimStart();
+  if (!sniff.startsWith('<') && /^(@prefix|@base|PREFIX\s|BASE\s)/m.test(sniff)) {
+    throw new RDFParseError(
+      'This file appears to be Turtle (.ttl), which is not supported yet. ' +
+      'Please convert it to RDF/XML first (for example with Apache Jena "riot" or an online RDF converter).'
+    );
+  }
+
   const parser = new DOMParser();
   const doc = parser.parseFromString(rdfXml, 'application/xml');
 
@@ -158,7 +202,7 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   let ontologyName = '';
   let ontologyDescription = '';
 
-  const ontologyEls = root.getElementsByTagNameNS(OWL_NS, 'Ontology');
+  const ontologyEls = getTypedElements(root, OWL_NS, 'Ontology');
   if (ontologyEls.length > 0) {
     const ontEl = ontologyEls[0];
     ontologyName = getChildText(ontEl, 'label', RDFS_NS) || '';
@@ -166,7 +210,7 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   }
 
   // --- Extract OWL Classes → EntityTypes ---
-  const classEls = root.getElementsByTagNameNS(OWL_NS, 'Class');
+  const classEls = getTypedElements(root, OWL_NS, 'Class');
   const entityMap = new Map<string, EntityType>();
 
   for (let i = 0; i < classEls.length; i++) {
@@ -192,7 +236,7 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   }
 
   // --- Extract DatatypeProperties → Properties + Relationship Attributes ---
-  const dtPropEls = root.getElementsByTagNameNS(OWL_NS, 'DatatypeProperty');
+  const dtPropEls = getTypedElements(root, OWL_NS, 'DatatypeProperty');
   const parsedDtProps: ParsedDatatypeProperty[] = [];
 
   for (let i = 0; i < dtPropEls.length; i++) {
@@ -268,7 +312,7 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   }
 
   // --- Extract ObjectProperties → Relationships ---
-  const objPropEls = root.getElementsByTagNameNS(OWL_NS, 'ObjectProperty');
+  const objPropEls = getTypedElements(root, OWL_NS, 'ObjectProperty');
   const relationships: Relationship[] = [];
 
   for (let i = 0; i < objPropEls.length; i++) {
@@ -323,8 +367,12 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
 
   // --- Extract DataBindings ---
   const bindings: DataBinding[] = [];
-  // Look for ont:DataBinding elements (they use the ontology namespace)
-  const allElements = root.getElementsByTagName('*');
+  // Look for ont:DataBinding elements (they use the ontology namespace).
+  // Use a static snapshot instead of the live getElementsByTagName('*')
+  // collection: repeated indexed access on live collections is quadratic in
+  // some DOM implementations, which made importing large ontologies
+  // (e.g. Brick, ~500k elements) pathologically slow.
+  const allElements = root.querySelectorAll('*');
   for (let i = 0; i < allElements.length; i++) {
     const el = allElements[i];
     const localName = el.localName || el.tagName.split(':').pop();
