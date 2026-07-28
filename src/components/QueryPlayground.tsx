@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/appStore';
 import { processQuery, generateQuerySuggestions } from '../data/queryEngine';
 import { Search, Sparkles, X, Lightbulb } from 'lucide-react';
+import { useT } from '../i18n';
 
 export function QueryPlayground() {
+  const t = useT();
   const [input, setInput] = useState('');
   const [result, setResult] = useState<string | null>(null);
   const [interpretation, setInterpretation] = useState<string | null>(null);
@@ -84,27 +86,27 @@ export function QueryPlayground() {
     <div className="query-section">
       <div className="section-title">
         <Sparkles size={14} />
-        Natural Language Query (NL2Ontology)
+        {t('query.title')}
       </div>
       
       <div className="query-input-container">
         <input
           type="text"
           className="query-input"
-          placeholder={`Ask about ${currentOntology.name}...`}
+          placeholder={t('query.askAbout', { name: currentOntology.name })}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
         />
         {input && (
-          <button className="icon-btn" onClick={handleClear} title="Clear" aria-label="Clear query">
+          <button className="icon-btn" onClick={handleClear} title={t('query.clear')} aria-label={t('query.clearLabel')}>
             <X size={18} />
           </button>
         )}
         <button 
           className="btn btn-primary" 
           onClick={handleQuery}
-          aria-label="Run query"
+          aria-label={t('query.runLabel')}
           disabled={isProcessing}
         >
           {isProcessing ? (
@@ -123,7 +125,7 @@ export function QueryPlayground() {
       {!result && !isProcessing && (
         <div style={{ marginBottom: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8 }}>
-            Try asking:
+            {t('query.tryAsking')}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {sampleQueries.slice(0, 3).map((query, index) => (

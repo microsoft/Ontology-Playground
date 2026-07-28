@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Sparkles, Send, Loader2, Check, AlertCircle, Edit3, Mic, MicOff } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Ontology } from '../data/ontology';
+import { useT, translate } from '../i18n';
 
 // Web Speech API types
 interface SpeechRecognitionEvent extends Event {
@@ -54,6 +55,7 @@ interface NLBuilderModalProps {
 type Step = 'input' | 'loading' | 'preview' | 'error';
 
 export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
+  const t = useT();
   const [description, setDescription] = useState('');
   const [step, setStep] = useState<Step>('input');
   const [generatedOntology, setGeneratedOntology] = useState<Ontology | null>(null);
@@ -104,14 +106,14 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         
         // Handle specific errors
         if (errorEvent.error === 'network') {
-          setVoiceError('Network error - try Chrome or Safari');
+          setVoiceError(translate('nl.speechNetwork'));
           shouldKeepListeningRef.current = false;
           setIsRecording(false);
           return;
         }
         
         if (errorEvent.error === 'service-not-allowed' || errorEvent.error === 'not-allowed') {
-          setVoiceError('Microphone access denied');
+          setVoiceError(translate('nl.micDenied'));
           shouldKeepListeningRef.current = false;
           setIsRecording(false);
           return;
@@ -152,7 +154,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         console.log('Recognition started');
       } catch (e) {
         console.error('Start failed:', e);
-        setVoiceError('Failed to start - try Chrome or Safari');
+        setVoiceError(translate('nl.speechStartFailed'));
         shouldKeepListeningRef.current = false;
         setIsRecording(false);
       }
@@ -201,7 +203,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
       
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to generate ontology');
+        throw new Error(data.error || translate('nl.generateFailed'));
       }
       
       const { ontology } = await response.json();
@@ -230,7 +232,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
       loadOntology(ontologyToApply);
       handleClose();
     } catch {
-      setError('Invalid JSON in editor');
+      setError(translate('nl.invalidJson'));
     }
   };
 
@@ -270,7 +272,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Sparkles size={20} style={{ color: 'var(--accent)' }} />
-            <h2>Describe Your Ontology</h2>
+            <h2>{t('nl.describeTitle')}</h2>
           </div>
           <button className="modal-close" onClick={handleClose}>
             <X size={20} />
@@ -287,7 +289,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                 <div className="nl-input-wrapper">
                   <textarea
                     className="nl-input-textarea"
-                    placeholder="Describe your business scenario..."
+                    placeholder={t('nl.placeholder')}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={5}
@@ -296,7 +298,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                     <button
                       className={`voice-btn ${isRecording ? 'recording' : ''}`}
                       onClick={toggleRecording}
-                      title={isRecording ? 'Stop recording' : 'Start voice input'}
+                      title={isRecording ? t('nl.stopRecording') : t('nl.startVoice')}
                       type="button"
                     >
                       {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
@@ -318,7 +320,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                 )}
 
                 <div className="example-prompts">
-                  <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>Try an example:</span>
+                  <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>{t('nl.tryExample')}</span>
                   <div className="example-chips">
                     {examplePrompts.map((prompt, i) => (
                       <button
@@ -338,7 +340,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                   disabled={!description.trim()}
                 >
                   <Sparkles size={16} />
-                  Generate Ontology
+                  {t('nl.generateOntology')}
                   <Send size={16} />
                 </button>
               </div>
@@ -347,7 +349,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
             {step === 'loading' && (
               <div className="nl-builder-content nl-loading">
                 <Loader2 size={48} className="spin" style={{ color: 'var(--accent)' }} />
-                <p>Analyzing your description...</p>
+                <p>{t('nl.analyzing')}</p>
                 <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
                   Extracting entities, relationships, and properties
                 </p>
@@ -363,7 +365,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                     onClick={() => setEditMode(!editMode)}
                   >
                     <Edit3 size={14} />
-                    {editMode ? 'Preview' : 'Edit JSON'}
+                    {editMode ? t('nl.preview') : t('nl.editJson')}
                   </button>
                 </div>
 
@@ -377,7 +379,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                 ) : (
                   <div className="preview-summary">
                     <div className="preview-section">
-                      <h4>Entities ({generatedOntology.entityTypes.length})</h4>
+                      <h4>{t('nl.entities', { count: generatedOntology.entityTypes.length })}</h4>
                       <div className="preview-items">
                         {generatedOntology.entityTypes.map((entity) => (
                           <div key={entity.id} className="preview-item entity">
@@ -390,7 +392,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                     </div>
 
                     <div className="preview-section">
-                      <h4>Relationships ({generatedOntology.relationships.length})</h4>
+                      <h4>{t('nl.relationships', { count: generatedOntology.relationships.length })}</h4>
                       <div className="preview-items">
                         {generatedOntology.relationships.map((rel) => (
                           <div key={rel.id} className="preview-item relationship">
@@ -413,11 +415,11 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
 
                 <div className="preview-actions">
                   <button className="btn-secondary" onClick={() => setStep('input')}>
-                    ← Back
+                    {t('nl.backArrow')}
                   </button>
                   <button className="btn-primary" onClick={handleApply}>
                     <Check size={16} />
-                    Apply Ontology
+                    {t('nl.applyOntology')}
                   </button>
                 </div>
               </div>
@@ -426,12 +428,12 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         {step === 'error' && (
           <div className="nl-builder-content nl-error">
             <AlertCircle size={48} style={{ color: '#FF6B6B' }} />
-            <p style={{ color: '#FF6B6B' }}>Generation Failed</p>
+            <p style={{ color: '#FF6B6B' }}>{t('nl.generationFailed')}</p>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-              {error || 'An unknown error occurred'}
+              {error || t('nl.unknownError')}
             </p>
             <button className="btn-secondary" onClick={() => setStep('input')}>
-              Try Again
+              {t('nl.tryAgain')}
             </button>
           </div>
         )}

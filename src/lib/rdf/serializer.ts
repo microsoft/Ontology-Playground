@@ -30,11 +30,16 @@ const XSD_TYPE_MAP: Record<string, string> = {
 /**
  * Derive a base URI from an ontology name.
  * Strips characters that are invalid in XML/URI contexts.
+ *
+ * Letters and digits from any script are kept, so "서울형 개인예산제" yields a
+ * real path segment instead of collapsing to "unnamed" the way an ASCII-only
+ * filter would.  The result is an IRI (RFC 3987), which RDF/XML allows and
+ * which matches how entity ids are written into class URIs below.
  */
 export function deriveBaseUri(ontologyName: string): string {
   const slug = ontologyName
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');

@@ -194,4 +194,46 @@ describe('RDF round-trip tests', () => {
       ontology.entityTypes[0].properties[0].description,
     );
   });
+
+  it('round-trips an ontology named entirely in Korean', () => {
+    const ontology: Ontology = {
+      name: '서울형 개인예산제',
+      description: '신청부터 정산까지를 모델링한다',
+      entityTypes: [
+        {
+          id: '참여자',
+          name: '참여자',
+          description: '시범사업에 참여하는 장애인 당사자',
+          icon: '👤',
+          color: '#0078D4',
+          properties: [
+            { name: '참여자 식별자', type: 'string', isIdentifier: true },
+            { name: '생년월일', type: 'date', description: '주민등록상 생년월일' },
+          ],
+        },
+        {
+          id: '이용계획',
+          name: 'Utilization Plan (개인예산 이용계획)',
+          description: '',
+          icon: '📋',
+          color: '#107C10',
+          properties: [{ name: '계획 식별자', type: 'string', isIdentifier: true }],
+        },
+      ],
+      relationships: [
+        {
+          id: '계획을수립한다',
+          name: '계획을 수립한다',
+          from: '참여자',
+          to: '이용계획',
+          cardinality: 'one-to-many',
+          description: '당사자가 이용계획을 세운다',
+        },
+      ],
+    };
+
+    const rdf = serializeToRDF(ontology);
+    const { ontology: parsed } = parseRDF(rdf);
+    expectOntologiesEqual(parsed, ontology);
+  });
 });

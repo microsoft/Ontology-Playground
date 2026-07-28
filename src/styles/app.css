@@ -61,9 +61,13 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
   
-  /* Font Family */
-  --font-primary: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'Cascadia Code', 'Fira Code', monospace;
+  /* Font Family
+     Korean faces sit after the Latin ones: the browser falls through to them
+     per-glyph, so Latin text keeps rendering in Segoe UI / Cascadia Code while
+     Hangul picks up a face that actually has the glyphs.  System fonts only —
+     no webfont, so this works offline. */
+  --font-primary: 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Cascadia Code', 'Fira Code', 'D2Coding', 'Consolas', monospace;
   
   /* Graph-specific dark mode colors */
   --graph-bg: #1E1E1E;
@@ -2582,6 +2586,12 @@ body {
   background: #2f363d;
   border-color: #2f363d;
 }
+/* Toggle in the pressed state (e.g. Fabric IQ strict naming) */
+.designer-toolbar-btn.active {
+  background: var(--ms-blue);
+  color: var(--on-accent);
+  border-color: var(--ms-blue);
+}
 
 /* Validation errors */
 .designer-validation-errors {
@@ -2624,6 +2634,16 @@ body {
 .designer-validation-errors li::before {
   content: '• ';
   color: var(--ms-red);
+}
+
+/* Non-blocking notes — Fabric IQ compatibility, not a local problem */
+.designer-validation-errors.warnings {
+  background: rgba(255, 185, 0, 0.08);
+  border-color: rgba(255, 185, 0, 0.35);
+}
+.designer-validation-errors.warnings .designer-validation-header,
+.designer-validation-errors.warnings li::before {
+  color: var(--ms-yellow, #ffb900);
 }
 .designer-error-link {
   cursor: pointer;

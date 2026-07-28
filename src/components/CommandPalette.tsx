@@ -4,6 +4,7 @@ import {
   Search, Command
 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useT } from '../i18n';
 
 export interface CommandItem {
   id: string;
@@ -21,6 +22,7 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ open, onClose, commands }: CommandPaletteProps) {
+  const t = useT();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -108,7 +110,7 @@ export function CommandPalette({ open, onClose, commands }: CommandPaletteProps)
             ref={inputRef}
             className="command-palette-input"
             type="text"
-            placeholder="Type a command…"
+            placeholder={t('palette.placeholder')}
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
@@ -116,7 +118,7 @@ export function CommandPalette({ open, onClose, commands }: CommandPaletteProps)
         </div>
         <div className="command-palette-list" ref={listRef}>
           {filtered.length === 0 && (
-            <div className="command-palette-empty">No matching commands</div>
+            <div className="command-palette-empty">{t('palette.noResults')}</div>
           )}
           {filtered.map((cmd, i) => (
             <button

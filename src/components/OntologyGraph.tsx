@@ -3,6 +3,8 @@ import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
 import type { Core, EventObject, LayoutOptions } from 'cytoscape';
 import { useAppStore } from '../store/appStore';
+import { GRAPH_FONT_FAMILY } from '../lib/fonts';
+import { useT } from '../i18n';
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, Download, Crosshair } from 'lucide-react';
 
 // Register fcose layout
@@ -34,6 +36,7 @@ function readGraphColors(darkMode: boolean, el?: HTMLElement | null): GraphColor
 }
 
 export function OntologyGraph() {
+  const t = useT();
   const cyRef = useRef<Core | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const mountedRef = useRef(true);
@@ -139,9 +142,11 @@ export function OntologyGraph() {
             'text-valign': 'bottom',
             'text-halign': 'center',
             'font-size': '14px',
-            'font-family': 'Segoe UI, sans-serif',
+            'font-family': GRAPH_FONT_FAMILY,
             'font-weight': 600,
             'color': initialThemeColors.current.nodeText,
+            'text-wrap': 'wrap',
+            'text-max-width': '140px',
             'text-margin-y': 10,
             'width': 70,
             'height': 70,
@@ -186,12 +191,14 @@ export function OntologyGraph() {
           style: {
             'label': 'data(label)',
             'font-size': '11px',
-            'font-family': 'Segoe UI, sans-serif',
+            'font-family': GRAPH_FONT_FAMILY,
             'color': initialThemeColors.current.edgeText,
             'text-rotation': 'autorotate',
             'text-margin-y': -10,
-            'text-wrap': 'ellipsis',
-            'text-max-width': '120px',
+            // wrap, not ellipsis: a Korean relationship label like
+            // "장애 정보를 가진다" is the point of the diagram, not decoration.
+            'text-wrap': 'wrap',
+            'text-max-width': '180px',
             'text-background-color': initialThemeColors.current.edgeLabelBg,
             'text-background-opacity': 1,
             'text-background-padding': '2px',
@@ -544,7 +551,7 @@ export function OntologyGraph() {
       {focusNodeId && (
         <div className="graph-focus-badge">
           <Crosshair size={13} />
-          <span>Focus mode</span>
+          <span>{t('graph.focusMode')}</span>
           <button
             className="graph-focus-exit"
             onClick={() => {
@@ -559,25 +566,25 @@ export function OntologyGraph() {
       )}
       
       <div className="graph-controls">
-        <button className="graph-control-btn" onClick={handleZoomIn} title="Zoom In">
+        <button className="graph-control-btn" onClick={handleZoomIn} title={t('graph.zoomIn')}>
           <ZoomIn size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleZoomOut} title="Zoom Out">
+        <button className="graph-control-btn" onClick={handleZoomOut} title={t('graph.zoomOut')}>
           <ZoomOut size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleFit} title="Fit to View">
+        <button className="graph-control-btn" onClick={handleFit} title={t('graph.fit')}>
           <Maximize2 size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleReset} title="Reset Layout">
+        <button className="graph-control-btn" onClick={handleReset} title={t('graph.reset')}>
           <RotateCcw size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleDownload} title="Download Graph as PNG" data-testid="download-ontology-png">
+        <button className="graph-control-btn" onClick={handleDownload} title={t('graph.downloadPng')} data-testid="download-ontology-png">
           <Download size={18} />
         </button>
       </div>
 
       <div className="graph-legend">
-        <div className="legend-title">Entity Types</div>
+        <div className="legend-title">{t('graph.legendTitle')}</div>
         {currentOntology.entityTypes.map(entity => (
           <div key={entity.id} className="legend-item">
             <div className="legend-dot" style={{ backgroundColor: entity.color }} />

@@ -18,6 +18,7 @@ import { serializeToRDF } from '../lib/rdf/serializer';
 import { parseRDF } from '../lib/rdf/parser';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rdf/highlighter';
 import type { Catalogue } from '../types/catalogue';
+import { GRAPH_FONT_FAMILY, GRAPH_FONT_FAMILY_CSS } from '../lib/fonts';
 
 cytoscape.use(fcose);
 
@@ -133,7 +134,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
   // ─ Render ───────────────────────────────────────────────────────────────
   const containerStyle: React.CSSProperties = {
     height: config.height,
-    fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif",
+    fontFamily: `${GRAPH_FONT_FAMILY_CSS}, -apple-system, BlinkMacSystemFont`,
     background: theme.bg,
     color: theme.text,
     border: `1px solid ${theme.border}`,
@@ -287,8 +288,9 @@ function EmbedGraph({ ontology, theme, setSelected }: EmbedGraphProps) {
           selector: 'node',
           style: {
             label: 'data(label)', 'text-valign': 'bottom', 'text-halign': 'center',
-            'font-size': '13px', 'font-family': 'Segoe UI, sans-serif', 'font-weight': 600,
+            'font-size': '13px', 'font-family': GRAPH_FONT_FAMILY, 'font-weight': 600,
             color: theme.nodeText, 'text-margin-y': 8,
+            'text-wrap': 'wrap', 'text-max-width': '120px',
             width: 60, height: 60, 'background-color': 'data(color)',
             'border-width': 2, 'border-color': 'data(color)', 'border-opacity': 0.5,
           },
@@ -300,8 +302,9 @@ function EmbedGraph({ ontology, theme, setSelected }: EmbedGraphProps) {
         {
           selector: 'edge',
           style: {
-            label: 'data(label)', 'font-size': '11px', 'font-family': 'Segoe UI, sans-serif',
+            label: 'data(label)', 'font-size': '11px', 'font-family': GRAPH_FONT_FAMILY,
             color: theme.edgeText, 'text-rotation': 'autorotate', 'text-margin-y': -8,
+            'text-wrap': 'wrap', 'text-max-width': '160px',
             width: 2, 'line-color': theme.edgeColor, 'target-arrow-color': theme.edgeColor,
             'target-arrow-shape': 'triangle', 'curve-style': 'unbundled-bezier',
             'control-point-step-size': 40,

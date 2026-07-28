@@ -407,4 +407,109 @@ describe('parseRDF', () => {
       expect(ontology.entityTypes[0].name).toBe('Widget');
     });
   });
+
+  describe('owl:hasKey', () => {
+    // Standard OWL way to declare a key — what Protégé and hand-written
+    // ontologies emit, as opposed to this app's own ont:isIdentifier.
+    const hasKeyRdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xml:base="http://example.org/k"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Ontology rdf:about="http://example.org/k">
+        <rdfs:label>Keyed</rdfs:label>
+    </owl:Ontology>
+    <owl:Class rdf:about="#Participant">
+        <rdfs:label>Participant</rdfs:label>
+        <owl:hasKey rdf:parseType="Collection">
+            <owl:DatatypeProperty rdf:about="#participantId"/>
+        </owl:hasKey>
+    </owl:Class>
+    <owl:DatatypeProperty rdf:about="#participantId">
+        <rdfs:label>participantId</rdfs:label>
+        <rdfs:domain rdf:resource="#Participant"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#participantName">
+        <rdfs:label>participantName</rdfs:label>
+        <rdfs:domain rdf:resource="#Participant"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+</rdf:RDF>`;
+
+    it('marks a property named by owl:hasKey as the identifier', () => {
+      const { ontology } = parseRDF(hasKeyRdf);
+      const entity = ontology.entityTypes[0];
+      expect(entity.properties.find((p) => p.name === 'participantId')?.isIdentifier).toBe(true);
+    });
+
+    it('leaves other properties alone', () => {
+      const { ontology } = parseRDF(hasKeyRdf);
+      const entity = ontology.entityTypes[0];
+      expect(entity.properties.find((p) => p.name === 'participantName')?.isIdentifier).toBeUndefined();
+    });
+
+    it('does not turn the hasKey stub into a duplicate property', () => {
+      const { ontology } = parseRDF(hasKeyRdf);
+      expect(ontology.entityTypes[0].properties).toHaveLength(2);
+    });
+  });
+
+  describe('xml:lang label selection', () => {
+    const bilingualRdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xml:base="http://example.org/l"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Ontology rdf:about="http://example.org/l">
+        <rdfs:label xml:lang="en">Seoul Personal Budget</rdfs:label>
+        <rdfs:label xml:lang="ko">서울형 개인예산제</rdfs:label>
+    </owl:Ontology>
+    <owl:Class rdf:about="#Participant">
+        <rdfs:label xml:lang="en">Participant</rdfs:label>
+        <rdfs:label xml:lang="ko">참여자</rdfs:label>
+        <rdfs:comment xml:lang="en">A person in the scheme</rdfs:comment>
+        <rdfs:comment xml:lang="ko">시범사업에 참여하는 당사자</rdfs:comment>
+    </owl:Class>
+    <owl:Class rdf:about="#Plan">
+        <rdfs:label>Utilization Plan</rdfs:label>
+    </owl:Class>
+    <owl:ObjectProperty rdf:about="#establishes">
+        <rdfs:label xml:lang="en">establishes</rdfs:label>
+        <rdfs:label xml:lang="ko">계획을 수립한다</rdfs:label>
+        <rdfs:domain rdf:resource="#Participant"/>
+        <rdfs:range rdf:resource="#Plan"/>
+    </owl:ObjectProperty>
+</rdf:RDF>`;
+
+    it('prefers the requested language', () => {
+      const { ontology } = parseRDF(bilingualRdf, { preferredLang: 'ko' });
+      expect(ontology.name).toBe('서울형 개인예산제');
+      expect(ontology.entityTypes[0].name).toBe('참여자');
+      expect(ontology.entityTypes[0].description).toBe('시범사업에 참여하는 당사자');
+      expect(ontology.relationships[0].name).toBe('계획을 수립한다');
+    });
+
+    it('matches on the primary subtag', () => {
+      const { ontology } = parseRDF(bilingualRdf, { preferredLang: 'ko-KR' });
+      expect(ontology.entityTypes[0].name).toBe('참여자');
+    });
+
+    it('picks the other language when asked', () => {
+      const { ontology } = parseRDF(bilingualRdf, { preferredLang: 'en' });
+      expect(ontology.name).toBe('Seoul Personal Budget');
+      expect(ontology.entityTypes[0].name).toBe('Participant');
+      expect(ontology.relationships[0].name).toBe('establishes');
+    });
+
+    it('falls back to document order when no language is requested', () => {
+      const { ontology } = parseRDF(bilingualRdf);
+      expect(ontology.entityTypes[0].name).toBe('Participant');
+    });
+
+    it('uses an untagged label regardless of the requested language', () => {
+      const { ontology } = parseRDF(bilingualRdf, { preferredLang: 'ko' });
+      expect(ontology.entityTypes[1].name).toBe('Utilization Plan');
+    });
+  });
 });

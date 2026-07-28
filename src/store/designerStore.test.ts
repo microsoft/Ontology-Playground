@@ -1,5 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useDesignerStore, validateOntology, isValidFabricIQName, fabricIQNameError } from './designerStore';
+import {
+  useDesignerStore,
+  validateOntology,
+  isValidFabricIQName,
+  fabricIQNameError,
+  isValidUnicodeName,
+  unicodeNameError,
+  blockingErrors,
+} from './designerStore';
 import type { Ontology } from '../data/ontology';
 
 // Reset store between tests
@@ -12,7 +20,9 @@ beforeEach(() => {
 describe('validateOntology', () => {
   it('reports empty ontology', () => {
     const errors = validateOntology({ name: '', description: '', entityTypes: [], relationships: [] });
-    expect(errors).toEqual([{ message: 'Add at least one entity type to your ontology.' }]);
+    expect(errors).toEqual([
+      { message: 'Add at least one entity type to your ontology.', severity: 'error' },
+    ]);
   });
 
   it('reports missing identifier property', () => {
@@ -221,6 +231,91 @@ describe('validateOntology', () => {
   });
 });
 
+// ─── Unicode naming mode ─────────────────────────────────────────────────────
+
+/** An ontology named the way a Korean-language model actually reads. */
+function koreanOntology(): Ontology {
+  return {
+    name: '서울형 개인예산제',
+    description: '',
+    entityTypes: [
+      {
+        id: '참여자', name: '참여자', description: '', icon: '👤', color: '#000',
+        properties: [{ name: '참여자 식별자', type: 'string', isIdentifier: true }],
+      },
+      {
+        id: 'utilizationPlan', name: 'Utilization Plan (개인예산 이용계획)', description: '', icon: '📋', color: '#000',
+        properties: [{ name: 'planId', type: 'string', isIdentifier: true }],
+      },
+    ],
+    relationships: [
+      { id: 'r1', name: '계획을 수립한다', from: '참여자', to: 'utilizationPlan', cardinality: 'one-to-many' },
+    ],
+  };
+}
+
+describe('unicode naming mode', () => {
+  it('accepts Korean entity, property, and relationship names', () => {
+    const errors = validateOntology(koreanOntology(), 'unicode');
+    expect(blockingErrors(errors)).toEqual([]);
+  });
+
+  it('still reports Fabric IQ problems, but only as warnings', () => {
+    const errors = validateOntology(koreanOntology(), 'unicode');
+    const warnings = errors.filter((e) => e.severity === 'warning');
+    expect(warnings.length).toBeGreaterThan(0);
+    expect(warnings.every((e) => e.message.includes('Fabric IQ compatibility'))).toBe(true);
+  });
+
+  it('promotes those same names to errors under the strict Fabric rules', () => {
+    const errors = validateOntology(koreanOntology(), 'fabric');
+    expect(blockingErrors(errors).length).toBeGreaterThan(0);
+  });
+
+  it('defaults to the strict Fabric rules when no mode is given', () => {
+    expect(validateOntology(koreanOntology())).toEqual(validateOntology(koreanOntology(), 'fabric'));
+  });
+
+  it('still rejects structurally broken names', () => {
+    const ontology = koreanOntology();
+    ontology.entityTypes[0].name = ' 앞공백';
+    expect(blockingErrors(validateOntology(ontology, 'unicode')).length).toBeGreaterThan(0);
+  });
+});
+
+describe('isValidUnicodeName', () => {
+  it('accepts names in any script', () => {
+    expect(isValidUnicodeName('참여자')).toBe(true);
+    expect(isValidUnicodeName('Participant (참여자)')).toBe(true);
+    expect(isValidUnicodeName('Disability Profile')).toBe(true);
+    expect(isValidUnicodeName('장애 정보를 가진다')).toBe(true);
+    expect(isValidUnicodeName('Customer')).toBe(true);
+  });
+
+  it('rejects empty, padded, punctuation-led, and over-long names', () => {
+    expect(isValidUnicodeName('')).toBe(false);
+    expect(isValidUnicodeName(' 참여자')).toBe(false);
+    expect(isValidUnicodeName('참여자 ')).toBe(false);
+    expect(isValidUnicodeName('-참여자')).toBe(false);
+    expect(isValidUnicodeName('참'.repeat(65))).toBe(false);
+    expect(isValidUnicodeName('bad@name')).toBe(false);
+  });
+});
+
+describe('unicodeNameError', () => {
+  it('returns null for valid names and for empty (caught elsewhere)', () => {
+    expect(unicodeNameError('entityType', '참여자')).toBeNull();
+    expect(unicodeNameError('entityType', '')).toBeNull();
+  });
+
+  it('explains what is wrong', () => {
+    expect(unicodeNameError('entityType', '참'.repeat(65))).toContain('exceeds 64');
+    expect(unicodeNameError('property', ' 참여자')).toContain('must not start or end with a space');
+    expect(unicodeNameError('property', '-참여자')).toContain('must start with');
+    expect(unicodeNameError('property', 'bad@name')).toContain('may only contain');
+  });
+});
+
 // ─── isValidFabricIQName helper ──────────────────────────────────────────────
 
 describe('isValidFabricIQName', () => {
@@ -243,18 +338,18 @@ describe('isValidFabricIQName', () => {
 
 describe('fabricIQNameError', () => {
   it('returns null for valid names', () => {
-    expect(fabricIQNameError('Entity type', 'Customer')).toBeNull();
+    expect(fabricIQNameError('entityType', 'Customer')).toBeNull();
   });
 
   it('returns null for empty names (caught elsewhere)', () => {
-    expect(fabricIQNameError('Entity type', '')).toBeNull();
+    expect(fabricIQNameError('entityType', '')).toBeNull();
   });
 
   it('returns specific error messages', () => {
-    expect(fabricIQNameError('Entity type', 'A'.repeat(27))).toContain('exceeds 26');
-    expect(fabricIQNameError('Property', '-start')).toContain('must start with');
-    expect(fabricIQNameError('Property', 'end-')).toContain('must end with');
-    expect(fabricIQNameError('Property', 'has space')).toContain('may only contain');
+    expect(fabricIQNameError('entityType', 'A'.repeat(27))).toContain('exceeds 26');
+    expect(fabricIQNameError('property', '-start')).toContain('must start with');
+    expect(fabricIQNameError('property', 'end-')).toContain('must end with');
+    expect(fabricIQNameError('property', 'has space')).toContain('may only contain');
   });
 });
 

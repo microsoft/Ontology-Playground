@@ -1,25 +1,27 @@
 import { designerTemplates } from '../../data/designerTemplates';
 import { useDesignerStore } from '../../store/designerStore';
+import { useT } from '../../i18n';
 
 export function TemplatePicker() {
+  const t = useT();
   const loadDraft = useDesignerStore((s) => s.loadDraft);
 
   return (
     <div className="template-picker">
       <div className="template-picker-header">
-        <h3>Start from a template</h3>
-        <p>Pick a domain to get started quickly, or add entities manually.</p>
+        <h3>{t('designer.templateHeading')}</h3>
+        <p>{t('designer.templateSubheading')}</p>
       </div>
       <div className="template-picker-grid">
-        {designerTemplates.map((t) => (
+        {designerTemplates.map((tpl) => (
           <button
-            key={t.id}
+            key={tpl.id}
             className="template-card"
-            onClick={() => loadDraft(t.ontology)}
+            onClick={() => loadDraft(tpl.ontology)}
           >
-            <span className="template-card-icon">{t.icon}</span>
-            <span className="template-card-label">{t.label}</span>
-            <span className="template-card-desc">{t.description}</span>
+            <span className="template-card-icon">{tpl.icon}</span>
+            <span className="template-card-label">{t(tpl.labelKey)}</span>
+            <span className="template-card-desc">{t(tpl.descriptionKey)}</span>
           </button>
         ))}
       </div>

@@ -7,10 +7,13 @@ import { useAppStore, type ThemeId } from '../../store/appStore';
 import { serializeToRDF } from '../../lib/rdf/serializer';
 import { parseRDF } from '../../lib/rdf/parser';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../../lib/rdf/highlighter';
+import { GRAPH_FONT_FAMILY } from '../../lib/fonts';
+import { useT } from '../../i18n';
 
 cytoscape.use(fcose);
 
 export function DesignerPreview() {
+  const t = useT();
   const [activeTab, setActiveTab] = useState<'graph' | 'rdf'>('graph');
   const { ontology, selectEntity, selectRelationship } = useDesignerStore();
   const theme = useAppStore((s) => s.theme);
@@ -22,13 +25,13 @@ export function DesignerPreview() {
           className={`designer-tab ${activeTab === 'graph' ? 'active' : ''}`}
           onClick={() => setActiveTab('graph')}
         >
-          Graph
+          {t('designer.tabGraph')}
         </button>
         <button
           className={`designer-tab ${activeTab === 'rdf' ? 'active' : ''}`}
           onClick={() => setActiveTab('rdf')}
         >
-          RDF
+          {t('designer.tabRdf')}
         </button>
       </div>
 
@@ -91,9 +94,11 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
             'text-valign': 'bottom',
             'text-halign': 'center',
             'font-size': '13px',
-            'font-family': 'Segoe UI, sans-serif',
+            'font-family': GRAPH_FONT_FAMILY,
             'font-weight': 600,
             color: themeColors.nodeText,
+            'text-wrap': 'wrap',
+            'text-max-width': '120px',
             'text-margin-y': 8,
             width: 60,
             height: 60,
@@ -108,9 +113,11 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
           style: {
             label: 'data(label)',
             'font-size': '11px',
-            'font-family': 'Segoe UI, sans-serif',
+            'font-family': GRAPH_FONT_FAMILY,
             color: themeColors.edgeText,
             'text-rotation': 'autorotate',
+            'text-wrap': 'wrap',
+            'text-max-width': '160px',
             'text-margin-y': -8,
             'text-background-color': themeColors.edgeLabelBg,
             'text-background-opacity': 1,
@@ -229,6 +236,7 @@ interface RdfPreviewProps {
 }
 
 function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
+  const t = useT();
   const [copied, setCopied] = useState(false);
   const [importMode, setImportMode] = useState(false);
   const [importText, setImportText] = useState('');
@@ -256,7 +264,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
   const handleImport = () => {
     const trimmed = importText.trim();
     if (!trimmed) {
-      setImportError('Paste RDF/XML content first');
+      setImportError(t('designer.pasteRdfFirst'));
       return;
     }
     try {
@@ -267,7 +275,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
       setImportError(null);
       onImported();
     } catch (err) {
-      setImportError(err instanceof Error ? err.message : 'Failed to parse RDF');
+      setImportError(err instanceof Error ? err.message : t('designer.failedToParseRdf'));
     }
   };
 
@@ -283,19 +291,19 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
         {importMode ? (
           <>
             <button className="designer-add-btn small" onClick={handleImport}>
-              Load into Designer
+              {t('designer.loadIntoDesigner')}
             </button>
             <button className="designer-add-btn small secondary" onClick={handleCancel}>
-              Cancel
+              {t('common.cancel')}
             </button>
           </>
         ) : (
           <>
             <button className="designer-add-btn small" onClick={() => { setImportMode(true); setImportText(rdfOutput); }}>
-              Edit RDF
+              {t('designer.editRdf')}
             </button>
             <button className="designer-add-btn small" onClick={handleCopy}>
-              {copied ? 'Copied!' : 'Copy RDF'}
+              {copied ? t('common.copied') : t('designer.copyRdf')}
             </button>
           </>
         )}
@@ -308,7 +316,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
           className="designer-rdf-source designer-rdf-textarea"
           value={importText}
           onChange={(e) => { setImportText(e.target.value); setImportError(null); }}
-          placeholder="Paste or edit RDF/XML content here…"
+          placeholder={t('designer.rdfPlaceholder')}
           autoFocus
           spellCheck={false}
         />

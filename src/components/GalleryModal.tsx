@@ -8,6 +8,7 @@ import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rd
 import { navigate, parseHash } from '../lib/router';
 import type { CatalogueEntry, Catalogue } from '../types/catalogue';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../types/catalogue';
+import { useT } from '../i18n';
 
 interface GalleryModalProps {
   onClose: () => void;
@@ -16,6 +17,7 @@ interface GalleryModalProps {
 type SourceFilter = 'all' | 'official' | 'community' | 'external';
 
 export function GalleryModal({ onClose }: GalleryModalProps) {
+  const t = useT();
   const { currentOntology, loadOntology } = useAppStore();
 
   const [catalogue, setCatalogue] = useState<CatalogueEntry[]>([]);
@@ -144,7 +146,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 24, fontWeight: 600 }}>Ontology Gallery</h2>
+            <h2 style={{ fontSize: 24, fontWeight: 600 }}>{t('gallery.title')}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
               Browse and load ontologies from the catalogue
             </p>
@@ -160,7 +162,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
             <Search size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
             <input
               type="text"
-              placeholder="Search by name, tag, author…"
+              placeholder={t('gallery.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -194,10 +196,10 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
               fontSize: 13,
             }}
           >
-            <option value="all">All sources</option>
-            <option value="official">Official</option>
-            <option value="external">External</option>
-            <option value="community">Community</option>
+            <option value="all">{t('gallery.allSources')}</option>
+            <option value="official">{t('gallery.official')}</option>
+            <option value="external">{t('gallery.external')}</option>
+            <option value="community">{t('gallery.community')}</option>
           </select>
           <select
             value={categoryFilter}
@@ -219,7 +221,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
               fontSize: 13,
             }}
           >
-            <option value="all">All categories</option>
+            <option value="all">{t('gallery.allCategories')}</option>
             {categories.map((cat) => (
               <option key={cat} value={cat}>
                 {CATEGORY_LABELS[cat] ?? cat}
@@ -231,7 +233,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         {/* Loading / Error / Empty */}
         {loading && (
           <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-secondary)' }}>
-            Loading catalogue…
+            {t('gallery.loading')}
           </div>
         )}
         {error && (
@@ -241,14 +243,14 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         )}
         {!loading && !error && filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-secondary)' }}>
-            No ontologies match your filters.
+            {t('gallery.noMatches')}
           </div>
         )}
 
         {/* Result count */}
         {!loading && !error && filtered.length > 0 && (
           <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>
-            Showing {Math.min(visibleCount, filtered.length)} of {filtered.length} ontolog{filtered.length === 1 ? 'y' : 'ies'}
+            {t('gallery.showing', { shown: Math.min(visibleCount, filtered.length), total: filtered.length })}
           </div>
         )}
 
@@ -352,7 +354,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                           fontWeight: 600,
                         }}
                       >
-                        Active
+                        {t('gallery.active')}
                       </div>
                     )}
                   </div>
@@ -403,13 +405,13 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <Layers size={14} color="var(--text-tertiary)" />
                         <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                          {entry.ontology.entityTypes.length} entities
+                          {t('gallery.entities', { count: entry.ontology.entityTypes.length })}
                         </span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <ArrowRight size={14} color="var(--text-tertiary)" />
                         <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                          {entry.ontology.relationships.length} relationships
+                          {t('gallery.relationships', { count: entry.ontology.relationships.length })}
                         </span>
                       </div>
                     </div>
@@ -418,7 +420,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
-                        title="View RDF source"
+                        title={t('gallery.viewRdf')}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleViewRdf(entry);
@@ -429,7 +431,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
-                        title={copiedEmbedId === entry.id ? 'Copied!' : 'Copy embed code'}
+                        title={copiedEmbedId === entry.id ? t('common.copied') : t('gallery.copyEmbed')}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCopyEmbed(entry);
@@ -440,7 +442,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
-                        title="Edit in Designer"
+                        title={t('gallery.editInDesigner')}
                         onClick={(e) => {
                           e.stopPropagation();
                           // Load into both stores: playground (appStore) and designer
@@ -463,7 +465,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                             handleLoadOntology(entry);
                           }}
                         >
-                          Load
+                          {t('gallery.load')}
                         </button>
                       )}
                     </div>
@@ -495,7 +497,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                 style={{ padding: '8px 24px', fontSize: 13 }}
                 onClick={handleShowMore}
               >
-                Show more ({filtered.length - visibleCount} remaining)
+                {t('gallery.showMore', { count: filtered.length - visibleCount })}
               </button>
             </div>
           )}
@@ -513,7 +515,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
           }}
         >
           <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-            Want to contribute? See{' '}
+            {t('gallery.contributePrefix')}{' '}
             <a
               href="https://github.com/microsoft/Ontology-Playground/blob/main/CONTRIBUTING.md"
               target="_blank"
@@ -526,7 +528,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
             >
               <strong>CONTRIBUTING.md</strong>
             </a>
-            {' '}— add your ontology as an RDF file and{' '}
+            {' '}{t('gallery.contributeMiddle')}{' '}
             <a
               href="https://github.com/microsoft/Ontology-Playground/fork"
               target="_blank"
@@ -537,7 +539,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                 cursor: 'pointer',
               }}
             >
-              open a PR
+              {t('gallery.contributeLink')}
             </a>
             .
           </p>

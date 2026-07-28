@@ -3,6 +3,7 @@ import { GitFork, ChevronDown, ChevronUp, ArrowRight, Search, X } from 'lucide-r
 import { useAppStore } from '../store/appStore';
 import { findShortestPath } from '../lib/pathFinder';
 import type { PathNode } from '../lib/pathFinder';
+import { useT } from '../i18n';
 
 interface PathStep {
   entityId: string;
@@ -16,6 +17,7 @@ interface PathStep {
 }
 
 export function PathFinderPanel() {
+  const t = useT();
   const { currentOntology, setHighlights, clearHighlights } = useAppStore();
   const [expanded, setExpanded] = useState(false);
   const [fromId, setFromId] = useState('');
@@ -87,7 +89,7 @@ export function PathFinderPanel() {
       >
         <span className="pathfinder-title">
           <GitFork size={14} />
-          Path Finder
+          {t('pathfinder.title')}
         </span>
         {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </button>
@@ -96,13 +98,13 @@ export function PathFinderPanel() {
         <div className="pathfinder-body">
           <div className="pathfinder-selects">
             <div className="pathfinder-select-group">
-              <label className="pathfinder-label">From</label>
+              <label className="pathfinder-label">{t('designer.from')}</label>
               <select
                 className="pathfinder-select"
                 value={fromId}
                 onChange={e => { setFromId(e.target.value); setSearched(false); clearHighlights(); }}
               >
-                <option value="">Select entity…</option>
+                <option value="">{t('pathfinder.selectEntity')}</option>
                 {entities.map(e => (
                   <option key={e.id} value={e.id}>{e.icon} {e.name}</option>
                 ))}
@@ -112,13 +114,13 @@ export function PathFinderPanel() {
             <ArrowRight size={16} className="pathfinder-arrow-icon" />
 
             <div className="pathfinder-select-group">
-              <label className="pathfinder-label">To</label>
+              <label className="pathfinder-label">{t('designer.to')}</label>
               <select
                 className="pathfinder-select"
                 value={toId}
                 onChange={e => { setToId(e.target.value); setSearched(false); clearHighlights(); }}
               >
-                <option value="">Select entity…</option>
+                <option value="">{t('pathfinder.selectEntity')}</option>
                 {entities.map(e => (
                   <option key={e.id} value={e.id}>{e.icon} {e.name}</option>
                 ))}
@@ -133,32 +135,32 @@ export function PathFinderPanel() {
               disabled={!fromId || !toId || !!sameEntity}
             >
               <Search size={13} />
-              Find Path
+              {t('pathfinder.findPath')}
             </button>
             {searched && (
               <button className="pathfinder-btn-clear" onClick={handleClear}>
                 <X size={13} />
-                Clear
+                {t('pathfinder.clear')}
               </button>
             )}
           </div>
 
           {sameEntity && (
             <div className="pathfinder-message pathfinder-message--warn">
-              Select two different entities.
+              {t('pathfinder.sameEntity')}
             </div>
           )}
 
           {noPath && (
             <div className="pathfinder-message pathfinder-message--warn">
-              No directed path found between these entities.
+              {t('pathfinder.noPath')}
             </div>
           )}
 
           {displaySteps.length > 0 && (
             <div className="pathfinder-result">
               <div className="pathfinder-result-label">
-                Shortest path — {displaySteps.length - 1} hop{displaySteps.length - 1 !== 1 ? 's' : ''}
+                {t(displaySteps.length - 1 !== 1 ? 'pathfinder.shortestPath_plural' : 'pathfinder.shortestPath', { count: displaySteps.length - 1 })}
               </div>
               <div className="pathfinder-chain">
                 {displaySteps.map((step, i) => (

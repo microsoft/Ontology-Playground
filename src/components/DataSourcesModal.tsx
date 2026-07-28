@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
 import { X, Database, Table, BarChart3, Cloud } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
+import { useT } from '../i18n';
 
 interface DataSourcesModalProps {
   onClose: () => void;
 }
 
 export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
+  const t = useT();
   const { currentOntology, dataBindings } = useAppStore();
   
   return (
@@ -27,7 +29,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>
-            <h2 style={{ fontSize: 24, fontWeight: 600 }}>Data Sources</h2>
+            <h2 style={{ fontSize: 24, fontWeight: 600 }}>{t('dataSources.title')}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
               How the Fourth Coffee ontology binds to a Data Lakehouse
             </p>
@@ -59,7 +61,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
             <Cloud size={28} color="white" />
           </div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>Data Lakehouse</div>
+            <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{t('dataSources.lakehouse')}</div>
             <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
               Unified storage layer for analytics. The ontology binds entity types to lakehouse tables and semantic models.
             </div>
@@ -123,7 +125,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <Database size={14} color="var(--text-tertiary)" />
-                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Source Table:</span>
+                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{t('dataSources.sourceTable')}</span>
                   </div>
                   <code style={{ 
                     fontSize: 13, 
@@ -139,9 +141,9 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                   Column Mappings
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '8px 12px', fontSize: 13 }}>
-                  <div style={{ color: 'var(--text-tertiary)', fontWeight: 600 }}>Property</div>
+                  <div style={{ color: 'var(--text-tertiary)', fontWeight: 600 }}>{t('dataSources.property')}</div>
                   <div></div>
-                  <div style={{ color: 'var(--text-tertiary)', fontWeight: 600, textAlign: 'right' }}>Column</div>
+                  <div style={{ color: 'var(--text-tertiary)', fontWeight: 600, textAlign: 'right' }}>{t('dataSources.column')}</div>
                   {Object.entries(binding.columnMappings).map(([prop, column]) => (
                     <>
                       <div key={`${prop}-prop`} style={{ color: 'var(--text-primary)' }}>{prop}</div>
@@ -162,7 +164,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
             textAlign: 'center'
           }}>
             <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 4 }}>
-              <strong>Other Entity Types:</strong> Store, Supplier, Shipment
+              <strong>{t('dataSources.otherEntityTypes')}</strong> Store, Supplier, Shipment
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
               In this demo, bindings are shown for Customer, Order, and Product. 

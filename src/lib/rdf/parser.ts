@@ -40,6 +40,100 @@ function getChildText(
   return null;
 }
 
+/** The BCP-47 language tag on an element, lowercased. '' when untagged. */
+function langOf(el: Element): string {
+  return (
+    el.getAttribute('xml:lang') ||
+    el.getAttributeNS('http://www.w3.org/XML/1998/namespace', 'lang') ||
+    ''
+  ).toLowerCase();
+}
+
+/** Direct children of `parent` whose local name matches. */
+function getChildElements(parent: Element, localName: string): Element[] {
+  const matches: Element[] = [];
+  for (let i = 0; i < parent.children.length; i++) {
+    const child = parent.children[i];
+    const childLocal = child.localName || child.tagName.split(':').pop();
+    if (childLocal === localName) matches.push(child);
+  }
+  return matches;
+}
+
+/**
+ * Pick the best element for a language.
+ *
+ * Preference order: exact tag ("ko") → primary subtag ("ko-KR" matches "ko")
+ * → untagged → first one found.  This lets a single RDF file carry both
+ * `<rdfs:label xml:lang="en">Participant</rdfs:label>` and
+ * `<rdfs:label xml:lang="ko">참여자</rdfs:label>`.
+ */
+function pickByLang(elements: Element[], preferredLang: string): Element | null {
+  if (elements.length === 0) return null;
+  if (elements.length === 1) return elements[0];
+
+  const want = preferredLang.toLowerCase();
+  const primary = want.split('-')[0];
+
+  const exact = elements.find((el) => langOf(el) === want);
+  if (exact) return exact;
+
+  if (primary) {
+    const byPrimary = elements.find((el) => langOf(el).split('-')[0] === primary);
+    if (byPrimary) return byPrimary;
+  }
+
+  const untagged = elements.find((el) => langOf(el) === '');
+  if (untagged) return untagged;
+
+  return elements[0];
+}
+
+/** Like getChildText, but honouring xml:lang when the element is repeated. */
+function getChildTextLang(
+  parent: Element,
+  localName: string,
+  preferredLang: string,
+  namespace?: string,
+): string | null {
+  const matches = getChildElements(parent, localName);
+  if (matches.length === 0) {
+    // Nothing at this level — fall back to the namespace-aware descendant search.
+    return getChildText(parent, localName, namespace);
+  }
+  return pickByLang(matches, preferredLang)?.textContent ?? null;
+}
+
+/**
+ * Collect the property URIs named by an `owl:hasKey` collection on a class:
+ *
+ *   <owl:Class rdf:about="#Participant">
+ *     <owl:hasKey rdf:parseType="Collection">
+ *       <owl:DatatypeProperty rdf:about="#participantId"/>
+ *     </owl:hasKey>
+ *   </owl:Class>
+ *
+ * This is the standard OWL way to declare a key, and what tools like Protégé
+ * emit — the ont:isIdentifier annotation below is this app's own shorthand.
+ */
+function getHasKeyPropertyUris(classEl: Element): string[] {
+  const uris: string[] = [];
+  for (let i = 0; i < classEl.children.length; i++) {
+    const child = classEl.children[i];
+    const childLocal = child.localName || child.tagName.split(':').pop();
+    if (childLocal !== 'hasKey') continue;
+
+    const members = child.getElementsByTagName('*');
+    for (let j = 0; j < members.length; j++) {
+      const uri =
+        members[j].getAttribute('rdf:about') ||
+        members[j].getAttributeNS(RDF_NS, 'about');
+      if (uri) uris.push(uri);
+    }
+  }
+  return uris;
+}
+
 /**
  * Get the rdf:resource attribute from a child element.
  */
@@ -139,10 +233,22 @@ interface ParsedDatatypeProperty {
   attributeType: string | null;
 }
 
+export interface ParseRDFOptions {
+  /**
+   * Language to prefer when labels/comments are repeated with xml:lang tags.
+   * Defaults to '' — take them in document order, as before.
+   */
+  preferredLang?: string;
+}
+
 /**
  * Parse an RDF/XML (OWL) string into an Ontology and optional DataBindings.
  */
-export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBinding[] } {
+export function parseRDF(
+  rdfXml: string,
+  options: ParseRDFOptions = {},
+): { ontology: Ontology; bindings: DataBinding[] } {
+  const preferredLang = options.preferredLang ?? '';
   const parser = new DOMParser();
   const doc = parser.parseFromString(rdfXml, 'application/xml');
 
@@ -161,13 +267,15 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   const ontologyEls = root.getElementsByTagNameNS(OWL_NS, 'Ontology');
   if (ontologyEls.length > 0) {
     const ontEl = ontologyEls[0];
-    ontologyName = getChildText(ontEl, 'label', RDFS_NS) || '';
-    ontologyDescription = getChildText(ontEl, 'comment', RDFS_NS) || '';
+    ontologyName = getChildTextLang(ontEl, 'label', preferredLang, RDFS_NS) || '';
+    ontologyDescription = getChildTextLang(ontEl, 'comment', preferredLang, RDFS_NS) || '';
   }
 
   // --- Extract OWL Classes → EntityTypes ---
   const classEls = root.getElementsByTagNameNS(OWL_NS, 'Class');
   const entityMap = new Map<string, EntityType>();
+  // Property URIs declared as keys via owl:hasKey, across all classes.
+  const hasKeyPropertyUris = new Set<string>();
 
   for (let i = 0; i < classEls.length; i++) {
     const el = classEls[i];
@@ -176,10 +284,14 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
 
     const className = localNameFromUri(about);
     const entityId = uncapitalize(className);
-    const label = getChildText(el, 'label', RDFS_NS) || className;
-    const description = getChildText(el, 'comment', RDFS_NS) || '';
+    const label = getChildTextLang(el, 'label', preferredLang, RDFS_NS) || className;
+    const description = getChildTextLang(el, 'comment', preferredLang, RDFS_NS) || '';
     const icon = getChildText(el, 'icon') || '📦';
     const color = getChildText(el, 'color') || '#0078D4';
+
+    for (const keyUri of getHasKeyPropertyUris(el)) {
+      hasKeyPropertyUris.add(keyUri);
+    }
 
     entityMap.set(about, {
       id: entityId,
@@ -200,17 +312,27 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
     const about = el.getAttribute('rdf:about') || el.getAttributeNS(RDF_NS, 'about') || '';
     if (!about) continue;
 
-    const comments = getChildTexts(el, 'comment');
-    const hasIdentifierComment = comments.some(c => /^identifier\s+property$/i.test(c.trim()));
-    const descriptionComment = comments.find(c => !/^identifier\s+property$/i.test(c.trim())) ?? null;
+    // "identifier property" is a marker comment, not a description — filter it
+    // out before picking the description for the requested language.
+    const isIdentifierMarker = (text: string) => /^identifier\s+property$/i.test(text.trim());
+    const commentEls = getChildElements(el, 'comment');
+    const hasIdentifierComment = commentEls.some((c) => isIdentifierMarker(c.textContent ?? ''));
+    const descriptionComment =
+      pickByLang(
+        commentEls.filter((c) => !isIdentifierMarker(c.textContent ?? '')),
+        preferredLang,
+      )?.textContent ?? null;
 
     parsedDtProps.push({
       about,
-      label: getChildText(el, 'label', RDFS_NS) || localNameFromUri(about),
+      label: getChildTextLang(el, 'label', preferredLang, RDFS_NS) || localNameFromUri(about),
       domainUri: getChildResource(el, 'domain'),
       rangeUri: getChildResource(el, 'range'),
       comment: descriptionComment,
-      isIdentifier: getChildText(el, 'isIdentifier') === 'true' || hasIdentifierComment,
+      isIdentifier:
+        getChildText(el, 'isIdentifier') === 'true' ||
+        hasIdentifierComment ||
+        hasKeyPropertyUris.has(about),
       unit: getChildText(el, 'unit'),
       enumValues: getChildText(el, 'enumValues'),
       propertyType: getChildText(el, 'propertyType'),
@@ -277,8 +399,8 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
     if (!about) continue;
 
     const relId = localNameFromUri(about);
-    const label = getChildText(el, 'label', RDFS_NS) || relId;
-    const description = getChildText(el, 'comment', RDFS_NS) || undefined;
+    const label = getChildTextLang(el, 'label', preferredLang, RDFS_NS) || relId;
+    const description = getChildTextLang(el, 'comment', preferredLang, RDFS_NS) || undefined;
 
     // Get from/to entity IDs — prefer explicit ont:fromEntityId/toEntityId,
     // fallback to domain/range URI.  Always uncapitalize to match entity IDs.

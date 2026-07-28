@@ -4,6 +4,13 @@
  * Usage:
  *   npx tsx scripts/validate-rdf.ts                     # validate all catalogue + built-in ontologies
  *   npx tsx scripts/validate-rdf.ts file1.rdf file2.rdf # validate specific RDF files
+ *   npx tsx scripts/validate-rdf.ts --mode=unicode f.rdf # allow non-ASCII (e.g. Korean) names
+ *   npx tsx scripts/validate-rdf.ts --lang=ko f.rdf      # prefer xml:lang="ko" labels
+ *
+ * The default mode is 'fabric' — the strict Microsoft Fabric IQ naming rules
+ * that gate the catalogue.  Pass --mode=unicode to check a locally-authored
+ * ontology that names things in a non-Latin script; Fabric violations are then
+ * reported as warnings instead of failures.
  *
  * Exit code 0 = all valid, 1 = one or more failures.
  * Suitable for CI (e.g., GitHub Actions) to gate community PRs.
@@ -16,6 +23,7 @@ const dom = new JSDOM();
 
 import { parseRDF } from '../src/lib/rdf/parser';
 import { validateOntology } from '../src/store/designerStore';
+import type { NamingMode, ValidationError } from '../src/store/designerStore';
 import { validateOntologyStyle } from './style-validator';
 import { cosmicCoffeeOntology } from '../src/data/ontology';
 import { sampleOntologies } from '../src/data/sampleOntologies';
@@ -24,14 +32,20 @@ import { join, basename } from 'path';
 
 let failures = 0;
 
-function report(label: string, errors: { message: string }[]) {
-  if (errors.length) {
+function report(label: string, errors: ValidationError[]) {
+  const blocking = errors.filter((e) => e.severity === 'error');
+  const warnings = errors.filter((e) => e.severity === 'warning');
+
+  if (blocking.length) {
     failures++;
     console.log(`FAIL  ${label}`);
-    for (const e of errors) console.log(`        ${e.message}`);
+    for (const e of blocking) console.log(`        ${e.message}`);
+  } else if (warnings.length) {
+    console.log(`WARN  ${label}`);
   } else {
     console.log(`  OK  ${label}`);
   }
+  for (const e of warnings) console.log(`      ⚠ ${e.message}`);
 }
 
 function reportStyle(label: string, errors: { message: string; severity: string }[]) {
@@ -52,10 +66,10 @@ function reportStyle(label: string, errors: { message: string; severity: string 
 
 function validateRdfFile(filePath: string, checkStyle = true) {
   const rdf = readFileSync(filePath, 'utf-8');
-  const { ontology } = parseRDF(rdf);
-  const errors = validateOntology(ontology);
+  const { ontology } = parseRDF(rdf, { preferredLang });
+  const errors = validateOntology(ontology, namingMode);
   report(basename(filePath), errors);
-  
+
   if (checkStyle) {
     const styleErrors = validateOntologyStyle(ontology);
     if (styleErrors.length > 0) {
@@ -64,8 +78,16 @@ function validateRdfFile(filePath: string, checkStyle = true) {
   }
 }
 
+// --- Flags ---
+const rawArgs = process.argv.slice(2);
+const flags = rawArgs.filter((a) => a.startsWith('--'));
+const args = rawArgs.filter((a) => !a.startsWith('--'));
+
+const modeFlag = flags.find((f) => f.startsWith('--mode='))?.split('=')[1];
+const namingMode: NamingMode = modeFlag === 'unicode' ? 'unicode' : 'fabric';
+const preferredLang = flags.find((f) => f.startsWith('--lang='))?.split('=')[1] ?? '';
+
 // --- Mode: validate specific files passed as CLI args ---
-const args = process.argv.slice(2);
 if (args.length > 0) {
   for (const file of args) {
     if (!existsSync(file)) {
@@ -79,9 +101,9 @@ if (args.length > 0) {
   // --- Mode: validate all built-in + catalogue ontologies ---
 
   // 1. Built-in TS ontology objects
-  report('Fourth Coffee (built-in)', validateOntology(cosmicCoffeeOntology));
+  report('Fourth Coffee (built-in)', validateOntology(cosmicCoffeeOntology, namingMode));
   for (const s of sampleOntologies) {
-    report(`${s.name} (built-in)`, validateOntology(s.ontology));
+    report(`${s.name} (built-in)`, validateOntology(s.ontology, namingMode));
   }
 
   // 2. Catalogue RDF files

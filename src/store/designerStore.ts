@@ -7,18 +7,50 @@
  */
 import { create } from 'zustand';
 import type { Ontology, EntityType, Property, Relationship, RelationshipAttribute } from '../data/ontology';
+import { translate } from '../i18n';
 
 // ─── Validation ──────────────────────────────────────────────────────────────
+
+/**
+ * `error` blocks actions (Load in Playground, Submit to Catalogue).
+ * `warning` is informational — the ontology still loads and exports.
+ */
+export type Severity = 'error' | 'warning';
 
 export interface ValidationError {
   message: string;
   entityId?: string;
   relationshipId?: string;
+  severity: Severity;
 }
 
-// ─── Fabric IQ naming rules ─────────────────────────────────────────────────
-// 1–26 chars, alphanumeric + hyphens + underscores, must start & end with
-// an alphanumeric character.
+/** Blocking problems only. Warnings never stop an action. */
+export function blockingErrors(errors: ValidationError[]): ValidationError[] {
+  return errors.filter((e) => e.severity === 'error');
+}
+
+// ─── Naming rules ───────────────────────────────────────────────────────────
+// Two rule sets, picked by NamingMode:
+//
+//   'fabric'  — Microsoft Fabric IQ rules. 1–26 chars, ASCII alphanumerics plus
+//               hyphens and underscores, starting and ending alphanumeric.
+//   'unicode' — Local authoring rules. Letters and digits from any script, so
+//               an ontology can be labelled in Korean, Japanese, Arabic, etc.
+//
+// The designer runs in 'unicode' and reports Fabric violations as warnings, so
+// you can still see at a glance what would need renaming before a Fabric IQ
+// export.  The strict-mode toggle promotes those warnings back to errors.
+
+export type NamingMode = 'unicode' | 'fabric';
+
+/** What is being named — resolved to a localized word in the message. */
+export type NameKind = 'entityType' | 'property';
+
+function kindLabel(kind: NameKind): string {
+  return kind === 'entityType'
+    ? translate('validation.kind.entityType')
+    : translate('validation.kind.property');
+}
 
 const FABRIC_IQ_NAME_RE = /^[A-Za-z0-9]([A-Za-z0-9_-]{0,24}[A-Za-z0-9])?$/;
 
@@ -26,20 +58,83 @@ export function isValidFabricIQName(name: string): boolean {
   return FABRIC_IQ_NAME_RE.test(name);
 }
 
-export function fabricIQNameError(kind: string, name: string): string | null {
+export function fabricIQNameError(kind: NameKind, name: string): string | null {
   if (!name) return null; // empty names are caught separately
-  if (name.length > 26) return `${kind} name "${name}" exceeds 26 characters.`;
-  if (!/^[A-Za-z0-9]/.test(name)) return `${kind} name "${name}" must start with a letter or digit.`;
-  if (!/[A-Za-z0-9]$/.test(name)) return `${kind} name "${name}" must end with a letter or digit.`;
-  if (!FABRIC_IQ_NAME_RE.test(name)) return `${kind} name "${name}" may only contain letters, digits, hyphens, and underscores.`;
+  const params = { kind: kindLabel(kind), name };
+  if (name.length > 26) return translate('validation.nameExceeds', { ...params, max: 26 });
+  if (!/^[A-Za-z0-9]/.test(name)) return translate('validation.nameMustStart', params);
+  if (!/[A-Za-z0-9]$/.test(name)) return translate('validation.nameMustEnd', params);
+  if (!FABRIC_IQ_NAME_RE.test(name)) return translate('validation.nameCharsFabric', params);
   return null;
 }
 
-export function validateOntology(ontology: Ontology): ValidationError[] {
+const UNICODE_NAME_MAX = 64;
+
+// Any script's letters and digits, plus the punctuation a bilingual label
+// needs — "Participant (참여자)" has to be spellable.  Deliberately no
+// "must end with a letter or digit" rule: that one alone rejected every
+// "English (한국어)" label.
+const UNICODE_NAME_RE = /^[\p{L}\p{N}][\p{L}\p{N} _\-()·./]*$/u;
+
+export function isValidUnicodeName(name: string): boolean {
+  return (
+    name.length <= UNICODE_NAME_MAX &&
+    name === name.trim() &&
+    UNICODE_NAME_RE.test(name)
+  );
+}
+
+export function unicodeNameError(kind: NameKind, name: string): string | null {
+  if (!name) return null; // empty names are caught separately
+  const params = { kind: kindLabel(kind), name };
+  if (name.length > UNICODE_NAME_MAX) return translate('validation.nameExceeds', { ...params, max: UNICODE_NAME_MAX });
+  if (name !== name.trim()) return translate('validation.nameNoPadding', params);
+  if (!/^[\p{L}\p{N}]/u.test(name)) return translate('validation.nameMustStart', params);
+  if (!UNICODE_NAME_RE.test(name)) return translate('validation.nameCharsUnicode', params);
+  return null;
+}
+
+/** Name check for the active mode. */
+export function nameError(kind: NameKind, name: string, mode: NamingMode): string | null {
+  return mode === 'fabric' ? fabricIQNameError(kind, name) : unicodeNameError(kind, name);
+}
+
+/**
+ * Validate an ontology.
+ *
+ * `mode` defaults to 'fabric' so the catalogue CI gate (scripts/validate-rdf.ts)
+ * keeps enforcing Fabric IQ rules.  The designer passes its own mode.
+ */
+export function validateOntology(
+  ontology: Ontology,
+  mode: NamingMode = 'fabric',
+): ValidationError[] {
   const errors: ValidationError[] = [];
 
+  /**
+   * Report a name against the active mode, then — when the active mode is the
+   * permissive one — add a non-blocking note if Fabric IQ would still object.
+   */
+  const checkName = (kind: NameKind, name: string, entityId?: string) => {
+    const err = nameError(kind, name, mode);
+    if (err) {
+      errors.push({ message: err, entityId, severity: 'error' });
+      return;
+    }
+    if (mode === 'unicode') {
+      const fabricErr = fabricIQNameError(kind, name);
+      if (fabricErr) {
+        errors.push({
+          message: translate('validation.fabricSuffix', { message: fabricErr }),
+          entityId,
+          severity: 'warning',
+        });
+      }
+    }
+  };
+
   if (ontology.entityTypes.length === 0) {
-    errors.push({ message: 'Add at least one entity type to your ontology.' });
+    errors.push({ message: translate('validation.needEntity'), severity: 'error' });
   }
 
   const entityIds = new Set<string>();
@@ -48,29 +143,27 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
   const propNameTypeMap = new Map<string, { type: string; entityName: string }>();
 
   for (const e of ontology.entityTypes) {
-    const label = e.name || 'Unnamed entity';
+    const label = e.name || translate('validation.unnamedEntity');
     if (!e.id) {
-      errors.push({ message: `"${label}" is missing an internal ID.`, entityId: e.id });
+      errors.push({ message: translate('validation.missingId', { label }), entityId: e.id, severity: 'error' });
     } else if (entityIds.has(e.id)) {
-      errors.push({ message: `Two entities share the same ID "${e.id}". Rename one of them.`, entityId: e.id });
+      errors.push({ message: translate('validation.duplicateEntityId', { id: e.id }), entityId: e.id, severity: 'error' });
     } else {
       entityIds.add(e.id);
     }
     if (!e.name) {
-      errors.push({ message: 'One of your entities has no name. Give it a name.', entityId: e.id });
+      errors.push({ message: translate('validation.entityHasNoName'), entityId: e.id, severity: 'error' });
     }
 
     // §7.1 — Entity type name validation
-    const nameErr = fabricIQNameError('Entity type', e.name);
-    if (nameErr) {
-      errors.push({ message: nameErr, entityId: e.id });
-    }
+    checkName('entityType', e.name, e.id);
 
     const hasIdentifier = e.properties.some((p) => p.isIdentifier);
     if (!hasIdentifier) {
       errors.push({
-        message: `"${label}" has no identifier property. Click the key icon (🔑) on one of its properties to mark it as the unique identifier.`,
+        message: translate('validation.noIdentifier', { label }),
         entityId: e.id,
+        severity: 'error',
       });
     }
 
@@ -78,23 +171,28 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
     for (const p of e.properties) {
       if (p.isIdentifier && p.type !== 'string' && p.type !== 'integer') {
         errors.push({
-          message: `Identifier property "${p.name}" on "${label}" must be string or integer type for Fabric IQ compatibility.`,
+          message: translate('validation.identifierType', { name: p.name, label }),
           entityId: e.id,
+          severity: 'error',
         });
       }
 
       // §7.2 — Property name validation
       if (p.name) {
-        const propNameErr = fabricIQNameError('Property', p.name);
-        if (propNameErr) {
-          errors.push({ message: propNameErr, entityId: e.id });
-        }
+        checkName('property', p.name, e.id);
         // Cross-entity uniqueness: same property name must map to the same type
         const existing = propNameTypeMap.get(p.name);
         if (existing && existing.type !== p.type) {
           errors.push({
-            message: `Property "${p.name}" is defined as "${p.type}" in "${label}" but as "${existing.type}" in "${existing.entityName}". Fabric IQ requires the same type when property names match across entity types.`,
+            message: translate('validation.propertyTypeConflict', {
+              name: p.name,
+              type: p.type,
+              label,
+              otherType: existing.type,
+              otherLabel: existing.entityName,
+            }),
             entityId: e.id,
+            severity: 'error',
           });
         } else if (!existing) {
           propNameTypeMap.set(p.name, { type: p.type, entityName: label });
@@ -105,26 +203,26 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
 
   const relIds = new Set<string>();
   for (const r of ontology.relationships) {
-    const label = r.name || 'Unnamed relationship';
+    const label = r.name || translate('validation.unnamedRelationship');
     if (!r.id) {
-      errors.push({ message: `"${label}" is missing an internal ID.`, relationshipId: r.id });
+      errors.push({ message: translate('validation.missingId', { label }), relationshipId: r.id, severity: 'error' });
     } else if (relIds.has(r.id)) {
-      errors.push({ message: `Two relationships share the same ID "${r.id}". Rename one of them.`, relationshipId: r.id });
+      errors.push({ message: translate('validation.duplicateRelationshipId', { id: r.id }), relationshipId: r.id, severity: 'error' });
     } else {
       relIds.add(r.id);
     }
     if (!entityIds.has(r.from)) {
-      const fromLabel = r.from || '(none)';
       errors.push({
-        message: `"${label}" points from "${fromLabel}" which doesn't exist. Pick a valid source entity.`,
+        message: translate('validation.danglingFrom', { label, from: r.from || '(none)' }),
         relationshipId: r.id,
+        severity: 'error',
       });
     }
     if (!entityIds.has(r.to)) {
-      const toLabel = r.to || '(none)';
       errors.push({
-        message: `"${label}" points to "${toLabel}" which doesn't exist. Pick a valid target entity.`,
+        message: translate('validation.danglingTo', { label, to: r.to || '(none)' }),
         relationshipId: r.id,
+        severity: 'error',
       });
     }
   }
@@ -134,10 +232,12 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
 
 // ─── ID helpers ──────────────────────────────────────────────────────────────
 
+// Keeps letters and digits from any script, so a Korean entity name yields a
+// readable id ("참여자" → "참여자") instead of collapsing to "entity".
 function slugify(name: string): string {
   return name
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
     .replace(/^-|-$/g, '')
     || 'entity';
 }
@@ -165,6 +265,22 @@ export const ENTITY_ICONS = [
   '🌐', '📁', '🎯', '⚡', '🔗', '📝', '🏷️', '📈',
 ];
 
+// ─── Naming mode persistence ─────────────────────────────────────────────────
+// Mirrors the theme persistence in appStore.
+
+const NAMING_MODE_KEY = 'namingMode';
+
+function getInitialNamingMode(): NamingMode {
+  if (typeof window === 'undefined' || !('localStorage' in window)) {
+    return 'unicode';
+  }
+  try {
+    return window.localStorage.getItem(NAMING_MODE_KEY) === 'fabric' ? 'fabric' : 'unicode';
+  } catch {
+    return 'unicode';
+  }
+}
+
 // ─── History helpers ─────────────────────────────────────────────────────────
 
 const HISTORY_LIMIT = 50;
@@ -189,6 +305,10 @@ interface DesignerState {
   selectedRelationshipId: string | null;
   validationErrors: ValidationError[];
   _lastValidatedAt: number;
+
+  /** Which naming rules validation enforces. Persisted to localStorage. */
+  namingMode: NamingMode;
+  setNamingMode: (mode: NamingMode) => void;
 
   // Actions — ontology metadata
   setOntologyName: (name: string) => void;
@@ -244,6 +364,20 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
   _lastValidatedAt: 0,
   _past: [],
   _future: [],
+
+  // ─ Naming mode ──────────────────────────────────────────────────────────
+  namingMode: getInitialNamingMode(),
+
+  setNamingMode: (mode) => {
+    try {
+      localStorage.setItem(NAMING_MODE_KEY, mode);
+    } catch {
+      // localStorage unavailable — the mode still applies for this session
+    }
+    // Re-validate immediately so the sidebar reflects the new rules.
+    const errors = validateOntology(get().ontology, mode);
+    set({ namingMode: mode, validationErrors: errors, _lastValidatedAt: Date.now() });
+  },
 
   // ─ Metadata ─────────────────────────────────────────────────────────────
   setOntologyName: (name) =>
@@ -454,7 +588,7 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
     set({ ontology: emptyOntology(), _past: [], _future: [], selectedEntityId: null, selectedRelationshipId: null, validationErrors: [] }),
 
   validate: () => {
-    const errors = validateOntology(get().ontology);
+    const errors = validateOntology(get().ontology, get().namingMode);
     set({ validationErrors: errors, _lastValidatedAt: Date.now() });
     return errors;
   },

@@ -33,6 +33,7 @@ import { navigate } from './lib/router';
 import { decodeSharePayload } from './lib/shareCodec';
 import type { Catalogue } from './types/catalogue';
 import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Database, Palette, FileText } from 'lucide-react';
+import { useT } from './i18n';
 import './styles/app.css';
 
 const AI_BUILDER_ENABLED = import.meta.env.VITE_ENABLE_AI_BUILDER === 'true';
@@ -42,6 +43,7 @@ const NLBuilderModal = AI_BUILDER_ENABLED
   : null;
 
 function App() {
+  const t = useT();
   const route = useRoute();
 
   const [showWelcome, setShowWelcome] = useState(false);
@@ -168,16 +170,16 @@ function App() {
 
   // ── Command palette items ──────────────────────────────
   const commands = useMemo<CommandItem[]>(() => [
-    { id: 'catalogue', label: 'Open Catalogue', icon: <LayoutGrid size={18} />, action: openGallery },
-    { id: 'designer', label: 'Open Designer', icon: <PenTool size={18} />, action: openDesigner },
-    { id: 'learn', label: 'Open Ontology School', icon: <BookOpen size={18} />, action: openLearn },
-    { id: 'import-export', label: 'Import / Export', icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
-    { id: 'summary', label: 'View Summary', icon: <FileText size={18} />, action: () => setShowSummary(true) },
-    { id: 'about', label: 'About & Trademark Notice', icon: <Info size={18} />, action: () => setShowAbout(true) },
-    { id: 'help', label: 'Help', icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
-    { id: 'data-sources', label: 'Data Sources', icon: <Database size={18} />, action: () => setShowDataSources(true) },
-    { id: 'theme', label: 'Switch Theme', icon: <Palette size={18} />, action: cycleTheme },
-  ], [openGallery, openDesigner, openLearn, cycleTheme]);
+    { id: 'catalogue', label: t('cmd.catalogue'), icon: <LayoutGrid size={18} />, action: openGallery },
+    { id: 'designer', label: t('cmd.designer'), icon: <PenTool size={18} />, action: openDesigner },
+    { id: 'learn', label: t('cmd.learn'), icon: <BookOpen size={18} />, action: openLearn },
+    { id: 'import-export', label: t('cmd.importExport'), icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
+    { id: 'summary', label: t('cmd.summary'), icon: <FileText size={18} />, action: () => setShowSummary(true) },
+    { id: 'about', label: t('cmd.about'), icon: <Info size={18} />, action: () => setShowAbout(true) },
+    { id: 'help', label: t('cmd.help'), icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
+    { id: 'data-sources', label: t('cmd.dataSources'), icon: <Database size={18} />, action: () => setShowDataSources(true) },
+    { id: 'theme', label: t('cmd.theme'), icon: <Palette size={18} />, action: cycleTheme },
+  ], [openGallery, openDesigner, openLearn, cycleTheme, t]);
 
   // Full-page views
   if (route.page === 'designer') {

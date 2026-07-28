@@ -54,7 +54,10 @@ describe('catalogue compilation (end-to-end)', () => {
     expect(output.count).toBe(output.entries.length);
     expect(output.entries.length).toBeGreaterThan(0);
     expect(output.generatedAt).toBeTruthy();
-  });
+    // Spawning tsx and compiling the whole catalogue takes ~7s on Windows;
+    // the execSync call above already allows 30s, so match it here rather
+    // than letting vitest's 5s default fail a build that actually succeeded.
+  }, 30000);
 
   it('catalogue.json entries have required fields', () => {
     const output = readCatalogue();

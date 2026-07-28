@@ -5,6 +5,7 @@ import { useAppStore } from '../store/appStore';
 import { serializeToRDF } from '../lib/rdf/serializer';
 import { parseRDF, RDFParseError } from '../lib/rdf/parser';
 import type { Ontology, DataBinding } from '../data/ontology';
+import { useT, translate } from '../i18n';
 
 const LEGACY_FORMATS_ENABLED = import.meta.env.VITE_ENABLE_LEGACY_FORMATS === 'true';
 
@@ -44,6 +45,7 @@ const sampleSchema = `{
 }`;
 
 export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalProps) {
+  const t = useT();
   const { currentOntology, dataBindings, loadOntology, resetToDefault, exportOntology } = useAppStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -77,7 +79,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
           const parsed = JSON.parse(content);
 
           if (!parsed.ontology || !parsed.ontology.entityTypes || !parsed.ontology.relationships) {
-            throw new Error('Invalid ontology structure. Must have ontology.entityTypes and ontology.relationships.');
+            throw new Error(translate('io.invalidStructure'));
           }
 
           ontology = parsed.ontology;
@@ -105,7 +107,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
         if (err instanceof RDFParseError) {
           setErrorMessage(`RDF parse error: ${err.message}`);
         } else {
-          setErrorMessage(err instanceof Error ? err.message : 'Failed to parse file');
+          setErrorMessage(err instanceof Error ? err.message : translate('io.parseFailed'));
         }
       }
     };
@@ -254,7 +256,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>
-            <h2 style={{ fontSize: 24, fontWeight: 600 }}>Import / Export Ontology</h2>
+            <h2 style={{ fontSize: 24, fontWeight: 600 }}>{t('io.title')}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
               Load your own ontology or export the current one
             </p>
@@ -275,7 +277,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
           alignItems: 'center'
         }}>
           <div>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 4 }}>Currently Loaded</div>
+            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 4 }}>{t('io.currentlyLoaded')}</div>
             <div style={{ fontSize: 16, fontWeight: 600 }}>{currentOntology.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
               {currentOntology.entityTypes.length} entity types, {currentOntology.relationships.length} relationships
@@ -304,7 +306,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
             color: 'var(--ms-green)'
           }}>
             <CheckCircle size={18} />
-            <span>Ontology loaded successfully!</span>
+            <span>{t('io.loadedOk')}</span>
           </div>
         )}
 
@@ -368,9 +370,9 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
             }}>
               <Upload size={24} color="var(--ms-blue)" />
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Import Ontology</div>
+            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{t('io.importOntology')}</div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
-              {LEGACY_FORMATS_ENABLED ? 'Drop JSON or RDF/OWL file here' : 'Drop RDF/OWL (.rdf, .owl, .iq) file here'}
+              {LEGACY_FORMATS_ENABLED ? t('io.dropJsonOrRdf') : t('io.dropRdf')}
             </div>
           </div>
 
@@ -395,7 +397,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
             }}>
               <Download size={24} color="var(--ms-green)" />
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Export Current</div>
+            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>{t('io.exportCurrent')}</div>
             
             {/* Format Selector — only shown when legacy formats are enabled */}
             {LEGACY_FORMATS_ENABLED && (
@@ -468,7 +470,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
                     alignItems: 'center',
                     gap: 4
                   }}
-                  title="RDF/XML format for MS Fabric"
+                  title={t('io.rdfFormatTitle')}
                 >
                   <Share2 size={12} />
                   RDF
@@ -481,7 +483,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
               onClick={handleExport}
               style={{ width: '100%' }}
             >
-              {LEGACY_FORMATS_ENABLED ? `Download .${exportFormat}` : 'Download RDF/OWL'}
+              {LEGACY_FORMATS_ENABLED ? `Download .${exportFormat}` : t('io.downloadRdf')}
             </button>
 
             {onFabricPush && (
@@ -518,7 +520,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
                 onClick={handleCopySchema}
               >
                 <Copy size={12} style={{ marginRight: 4 }} />
-                {copied ? 'Copied!' : 'Copy'}
+                {copied ? t('common.copied') : t('common.copy')}
               </button>
             </div>
             <pre style={{ 

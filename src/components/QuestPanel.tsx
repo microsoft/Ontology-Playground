@@ -1,8 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/appStore';
 import { Trophy, Star, X, CheckCircle, Lightbulb, Target } from 'lucide-react';
+import { useT } from '../i18n';
 
 export function QuestPanel() {
+  const t = useT();
   const {
     availableQuests,
     activeQuest,
@@ -19,7 +21,7 @@ export function QuestPanel() {
       <div className="panel-header">
         <h3 className="panel-title">
           <Target size={16} style={{ marginRight: 8 }} />
-          Quests
+          {t('quest.title')}
         </h3>
       </div>
 
@@ -71,7 +73,7 @@ export function QuestPanel() {
             <div className="quest-actions">
               <button className="btn btn-secondary" onClick={abandonQuest}>
                 <X size={16} />
-                Abandon
+                {t('quest.abandon')}
               </button>
             </div>
           </motion.div>
@@ -98,14 +100,14 @@ export function QuestPanel() {
                   {quest.title}
                 </span>
                 <span className={`quest-badge ${quest.difficulty}`}>
-                  {quest.difficulty}
+                  {t(`quest.${quest.difficulty}`)}
                 </span>
               </div>
               <p className="quest-description">{quest.description}</p>
               <div className="quest-reward">
                 <Trophy size={14} />
                 <span>{quest.reward.badgeIcon} {quest.reward.badge}</span>
-                <span className="quest-points">+{quest.reward.points} pts</span>
+                <span className="quest-points">{t('quest.points', { count: quest.reward.points })}</span>
               </div>
             </motion.div>
           );
@@ -117,7 +119,7 @@ export function QuestPanel() {
         <div className="badges-panel">
           <div className="section-title">
             <Star size={14} />
-            Earned Badges ({earnedBadges.length})
+            {t('quest.earnedBadges', { count: earnedBadges.length })}
           </div>
           <div className="badges-grid">
             {earnedBadges.map((badge, index) => (
@@ -134,7 +136,7 @@ export function QuestPanel() {
             ))}
           </div>
           <div style={{ marginTop: 8, fontSize: 12, color: 'var(--ms-yellow)', fontWeight: 600 }}>
-            Total: {totalPoints} points
+            {t('quest.total', { count: totalPoints })}
           </div>
         </div>
       )}

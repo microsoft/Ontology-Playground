@@ -6,12 +6,14 @@ import { navigate } from '../lib/router';
 import { EntityForm, RelationshipForm, DesignerPreview, DesignerToolbar, DesignerValidation, TemplatePicker } from './designer';
 import type { Catalogue } from '../types/catalogue';
 import type { Route } from '../lib/router';
+import { useT } from '../i18n';
 
 interface OntologyDesignerProps {
   route: Route & { page: 'designer' };
 }
 
 export function OntologyDesigner({ route }: OntologyDesignerProps) {
+  const t = useT();
   const { ontology, setOntologyName, setOntologyDescription, loadDraft, undo, redo } = useDesignerStore();
   const theme = useAppStore((s) => s.theme);
   const isEmpty = ontology.entityTypes.length === 0 && ontology.relationships.length === 0;
@@ -57,7 +59,7 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
       {/* Top bar */}
       <div className="designer-topbar">
         <button className="designer-back-btn" onClick={() => navigate({ page: 'home' })}>
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} /> {t('common.back')}
         </button>
         <div className="designer-meta-fields">
           <input
@@ -65,14 +67,14 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
             type="text"
             value={ontology.name}
             onChange={(e) => setOntologyName(e.target.value)}
-            placeholder="Ontology name"
+            placeholder={t('designer.ontologyNamePlaceholder')}
           />
           <input
             className="designer-meta-desc"
             type="text"
             value={ontology.description}
             onChange={(e) => setOntologyDescription(e.target.value)}
-            placeholder="Description"
+            placeholder={t('designer.descriptionPlaceholder')}
           />
         </div>
         <DesignerToolbar />

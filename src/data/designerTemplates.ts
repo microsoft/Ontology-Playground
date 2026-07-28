@@ -5,11 +5,14 @@
  * relationships) so users don't face a blank page when they open the designer.
  */
 import type { Ontology } from './ontology';
+import type { TranslationKey } from '../i18n';
 
 export interface DesignerTemplate {
   id: string;
-  label: string;
-  description: string;
+  /** i18n key for the picker label. */
+  labelKey: TranslationKey;
+  /** i18n key for the picker blurb. */
+  descriptionKey: TranslationKey;
   icon: string;
   ontology: Ontology;
 }
@@ -17,8 +20,8 @@ export interface DesignerTemplate {
 export const designerTemplates: DesignerTemplate[] = [
   {
     id: 'retail',
-    label: 'Retail',
-    description: 'Customers, products, and orders',
+    labelKey: 'template.retail',
+    descriptionKey: 'template.retailDesc',
     icon: '🛒',
     ontology: {
       name: 'Retail Ontology',
@@ -71,8 +74,8 @@ export const designerTemplates: DesignerTemplate[] = [
   },
   {
     id: 'healthcare',
-    label: 'Healthcare',
-    description: 'Patients, providers, and encounters',
+    labelKey: 'template.healthcare',
+    descriptionKey: 'template.healthcareDesc',
     icon: '🏥',
     ontology: {
       name: 'Healthcare Ontology',
@@ -124,8 +127,8 @@ export const designerTemplates: DesignerTemplate[] = [
   },
   {
     id: 'finance',
-    label: 'Finance',
-    description: 'Accounts, transactions, and parties',
+    labelKey: 'template.finance',
+    descriptionKey: 'template.financeDesc',
     icon: '💰',
     ontology: {
       name: 'Finance Ontology',
@@ -178,8 +181,8 @@ export const designerTemplates: DesignerTemplate[] = [
   },
   {
     id: 'iot',
-    label: 'IoT',
-    description: 'Devices, sensors, and readings',
+    labelKey: 'template.iot',
+    descriptionKey: 'template.iotDesc',
     icon: '📡',
     ontology: {
       name: 'IoT Ontology',
@@ -231,8 +234,8 @@ export const designerTemplates: DesignerTemplate[] = [
   },
   {
     id: 'education',
-    label: 'Education',
-    description: 'Students, courses, and enrollments',
+    labelKey: 'template.education',
+    descriptionKey: 'template.educationDesc',
     icon: '🎓',
     ontology: {
       name: 'Education Ontology',
