@@ -502,4 +502,140 @@ describe('parseRDF', () => {
       expect(() => parseRDF('this is not xml at all')).toThrow(/Malformed XML|No ontology metadata/);
     });
   });
+
+  describe('rdfs:subClassOf hierarchy (#101)', () => {
+    // Taxonomy-shaped ontologies (e.g. Brick) carry their graph structure in
+    // rdfs:subClassOf rather than object-property domain/range pairs.
+    const hierarchyRdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+
+    <owl:Class rdf:about="http://example.org/h/Equipment">
+        <rdfs:label>Equipment</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/h/HVAC">
+        <rdfs:label>HVAC</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://example.org/h/Equipment"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/h/AHU">
+        <rdfs:label>AHU</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://example.org/h/HVAC"/>
+    </owl:Class>
+
+</rdf:RDF>`;
+
+    it('extracts subClassOf references as relationships', () => {
+      const { ontology } = parseRDF(hierarchyRdf);
+      expect(ontology.relationships).toHaveLength(2);
+      expect(ontology.relationships).toContainEqual({
+        id: 'hVAC-subClassOf-equipment',
+        name: 'subClassOf',
+        from: 'hVAC',
+        to: 'equipment',
+        cardinality: 'many-to-one',
+      });
+      expect(ontology.relationships).toContainEqual({
+        id: 'aHU-subClassOf-hVAC',
+        name: 'subClassOf',
+        from: 'aHU',
+        to: 'hVAC',
+        cardinality: 'many-to-one',
+      });
+    });
+
+    it('extracts subClassOf from rdf:Description-typed classes (Brick style)', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <rdf:Description rdf:about="http://example.org/h/Equipment">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <rdfs:label>Equipment</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://example.org/h/Fan">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <rdfs:label>Fan</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://example.org/h/Equipment"/>
+    </rdf:Description>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.relationships).toHaveLength(1);
+      expect(ontology.relationships[0]).toMatchObject({
+        name: 'subClassOf',
+        from: 'fan',
+        to: 'equipment',
+      });
+    });
+
+    it('supports multiple parents (multiple inheritance)', () => {
+      const rdf = hierarchyRdf.replace(
+        '<rdfs:subClassOf rdf:resource="http://example.org/h/HVAC"/>',
+        `<rdfs:subClassOf rdf:resource="http://example.org/h/HVAC"/>
+         <rdfs:subClassOf rdf:resource="http://example.org/h/Equipment"/>`
+      );
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.relationships).toHaveLength(3);
+      const ahuParents = ontology.relationships
+        .filter((r) => r.from === 'aHU')
+        .map((r) => r.to)
+        .sort();
+      expect(ahuParents).toEqual(['equipment', 'hVAC']);
+    });
+
+    it('skips references to classes not present in the document', () => {
+      const rdf = hierarchyRdf.replace(
+        'http://example.org/h/Equipment"/>',
+        'http://www.w3.org/2002/07/owl#Thing"/>'
+      );
+      const { ontology } = parseRDF(rdf);
+      // HVAC → owl:Thing dropped; AHU → HVAC kept
+      expect(ontology.relationships).toHaveLength(1);
+      expect(ontology.relationships[0]).toMatchObject({ from: 'aHU', to: 'hVAC' });
+    });
+
+    it('skips self-references and duplicate edges', () => {
+      const rdf = hierarchyRdf.replace(
+        '<rdfs:subClassOf rdf:resource="http://example.org/h/Equipment"/>',
+        `<rdfs:subClassOf rdf:resource="http://example.org/h/Equipment"/>
+         <rdfs:subClassOf rdf:resource="http://example.org/h/Equipment"/>
+         <rdfs:subClassOf rdf:resource="http://example.org/h/HVAC"/>`
+      );
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.relationships).toHaveLength(2);
+    });
+
+    it('ignores nested owl:Restriction subClassOf nodes', () => {
+      const rdf = hierarchyRdf.replace(
+        '<rdfs:subClassOf rdf:resource="http://example.org/h/HVAC"/>',
+        `<rdfs:subClassOf rdf:resource="http://example.org/h/HVAC"/>
+         <rdfs:subClassOf>
+           <owl:Restriction>
+             <owl:onProperty rdf:resource="http://example.org/h/hasPart"/>
+             <owl:someValuesFrom rdf:resource="http://example.org/h/Equipment"/>
+           </owl:Restriction>
+         </rdfs:subClassOf>`
+      );
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.relationships).toHaveLength(2);
+    });
+
+    it('coexists with object-property relationships', () => {
+      const rdf = hierarchyRdf.replace(
+        '</rdf:RDF>',
+        `<owl:ObjectProperty rdf:about="http://example.org/h/feeds">
+           <rdfs:label>feeds</rdfs:label>
+           <rdfs:domain rdf:resource="http://example.org/h/AHU"/>
+           <rdfs:range rdf:resource="http://example.org/h/HVAC"/>
+         </owl:ObjectProperty></rdf:RDF>`
+      );
+      const { ontology } = parseRDF(rdf);
+      expect(ontology.relationships).toHaveLength(3);
+      expect(ontology.relationships.map((r) => r.name)).toContain('feeds');
+    });
+  });
 });

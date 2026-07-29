@@ -61,6 +61,25 @@ function getChildResource(
 }
 
 /**
+ * Get all rdf:resource attribute values from children with a given local name.
+ * Children without an rdf:resource attribute (e.g. nested owl:Restriction
+ * nodes) are ignored.
+ */
+function getChildResources(parent: Element, localName: string): string[] {
+  const results: string[] = [];
+  for (let i = 0; i < parent.children.length; i++) {
+    const child = parent.children[i];
+    const childLocal = child.localName || child.tagName.split(':').pop();
+    if (childLocal !== localName) continue;
+    const resource =
+      child.getAttribute('rdf:resource') ||
+      child.getAttributeNS(RDF_NS, 'resource');
+    if (resource) results.push(resource);
+  }
+  return results;
+}
+
+/**
  * Get all text values from children with a given local name.
  */
 function getChildTexts(parent: Element, localName: string): string[] {
@@ -363,6 +382,42 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
     if (!rel.from || !rel.to) continue;
 
     relationships.push(rel);
+  }
+
+  // --- Extract rdfs:subClassOf hierarchy → Relationships (#101) ---
+  // Many published ontologies (e.g. Brick) carry little or no
+  // rdfs:domain/rdfs:range on their object properties; their dominant graph
+  // structure is the class taxonomy. Surface it as relationships so imported
+  // hierarchies are visible instead of rendering as disconnected nodes.
+  const seenSubClassEdges = new Set<string>();
+
+  for (let i = 0; i < classEls.length; i++) {
+    const el = classEls[i];
+    const about = el.getAttribute('rdf:about') || el.getAttributeNS(RDF_NS, 'about') || '';
+    if (!about) continue;
+
+    const subEntity = entityMap.get(about);
+    if (!subEntity) continue;
+
+    const superUris = getChildResources(el, 'subClassOf');
+    for (const superUri of superUris) {
+      // Only link classes that were imported as entities; skip external
+      // references (owl:Thing, other vocabularies) and self-references.
+      const superEntity = entityMap.get(superUri);
+      if (!superEntity || superEntity === subEntity) continue;
+
+      const edgeKey = `${subEntity.id}\u0000${superEntity.id}`;
+      if (seenSubClassEdges.has(edgeKey)) continue;
+      seenSubClassEdges.add(edgeKey);
+
+      relationships.push({
+        id: `${subEntity.id}-subClassOf-${superEntity.id}`,
+        name: 'subClassOf',
+        from: subEntity.id,
+        to: superEntity.id,
+        cardinality: 'many-to-one',
+      });
+    }
   }
 
   // --- Extract DataBindings ---
