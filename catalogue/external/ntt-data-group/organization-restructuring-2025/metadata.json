@@ -1,0 +1,8 @@
+{
+  "name": "NTT DATA Group Organization Structure 2025",
+  "description": "Models the public organizational structure of NTT DATA Group and NTT DATA as of July 1, 2025, including governance, corporate functions, business fields, and regional companies.",
+  "icon": "🏢",
+  "category": "general",
+  "tags": ["organization", "governance", "enterprise-architecture", "ntt-data", "japan"],
+  "author": "NTT DATA Group public-information model"
+}

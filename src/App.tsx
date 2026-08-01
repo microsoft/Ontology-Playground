@@ -23,7 +23,8 @@ import {
   isTourDismissed,
   AppFooter,
   OntologyStatsPanel,
-  PathFinderPanel
+  PathFinderPanel,
+  OrganizationDashboard
 } from './components';
 import type { CommandItem } from './components';
 import { useAppStore, themeClass, THEME_OPTIONS } from './store/appStore';
@@ -185,6 +186,9 @@ function App() {
   }
   if (route.page === 'learn') {
     return <LearnPage route={route} />;
+  }
+  if (route.page === 'organization-dashboard') {
+    return <OrganizationDashboard organizationId={route.organizationId} />;
   }
 
   return (

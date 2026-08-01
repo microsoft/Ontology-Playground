@@ -24,6 +24,31 @@ Cytoscape.js-powered graph that renders any ontology as an interactive
 node-and-edge diagram. Pan, zoom, click nodes to inspect properties, and use
 the live search bar to filter entities and relationships.
 
+### Provenance-Aware Research Paths
+
+The temporal organization demo models a research question, its target
+organization, the artifacts to retrieve, extracted claims, and proposed
+initiatives as RDF nodes. Query intent controls source traversal order: a
+registered internal alias (for example, `AIS`) always resolves to its internal
+route first, even when the question does not explicitly say "internal". Other
+internal/current-conversation requests also prioritize Slack, while decisions,
+implementation work, and official facts prioritize Notion, GitHub, and
+official sources respectively. Source status and confidence remain visible so
+fictional demo artifacts are never presented as factual evidence.
+Stable search aliases and source routes can also be modeled—for example,
+`AIストラテジー推進部` / `AIS` routes a current-status inquiry to Slack—without
+copying volatile message contents into the ontology.
+
+### Portable Organization Packs
+
+The organization dashboard is a reusable RDF/XML middle layer rather than an
+NTT DATA-specific screen. Each organization supplies an `organization-pack.rdf`
+profile and a graph RDF file; the standard dashboard provides the Cytoscape
+visualization, period filters, organization hierarchy, research routes,
+provenance inspector, and source links. Packs can point to GitHub, Slack,
+Notion, or other organization-specific systems without changing React code.
+See the [Organization Pack Guide](docs/organization-pack-guide.md).
+
 ### Ontology Catalogue
 
 A curated library of official and community-contributed ontologies spanning six
@@ -124,6 +149,8 @@ Client-side hash routing with shareable URLs for every page:
 | `/#/learn` | Ontology School — course catalogue |
 | `/#/learn/<course>` | Course detail — article list |
 | `/#/learn/<course>/<article>` | Article view (with presentation mode) |
+| `/#/organization-dashboard` | Default organization-pack graph dashboard |
+| `/#/organization-dashboard/<organization>` | Organization-specific RDF/XML graph dashboard (for example, `ntt-data`) |
 
 ## Official Ontologies
 
@@ -164,9 +191,9 @@ Visit http://localhost:5173
 npm run build
 ```
 
-The build pipeline compiles the catalogue, compiles learning content markdown,
-type-checks, bundles the app, and builds the embed widget. Output is in
-`build/`.
+The build pipeline compiles the catalogue and organization-pack registry,
+compiles learning content markdown, type-checks, bundles the app, and builds
+the embed widget. Output is in `build/`.
 
 ### Running Tests
 

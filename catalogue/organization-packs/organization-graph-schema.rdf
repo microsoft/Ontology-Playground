@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xmlns:org="https://ontology-playground.example/organization-graph#">
+  <owl:Ontology rdf:about="https://ontology-playground.example/organization-graph">
+    <rdfs:label>Organization Graph Middle Layer</rdfs:label>
+    <rdfs:comment>Standard portable vocabulary for temporal organization structures, research paths, external artifacts, claims, and provenance.</rdfs:comment>
+  </owl:Ontology>
+
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#Organization"><rdfs:label>Organization</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#OrganizationSnapshot"><rdfs:label>OrganizationSnapshot</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#OrganizationalUnit"><rdfs:label>OrganizationalUnit</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#SourceDocument"><rdfs:label>SourceDocument</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#InformationArtifact"><rdfs:label>InformationArtifact</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#ResearchQuestion"><rdfs:label>ResearchQuestion</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#Initiative"><rdfs:label>Initiative</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#Claim"><rdfs:label>Claim</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#ChangeHypothesis"><rdfs:label>ChangeHypothesis</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#MarketRelationship"><rdfs:label>MarketRelationship</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#Market"><rdfs:label>Market</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-graph#EcosystemCompany"><rdfs:label>EcosystemCompany</rdfs:label></owl:Class>
+
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#observedYears"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#effectiveDate"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#artifactUrl"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#platform"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#status"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#confidence"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#questionText"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#publishedAt"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#retrievedAt"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-graph#searchTerm"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#hasSnapshot"><rdfs:label>has snapshot</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#hasUnit"><rdfs:label>has unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#parentUnit"><rdfs:label>parent unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#supportedBy"><rdfs:label>supported by</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#aboutUnit"><rdfs:label>about unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#retrievesFrom"><rdfs:label>retrieves from</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#mentions"><rdfs:label>mentions</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#asserts"><rdfs:label>asserts</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#discusses"><rdfs:label>discusses</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#documents"><rdfs:label>documents</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#implements"><rdfs:label>implements</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#beforeUnit"><rdfs:label>before unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#afterUnit"><rdfs:label>after unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#trackedBy"><rdfs:label>tracked by</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#companyA"><rdfs:label>company A</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#companyB"><rdfs:label>company B</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://ontology-playground.example/organization-graph#inMarket"><rdfs:label>in market</rdfs:label></owl:ObjectProperty>
+</rdf:RDF>

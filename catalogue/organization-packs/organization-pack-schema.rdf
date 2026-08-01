@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xmlns:pack="https://ontology-playground.example/organization-pack#">
+  <owl:Ontology rdf:about="https://ontology-playground.example/organization-pack">
+    <rdfs:label>Organization Pack Profile</rdfs:label>
+    <rdfs:comment>Portable configuration vocabulary for organization graph dashboards backed by RDF/XML.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:about="https://ontology-playground.example/organization-pack#OrganizationPack"><rdfs:label>OrganizationPack</rdfs:label></owl:Class>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-pack#packId"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-pack#dataFile"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-pack#dashboardTitle"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-pack#dashboardSubtitle"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-pack#disclaimer"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-pack#defaultView"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://ontology-playground.example/organization-pack#isDefault"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/></owl:DatatypeProperty>
+</rdf:RDF>

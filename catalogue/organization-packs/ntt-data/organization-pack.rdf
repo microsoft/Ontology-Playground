@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xmlns:pack="https://ontology-playground.example/organization-pack#">
+  <owl:Ontology rdf:about="https://example.org/organization-pack/ntt-data">
+    <owl:imports rdf:resource="https://ontology-playground.example/organization-pack"/>
+  </owl:Ontology>
+  <pack:OrganizationPack rdf:about="https://example.org/organization-pack/ntt-data#profile">
+    <pack:packId>ntt-data</pack:packId>
+    <rdfs:label>NTT DATA</rdfs:label>
+    <rdfs:comment>NTT DATAを例に、組織時系列とGitHub・Slack・Notionの探索動線を統合するデモパック。</rdfs:comment>
+    <pack:dataFile>catalogue/external/ntt-data-group/organization-evolution-2025-2026/organization-evolution-2025-2026.rdf</pack:dataFile>
+    <pack:dashboardTitle>Temporal organization &amp; evidence graph</pack:dashboardTitle>
+    <pack:dashboardSubtitle>組織変化と分散した根拠をRDFで統合</pack:dashboardSubtitle>
+    <pack:disclaimer>架空の検証環境です。組織事実はNTT DATAの公開資料を参照し、Slack・Notion・GitHubの内容はオントロジー効果を確認するためのダミーデータです。変更仮説と競合候補は公式見解ではありません。</pack:disclaimer>
+    <pack:defaultView>all</pack:defaultView>
+    <pack:isDefault rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</pack:isDefault>
+  </pack:OrganizationPack>
+</rdf:RDF>

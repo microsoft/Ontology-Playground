@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "catalogue:build": "tsx scripts/compile-catalogue.ts",
+    "organization-packs:build": "tsx scripts/compile-organization-packs.ts",
     "learn:build": "tsx scripts/compile-learn.ts",
-    "build": "npm run catalogue:build && npm run learn:build && tsc -b && vite build && npm run build:embed",
+    "build": "npm run catalogue:build && npm run organization-packs:build && npm run learn:build && tsc -b && vite build && npm run build:embed",
     "build:embed": "vite build --config vite.config.embed.ts",
     "lint": "eslint .",
     "hooks:install": "git config core.hooksPath .githooks",

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xmlns:evo="https://example.org/ontology/ntt-data-evolution/">
+
+  <owl:Ontology rdf:about="https://example.org/ontology/ntt-data-evolution">
+    <rdfs:label>NTT DATA Organization Evolution 2025-2026</rdfs:label>
+    <rdfs:comment>Fictional ontology demonstration. Organization facts are derived from cited public sources. Slack conversations, Notion documents, and GitHub tasks are demonstration artifacts and are not official NTT DATA records.</rdfs:comment>
+    <owl:versionInfo>2026-08-01</owl:versionInfo>
+  </owl:Ontology>
+
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/Organization"><rdfs:label>Organization</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/OrganizationSnapshot"><rdfs:label>OrganizationSnapshot</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/OrganizationalUnit"><rdfs:label>OrganizationalUnit</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/SourceDocument"><rdfs:label>SourceDocument</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/InformationArtifact"><rdfs:label>InformationArtifact</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/ResearchQuestion"><rdfs:label>ResearchQuestion</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/Initiative"><rdfs:label>Initiative</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/Claim"><rdfs:label>Claim</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/ChangeHypothesis"><rdfs:label>ChangeHypothesis</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/MarketRelationship"><rdfs:label>MarketRelationship</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/Market"><rdfs:label>Market</rdfs:label></owl:Class>
+  <owl:Class rdf:about="https://example.org/ontology/ntt-data-evolution/EcosystemCompany"><rdfs:label>EcosystemCompany</rdfs:label></owl:Class>
+
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/organization_id"><rdfs:label>organization_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/Organization"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/snapshot_id"><rdfs:label>snapshot_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/OrganizationSnapshot"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/unit_id"><rdfs:label>unit_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/OrganizationalUnit"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/source_id"><rdfs:label>source_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/SourceDocument"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/artifact_id"><rdfs:label>artifact_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/InformationArtifact"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/change_id"><rdfs:label>change_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/ChangeHypothesis"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/relationship_id"><rdfs:label>relationship_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/MarketRelationship"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/market_id"><rdfs:label>market_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/Market"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/company_id"><rdfs:label>company_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/EcosystemCompany"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/query_id"><rdfs:label>query_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/ResearchQuestion"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/initiative_id"><rdfs:label>initiative_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/Initiative"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/claim_id"><rdfs:label>claim_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-evolution/Claim"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><evo:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</evo:isIdentifier></owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/effectiveDate"><rdfs:label>effective_date</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/observedYears"><rdfs:label>observed_years</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/artifactUrl"><rdfs:label>artifact_url</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/platform"><rdfs:label>platform</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/confidence"><rdfs:label>confidence</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/status"><rdfs:label>status</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/questionText"><rdfs:label>question_text</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/publishedAt"><rdfs:label>published_at</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/retrievedAt"><rdfs:label>retrieved_at</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-evolution/searchTerm"><rdfs:label>search_term</rdfs:label><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/></owl:DatatypeProperty>
+
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/hasSnapshot"><rdfs:label>has snapshot</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/hasUnit"><rdfs:label>has unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/supportedBy"><rdfs:label>supported by</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/discusses"><rdfs:label>discusses</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/documents"><rdfs:label>documents</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/implements"><rdfs:label>implements</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/beforeUnit"><rdfs:label>before unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/afterUnit"><rdfs:label>after unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/companyA"><rdfs:label>company A</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/companyB"><rdfs:label>company B</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/inMarket"><rdfs:label>in market</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/trackedBy"><rdfs:label>tracked by</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/parentUnit"><rdfs:label>parent unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/aboutUnit"><rdfs:label>about unit</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/retrievesFrom"><rdfs:label>retrieves from</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/mentions"><rdfs:label>mentions</rdfs:label></owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-evolution/asserts"><rdfs:label>asserts</rdfs:label></owl:ObjectProperty>
+
+  <evo:Organization rdf:about="https://example.org/ontology/ntt-data-evolution/ntt-data">
+    <rdfs:label>株式会社NTTデータ</rdfs:label>
+    <evo:observedYears>2025,2026</evo:observedYears>
+    <evo:hasSnapshot rdf:resource="https://example.org/ontology/ntt-data-evolution/snapshot-2025"/>
+    <evo:hasSnapshot rdf:resource="https://example.org/ontology/ntt-data-evolution/snapshot-2026"/>
+  </evo:Organization>
+
+  <evo:OrganizationSnapshot rdf:about="https://example.org/ontology/ntt-data-evolution/snapshot-2025">
+    <rdfs:label>NTTデータ組織 2025-07-01</rdfs:label>
+    <evo:effectiveDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-07-01</evo:effectiveDate>
+    <evo:observedYears>2025</evo:observedYears>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2025-reorganization"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/public-field"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/corporate-field"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/tcs-field-2025"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/consulting-hq-2025"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/system-integration-hq-2025"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/fourth-public-hq-2025"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/social-infrastructure-hq-2025"/>
+  </evo:OrganizationSnapshot>
+
+  <evo:OrganizationSnapshot rdf:about="https://example.org/ontology/ntt-data-evolution/snapshot-2026">
+    <rdfs:label>NTTデータ組織 2026-07-01</rdfs:label>
+    <evo:effectiveDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2026-07-01</evo:effectiveDate>
+    <evo:observedYears>2026</evo:observedYears>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/public-field"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/corporate-field"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/consulting-segment-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/technology-segment-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/strategy-consulting-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/technology-business-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/ai-business-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/infrastructure-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/social-dx-consulting-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/business-engineering-integration-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/eas-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/corporate-planning-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/audit-department-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/first-public-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/second-public-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/third-public-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/telecom-utility-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/first-financial-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/second-financial-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/third-financial-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-innovation-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-advanced-tech-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/first-industry-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/second-industry-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/corporate-consulting-hq-2026"/>
+    <evo:hasUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/payment-hq-2026"/>
+  </evo:OrganizationSnapshot>
+
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/public-field"><rdfs:label>公共・社会基盤分野</rdfs:label><evo:observedYears>2025,2026</evo:observedYears></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/financial-field"><rdfs:label>金融分野</rdfs:label><evo:observedYears>2025,2026</evo:observedYears></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/corporate-field"><rdfs:label>法人分野</rdfs:label><evo:observedYears>2025,2026</evo:observedYears></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/tcs-field-2025"><rdfs:label>テクノロジーコンサルティング＆ソリューション分野</rdfs:label><evo:observedYears>2025</evo:observedYears></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/consulting-hq-2025"><rdfs:label>コンサルティング事業本部</rdfs:label><evo:observedYears>2025</evo:observedYears></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/system-integration-hq-2025"><rdfs:label>システムインテグレーション事業本部</rdfs:label><evo:observedYears>2025</evo:observedYears></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/fourth-public-hq-2025"><rdfs:label>第四公共事業本部</rdfs:label><evo:observedYears>2025</evo:observedYears></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/social-infrastructure-hq-2025"><rdfs:label>社会基盤ソリューション事業本部</rdfs:label><evo:observedYears>2025</evo:observedYears></evo:OrganizationalUnit>
+
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/consulting-segment-2026"><rdfs:label>コンサルティングセグメント</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/technology-segment-2026"><rdfs:label>テクノロジーセグメント</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/strategy-consulting-hq-2026"><rdfs:label>戦略コンサルティング事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/consulting-segment-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/technology-business-hq-2026"><rdfs:label>テクノロジービジネス事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/technology-segment-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/ai-business-hq-2026"><rdfs:label>AI事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/technology-segment-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/ai-strategy-promotion-department-2026"><rdfs:label>AIストラテジー推進部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:searchTerm>AIストラテジー推進部</evo:searchTerm><evo:searchTerm>AIS</evo:searchTerm><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/ai-business-hq-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/infrastructure-hq-2026"><rdfs:label>インフラストラクチャ事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/technology-segment-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/social-dx-consulting-hq-2026"><rdfs:label>社会DXコンサルティング事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/public-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/business-engineering-integration-hq-2026"><rdfs:label>ビジネスエンジニアリング＆インテグレーション事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/eas-hq-2026"><rdfs:label>EAS事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"/></evo:OrganizationalUnit>
+
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/corporate-planning-hq-2026"><rdfs:label>経営企画本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/audit-department-2026"><rdfs:label>監査部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/first-public-hq-2026"><rdfs:label>第一公共事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/public-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/second-public-hq-2026"><rdfs:label>第二公共事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/public-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/third-public-hq-2026"><rdfs:label>第三公共事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/public-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/telecom-utility-hq-2026"><rdfs:label>テレコム・ユーティリティ事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/public-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/first-financial-hq-2026"><rdfs:label>第一金融事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/second-financial-hq-2026"><rdfs:label>第二金融事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/third-financial-hq-2026"><rdfs:label>第三金融事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/financial-innovation-hq-2026"><rdfs:label>金融イノベーション本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/financial-advanced-tech-hq-2026"><rdfs:label>金融高度技術本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"><rdfs:label>インダストリ統括本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/corporate-field"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/first-industry-hq-2026"><rdfs:label>第一インダストリ事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/second-industry-hq-2026"><rdfs:label>第二インダストリ事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/corporate-consulting-hq-2026"><rdfs:label>コンサルティング事業本部（法人）</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"/></evo:OrganizationalUnit>
+  <evo:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-evolution/payment-hq-2026"><rdfs:label>ペイメント事業本部</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:parentUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"/></evo:OrganizationalUnit>
+
+  <evo:SourceDocument rdf:about="https://example.org/ontology/ntt-data-evolution/source-2025-reorganization">
+    <rdfs:label>2025年 組織再編について</rdfs:label><evo:observedYears>2025</evo:observedYears><evo:platform>NTT DATA公式</evo:platform><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://www.nttdata.com/global/ja/news/release/2025/050903/</evo:artifactUrl>
+  </evo:SourceDocument>
+  <evo:SourceDocument rdf:about="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart">
+    <rdfs:label>2026年7月1日付 NTTデータ組織図</rdfs:label><evo:observedYears>2026</evo:observedYears><evo:platform>NTT DATA公式</evo:platform><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://www.nttdata.com/jp/ja/about-us/organization/</evo:artifactUrl>
+  </evo:SourceDocument>
+
+  <evo:ChangeHypothesis rdf:about="https://example.org/ontology/ntt-data-evolution/change-tcs-to-segments">
+    <rdfs:label>テクノロジー領域の再構成仮説</rdfs:label><evo:status>observed</evo:status><evo:confidence>unconfirmed</evo:confidence>
+    <evo:beforeUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/tcs-field-2025"/>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/consulting-segment-2026"/>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/technology-segment-2026"/>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2025-reorganization"/>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/>
+    <evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-2"/>
+  </evo:ChangeHypothesis>
+
+  <evo:ChangeHypothesis rdf:about="https://example.org/ontology/ntt-data-evolution/change-ai-business-emergence">
+    <rdfs:label>AI事業本部の新設・再配置仮説</rdfs:label><evo:status>observed</evo:status><evo:confidence>unconfirmed</evo:confidence>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/ai-business-hq-2026"/>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/>
+    <evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-6"/>
+  </evo:ChangeHypothesis>
+
+  <evo:ChangeHypothesis rdf:about="https://example.org/ontology/ntt-data-evolution/change-public-reconfiguration">
+    <rdfs:label>公共・社会基盤領域の再構成仮説</rdfs:label><evo:status>observed</evo:status><evo:confidence>unconfirmed</evo:confidence>
+    <evo:beforeUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/fourth-public-hq-2025"/>
+    <evo:beforeUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/social-infrastructure-hq-2025"/>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/social-dx-consulting-hq-2026"/>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/first-public-hq-2026"/>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/second-public-hq-2026"/>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/third-public-hq-2026"/>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/telecom-utility-hq-2026"/>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2025-reorganization"/>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/>
+    <evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-7"/>
+  </evo:ChangeHypothesis>
+
+  <evo:ChangeHypothesis rdf:about="https://example.org/ontology/ntt-data-evolution/change-consulting-specialization">
+    <rdfs:label>コンサルティング機能の専門化仮説</rdfs:label><evo:status>observed</evo:status><evo:confidence>unconfirmed</evo:confidence>
+    <evo:beforeUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/consulting-hq-2025"/>
+    <evo:afterUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/strategy-consulting-hq-2026"/>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2025-reorganization"/>
+    <evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/source-2026-org-chart"/>
+    <evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-2"/>
+  </evo:ChangeHypothesis>
+
+  <evo:Market rdf:about="https://example.org/ontology/ntt-data-evolution/consulting-market"><rdfs:label>コンサルティング市場</rdfs:label></evo:Market>
+  <evo:Market rdf:about="https://example.org/ontology/ntt-data-evolution/system-integration-market"><rdfs:label>システムインテグレーション市場</rdfs:label></evo:Market>
+  <evo:Market rdf:about="https://example.org/ontology/ntt-data-evolution/public-it-market"><rdfs:label>公共IT市場</rdfs:label></evo:Market>
+  <evo:Market rdf:about="https://example.org/ontology/ntt-data-evolution/cloud-ai-market"><rdfs:label>クラウド・AI市場</rdfs:label></evo:Market>
+  <evo:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-evolution/accenture"><rdfs:label>Accenture</rdfs:label></evo:EcosystemCompany>
+  <evo:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-evolution/deloitte"><rdfs:label>Deloitte</rdfs:label></evo:EcosystemCompany>
+  <evo:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-evolution/ibm"><rdfs:label>IBM</rdfs:label></evo:EcosystemCompany>
+  <evo:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-evolution/fujitsu"><rdfs:label>富士通</rdfs:label></evo:EcosystemCompany>
+  <evo:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-evolution/nec"><rdfs:label>NEC</rdfs:label></evo:EcosystemCompany>
+  <evo:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-evolution/capgemini"><rdfs:label>Capgemini</rdfs:label></evo:EcosystemCompany>
+  <evo:MarketRelationship rdf:about="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-accenture-consulting">
+    <rdfs:label>NTT DATAとAccentureの競合候補</rdfs:label><evo:status>research-candidate</evo:status><evo:confidence>unverified</evo:confidence>
+    <evo:companyA rdf:resource="https://example.org/ontology/ntt-data-evolution/ntt-data"/>
+    <evo:companyB rdf:resource="https://example.org/ontology/ntt-data-evolution/accenture"/>
+    <evo:inMarket rdf:resource="https://example.org/ontology/ntt-data-evolution/consulting-market"/>
+    <evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-3"/>
+  </evo:MarketRelationship>
+
+  <evo:MarketRelationship rdf:about="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-deloitte-consulting">
+    <rdfs:label>NTT DATAとDeloitteの競合候補</rdfs:label><evo:status>research-candidate</evo:status><evo:confidence>unverified</evo:confidence>
+    <evo:companyA rdf:resource="https://example.org/ontology/ntt-data-evolution/ntt-data"/><evo:companyB rdf:resource="https://example.org/ontology/ntt-data-evolution/deloitte"/><evo:inMarket rdf:resource="https://example.org/ontology/ntt-data-evolution/consulting-market"/><evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-3"/>
+  </evo:MarketRelationship>
+  <evo:MarketRelationship rdf:about="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-ibm-cloud-ai">
+    <rdfs:label>NTT DATAとIBMの競合・協業調査候補</rdfs:label><evo:status>research-candidate</evo:status><evo:confidence>unverified</evo:confidence>
+    <evo:companyA rdf:resource="https://example.org/ontology/ntt-data-evolution/ntt-data"/><evo:companyB rdf:resource="https://example.org/ontology/ntt-data-evolution/ibm"/><evo:inMarket rdf:resource="https://example.org/ontology/ntt-data-evolution/cloud-ai-market"/><evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-3"/>
+  </evo:MarketRelationship>
+  <evo:MarketRelationship rdf:about="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-fujitsu-si">
+    <rdfs:label>NTT DATAと富士通の競合候補</rdfs:label><evo:status>research-candidate</evo:status><evo:confidence>unverified</evo:confidence>
+    <evo:companyA rdf:resource="https://example.org/ontology/ntt-data-evolution/ntt-data"/><evo:companyB rdf:resource="https://example.org/ontology/ntt-data-evolution/fujitsu"/><evo:inMarket rdf:resource="https://example.org/ontology/ntt-data-evolution/system-integration-market"/><evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-3"/>
+  </evo:MarketRelationship>
+  <evo:MarketRelationship rdf:about="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-nec-public-it">
+    <rdfs:label>NTT DATAとNECの競合候補</rdfs:label><evo:status>research-candidate</evo:status><evo:confidence>unverified</evo:confidence>
+    <evo:companyA rdf:resource="https://example.org/ontology/ntt-data-evolution/ntt-data"/><evo:companyB rdf:resource="https://example.org/ontology/ntt-data-evolution/nec"/><evo:inMarket rdf:resource="https://example.org/ontology/ntt-data-evolution/public-it-market"/><evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-3"/>
+  </evo:MarketRelationship>
+  <evo:MarketRelationship rdf:about="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-capgemini-consulting">
+    <rdfs:label>NTT DATAとCapgeminiの競合候補</rdfs:label><evo:status>research-candidate</evo:status><evo:confidence>unverified</evo:confidence>
+    <evo:companyA rdf:resource="https://example.org/ontology/ntt-data-evolution/ntt-data"/><evo:companyB rdf:resource="https://example.org/ontology/ntt-data-evolution/capgemini"/><evo:inMarket rdf:resource="https://example.org/ontology/ntt-data-evolution/consulting-market"/><evo:trackedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/github-issue-3"/>
+  </evo:MarketRelationship>
+
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/slack-thread-001">
+    <rdfs:label>Slack: 2025–2026組織比較の設計議論</rdfs:label><evo:platform>Slack</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://langchaintesttalk.slack.com/archives/C0BM8N1TX1C/p1785547303904419</evo:artifactUrl><evo:discusses rdf:resource="https://example.org/ontology/ntt-data-evolution/change-tcs-to-segments"/>
+  </evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-hub">
+    <rdfs:label>Notion: NTT DATA Ontology Demo</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d48106a3fbe954ff351910</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/change-tcs-to-segments"/>
+  </evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-comparison">
+    <rdfs:label>Notion: 2025–2026組織比較</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d4819ea345c39d365ff66e</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/change-tcs-to-segments"/>
+  </evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-1"><rdfs:label>GitHub #1: 2026年組織図を取り込む</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/1</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/snapshot-2026"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-2"><rdfs:label>GitHub #2: 時間付き組織差分</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/2</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/change-tcs-to-segments"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-3"><rdfs:label>GitHub #3: 競合・協業の根拠モデル</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/3</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-accenture-consulting"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-4"><rdfs:label>GitHub #4: 横断ダッシュボード</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/4</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/notion-hub"/></evo:InformationArtifact>
+
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-2026-unit-inventory"><rdfs:label>Notion: 2026年組織ユニット棚卸し</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d481189cc6d783e2936fb9</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/snapshot-2026"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-change-backlog"><rdfs:label>Notion: 時系列差分仮説バックログ</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d4810f9622c96cbc163c8a</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/change-tcs-to-segments"/><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/change-public-reconfiguration"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-ai-research"><rdfs:label>Notion: AI事業本部トピック調査</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d4812e9eecff198531a696</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/ai-business-hq-2026"/><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/change-ai-business-emergence"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-domain-comparison"><rdfs:label>Notion: 公共・金融・法人分野比較</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d48157928ec5f2a02c1aeb</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/public-field"/><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/corporate-field"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-query-catalog"><rdfs:label>Notion: 探索クエリ15本</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d481ed843df27bb3ee4333</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/notion-hub"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-quality-policy"><rdfs:label>Notion: データ品質・確度・来歴ポリシー</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d481b69d3fe059446c5925</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/change-tcs-to-segments"/><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-accenture-consulting"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/notion-vocabulary"><rdfs:label>Notion: 共通語彙・エッジ辞書</rdfs:label><evo:platform>Notion</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://app.notion.com/p/3af5ceaf54d48171a2d6ffc013c5a5e4</evo:artifactUrl><evo:documents rdf:resource="https://example.org/ontology/ntt-data-evolution/notion-hub"/></evo:InformationArtifact>
+
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/slack-thread-ai"><rdfs:label>Slack: AI事業本部の位置づけ</rdfs:label><evo:platform>Slack</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://langchaintesttalk.slack.com/archives/C0BM8N1TX1C/p1785548035117569</evo:artifactUrl><evo:discusses rdf:resource="https://example.org/ontology/ntt-data-evolution/change-ai-business-emergence"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/slack-thread-public"><rdfs:label>Slack: 公共・社会基盤分野の差分</rdfs:label><evo:platform>Slack</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://langchaintesttalk.slack.com/archives/C0BM8N1TX1C/p1785548035658209</evo:artifactUrl><evo:discusses rdf:resource="https://example.org/ontology/ntt-data-evolution/change-public-reconfiguration"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/slack-thread-finance-corporate"><rdfs:label>Slack: 金融・法人分野の棚卸し</rdfs:label><evo:platform>Slack</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://langchaintesttalk.slack.com/archives/C0BM8N1TX1C/p1785548036149549</evo:artifactUrl><evo:discusses rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/><evo:discusses rdf:resource="https://example.org/ontology/ntt-data-evolution/corporate-field"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/slack-thread-market-quality"><rdfs:label>Slack: 競合・協業グラフの品質基準</rdfs:label><evo:platform>Slack</evo:platform><evo:status>fictional-demo</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://langchaintesttalk.slack.com/archives/C0BM8N1TX1C/p1785548036939119</evo:artifactUrl><evo:discusses rdf:resource="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-accenture-consulting"/><evo:discusses rdf:resource="https://example.org/ontology/ntt-data-evolution/candidate-nttdata-fujitsu-si"/></evo:InformationArtifact>
+
+  <!-- Research requests drive traversal; claims remain explicitly non-factual when sourced from demo artifacts. -->
+  <evo:ResearchQuestion rdf:about="https://example.org/ontology/ntt-data-evolution/query-ai-strategy-latest-internal"><evo:query_id>query-ai-strategy-latest-internal</evo:query_id><rdfs:label>AIストラテジー推進部の社内最新動向</rdfs:label><evo:questionText>AIストラテジー推進部の最新の取り組み状況を、AISを含む検索語でSlackから確認する</evo:questionText><evo:status>research-template</evo:status><evo:aboutUnit rdf:resource="https://example.org/ontology/ntt-data-evolution/ai-strategy-promotion-department-2026"/><evo:retrievesFrom rdf:resource="https://example.org/ontology/ntt-data-evolution/slack-ai-strategy-search-route"/></evo:ResearchQuestion>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/slack-ai-strategy-search-route"><rdfs:label>Slack検索動線: AIストラテジー推進部（AIS）</rdfs:label><evo:platform>Slack</evo:platform><evo:status>search-route</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://langchaintesttalk.slack.com/archives/C0BM8N1TX1C</evo:artifactUrl><evo:searchTerm>AIストラテジー推進部</evo:searchTerm><evo:searchTerm>AIS</evo:searchTerm><evo:mentions rdf:resource="https://example.org/ontology/ntt-data-evolution/ai-strategy-promotion-department-2026"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/slack-ai-strategy-sprint"><rdfs:label>Slack: AIストラテジー推進部の最新取り組み</rdfs:label><evo:platform>Slack</evo:platform><evo:status>fictional-demo</evo:status><evo:publishedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-08-01T11:01:10+09:00</evo:publishedAt><evo:retrievedAt rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2026-08-01T11:05:00+09:00</evo:retrievedAt><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://langchaintesttalk.slack.com/archives/C0BM8N1TX1C/p1785549670557629</evo:artifactUrl><evo:mentions rdf:resource="https://example.org/ontology/ntt-data-evolution/ai-strategy-promotion-department-2026"/></evo:InformationArtifact>
+  <evo:Initiative rdf:about="https://example.org/ontology/ntt-data-evolution/initiative-sprint-nemesis"><evo:initiative_id>initiative-sprint-nemesis</evo:initiative_id><rdfs:label>爆速スプリントモデルへのNenesis統合</rdfs:label><evo:status>target-selection-in-progress</evo:status><evo:confidence>unverified</evo:confidence></evo:Initiative>
+  <evo:Claim rdf:about="https://example.org/ontology/ntt-data-evolution/claim-nemesis-integration"><evo:claim_id>claim-nemesis-integration</evo:claim_id><rdfs:label>Nenesis統合と部長支援施策のターゲット選定中</rdfs:label><evo:status>observed</evo:status><evo:confidence>unverified</evo:confidence><evo:supportedBy rdf:resource="https://example.org/ontology/ntt-data-evolution/slack-ai-strategy-sprint"/><evo:asserts rdf:resource="https://example.org/ontology/ntt-data-evolution/initiative-sprint-nemesis"/></evo:Claim>
+
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-5"><rdfs:label>GitHub #5: 2026年全組織ノード化</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/5</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/snapshot-2026"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-6"><rdfs:label>GitHub #6: AI事業本部の時系列仮説</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/6</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/change-ai-business-emergence"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-7"><rdfs:label>GitHub #7: 公共領域の一対多変更</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/7</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/change-public-reconfiguration"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-8"><rdfs:label>GitHub #8: 金融・法人の階層関係</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/8</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/financial-field"/><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/industry-control-hq-2026"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-9"><rdfs:label>GitHub #9: 探索クエリ15本</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/9</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/notion-query-catalog"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-10"><rdfs:label>GitHub #10: 来歴・確度の検証ルール</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/10</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/notion-quality-policy"/></evo:InformationArtifact>
+  <evo:InformationArtifact rdf:about="https://example.org/ontology/ntt-data-evolution/github-issue-11"><rdfs:label>GitHub #11: 分散情報のRDF同期</rdfs:label><evo:platform>GitHub</evo:platform><evo:status>open</evo:status><evo:artifactUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://github.com/ryota-nakazawa/nttdata-ontology-demo/issues/11</evo:artifactUrl><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/notion-hub"/><evo:implements rdf:resource="https://example.org/ontology/ntt-data-evolution/slack-thread-001"/></evo:InformationArtifact>
+</rdf:RDF>

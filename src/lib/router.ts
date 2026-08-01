@@ -13,6 +13,8 @@
  *   /#/learn/<course>                                 → course detail page
  *   /#/learn/<course>/<article>                       → article within a course
  *   /#/share/<base64-data>                            → shared inline ontology
+ *   /#/organization-dashboard                          → default organization graph dashboard
+ *   /#/organization-dashboard/<organization>           → organization-specific graph dashboard
  */
 
 export type Route =
@@ -21,7 +23,8 @@ export type Route =
   | { page: 'embed'; ontologyId: string }
   | { page: 'designer'; ontologyId?: string }
   | { page: 'learn'; courseSlug?: string; articleSlug?: string }
-  | { page: 'share'; data: string };
+  | { page: 'share'; data: string }
+  | { page: 'organization-dashboard'; organizationId?: string };
 
 /**
  * Validate and sanitize an ontology ID parsed from the URL hash.
@@ -104,13 +107,18 @@ export function parseHash(hash: string): Route {
     }
     return { page: 'home' };
   }
+  if (segments[0] === 'organization-dashboard') {
+    if (segments.length === 1) return { page: 'organization-dashboard' };
+    const organizationId = sanitizeOntologyId(segments[1]);
+    return organizationId ? { page: 'organization-dashboard', organizationId } : { page: 'organization-dashboard' };
+  }
   return { page: 'home' };
 }
 
 /** Convert a Route back to a hash string. */
 export function routeToHash(route: Route): string {
   switch (route.page) {
-    case 'catalogue':
+    case 'catalogue': {
       const hash = route.ontologyId
         ? `#/catalogue/${route.ontologyId}`
         : '#/catalogue';
@@ -119,6 +127,7 @@ export function routeToHash(route: Route): string {
       if (route.source) queryParams.set('source', route.source);
       const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
       return hash + query;
+    }
     case 'embed':
       return `#/embed/${route.ontologyId}`;
     case 'designer':
@@ -132,6 +141,10 @@ export function routeToHash(route: Route): string {
       return '#/learn';
     case 'share':
       return `#/share/${route.data}`;
+    case 'organization-dashboard':
+      return route.organizationId
+        ? `#/organization-dashboard/${route.organizationId}`
+        : '#/organization-dashboard';
     case 'home':
     default:
       return '#/';

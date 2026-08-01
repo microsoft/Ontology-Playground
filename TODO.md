@@ -6,6 +6,17 @@
 
 ---
 
+## 0. Portable organization ontology middle layer
+
+- [x] Define RDF/XML vocabularies for organization graph data and pack profiles
+- [x] Compile organization packs into a static browser registry
+- [x] Route dashboards by organization pack ID
+- [x] Derive time filters, research routes, aliases, and source links from RDF
+- [x] Provide the interactive Cytoscape graph dashboard by default
+- [x] Document the organization onboarding and extension workflow
+
+---
+
 ## 1. RDF Import / Export (with full test coverage)
 
 The current RDF export is inline in `ImportExportModal.tsx` and there is no RDF

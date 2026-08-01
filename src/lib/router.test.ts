@@ -18,6 +18,17 @@ describe('parseHash', () => {
     expect(parseHash('#/unknown/stuff')).toEqual({ page: 'home' });
   });
 
+  it('parses the organization dashboard route', () => {
+    expect(parseHash('#/organization-dashboard')).toEqual({ page: 'organization-dashboard' });
+  });
+
+  it('parses an organization-specific dashboard route', () => {
+    expect(parseHash('#/organization-dashboard/ntt-data')).toEqual({
+      page: 'organization-dashboard',
+      organizationId: 'ntt-data',
+    });
+  });
+
   it('parses catalogue route without id', () => {
     expect(parseHash('#/catalogue')).toEqual({ page: 'catalogue', ontologyId: undefined });
   });
@@ -282,6 +293,14 @@ describe('routeToHash', () => {
       '#/share/eJxLzs8FAAPcAbQ',
     );
   });
+
+  it('converts the organization dashboard route', () => {
+    expect(routeToHash({ page: 'organization-dashboard' })).toBe('#/organization-dashboard');
+  });
+
+  it('converts an organization-specific dashboard route', () => {
+    expect(routeToHash({ page: 'organization-dashboard', organizationId: 'ntt-data' })).toBe('#/organization-dashboard/ntt-data');
+  });
 });
 
 describe('roundtrip', () => {
@@ -299,6 +318,7 @@ describe('roundtrip', () => {
     { page: 'learn' as const, courseSlug: 'ontology-fundamentals' },
     { page: 'learn' as const, courseSlug: 'ontology-fundamentals', articleSlug: 'what-is-an-ontology' },
     { page: 'share' as const, data: 'eJxLzs8FAAPcAbQ' },
+    { page: 'organization-dashboard' as const },
   ];
 
   for (const route of routes) {

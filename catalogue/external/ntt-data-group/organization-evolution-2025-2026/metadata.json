@@ -1,0 +1,9 @@
+{
+  "name": "NTT DATA Organization Evolution 2025-2026",
+  "description": "A temporal and provenance-aware demo ontology connecting NTT DATA public organization snapshots with fictional GitHub, Slack, and Notion artifacts.",
+  "category": "general",
+  "tags": ["organization", "temporal", "provenance", "ntt-data", "demo"],
+  "author": "Ontology Playground demo",
+  "license": "Demo data based on cited public sources",
+  "sourceUrl": "https://www.nttdata.com/jp/ja/about-us/organization/"
+}

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="https://example.org/ontology/ntt-data-group-organization-2025/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:org="https://example.org/ontology/ntt-data-group-organization-2025/">
+
+    <owl:Ontology rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/">
+        <rdfs:label>NTT DATA Group Organization Structure 2025</rdfs:label>
+        <rdfs:comment>Organization model derived from NTT DATA Group's public organization-restructuring announcement. It represents the public structure effective July 1, 2025; it is not an authoritative source for later changes.</rdfs:comment>
+        <dcterms:source rdf:resource="https://www.nttdata.com/global/ja/news/release/2025/050903/"/>
+        <owl:versionInfo>2025-07-01</owl:versionInfo>
+    </owl:Ontology>
+
+    <!-- Core vocabulary: the graph view displays these reusable organization concepts. -->
+    <owl:Class rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/Organization">
+        <rdfs:label>Organization</rdfs:label>
+        <rdfs:comment>A legal company or organizational grouping in the published structure.</rdfs:comment>
+        <org:icon>🏢</org:icon>
+        <org:color>#0078D4</org:color>
+    </owl:Class>
+    <owl:Class rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/OrganizationalUnit">
+        <rdfs:label>OrganizationalUnit</rdfs:label>
+        <rdfs:comment>A headquarters, department, office, or business headquarters within an organization.</rdfs:comment>
+        <org:icon>🧩</org:icon>
+        <org:color>#5C2D91</org:color>
+    </owl:Class>
+    <owl:Class rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/BusinessField">
+        <rdfs:label>BusinessField</rdfs:label>
+        <rdfs:comment>A customer-facing business field that groups related business headquarters.</rdfs:comment>
+        <org:icon>🎯</org:icon>
+        <org:color>#107C10</org:color>
+    </owl:Class>
+    <owl:Class rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/CorporateFunction">
+        <rdfs:label>CorporateFunction</rdfs:label>
+        <rdfs:comment>A corporate staff function, such as strategy, finance, governance, or audit.</rdfs:comment>
+        <org:icon>⚙️</org:icon>
+        <org:color>#D83B01</org:color>
+    </owl:Class>
+    <owl:Class rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/GovernanceBody">
+        <rdfs:label>GovernanceBody</rdfs:label>
+        <rdfs:comment>A board, committee, or audit body that governs or oversees an organization.</rdfs:comment>
+        <org:icon>⚖️</org:icon>
+        <org:color>#E81123</org:color>
+    </owl:Class>
+    <owl:Class rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/Role">
+        <rdfs:label>Role</rdfs:label>
+        <rdfs:comment>An executive or organizational role shown in the public organization chart.</rdfs:comment>
+        <org:icon>👤</org:icon>
+        <org:color>#00A9E0</org:color>
+    </owl:Class>
+    <owl:Class rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/Region">
+        <rdfs:label>Region</rdfs:label>
+        <rdfs:comment>A geographic operating region that groups regional companies.</rdfs:comment>
+        <org:icon>🌏</org:icon>
+        <org:color>#008272</org:color>
+    </owl:Class>
+    <owl:Class rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/EcosystemCompany">
+        <rdfs:label>EcosystemCompany</rdfs:label>
+        <rdfs:comment>An external company or NTT Group company related through competition, collaboration, technology partnership, or group affiliation.</rdfs:comment>
+        <org:icon>◈</org:icon>
+        <org:color>#0065A8</org:color>
+    </owl:Class>
+
+    <!-- Stable attributes support matching this model to HR, directory, or finance data. -->
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/organization_org_id">
+        <rdfs:label>org_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</org:isIdentifier><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/organization_display_name">
+        <rdfs:label>display_name</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/organizationalUnit_unit_id">
+        <rdfs:label>unit_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/OrganizationalUnit"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</org:isIdentifier><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/organizationalUnit_display_name">
+        <rdfs:label>display_name</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/OrganizationalUnit"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/businessField_field_id">
+        <rdfs:label>field_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/BusinessField"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</org:isIdentifier><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/businessField_effective_date">
+        <rdfs:label>effective_date</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/BusinessField"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/><org:propertyType>date</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/corporateFunction_function_id">
+        <rdfs:label>function_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/CorporateFunction"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</org:isIdentifier><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/governanceBody_body_id">
+        <rdfs:label>body_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/GovernanceBody"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</org:isIdentifier><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/role_role_id">
+        <rdfs:label>role_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Role"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</org:isIdentifier><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/region_region_id">
+        <rdfs:label>region_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Region"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</org:isIdentifier><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ecosystemCompany_company_id">
+        <rdfs:label>company_id</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/EcosystemCompany"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><org:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</org:isIdentifier><org:propertyType>string</org:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- Relationships make both legal/company structure and internal reporting structure explicit. -->
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hasOrganizationalUnit">
+        <rdfs:label>has_organizational_unit</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/OrganizationalUnit"/><rdfs:comment>An organization contains an organizational unit.</rdfs:comment><org:cardinality>one-to-many</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>organizationalUnit</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hasBusinessField">
+        <rdfs:label>has_business_field</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/BusinessField"/><rdfs:comment>An organization operates a customer-facing business field.</rdfs:comment><org:cardinality>one-to-many</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>businessField</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hasCorporateFunction">
+        <rdfs:label>has_corporate_function</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/CorporateFunction"/><rdfs:comment>An organization has a corporate staff function.</rdfs:comment><org:cardinality>one-to-many</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>corporateFunction</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hasBusinessUnit">
+        <rdfs:label>has_business_unit</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/BusinessField"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/OrganizationalUnit"/><rdfs:comment>A business field contains a business headquarters or business unit.</rdfs:comment><org:cardinality>one-to-many</org:cardinality><org:fromEntityId>businessField</org:fromEntityId><org:toEntityId>organizationalUnit</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/containsUnit">
+        <rdfs:label>contains_unit</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/OrganizationalUnit"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/OrganizationalUnit"/><rdfs:comment>An organizational unit contains a subordinate unit.</rdfs:comment><org:cardinality>one-to-many</org:cardinality><org:fromEntityId>organizationalUnit</org:fromEntityId><org:toEntityId>organizationalUnit</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hasGovernanceBody">
+        <rdfs:label>has_governance_body</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/GovernanceBody"/><rdfs:comment>A governance body oversees an organization.</rdfs:comment><org:cardinality>one-to-many</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>governanceBody</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hasRole">
+        <rdfs:label>has_role</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Role"/><rdfs:comment>An organization has an executive role.</rdfs:comment><org:cardinality>one-to-many</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>role</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/operatesInRegion">
+        <rdfs:label>operates_in_region</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Region"/><rdfs:comment>An organization is the operating company for a region.</rdfs:comment><org:cardinality>many-to-one</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>region</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/competesWith">
+        <rdfs:label>competes_with</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/EcosystemCompany"/><rdfs:comment>Competes with an ecosystem company in one or more markets or service layers.</rdfs:comment><org:cardinality>many-to-many</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>ecosystemCompany</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/collaboratesWith">
+        <rdfs:label>collaborates_with</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/EcosystemCompany"/><rdfs:comment>Has a publicly described collaboration or strategic cooperation.</rdfs:comment><org:cardinality>many-to-many</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>ecosystemCompany</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hasTechnologyPartner">
+        <rdfs:label>has_technology_partner</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/EcosystemCompany"/><rdfs:comment>Uses or jointly develops offerings with a technology ecosystem partner.</rdfs:comment><org:cardinality>many-to-many</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>ecosystemCompany</org:toEntityId>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hasGroupParent">
+        <rdfs:label>has_group_parent</rdfs:label><rdfs:domain rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/Organization"/><rdfs:range rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/EcosystemCompany"/><rdfs:comment>Belongs to an NTT Group parent company.</rdfs:comment><org:cardinality>many-to-one</org:cardinality><org:fromEntityId>organization</org:fromEntityId><org:toEntityId>ecosystemCompany</org:toEntityId>
+    </owl:ObjectProperty>
+
+    <!-- Published structure (ABox).  These instances can be queried in an RDF store. -->
+    <org:Organization rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ntt-data-group"><org:organization_org_id>ntt-data-group</org:organization_org_id><rdfs:label>株式会社NTTデータグループ</rdfs:label><org:hasOrganizationalUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/group-management-planning-hq"/><org:hasOrganizationalUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/technology-innovation-hq"/><org:hasCorporateFunction rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/finance-hq"/><org:hasCorporateFunction rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/human-resources-hq"/><org:hasCorporateFunction rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/global-governance-hq"/><org:hasCorporateFunction rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/global-marketing-communications-hq"/><org:hasGovernanceBody rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/group-board"/><org:hasRole rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/group-president"/></org:Organization>
+    <org:Organization rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ntt-data"><org:organization_org_id>ntt-data</org:organization_org_id><rdfs:label>株式会社NTTデータ</rdfs:label><org:hasBusinessField rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/public-social-infrastructure"/><org:hasBusinessField rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/financial"/><org:hasBusinessField rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/corporate"/><org:hasBusinessField rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/technology-consulting-solutions"/><org:hasGovernanceBody rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/domestic-board"/><org:hasRole rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/domestic-president"/><org:operatesInRegion rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/japan-region"/></org:Organization>
+    <org:Organization rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ntt-data-inc"><org:organization_org_id>ntt-data-inc</org:organization_org_id><rdfs:label>NTT DATA, Inc.</rdfs:label><org:operatesInRegion rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/overseas-region"/></org:Organization>
+
+    <org:Region rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/japan-region"><org:region_region_id>japan</org:region_region_id><rdfs:label>日本リージョン</rdfs:label></org:Region>
+    <org:Region rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/overseas-region"><org:region_region_id>overseas</org:region_region_id><rdfs:label>海外リージョン</rdfs:label></org:Region>
+    <org:GovernanceBody rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/group-board"><org:governanceBody_body_id>group-board</org:governanceBody_body_id><rdfs:label>取締役会</rdfs:label></org:GovernanceBody>
+    <org:GovernanceBody rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/domestic-board"><org:governanceBody_body_id>domestic-board</org:governanceBody_body_id><rdfs:label>取締役会</rdfs:label></org:GovernanceBody>
+    <org:Role rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/group-president"><org:role_role_id>group-president</org:role_role_id><rdfs:label>社長</rdfs:label></org:Role>
+    <org:Role rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/domestic-president"><org:role_role_id>domestic-president</org:role_role_id><rdfs:label>社長</rdfs:label></org:Role>
+
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/group-management-planning-hq"><org:organizationalUnit_unit_id>group-management-planning-hq</org:organizationalUnit_unit_id><rdfs:label>グループ経営企画統括本部</rdfs:label><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/corporate-strategy-hq"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/sustainability-management-hq"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/global-innovation-hq"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/consulting-business-acceleration-hq"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/procurement-department"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/ir-office"/></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/technology-innovation-hq"><org:organizationalUnit_unit_id>technology-innovation-hq</org:organizationalUnit_unit_id><rdfs:label>技術革新統括本部</rdfs:label><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/global-technology-strategy-department"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/global-architect-department"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/ai-department"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/innovation-department"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/quality-assurance-department"/></org:OrganizationalUnit>
+    <org:CorporateFunction rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/finance-hq"><org:corporateFunction_function_id>finance-hq</org:corporateFunction_function_id><rdfs:label>財務本部</rdfs:label></org:CorporateFunction>
+    <org:CorporateFunction rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/human-resources-hq"><org:corporateFunction_function_id>human-resources-hq</org:corporateFunction_function_id><rdfs:label>人事本部</rdfs:label></org:CorporateFunction>
+    <org:CorporateFunction rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/global-governance-hq"><org:corporateFunction_function_id>global-governance-hq</org:corporateFunction_function_id><rdfs:label>グローバルガバナンス本部</rdfs:label></org:CorporateFunction>
+    <org:CorporateFunction rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/global-marketing-communications-hq"><org:corporateFunction_function_id>global-marketing-communications-hq</org:corporateFunction_function_id><rdfs:label>グローバルマーケティング＆コミュニケーション本部</rdfs:label></org:CorporateFunction>
+
+    <org:BusinessField rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/public-social-infrastructure"><org:businessField_field_id>public-social-infrastructure</org:businessField_field_id><org:businessField_effective_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-07-01</org:businessField_effective_date><rdfs:label>公共・社会基盤分野</rdfs:label></org:BusinessField>
+    <org:BusinessField rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/financial"><org:businessField_field_id>financial</org:businessField_field_id><org:businessField_effective_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-07-01</org:businessField_effective_date><rdfs:label>金融分野</rdfs:label></org:BusinessField>
+    <org:BusinessField rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/corporate"><org:businessField_field_id>corporate</org:businessField_field_id><org:businessField_effective_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-07-01</org:businessField_effective_date><rdfs:label>法人分野</rdfs:label></org:BusinessField>
+    <org:BusinessField rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/technology-consulting-solutions"><org:businessField_field_id>technology-consulting-solutions</org:businessField_field_id><org:businessField_effective_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-07-01</org:businessField_effective_date><rdfs:label>テクノロジーコンサルティング＆ソリューション分野</rdfs:label></org:BusinessField>
+
+    <!-- The remaining names are declared as organizational units.  Parent links preserve the organization-chart hierarchy. -->
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/corporate-strategy-hq"><org:organizationalUnit_unit_id>corporate-strategy-hq</org:organizationalUnit_unit_id><rdfs:label>コーポレート戦略本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/sustainability-management-hq"><org:organizationalUnit_unit_id>sustainability-management-hq</org:organizationalUnit_unit_id><rdfs:label>サステナビリティ経営推進本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/global-innovation-hq"><org:organizationalUnit_unit_id>global-innovation-hq</org:organizationalUnit_unit_id><rdfs:label>グローバルイノベーション本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/consulting-business-acceleration-hq"><org:organizationalUnit_unit_id>consulting-business-acceleration-hq</org:organizationalUnit_unit_id><rdfs:label>コンサルティング＆ビジネスアクセラレーション本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/procurement-department"><org:organizationalUnit_unit_id>procurement-department</org:organizationalUnit_unit_id><rdfs:label>プロキュアメント部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ir-office"><org:organizationalUnit_unit_id>ir-office</org:organizationalUnit_unit_id><rdfs:label>IR室</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/global-technology-strategy-department"><org:organizationalUnit_unit_id>global-technology-strategy-department</org:organizationalUnit_unit_id><rdfs:label>グローバル技術戦略推進部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/global-architect-department"><org:organizationalUnit_unit_id>global-architect-department</org:organizationalUnit_unit_id><rdfs:label>グローバルアーキテクト推進部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ai-department"><org:organizationalUnit_unit_id>ai-department</org:organizationalUnit_unit_id><rdfs:label>AI技術部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/innovation-department"><org:organizationalUnit_unit_id>innovation-department</org:organizationalUnit_unit_id><rdfs:label>Innovation技術部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/quality-assurance-department"><org:organizationalUnit_unit_id>quality-assurance-department</org:organizationalUnit_unit_id><rdfs:label>品質保証部</rdfs:label></org:OrganizationalUnit>
+
+    <!-- NTT DATA domestic business fields and their published business headquarters. -->
+    <org:BusinessField rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/public-social-infrastructure"><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/first-public-sector-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/second-public-sector-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/third-public-sector-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/fourth-public-sector-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/social-infrastructure-solution-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/telecom-utility-hq"/></org:BusinessField>
+    <org:BusinessField rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/financial"><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/first-financial-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/second-financial-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/third-financial-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/financial-it-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/financial-it-innovation-hq"/></org:BusinessField>
+    <org:BusinessField rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/corporate"><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/industry-management-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/consulting-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/payment-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/system-integration-hq"/></org:BusinessField>
+    <org:BusinessField rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/technology-consulting-solutions"><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/technology-consulting-hq"/><org:hasBusinessUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/solutions-hq"/></org:BusinessField>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/first-public-sector-hq"><org:organizationalUnit_unit_id>first-public-sector-hq</org:organizationalUnit_unit_id><rdfs:label>第一公共事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/second-public-sector-hq"><org:organizationalUnit_unit_id>second-public-sector-hq</org:organizationalUnit_unit_id><rdfs:label>第二公共事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/third-public-sector-hq"><org:organizationalUnit_unit_id>third-public-sector-hq</org:organizationalUnit_unit_id><rdfs:label>第三公共事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/fourth-public-sector-hq"><org:organizationalUnit_unit_id>fourth-public-sector-hq</org:organizationalUnit_unit_id><rdfs:label>第四公共事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/social-infrastructure-solution-hq"><org:organizationalUnit_unit_id>social-infrastructure-solution-hq</org:organizationalUnit_unit_id><rdfs:label>社会基盤ソリューション事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/telecom-utility-hq"><org:organizationalUnit_unit_id>telecom-utility-hq</org:organizationalUnit_unit_id><rdfs:label>テレコム・ユーティリティ事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/first-financial-hq"><org:organizationalUnit_unit_id>first-financial-hq</org:organizationalUnit_unit_id><rdfs:label>第一金融事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/second-financial-hq"><org:organizationalUnit_unit_id>second-financial-hq</org:organizationalUnit_unit_id><rdfs:label>第二金融事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/third-financial-hq"><org:organizationalUnit_unit_id>third-financial-hq</org:organizationalUnit_unit_id><rdfs:label>第三金融事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/financial-it-hq"><org:organizationalUnit_unit_id>financial-it-hq</org:organizationalUnit_unit_id><rdfs:label>金融イノベーション本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/financial-it-innovation-hq"><org:organizationalUnit_unit_id>financial-it-innovation-hq</org:organizationalUnit_unit_id><rdfs:label>金融高度技術本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/industry-management-hq"><org:organizationalUnit_unit_id>industry-management-hq</org:organizationalUnit_unit_id><rdfs:label>インダストリ統括本部</rdfs:label><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/first-industry-hq"/><org:containsUnit rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/second-industry-hq"/></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/first-industry-hq"><org:organizationalUnit_unit_id>first-industry-hq</org:organizationalUnit_unit_id><rdfs:label>第一インダストリ事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/second-industry-hq"><org:organizationalUnit_unit_id>second-industry-hq</org:organizationalUnit_unit_id><rdfs:label>第二インダストリ事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/consulting-hq"><org:organizationalUnit_unit_id>consulting-hq</org:organizationalUnit_unit_id><rdfs:label>コンサルティング事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/payment-hq"><org:organizationalUnit_unit_id>payment-hq</org:organizationalUnit_unit_id><rdfs:label>ペイメント事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/system-integration-hq"><org:organizationalUnit_unit_id>system-integration-hq</org:organizationalUnit_unit_id><rdfs:label>システムインテグレーション事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/technology-consulting-hq"><org:organizationalUnit_unit_id>technology-consulting-hq</org:organizationalUnit_unit_id><rdfs:label>テクノロジーコンサルティング事業本部</rdfs:label></org:OrganizationalUnit>
+    <org:OrganizationalUnit rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/solutions-hq"><org:organizationalUnit_unit_id>solutions-hq</org:organizationalUnit_unit_id><rdfs:label>ソリューション事業本部</rdfs:label></org:OrganizationalUnit>
+    <!-- Market and ecosystem relationships.  “Competes with” can coexist with collaboration. -->
+    <org:Organization rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ntt-data-group"><org:hasGroupParent rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/ntt"/></org:Organization>
+    <org:Organization rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ntt-data"><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/fujitsu"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/nec"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/hitachi"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/accenture"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/ibm"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/tcs"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/capgemini"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/baycurrent"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/shift"/><org:competesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/layerx"/><org:collaboratesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/nec"/><org:collaboratesWith rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/hitachi"/><org:hasTechnologyPartner rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/aws"/><org:hasTechnologyPartner rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/microsoft"/><org:hasTechnologyPartner rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/google-cloud"/><org:hasTechnologyPartner rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/oracle"/><org:hasTechnologyPartner rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/sap"/><org:hasTechnologyPartner rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/salesforce"/><org:hasTechnologyPartner rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/cisco"/><org:hasTechnologyPartner rdf:resource="https://example.org/ontology/ntt-data-group-organization-2025/openai"/></org:Organization>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ntt"><org:ecosystemCompany_company_id>ntt</org:ecosystemCompany_company_id><rdfs:label>NTT株式会社</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/fujitsu"><org:ecosystemCompany_company_id>fujitsu</org:ecosystemCompany_company_id><rdfs:label>富士通</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/nec"><org:ecosystemCompany_company_id>nec</org:ecosystemCompany_company_id><rdfs:label>NEC</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/hitachi"><org:ecosystemCompany_company_id>hitachi</org:ecosystemCompany_company_id><rdfs:label>日立製作所</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/accenture"><org:ecosystemCompany_company_id>accenture</org:ecosystemCompany_company_id><rdfs:label>Accenture</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/ibm"><org:ecosystemCompany_company_id>ibm</org:ecosystemCompany_company_id><rdfs:label>IBM</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/tcs"><org:ecosystemCompany_company_id>tcs</org:ecosystemCompany_company_id><rdfs:label>TCS</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/capgemini"><org:ecosystemCompany_company_id>capgemini</org:ecosystemCompany_company_id><rdfs:label>Capgemini</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/baycurrent"><org:ecosystemCompany_company_id>baycurrent</org:ecosystemCompany_company_id><rdfs:label>ベイカレント</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/shift"><org:ecosystemCompany_company_id>shift</org:ecosystemCompany_company_id><rdfs:label>SHIFT</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/layerx"><org:ecosystemCompany_company_id>layerx</org:ecosystemCompany_company_id><rdfs:label>LayerX</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/aws"><org:ecosystemCompany_company_id>aws</org:ecosystemCompany_company_id><rdfs:label>AWS</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/microsoft"><org:ecosystemCompany_company_id>microsoft</org:ecosystemCompany_company_id><rdfs:label>Microsoft</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/google-cloud"><org:ecosystemCompany_company_id>google-cloud</org:ecosystemCompany_company_id><rdfs:label>Google Cloud</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/oracle"><org:ecosystemCompany_company_id>oracle</org:ecosystemCompany_company_id><rdfs:label>Oracle</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/sap"><org:ecosystemCompany_company_id>sap</org:ecosystemCompany_company_id><rdfs:label>SAP</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/salesforce"><org:ecosystemCompany_company_id>salesforce</org:ecosystemCompany_company_id><rdfs:label>Salesforce</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/cisco"><org:ecosystemCompany_company_id>cisco</org:ecosystemCompany_company_id><rdfs:label>Cisco</rdfs:label></org:EcosystemCompany>
+    <org:EcosystemCompany rdf:about="https://example.org/ontology/ntt-data-group-organization-2025/openai"><org:ecosystemCompany_company_id>openai</org:ecosystemCompany_company_id><rdfs:label>OpenAI</rdfs:label></org:EcosystemCompany>
+</rdf:RDF>
