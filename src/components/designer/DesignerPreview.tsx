@@ -152,73 +152,85 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
 
   // Incrementally sync nodes & edges without full relayout
   useEffect(() => {
-    const cy = cyRef.current;
-    if (!cy) return;
-
-    const currentNodeIds = new Set(cy.nodes().map((n) => n.id()));
-    const currentEdgeIds = new Set(cy.edges().map((e) => e.id()));
-    const desiredNodeIds = new Set(ontology.entityTypes.map((e) => e.id));
-    const desiredEdgeIds = new Set(ontology.relationships.map((r) => r.id));
-
-    // Remove deleted elements
-    const toRemove = cy.elements().filter((ele) => {
-      const id = ele.id();
-      return ele.isNode() ? !desiredNodeIds.has(id) : !desiredEdgeIds.has(id);
-    });
-    if (toRemove.length) toRemove.remove();
-
-    // Add new nodes
-    const newNodes: { data: Record<string, string> }[] = [];
-    for (const entity of ontology.entityTypes) {
-      if (!currentNodeIds.has(entity.id)) {
-        newNodes.push({ data: { id: entity.id, label: `${entity.icon} ${entity.name}`, color: entity.color } });
-      }
-    }
-
-    // Add new edges
-    const newEdges: { data: Record<string, string> }[] = [];
-    for (const rel of ontology.relationships) {
-      if (!currentEdgeIds.has(rel.id)) {
-        newEdges.push({ data: { id: rel.id, source: rel.from, target: rel.to, label: rel.name } });
-      }
-    }
-
-    if (newNodes.length || newEdges.length) {
-      cy.add([...newNodes, ...newEdges]);
-      // Only lay out NEW nodes near existing ones, keeping existing positions
-      if (newNodes.length) {
-        const newEles = cy.collection();
-        for (const n of newNodes) {
-          newEles.merge(cy.getElementById(n.data.id));
-        }
-        // Position new nodes near the center of the viewport
-        const { x1, y1, w, h } = cy.extent();
-        const cx = x1 + w / 2;
-        const cy2 = y1 + h / 2;
-        newEles.forEach((ele, i) => {
-          ele.position({ x: cx + (i - newNodes.length / 2) * 80, y: cy2 });
-        });
-      }
-      cy.fit(undefined, 40);
-    }
-
-    // Update cosmetic data on existing elements
-    for (const entity of ontology.entityTypes) {
-      const node = cy.getElementById(entity.id);
-      if (node.length) {
-        node.data('label', `${entity.icon} ${entity.name}`);
-        node.data('color', entity.color);
-      }
-    }
-    for (const rel of ontology.relationships) {
-      const edge = cy.getElementById(rel.id);
-      if (edge.length) {
-        edge.data('label', rel.name);
-      }
-    }
+    if (cyRef.current) syncGraphElements(cyRef.current, ontology);
   }, [ontology]);
 
   return <div ref={containerRef} className="designer-graph-container" />;
+}
+
+/** Sync an existing graph to match the ontology, keeping the positions of
+ *  nodes that are still present instead of laying the whole graph out again.
+ *
+ *  Exported so it can be tested against a headless Cytoscape instance —
+ *  rendering the component needs a canvas, which jsdom does not provide. */
+export function syncGraphElements(cy: Core, ontology: GraphPreviewProps['ontology']) {
+  const currentNodeIds = new Set(cy.nodes().map((n) => n.id()));
+  const currentEdgeIds = new Set(cy.edges().map((e) => e.id()));
+  const desiredNodeIds = new Set(ontology.entityTypes.map((e) => e.id));
+  const desiredEdgeIds = new Set(ontology.relationships.map((r) => r.id));
+
+  // Remove deleted elements
+  const toRemove = cy.elements().filter((ele) => {
+    const id = ele.id();
+    return ele.isNode() ? !desiredNodeIds.has(id) : !desiredEdgeIds.has(id);
+  });
+  if (toRemove.length) toRemove.remove();
+
+  // Add new nodes
+  const newNodes: { data: Record<string, string> }[] = [];
+  for (const entity of ontology.entityTypes) {
+    if (!currentNodeIds.has(entity.id)) {
+      newNodes.push({ data: { id: entity.id, label: `${entity.icon} ${entity.name}`, color: entity.color } });
+    }
+  }
+
+  // Add new edges
+  const newEdges: { data: Record<string, string> }[] = [];
+  for (const rel of ontology.relationships) {
+    if (!currentEdgeIds.has(rel.id)) {
+      newEdges.push({ data: { id: rel.id, source: rel.from, target: rel.to, label: rel.name } });
+    }
+  }
+
+  if (newNodes.length || newEdges.length) {
+    cy.add([...newNodes, ...newEdges]);
+    // Only lay out NEW nodes near existing ones, keeping existing positions
+    if (newNodes.length) {
+      const newEles = cy.collection();
+      for (const n of newNodes) {
+        newEles.merge(cy.getElementById(n.data.id));
+      }
+      // Position new nodes near the center of the viewport
+      const { x1, y1, w, h } = cy.extent();
+      const cx = x1 + w / 2;
+      const cy2 = y1 + h / 2;
+      newEles.forEach((ele, i) => {
+        ele.position({ x: cx + (i - newNodes.length / 2) * 80, y: cy2 });
+      });
+    }
+    cy.fit(undefined, 40);
+  }
+
+  // Update cosmetic data on existing nodes
+  for (const entity of ontology.entityTypes) {
+    const node = cy.getElementById(entity.id);
+    if (node.length) {
+      node.data('label', `${entity.icon} ${entity.name}`);
+      node.data('color', entity.color);
+    }
+  }
+
+  // Rebuild an edge whose endpoints moved — Cytoscape treats source/target as immutable.
+  for (const rel of ontology.relationships) {
+    const edge = cy.getElementById(rel.id);
+    if (!edge.length) continue;
+    if (edge.data('source') !== rel.from || edge.data('target') !== rel.to) {
+      edge.remove();
+      cy.add({ data: { id: rel.id, source: rel.from, target: rel.to, label: rel.name } });
+      continue;
+    }
+    edge.data('label', rel.name);
+  }
 }
 
 // ─── RDF tab ─────────────────────────────────────────────────────────────────
