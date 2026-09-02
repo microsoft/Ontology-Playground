@@ -244,6 +244,7 @@ The table below lists the main end-user and contributor guides. Internal plannin
 | [Playground Feature Demo Guide](docs/playground-features-demo-guide.md) | Step-by-step demo script to showcase key Playground capabilities and connect them to Fabric IQ and Real-Time Intelligence |
 | [Ontology School Demo Guide](docs/ontology-school-demo-guide.md) | Step-by-step live demo plan for courses, embeds, quizzes, presentation mode, and learning workflow |
 | [Embedding Guide](docs/embed-guide.md) | How to embed interactive ontology widgets on any web page |
+| [Generating RDF from External Tools](docs/external-rdf-generators.md) | The RDF/XML profile the importer understands — for schema generators and pipelines that emit Playground-compatible ontologies |
 | [GitHub OAuth Setup](docs/github-oauth-setup.md) | How to configure GitHub OAuth for one-click catalogue PRs |
 | [Embed Security](docs/embed-security.md) | Security model for the embeddable widget |
 | [Learning Content Guide](docs/learn-content-guide.md) | How to author courses, articles, quizzes, and ontology embeds for the Ontology School |
