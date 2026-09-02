@@ -765,8 +765,49 @@ body {
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 16px;
   min-width: 180px;
+  /* Never let a large ontology's legend blanket the canvas it sits on. */
+  max-height: 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.legend-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.legend-toggle:hover {
+  color: var(--text-primary);
+}
+
+.legend-toggle:focus-visible {
+  outline: 2px solid var(--ms-blue);
+  outline-offset: -2px;
+}
+
+.legend-count {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.legend-body {
+  padding: 0 16px 14px;
+  overflow-y: auto;
 }
 
 .legend-title {
@@ -774,7 +815,6 @@ body {
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
-  margin-bottom: 12px;
 }
 
 .legend-item {

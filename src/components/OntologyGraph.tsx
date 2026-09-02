@@ -4,6 +4,7 @@ import fcose from 'cytoscape-fcose';
 import type { Core, EventObject, LayoutOptions } from 'cytoscape';
 import { useAppStore } from '../store/appStore';
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, Download, Crosshair } from 'lucide-react';
+import { GraphLegend } from './GraphLegend';
 
 // Register fcose layout
 cytoscape.use(fcose);
@@ -576,15 +577,7 @@ export function OntologyGraph() {
         </button>
       </div>
 
-      <div className="graph-legend">
-        <div className="legend-title">Entity Types</div>
-        {currentOntology.entityTypes.map(entity => (
-          <div key={entity.id} className="legend-item">
-            <div className="legend-dot" style={{ backgroundColor: entity.color }} />
-            <span>{entity.icon} {entity.name}</span>
-          </div>
-        ))}
-      </div>
+      <GraphLegend entityTypes={currentOntology.entityTypes} />
     </div>
   );
 }
