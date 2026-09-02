@@ -28,6 +28,9 @@ jobs:
       - name: Validate RDF files
         run: npm run validate
 
+      - name: Lint
+        run: npm run lint
+
       - name: Type check
         run: npx tsc -b
 

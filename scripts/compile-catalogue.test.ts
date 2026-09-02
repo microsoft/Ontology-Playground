@@ -6,6 +6,8 @@ import { serializeToRDF } from '../src/lib/rdf/serializer';
 import { parseRDF } from '../src/lib/rdf/parser';
 
 const ROOT = join(import.meta.dirname, '..');
+/** Spawning `npx tsx` and compiling the whole catalogue exceeds Vitest's 5s default. */
+const CATALOGUE_BUILD_TIMEOUT_MS = 60000;
 const CATALOGUE_JSON = join(ROOT, 'public', 'catalogue.json');
 const COMMUNITY_DIR = join(ROOT, 'catalogue', 'community');
 
@@ -45,7 +47,7 @@ describe('catalogue compilation (end-to-end)', () => {
     const result = execSync('npx tsx scripts/compile-catalogue.ts', {
       cwd: ROOT,
       encoding: 'utf-8',
-      timeout: 30000,
+      timeout: CATALOGUE_BUILD_TIMEOUT_MS,
     });
     expect(result).toContain('official/cosmic-coffee');
     expect(result).toContain('official/ecommerce');
@@ -54,7 +56,7 @@ describe('catalogue compilation (end-to-end)', () => {
     expect(output.count).toBe(output.entries.length);
     expect(output.entries.length).toBeGreaterThan(0);
     expect(output.generatedAt).toBeTruthy();
-  });
+  }, CATALOGUE_BUILD_TIMEOUT_MS);
 
   it('catalogue.json entries have required fields', () => {
     const output = readCatalogue();
