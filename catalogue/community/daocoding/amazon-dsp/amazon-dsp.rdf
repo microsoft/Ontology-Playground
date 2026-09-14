@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/amazon-dsp/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/amazon-dsp/">
+
+    <owl:Ontology rdf:about="http://example.org/ontology/amazon-dsp/">
+        <rdfs:label>Amazon DSP</rdfs:label>
+        <rdfs:comment>Amazon's Delivery Service Partner program (launched 2018) as an ontology - the cleanest public example of a business-in-a-box: the franchisor supplies the brand, the demand, the playbook and a coach; the operator supplies leadership and a team. Growth means hiring drivers, not driving more routes yourself. The model is honest about its shape: startup around $10K, revenue potential $1M-$4.5M a year, and a hard fleet ceiling - every mechanic worth studying is on this map.</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ====================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ====================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Amazon">
+        <rdfs:label>Amazon</rdfs:label>
+        <rdfs:comment>The franchisor side of the box: supplies brand trust, package demand, the playbook, the coach and the stations, plus negotiated deals on the whole setup: branded vans, maintenance and insurance, a fuel program, uniforms, handheld devices, DOT compliance, recruiting tools, payroll and accounting, health benefits, legal support. Support in motion: a dedicated Business Coach, an area manager, and an on-road assistance team. Note what it keeps - the customer relationship and the demand pipe. Every package delivered grows the platform; the operator's margin is set by contract.</rdfs:comment>
+        <ont:icon>🅰️</ont:icon>
+        <ont:color>#FF9900</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Candidate">
+        <rdfs:label>Candidate</rdfs:label>
+        <rdfs:comment>Who Amazon recruits: leaders, not logistics experts - prior delivery experience is deliberately not required. The bet is character and coachability over resume; the selection process is deliberately intensive and lengthy, and successful candidates may pass through the Future DSP Program before receiving a rate card and offer. Around $10K in liquid capital and the drive to build a team is the bar.</rdfs:comment>
+        <ont:icon>🙋</ont:icon>
+        <ont:color>#8E44AD</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/DSPOwner">
+        <rdfs:label>DSPOwner</rdfs:label>
+        <rdfs:comment>The operator - a Candidate who was selected and trained. Their job is not driving; it is hiring, coaching and retaining drivers while running Amazon's system. The stage property tracks the ramp from training to a fully-scaled fleet.</rdfs:comment>
+        <ont:icon>🧑‍💼</ont:icon>
+        <ont:color>#9B59B6</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/DSPBusiness">
+        <rdfs:label>DSPBusiness</rdfs:label>
+        <rdfs:comment>The owner's company - a real business with payroll, insurance and P&amp;L, built inside Amazon's frame. Startup around $10K (a figure based on the first five vans); fully ramped means 20-40 vans and a team of 40-100 employees, with revenue potential of $1M-$4.5M and profit potential of $75K-$300K a year. The ceiling is part of the deal - study it, don't ignore it.</rdfs:comment>
+        <ont:icon>🏢</ont:icon>
+        <ont:color>#BF7FD6</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/BusinessCoach">
+        <rdfs:label>BusinessCoach</rdfs:label>
+        <rdfs:comment>Assigned by Amazon to every DSP - the support structure that makes "no experience required" an honest promise. Weekly cadence, playbook enforcement, escalation path.</rdfs:comment>
+        <ont:icon>🧭</ont:icon>
+        <ont:color>#E88B00</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Playbook">
+        <rdfs:label>Playbook</rdfs:label>
+        <rdfs:comment>The "box" in business-in-a-box: hiring, routing, safety, vehicle maintenance, payroll - decades of logistics practice compressed into a system the operator runs rather than invents. Two weeks of training to learn it: week one in a virtual classroom on the business, week two inside a delivery station working alongside existing owners.</rdfs:comment>
+        <ont:icon>📘</ont:icon>
+        <ont:color>#D97706</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Driver">
+        <rdfs:label>Driver</rdfs:label>
+        <rdfs:comment>The team the owner builds - drivers and helpers, hired, trained and paid by the DSP, not by Amazon. Headcount is the growth lever: an owner scales by adding drivers, not by driving more.</rdfs:comment>
+        <ont:icon>🧑‍✈️</ont:icon>
+        <ont:color>#2E86AB</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Van">
+        <rdfs:label>Van</rdfs:label>
+        <rdfs:comment>The branded fleet asset - leased through Amazon's program, wearing Amazon's livery. The fleet cap (around 40) is what bounds the whole business.</rdfs:comment>
+        <ont:icon>🚐</ont:icon>
+        <ont:color>#3498DB</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Route">
+        <rdfs:label>Route</rdfs:label>
+        <rdfs:comment>The daily unit of work - assigned by Amazon, not chosen by the DSP. Demand flows from the franchisor; the operator staffs it. That direction of flow is the model's power and its leash.</rdfs:comment>
+        <ont:icon>🗺️</ont:icon>
+        <ont:color>#5DADE2</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Package">
+        <rdfs:label>Package</rdfs:label>
+        <rdfs:comment>The thing delivered. Per-package economics are small and fixed; the business is volume, density and doing it ten thousand times without incident.</rdfs:comment>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#7FB3D5</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/DeliveryStation">
+        <rdfs:label>DeliveryStation</rdfs:label>
+        <rdfs:comment>The Amazon facility a DSP operates out of - packages arrive sorted, vans load at dawn. The DSP works inside Amazon's walls, literally.</rdfs:comment>
+        <ont:icon>🏭</ont:icon>
+        <ont:color>#F5A623</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Customer">
+        <rdfs:label>Customer</rdfs:label>
+        <rdfs:comment>The package recipient - and pointedly, Amazon's customer, not the DSP's. The operator owns the labor relationship; the franchisor owns the customer relationship. Notice who owns which.</rdfs:comment>
+        <ont:icon>🏠</ont:icon>
+        <ont:color>#85C1E9</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Scorecard">
+        <rdfs:label>Scorecard</rdfs:label>
+        <rdfs:comment>Amazon grades every DSP weekly - safety, quality, team health - into standings from Fantastic Plus down to Poor. The scorecard decides bonuses and, ultimately, whether the contract survives. Measurement is the franchisor's steering wheel.</rdfs:comment>
+        <ont:icon>📊</ont:icon>
+        <ont:color>#E67E22</ont:color>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/amazon-dsp/Payout">
+        <rdfs:label>Payout</rdfs:label>
+        <rdfs:comment>How money reaches the DSP: a fixed monthly payment based on the number of vans operated, a route rate based on route length, a per-package rate on successful deliveries, and performance-linked bonuses. Fixed margins on assigned volume - the revenue is real and the ceiling is structural.</rdfs:comment>
+        <ont:icon>💵</ont:icon>
+        <ont:color>#D4A017</ont:color>
+    </owl:Class>
+
+    <!-- =============== -->
+    <!-- Data Properties -->
+    <!-- =============== -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/amazon_programName">
+        <rdfs:label>programName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Amazon"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/amazon_programLaunched">
+        <rdfs:label>programLaunched</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Amazon"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/amazon_activePartners">
+        <rdfs:label>activePartners</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Amazon"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Thousands of DSPs worldwide - the model duplicates</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/candidate_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Candidate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/candidate_priorLogisticsExperience">
+        <rdfs:label>priorLogisticsExperience</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Candidate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment>Deliberately not required - the program bets on leadership, not resume</rdfs:comment>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/candidate_liquidCapital">
+        <rdfs:label>liquidCapital</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Candidate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspowner_ownerId">
+        <rdfs:label>ownerId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPOwner"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspowner_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPOwner"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspowner_stage">
+        <rdfs:label>stage</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPOwner"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>selected,training,launch,ramping,fully_ramped</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspbusiness_businessName">
+        <rdfs:label>businessName</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspbusiness_startupCost">
+        <rdfs:label>startupCost</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>As low as roughly $10K - the deliberately low door</rdfs:comment>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspbusiness_fleetSize">
+        <rdfs:label>fleetSize</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Capped around 40 vans - the structural ceiling</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspbusiness_annualRevenue">
+        <rdfs:label>annualRevenue</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>$1M-$4.5M potential fully ramped</rdfs:comment>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspbusiness_annualProfit">
+        <rdfs:label>annualProfit</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment>$75K-$300K potential fully ramped - the number the revenue line hides</rdfs:comment>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/dspbusiness_serviceType">
+        <rdfs:label>serviceType</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Standard and rural ramp to 20-40 vehicles; specialized to 10-30</rdfs:comment>
+        <ont:enumValues>standard,rural,specialized</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/businesscoach_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/BusinessCoach"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/businesscoach_dspPortfolio">
+        <rdfs:label>dspPortfolio</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/BusinessCoach"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/playbook_scope">
+        <rdfs:label>scope</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Playbook"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/playbook_trainingWeeks">
+        <rdfs:label>trainingWeeks</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Playbook"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Two weeks hands-on before launch</rdfs:comment>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/driver_driverId">
+        <rdfs:label>driverId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Driver"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/driver_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Driver"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/driver_role">
+        <rdfs:label>role</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Driver"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The brochure's own pair: drivers and helpers</rdfs:comment>
+        <ont:enumValues>driver,helper</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/driver_certifiedAt">
+        <rdfs:label>certifiedAt</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Driver"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/van_vanId">
+        <rdfs:label>vanId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Van"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/van_model">
+        <rdfs:label>model</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Van"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/van_branded">
+        <rdfs:label>branded</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Van"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment>Amazon livery on someone else's balance sheet</rdfs:comment>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/route_routeId">
+        <rdfs:label>routeId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Route"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/route_stops">
+        <rdfs:label>stops</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Route"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/route_routeDate">
+        <rdfs:label>routeDate</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Route"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/package_trackingId">
+        <rdfs:label>trackingId</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Package"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/package_size">
+        <rdfs:label>size</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Package"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>envelope,small,medium,large,oversize</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/deliverystation_stationCode">
+        <rdfs:label>stationCode</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DeliveryStation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/deliverystation_city">
+        <rdfs:label>city</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DeliveryStation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/customer_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/customer_address">
+        <rdfs:label>address</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Customer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/scorecard_week">
+        <rdfs:label>week</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Scorecard"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/scorecard_standing">
+        <rdfs:label>standing</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Scorecard"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Amazon's actual tiers</rdfs:comment>
+        <ont:enumValues>fantastic_plus,fantastic,great,fair,poor</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/scorecard_safetyScore">
+        <rdfs:label>safetyScore</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Scorecard"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/payout_amount">
+        <rdfs:label>amount</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Payout"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <ont:unit>USD</ont:unit>
+        <ont:propertyType>decimal</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/payout_basis">
+        <rdfs:label>basis</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Payout"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Fixed base + variable rates + scorecard bonus: the whole margin structure</rdfs:comment>
+        <ont:enumValues>fixed_monthly,per_route,per_package,bonus</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/amazon-dsp/payout_paidAt">
+        <rdfs:label>paidAt</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Payout"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+        <ont:propertyType>date</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ===================== -->
+    <!-- Relationships (Verbs) -->
+    <!-- ===================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-amazon-selects">
+        <rdfs:label>selects</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Amazon"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Candidate"/>
+        <rdfs:comment>Leaders, not logistics experts</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>amazon</ont:fromEntityId>
+        <ont:toEntityId>candidate</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-candidate-becomes">
+        <rdfs:label>becomes</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Candidate"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/DSPOwner"/>
+        <rdfs:comment>The transformation the whole program sells: ordinary person to business owner</rdfs:comment>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>candidate</ont:fromEntityId>
+        <ont:toEntityId>dspowner</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-owner-founds">
+        <rdfs:label>founds</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPOwner"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>dspowner</ont:fromEntityId>
+        <ont:toEntityId>dspbusiness</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-owner-coached-by">
+        <rdfs:label>coached by</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPOwner"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/BusinessCoach"/>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>dspowner</ont:fromEntityId>
+        <ont:toEntityId>businesscoach</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-amazon-provides">
+        <rdfs:label>provides</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Amazon"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Playbook"/>
+        <ont:cardinality>one-to-one</ont:cardinality>
+        <ont:fromEntityId>amazon</ont:fromEntityId>
+        <ont:toEntityId>playbook</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-business-follows">
+        <rdfs:label>follows</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Playbook"/>
+        <rdfs:comment>You do not invent the system; you run it</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>dspbusiness</ont:fromEntityId>
+        <ont:toEntityId>playbook</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-business-hires">
+        <rdfs:label>hires</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Driver"/>
+        <rdfs:comment>The growth lever: scale by adding people, not by working more yourself</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>dspbusiness</ont:fromEntityId>
+        <ont:toEntityId>driver</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-business-leases">
+        <rdfs:label>leases</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Van"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>dspbusiness</ont:fromEntityId>
+        <ont:toEntityId>van</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-business-operates-from">
+        <rdfs:label>operates from</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/DeliveryStation"/>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>dspbusiness</ont:fromEntityId>
+        <ont:toEntityId>deliverystation</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-driver-drives">
+        <rdfs:label>drives</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Driver"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Van"/>
+        <ont:cardinality>many-to-many</ont:cardinality>
+        <ont:fromEntityId>driver</ont:fromEntityId>
+        <ont:toEntityId>van</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-driver-runs">
+        <rdfs:label>runs</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Driver"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Route"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>driver</ont:fromEntityId>
+        <ont:toEntityId>route</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-amazon-assigns">
+        <rdfs:label>assigns</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Amazon"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Route"/>
+        <rdfs:comment>Demand flows from the franchisor - the operator staffs it, never sources it</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>amazon</ont:fromEntityId>
+        <ont:toEntityId>route</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-route-delivers">
+        <rdfs:label>delivers</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Route"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Package"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>route</ont:fromEntityId>
+        <ont:toEntityId>package</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-package-reaches">
+        <rdfs:label>reaches</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Package"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Customer"/>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>package</ont:fromEntityId>
+        <ont:toEntityId>customer</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-amazon-serves">
+        <rdfs:label>keeps</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Amazon"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Customer"/>
+        <rdfs:comment>The customer relationship stays with the franchisor - the deepest line on this map</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>amazon</ont:fromEntityId>
+        <ont:toEntityId>customer</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-amazon-pays">
+        <rdfs:label>pays</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Amazon"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Payout"/>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>amazon</ont:fromEntityId>
+        <ont:toEntityId>payout</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-payout-funds">
+        <rdfs:label>funds</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Payout"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>payout</ont:fromEntityId>
+        <ont:toEntityId>dspbusiness</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-scorecard-rates">
+        <rdfs:label>rates</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Scorecard"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/DSPBusiness"/>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>scorecard</ont:fromEntityId>
+        <ont:toEntityId>dspbusiness</ont:toEntityId>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/amazon-dsp/rel-scorecard-determines">
+        <rdfs:label>determines</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/amazon-dsp/Scorecard"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/amazon-dsp/Payout"/>
+        <rdfs:comment>Bonuses ride the standing; measurement is the steering wheel</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>scorecard</ont:fromEntityId>
+        <ont:toEntityId>payout</ont:toEntityId>
+    </owl:ObjectProperty>
+
+</rdf:RDF>
