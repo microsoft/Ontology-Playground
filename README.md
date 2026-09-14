@@ -207,11 +207,27 @@ GitHub Pages build so asset paths resolve correctly.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VITE_ENABLE_AI_BUILDER` | `false` | Enable the Azure OpenAI ontology builder |
+| `VITE_ENABLE_AI_BUILDER` | `false` | Enable the AI ontology builder (backed by the `api/` function) |
 | `VITE_ENABLE_LEGACY_FORMATS` | `false` | Enable JSON/YAML/CSV import/export formats |
 | `VITE_BASE_PATH` | `/` | Base path for the app (set automatically for GitHub Pages) |
 | `VITE_GITHUB_CLIENT_ID` | *(empty)* | GitHub OAuth App client ID for one-click catalogue PRs ([setup guide](docs/github-oauth-setup.md)) |
 | `VITE_GITHUB_OAUTH_BASE` | *(empty)* | External OAuth proxy URL for GitHub Pages deployments (e.g. Cloudflare Worker URL) |
+
+#### AI builder backend (`api/`)
+
+The `generate-ontology` function selects its language model provider from
+`AI_PROVIDER` (default `azure`). Configure these in `api/local.settings.json`
+(local) or the Function App application settings (deployed).
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AI_PROVIDER` | `azure` | Provider for the ontology builder: `azure` or `minimax` |
+| `AZURE_OPENAI_ENDPOINT` | *(empty)* | Azure OpenAI resource endpoint (required when `AI_PROVIDER=azure`) |
+| `AZURE_OPENAI_API_KEY` | *(empty)* | Azure OpenAI API key (required when `AI_PROVIDER=azure`) |
+| `AZURE_OPENAI_DEPLOYMENT` | `gpt-4o-mini` | Azure OpenAI deployment name |
+| `MINIMAX_BASE_URL` | `https://api.minimax.io/v1` | MiniMax OpenAI-compatible base URL (use `https://api.minimaxi.com/v1` for mainland China) |
+| `MINIMAX_API_KEY` | *(empty)* | MiniMax API key (required when `AI_PROVIDER=minimax`) |
+| `MINIMAX_MODEL` | `MiniMax-M3` | MiniMax model id |
 
 ## Project Structure
 
