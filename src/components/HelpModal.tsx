@@ -54,7 +54,7 @@ export function HelpModal({ onClose }: HelpModalProps) {
 
           <div className="feature-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <MessageSquare size={20} color="var(--ms-yellow)" />
+              <MessageSquare size={20} color="var(--ms-yellow-fg)" />
               <span className="feature-title" style={{ marginBottom: 0 }}>Ask Natural Language Questions</span>
             </div>
             <p className="feature-text">

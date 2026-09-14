@@ -108,7 +108,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                     borderRadius: 'var(--radius-sm)',
                     fontSize: 12,
                     fontWeight: 600,
-                    color: isLakehouse ? 'var(--ms-blue)' : 'var(--ms-yellow)'
+                    color: isLakehouse ? 'var(--ms-blue)' : 'var(--ms-yellow-fg)'
                   }}>
                     {isSemanticModel ? <BarChart3 size={14} /> : <Table size={14} />}
                     {isSemanticModel ? 'Semantic model' : 'Lakehouse'}
