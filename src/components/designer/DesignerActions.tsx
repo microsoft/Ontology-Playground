@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Download, AlertTriangle, CheckCircle, Upload, Github, FilePlus, Undo2, Redo2 } from 'lucide-react';
 import { useDesignerStore } from '../../store/designerStore';
 import type { ValidationError } from '../../store/designerStore';
@@ -11,6 +12,7 @@ import { SubmitCatalogueModal } from './SubmitCatalogueModal';
  * Toolbar buttons — rendered in the designer topbar.
  */
 export function DesignerToolbar() {
+  const { t } = useTranslation();
   const { ontology, validate, resetDraft, undo, redo, _past, _future } = useDesignerStore();
   const loadOntology = useAppStore((s) => s.loadOntology);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -59,28 +61,28 @@ export function DesignerToolbar() {
   return (
     <>
       <div className="designer-toolbar">
-        <button className="designer-toolbar-btn" onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)">
+        <button className="designer-toolbar-btn" onClick={undo} disabled={!canUndo} title={t('designer.undoTitle')}>
           <Undo2 size={14} />
         </button>
-        <button className="designer-toolbar-btn" onClick={redo} disabled={!canRedo} title="Redo (Ctrl+Shift+Z)">
+        <button className="designer-toolbar-btn" onClick={redo} disabled={!canRedo} title={t('designer.redoTitle')}>
           <Redo2 size={14} />
         </button>
         <div className="designer-toolbar-sep" />
-        <button className="designer-toolbar-btn" onClick={handleNewOntology} title="New ontology">
-          <FilePlus size={14} /> New
+        <button className="designer-toolbar-btn" onClick={handleNewOntology} title={t('designer.newTitle')}>
+          <FilePlus size={14} /> {t('designer.new')}
         </button>
-        <button className="designer-toolbar-btn" onClick={handleValidate} title="Validate ontology">
-          <CheckCircle size={14} /> Validate
+        <button className="designer-toolbar-btn" onClick={handleValidate} title={t('designer.validateTitle')}>
+          <CheckCircle size={14} /> {t('designer.validate')}
         </button>
         <div className="designer-toolbar-sep" />
-        <button className="designer-toolbar-btn" onClick={handleExportRDF} title="Export RDF">
-          <Download size={14} /> Export RDF
+        <button className="designer-toolbar-btn" onClick={handleExportRDF} title={t('designer.exportRdfTitle')}>
+          <Download size={14} /> {t('designer.exportRdf')}
         </button>
-        <button className="designer-toolbar-btn" onClick={handleLoadInPlayground} title="Load in Playground">
-          <Upload size={14} /> Load in Playground
+        <button className="designer-toolbar-btn" onClick={handleLoadInPlayground} title={t('designer.loadInPlaygroundTitle')}>
+          <Upload size={14} /> {t('designer.loadInPlayground')}
         </button>
-        <button className="designer-toolbar-btn submit" onClick={handleSubmitToCatalogue} title="Submit to community catalogue">
-          <Github size={14} /> Submit to Catalogue
+        <button className="designer-toolbar-btn submit" onClick={handleSubmitToCatalogue} title={t('designer.submitTitle')}>
+          <Github size={14} /> {t('designer.submitToCatalogue')}
         </button>
       </div>
 
@@ -95,6 +97,7 @@ export function DesignerToolbar() {
  * Validation feedback — rendered in the sidebar.
  */
 export function DesignerValidation() {
+  const { t } = useTranslation();
   const validationErrors = useDesignerStore((s) => s.validationErrors);
   const lastValidatedAt = useDesignerStore((s) => s._lastValidatedAt);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -114,7 +117,7 @@ export function DesignerValidation() {
     return (
       <div className="designer-validation-success">
         <div className="designer-validation-header" style={{ color: 'var(--ms-green, #16c60c)' }}>
-          <CheckCircle size={14} /> No issues found
+          <CheckCircle size={14} /> {t('designer.noIssues')}
         </div>
       </div>
     );
@@ -123,7 +126,7 @@ export function DesignerValidation() {
   return (
     <div className="designer-validation-errors">
       <div className="designer-validation-header">
-        <AlertTriangle size={14} /> {validationErrors.length} issue{validationErrors.length > 1 ? 's' : ''} to fix
+        <AlertTriangle size={14} /> {t('designer.issues', { count: validationErrors.length })}
       </div>
       <ul>
         {validationErrors.map((err, i) => (

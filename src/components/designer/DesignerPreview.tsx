@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
 import type { Core } from 'cytoscape';
@@ -11,6 +12,7 @@ import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../../lib
 cytoscape.use(fcose);
 
 export function DesignerPreview() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'graph' | 'rdf'>('graph');
   const { ontology, selectEntity, selectRelationship } = useDesignerStore();
   const theme = useAppStore((s) => s.theme);
@@ -22,13 +24,13 @@ export function DesignerPreview() {
           className={`designer-tab ${activeTab === 'graph' ? 'active' : ''}`}
           onClick={() => setActiveTab('graph')}
         >
-          Graph
+          {t('designer.graph')}
         </button>
         <button
           className={`designer-tab ${activeTab === 'rdf' ? 'active' : ''}`}
           onClick={() => setActiveTab('rdf')}
         >
-          RDF
+          {t('designer.rdfTab')}
         </button>
       </div>
 
@@ -229,6 +231,7 @@ interface RdfPreviewProps {
 }
 
 function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [importMode, setImportMode] = useState(false);
   const [importText, setImportText] = useState('');
@@ -239,7 +242,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
   try {
     rdfOutput = serializeToRDF(ontology as Parameters<typeof serializeToRDF>[0], []);
   } catch {
-    rdfOutput = '<!-- Ontology is incomplete or invalid; fix errors to see RDF output -->';
+    rdfOutput = t('designer.incompleteRdf');
   }
 
   const darkMode = useAppStore((s) => s.darkMode);
@@ -256,7 +259,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
   const handleImport = () => {
     const trimmed = importText.trim();
     if (!trimmed) {
-      setImportError('Paste RDF/XML content first');
+      setImportError(t('designer.pasteRdfFirst'));
       return;
     }
     try {
@@ -267,7 +270,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
       setImportError(null);
       onImported();
     } catch (err) {
-      setImportError(err instanceof Error ? err.message : 'Failed to parse RDF');
+      setImportError(err instanceof Error ? err.message : t('designer.failedParseRdf'));
     }
   };
 
@@ -283,20 +286,20 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
         {importMode ? (
           <>
             <button className="designer-add-btn small" onClick={handleImport}>
-              Load into Designer
+              {t('designer.loadIntoDesigner')}
             </button>
             <button className="designer-add-btn small secondary" onClick={handleCancel}>
-              Cancel
+              {t('designer.cancel')}
             </button>
           </>
         ) : (
           <>
-            <button className="designer-add-btn small" onClick={() => { setImportMode(true); setImportText(rdfOutput); }}>
-              Edit RDF
-            </button>
-            <button className="designer-add-btn small" onClick={handleCopy}>
-              {copied ? 'Copied!' : 'Copy RDF'}
-            </button>
+              <button className="designer-add-btn small" onClick={() => { setImportMode(true); setImportText(rdfOutput); }}>
+                {t('designer.editRdf')}
+              </button>
+              <button className="designer-add-btn small" onClick={handleCopy}>
+                {copied ? t('share.copied') : t('designer.copyRdf')}
+              </button>
           </>
         )}
       </div>
@@ -308,7 +311,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
           className="designer-rdf-source designer-rdf-textarea"
           value={importText}
           onChange={(e) => { setImportText(e.target.value); setImportError(null); }}
-          placeholder="Paste or edit RDF/XML content here…"
+          placeholder={t('designer.rdfPlaceholder')}
           autoFocus
           spellCheck={false}
         />

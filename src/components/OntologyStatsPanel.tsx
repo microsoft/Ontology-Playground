@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BarChart2, ChevronDown, ChevronUp, Network, Link2, Layers } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 
 export function OntologyStatsPanel() {
+  const { t } = useTranslation();
   const { currentOntology } = useAppStore();
   const [expanded, setExpanded] = useState(true);
 
@@ -30,7 +32,7 @@ export function OntologyStatsPanel() {
       >
         <span className="stats-panel-title">
           <BarChart2 size={14} />
-          Ontology Insights
+          {t('stats.title')}
         </span>
         {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </button>
@@ -42,17 +44,17 @@ export function OntologyStatsPanel() {
             <div className="stat-card stat-card--blue">
               <Layers size={16} className="stat-card-icon" />
               <div className="stat-card-value">{stats.entityCount}</div>
-              <div className="stat-card-label">Entities</div>
+              <div className="stat-card-label">{t('stats.entities')}</div>
             </div>
             <div className="stat-card stat-card--purple">
               <Link2 size={16} className="stat-card-icon" />
               <div className="stat-card-value">{stats.relationshipCount}</div>
-              <div className="stat-card-label">Relationships</div>
+              <div className="stat-card-label">{t('stats.relationships')}</div>
             </div>
             <div className="stat-card stat-card--green">
               <Network size={16} className="stat-card-icon" />
               <div className="stat-card-value">{stats.totalProperties}</div>
-              <div className="stat-card-label">Properties</div>
+              <div className="stat-card-label">{t('stats.properties')}</div>
             </div>
           </div>
 

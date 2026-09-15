@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, BookOpen, ChevronRight, Sun, Moon, FlaskConical, GraduationCap, Play, X } from 'lucide-react';
 import { AppFooter } from './AppFooter';
 import { useAppStore, themeClass } from '../store/appStore';
@@ -13,6 +14,7 @@ interface LearnPageProps {
 }
 
 export function LearnPage({ route }: LearnPageProps) {
+  const { t } = useTranslation();
   const { darkMode, toggleDarkMode, theme } = useAppStore();
   const [manifest, setManifest] = useState<LearnManifest | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export function LearnPage({ route }: LearnPageProps) {
   if (error) {
     return (
       <div className={`learn-page ${themeClass(theme)}`}>
-        <div className="learn-error">Failed to load learning content: {error}</div>
+        <div className="learn-error">{t('learn.loadError', { error })}</div>
       </div>
     );
   }
@@ -44,7 +46,7 @@ export function LearnPage({ route }: LearnPageProps) {
   if (!manifest) {
     return (
       <div className={`learn-page ${themeClass(theme)}`}>
-        <div className="learn-loading">Loading…</div>
+        <div className="learn-loading">{t('learn.loading')}</div>
       </div>
     );
   }
@@ -64,10 +66,10 @@ export function LearnPage({ route }: LearnPageProps) {
     backLabel = course.title;
     backAction = () => navigate({ page: 'learn', courseSlug: course.slug });
   } else if (course) {
-    backLabel = 'All courses';
+    backLabel = t('learn.allCourses');
     backAction = () => navigate({ page: 'learn' });
   } else {
-    backLabel = 'Playground';
+    backLabel = t('learn.playground');
     backAction = () => navigate({ page: 'home' });
   }
 
@@ -77,16 +79,16 @@ export function LearnPage({ route }: LearnPageProps) {
         <button
           className="learn-back-btn"
           onClick={backAction}
-          title={`Back to ${backLabel}`}
+          title={t('learn.backTo', { label: backLabel })}
         >
           <ArrowLeft size={20} />
           <span>{backLabel}</span>
         </button>
         <button className="learn-header-title" onClick={() => navigate({ page: 'learn' })}>
           <BookOpen size={20} />
-          <span>Ontology School</span>
+          <span>{t('learn.school')}</span>
         </button>
-        <button className="icon-btn" onClick={toggleDarkMode} title="Toggle Theme">
+        <button className="icon-btn" onClick={toggleDarkMode} title={t('learn.toggleTheme')}>
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </header>
@@ -107,6 +109,7 @@ export function LearnPage({ route }: LearnPageProps) {
 // -------------------------------------------------------------------
 
 function CourseCatalogue({ courses }: { courses: LearnCourse[] }) {
+  const { t } = useTranslation();
   const orderedCourses = useMemo(() => {
     const pinnedSlug = 'ontology-fundamentals';
     return [...courses].sort((a, b) => {
@@ -120,8 +123,7 @@ function CourseCatalogue({ courses }: { courses: LearnCourse[] }) {
     <div className="learn-index">
       <div className="learn-index-hero">
         <p>
-          Learning paths and hands-on labs to help you understand and build
-          ontologies for Microsoft Fabric IQ.
+          {t('learn.catalogueHero')}
         </p>
       </div>
       <div className="learn-card-grid">
@@ -135,16 +137,16 @@ function CourseCatalogue({ courses }: { courses: LearnCourse[] }) {
               <span className="learn-card-icon">{c.icon}</span>
               <span className={`learn-card-badge learn-card-badge--${c.type}`}>
                 {c.type === 'lab' ? <FlaskConical size={12} /> : <GraduationCap size={12} />}
-                {c.type === 'lab' ? 'Lab' : 'Path'}
+                {c.type === 'lab' ? t('learn.lab') : t('learn.path')}
               </span>
             </div>
             <h2>{c.title}</h2>
             <p>{c.description}</p>
             <span className="learn-card-meta">
-              {c.articles.length} {c.type === 'lab' ? 'steps' : 'articles'}
+              {t(c.type === 'lab' ? 'learn.steps' : 'learn.articles', { count: c.articles.length })}
             </span>
             <span className="learn-card-cta">
-              {c.type === 'lab' ? 'Start lab' : 'Start learning'} <ChevronRight size={16} />
+              {c.type === 'lab' ? t('learn.startLab') : t('learn.startLearning')} <ChevronRight size={16} />
             </span>
           </button>
         ))}
@@ -155,6 +157,7 @@ function CourseCatalogue({ courses }: { courses: LearnCourse[] }) {
 }
 
 function CourseDetail({ course }: { course: LearnCourse }) {
+  const { t } = useTranslation();
   return (
     <div className="learn-index">
       <div className="learn-index-hero">
@@ -162,7 +165,7 @@ function CourseDetail({ course }: { course: LearnCourse }) {
           <span className="learn-course-icon">{course.icon}</span>
           <span className={`learn-card-badge learn-card-badge--${course.type}`}>
             {course.type === 'lab' ? <FlaskConical size={12} /> : <GraduationCap size={12} />}
-            {course.type === 'lab' ? 'Lab' : 'Learning Path'}
+            {course.type === 'lab' ? t('learn.lab') : t('learn.learningPath')}
           </span>
         </div>
         <h1>{course.title}</h1>
@@ -176,15 +179,15 @@ function CourseDetail({ course }: { course: LearnCourse }) {
             onClick={() => navigate({ page: 'learn', courseSlug: course.slug, articleSlug: a.slug })}
           >
             <span className="learn-card-order">
-              {course.type === 'lab' ? (a.order === 1 ? 'Overview' : `Step ${a.order - 1}`) : a.order}
+              {course.type === 'lab' ? (a.order === 1 ? t('learn.overview') : t('learn.step', { n: a.order - 1 })) : a.order}
             </span>
             <h2>{a.title}</h2>
             {a.reviewStatus === 'under-human-review' && (
-              <span className="learn-card-review-badge">🔍 Under human review</span>
+              <span className="learn-card-review-badge">{t('learn.underReview')}</span>
             )}
             <p>{a.description}</p>
             <span className="learn-card-cta">
-              {course.type === 'lab' ? 'Open step' : 'Read article'} <ChevronRight size={16} />
+              {course.type === 'lab' ? t('learn.openStep') : t('learn.readArticle')} <ChevronRight size={16} />
             </span>
           </button>
         ))}
@@ -207,6 +210,7 @@ function ArticleView({
   darkMode: boolean;
 }) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   // Auto-open presentation if URL has ?slide= param
   const [presenting, setPresenting] = useState(() => {
     const hash = window.location.hash;
@@ -291,10 +295,10 @@ function ArticleView({
         <button
           className="learn-present-btn"
           onClick={() => setPresenting(true)}
-          title="Present as slides"
+          title={t('learn.presentAsSlides')}
         >
           <Play size={16} />
-          <span>Present</span>
+          <span>{t('learn.present')}</span>
         </button>
       </div>
       <ArticleContent article={article} contentRef={contentRef} />
@@ -321,7 +325,7 @@ function ArticleView({
           >
             <ArrowLeft size={16} />
             <div>
-              <span className="learn-nav-label">Previous</span>
+              <span className="learn-nav-label">{t('learn.previous')}</span>
               <span className="learn-nav-title">{prevArticle.title}</span>
             </div>
           </button>
@@ -334,7 +338,7 @@ function ArticleView({
             onClick={() => navigate({ page: 'learn', courseSlug: course.slug, articleSlug: nextArticle.slug })}
           >
             <div>
-              <span className="learn-nav-label">Next</span>
+              <span className="learn-nav-label">{t('learn.next')}</span>
               <span className="learn-nav-title">{nextArticle.title}</span>
             </div>
             <ChevronRight size={16} />
@@ -393,6 +397,7 @@ function renderInlineCode(text: string): { __html: string } {
 }
 
 export function QuizSlide({ quiz }: { quiz: QuizData }) {
+  const { t } = useTranslation();
   const [answered, setAnswered] = useState<number | null>(null);
   const chose = answered !== null;
   const isCorrect = chose && quiz.options[answered].correct;
@@ -429,8 +434,8 @@ export function QuizSlide({ quiz }: { quiz: QuizData }) {
       {chose && (
         <div className={`quiz-result ${isCorrect ? 'quiz-result--correct' : 'quiz-result--wrong'}`}>
           {isCorrect
-            ? <><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Correct!</>
-            : <><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Not quite</>}
+            ? <><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> {t('learn.correct')}</>
+            : <><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> {t('learn.notQuite')}</>}
         </div>
       )}
       {chose && quiz.explanation && (
@@ -573,6 +578,7 @@ function PresentationMode({
   courseSlug: string;
 }) {
   const slides = useMemo(() => splitIntoSlides(article.html, article.title), [article.html, article.title]);
+  const { t } = useTranslation();
   const total = slides.length;
 
   // Read initial slide from URL (?slide=N, 1-based for humans)
@@ -673,13 +679,13 @@ function PresentationMode({
   return (
     <div className={`presentation-overlay ${presenterDark ? '' : 'light-theme'}`}>
       <div className="presentation-chrome">
-        <button className="presentation-close" onClick={onClose} title="Exit (Esc)">
+        <button className="presentation-close" onClick={onClose} title={t('learn.exitEsc')}>
           <X size={20} />
         </button>
         <button
           className="presentation-theme-toggle"
           onClick={() => setPresenterDark((d) => !d)}
-          title="Toggle theme"
+          title={t('learn.toggleTheme')}
         >
           {presenterDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
@@ -690,7 +696,7 @@ function PresentationMode({
           className="presentation-nav presentation-nav--prev"
           onClick={goPrev}
           disabled={slideIndex === 0 && !prevArticle}
-          aria-label={slideIndex === 0 && prevArticle ? `Previous: ${prevArticle.title}` : 'Previous slide'}
+          aria-label={slideIndex === 0 && prevArticle ? t('learn.previousOf', { title: prevArticle.title }) : t('learn.previousSlide')}
         >
           <ArrowLeft size={28} />
         </button>
@@ -714,7 +720,7 @@ function PresentationMode({
           className="presentation-nav presentation-nav--next"
           onClick={goNext}
           disabled={slideIndex === total - 1 && !nextArticle}
-          aria-label={slideIndex === total - 1 && nextArticle ? `Next: ${nextArticle.title}` : 'Next slide'}
+          aria-label={slideIndex === total - 1 && nextArticle ? t('learn.nextOf', { title: nextArticle.title }) : t('learn.nextSlide')}
         >
           <ChevronRight size={28} />
         </button>
@@ -730,10 +736,10 @@ function PresentationMode({
         <span className="presentation-counter">
           {slideIndex + 1} / {total}
           {slideIndex === total - 1 && nextArticle && (
-            <span className="presentation-next-hint"> — next: {nextArticle.title}</span>
+            <span className="presentation-next-hint">{t('learn.nextHint', { title: nextArticle.title })}</span>
           )}
           {slideIndex === 0 && prevArticle && (
-            <span className="presentation-next-hint"> — prev: {prevArticle.title}</span>
+            <span className="presentation-next-hint">{t('learn.prevHint', { title: prevArticle.title })}</span>
           )}
         </span>
       </div>

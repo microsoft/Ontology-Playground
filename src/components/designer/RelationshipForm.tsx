@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useDesignerStore } from '../../store/designerStore';
 import type { Relationship } from '../../data/ontology';
 
@@ -14,6 +15,7 @@ const CARDINALITY_LABELS: Record<Relationship['cardinality'], string> = {
 };
 
 export function RelationshipForm() {
+  const { t } = useTranslation();
   const {
     ontology,
     selectedRelationshipId,
@@ -40,22 +42,22 @@ export function RelationshipForm() {
   return (
     <div className="designer-relationship-list">
       <div className="designer-section-header">
-        <h3>Relationships ({ontology.relationships.length})</h3>
+        <h3>{t('designer.relationships', { count: ontology.relationships.length })}</h3>
         <button
           className="designer-add-btn"
           onClick={handleAdd}
           disabled={entities.length < 1}
-          title={entities.length < 1 ? 'Create at least one entity to add a relationship' : 'Add relationship'}
+          title={entities.length < 1 ? t('designer.addRelNeedsEntity') : t('designer.addRelationship')}
         >
-          <Plus size={14} /> Add
+          <Plus size={14} /> {t('designer.add')}
         </button>
       </div>
 
       {ontology.relationships.length === 0 && (
         <div className="designer-empty">
           {entities.length < 1
-            ? 'Create at least one entity first.'
-            : 'No relationships yet. Click "Add" to create one.'}
+            ? t('designer.needEntityFirst')
+            : t('designer.noRelationships')}
         </div>
       )}
 
@@ -79,7 +81,7 @@ export function RelationshipForm() {
               <button
                 className="designer-delete-btn"
                 onClick={(e) => { e.stopPropagation(); removeRelationship(rel.id); }}
-                title="Delete relationship"
+                title={t('designer.deleteRelationshipTitle')}
               >
                 <Trash2 size={14} />
               </button>
@@ -89,19 +91,19 @@ export function RelationshipForm() {
               <div className="designer-rel-body">
                 {/* Name */}
                 <label className="designer-field">
-                  <span>Name</span>
+                  <span>{t('designer.name')}</span>
                   <input
                     type="text"
                     value={rel.name}
                     onChange={(e) => updateRelationship(rel.id, { name: e.target.value })}
-                    placeholder="Relationship name"
+                    placeholder={t('designer.relationshipNamePlaceholder')}
                   />
                 </label>
 
                 {/* Source / Target */}
                 <div className="designer-field-row">
                   <label className="designer-field">
-                    <span>From</span>
+                    <span>{t('designer.from')}</span>
                     <select
                       value={rel.from}
                       onChange={(e) => updateRelationship(rel.id, { from: e.target.value })}
@@ -112,7 +114,7 @@ export function RelationshipForm() {
                     </select>
                   </label>
                   <label className="designer-field">
-                    <span>To</span>
+                    <span>{t('designer.to')}</span>
                     <select
                       value={rel.to}
                       onChange={(e) => updateRelationship(rel.id, { to: e.target.value })}
@@ -126,7 +128,7 @@ export function RelationshipForm() {
 
                 {/* Cardinality */}
                 <label className="designer-field">
-                  <span>Cardinality</span>
+                  <span>{t('designer.cardinality')}</span>
                   <select
                     value={rel.cardinality}
                     onChange={(e) =>
@@ -141,24 +143,24 @@ export function RelationshipForm() {
 
                 {/* Description */}
                 <label className="designer-field">
-                  <span>Description</span>
+                  <span>{t('designer.description')}</span>
                   <textarea
                     rows={2}
                     value={rel.description ?? ''}
                     onChange={(e) => updateRelationship(rel.id, { description: e.target.value })}
-                    placeholder="Describe this relationship"
+                    placeholder={t('designer.relationshipDescPlaceholder')}
                   />
                 </label>
 
                 {/* Attributes */}
                 <div className="designer-field">
                   <div className="designer-section-header">
-                    <span>Attributes ({rel.attributes?.length ?? 0})</span>
+                    <span>{t('designer.attributes', { count: rel.attributes?.length ?? 0 })}</span>
                     <button
                       className="designer-add-btn small"
                       onClick={() => addRelationshipAttribute(rel.id)}
                     >
-                      <Plus size={12} /> Add
+                      <Plus size={12} /> {t('designer.add')}
                     </button>
                   </div>
                   {(rel.attributes ?? []).map((attr, idx) => (
@@ -170,7 +172,7 @@ export function RelationshipForm() {
                         onChange={(e) =>
                           updateRelationshipAttribute(rel.id, idx, { name: e.target.value })
                         }
-                        placeholder="Attribute name"
+                        placeholder={t('designer.attributeNamePlaceholder')}
                       />
                       <input
                         className="designer-prop-type"
@@ -179,12 +181,12 @@ export function RelationshipForm() {
                         onChange={(e) =>
                           updateRelationshipAttribute(rel.id, idx, { type: e.target.value })
                         }
-                        placeholder="Type"
+                        placeholder={t('designer.typePlaceholder')}
                       />
                       <button
                         className="designer-delete-btn small"
                         onClick={() => removeRelationshipAttribute(rel.id, idx)}
-                        title="Remove attribute"
+                        title={t('designer.removeAttributeTitle')}
                       >
                         <Trash2 size={12} />
                       </button>

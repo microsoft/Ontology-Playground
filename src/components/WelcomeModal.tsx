@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Sparkles, GitBranch, Database, MessageSquare } from 'lucide-react';
 
 interface WelcomeModalProps {
@@ -6,6 +7,7 @@ interface WelcomeModalProps {
 }
 
 export function WelcomeModal({ onClose }: WelcomeModalProps) {
+  const { t } = useTranslation();
   return (
     <motion.div
       className="modal-overlay"
@@ -21,9 +23,9 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
       >
         <div className="modal-header">
           <div className="modal-logo">☕</div>
-          <h1 className="modal-title">Welcome to Ontology Playground (Preview)</h1>
+          <h1 className="modal-title">{t('welcome.title')}</h1>
           <p className="modal-subtitle">
-            Explore Microsoft Fabric IQ Ontology through the lens of Fourth Coffee
+            {t('welcome.subtitle')}
           </p>
         </div>
 
@@ -32,9 +34,9 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
             <div className="feature-icon">
               <Sparkles size={24} color="#0078D4" />
             </div>
-            <div className="feature-title">Entity Types</div>
+            <div className="feature-title">{t('welcome.featureEntityTypes')}</div>
             <div className="feature-text">
-              Discover reusable logical models like Customer, Product, and Order
+              {t('welcome.featureEntityTypesText')}
             </div>
           </div>
 
@@ -42,9 +44,9 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
             <div className="feature-icon">
               <GitBranch size={24} color="#5C2D91" />
             </div>
-            <div className="feature-title">Relationships</div>
+            <div className="feature-title">{t('welcome.featureRelationships')}</div>
             <div className="feature-text">
-              See how entities connect with typed, directional links
+              {t('welcome.featureRelationshipsText')}
             </div>
           </div>
 
@@ -52,9 +54,9 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
             <div className="feature-icon">
               <Database size={24} color="#107C10" />
             </div>
-            <div className="feature-title">Data Bindings</div>
+            <div className="feature-title">{t('welcome.featureDataBindings')}</div>
             <div className="feature-text">
-              Connect ontology concepts to real data platform sources
+              {t('welcome.featureDataBindingsText')}
             </div>
           </div>
 
@@ -62,9 +64,9 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
             <div className="feature-icon">
               <MessageSquare size={24} color="#FFB900" />
             </div>
-            <div className="feature-title">NL Queries</div>
+            <div className="feature-title">{t('welcome.featureNLQueries')}</div>
             <div className="feature-text">
-              Ask questions in natural language and traverse the graph
+              {t('welcome.featureNLQueriesText')}
             </div>
           </div>
         </div>
@@ -72,7 +74,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
         <div className="modal-actions">
           <button className="btn btn-primary" onClick={onClose}>
             <Sparkles size={18} />
-            Start Exploring
+            {t('welcome.startExploring')}
           </button>
         </div>
 
@@ -82,7 +84,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
           fontSize: 12, 
           color: 'var(--text-tertiary)' 
         }}>
-          Complete quests to earn badges and learn about Microsoft Fabric IQ Ontology
+          {t('welcome.footer')}
         </div>
       </motion.div>
     </motion.div>

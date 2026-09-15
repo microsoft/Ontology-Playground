@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { X, MousePointer, Target, MessageSquare, Link2, Lightbulb, Command } from 'lucide-react';
 
 interface HelpModalProps {
@@ -6,6 +7,7 @@ interface HelpModalProps {
 }
 
 export function HelpModal({ onClose }: HelpModalProps) {
+  const { t } = useTranslation();
   return (
     <motion.div
       className="modal-overlay"
@@ -23,7 +25,7 @@ export function HelpModal({ onClose }: HelpModalProps) {
         style={{ maxWidth: 700 }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 600 }}>How to Use Ontology Playground (Preview)</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 600 }}>{t('help.title')}</h2>
           <button className="icon-btn" onClick={onClose}>
             <X size={20} />
           </button>
@@ -33,45 +35,33 @@ export function HelpModal({ onClose }: HelpModalProps) {
           <div className="feature-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <MousePointer size={20} color="var(--ms-blue)" />
-              <span className="feature-title" style={{ marginBottom: 0 }}>Explore the Graph</span>
+              <span className="feature-title" style={{ marginBottom: 0 }}>{t('help.exploreGraph')}</span>
             </div>
-            <p className="feature-text">
-              Click on any <strong>entity type</strong> (colored node) to see its properties, relationships, and data bindings. 
-              Click on <strong>relationship lines</strong> to see how entities connect. Use the controls in the bottom-left to zoom and reset the layout.
-            </p>
+            <p className="feature-text" dangerouslySetInnerHTML={{ __html: t('help.exploreGraphText') }} />
           </div>
 
           <div className="feature-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <Target size={20} color="var(--ms-purple)" />
-              <span className="feature-title" style={{ marginBottom: 0 }}>Complete Quests</span>
+              <span className="feature-title" style={{ marginBottom: 0 }}>{t('help.completeQuests')}</span>
             </div>
-            <p className="feature-text">
-              Select a quest from the left panel to start a guided journey. Follow the instructions to click on specific entities 
-              or relationships. Complete all steps to earn <strong>badges</strong> and <strong>points</strong>!
-            </p>
+            <p className="feature-text" dangerouslySetInnerHTML={{ __html: t('help.completeQuestsText') }} />
           </div>
 
           <div className="feature-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <MessageSquare size={20} color="var(--ms-yellow)" />
-              <span className="feature-title" style={{ marginBottom: 0 }}>Ask Natural Language Questions</span>
+              <span className="feature-title" style={{ marginBottom: 0 }}>{t('help.askNL')}</span>
             </div>
-            <p className="feature-text">
-              Use the query playground in the bottom-right to ask questions like "Show me Gold tier customers" or 
-              "Which products come from Ethiopia?". The graph will highlight relevant entities and relationships.
-            </p>
+            <p className="feature-text" dangerouslySetInnerHTML={{ __html: t('help.askNLText') }} />
           </div>
 
           <div className="feature-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <Link2 size={20} color="var(--ms-green)" />
-              <span className="feature-title" style={{ marginBottom: 0 }}>View Data Bindings</span>
+              <span className="feature-title" style={{ marginBottom: 0 }}>{t('help.viewDataBindings')}</span>
             </div>
-            <p className="feature-text">
-              When you select an entity type, the inspector shows how ontology properties map to real data sources in a data lakehouse, 
-              including lakehouse tables and semantic models.
-            </p>
+            <p className="feature-text" dangerouslySetInnerHTML={{ __html: t('help.viewDataBindingsText') }} />
           </div>
 
           <div style={{ 
@@ -84,32 +74,29 @@ export function HelpModal({ onClose }: HelpModalProps) {
           }}>
             <Lightbulb size={20} color="var(--ms-blue)" style={{ flexShrink: 0, marginTop: 2 }} />
             <div>
-              <strong style={{ color: 'var(--ms-blue)' }}>About Microsoft Fabric IQ Ontology</strong>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4, lineHeight: 1.5 }}>
-                An ontology is a shared, machine-understandable vocabulary of your business. It defines entity types (like Customer, Product), 
-                their properties, and relationships. This demo uses a fictional "Fourth Coffee" to illustrate these concepts.
-              </p>
+              <strong style={{ color: 'var(--ms-blue)' }}>{t('help.aboutFabricIQ')}</strong>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4, lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: t('help.aboutFabricIQText') }} />
             </div>
           </div>
 
           <div className="feature-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
               <Command size={20} color="var(--ms-blue)" />
-              <span className="feature-title" style={{ marginBottom: 0 }}>Keyboard Shortcuts</span>
+              <span className="feature-title" style={{ marginBottom: 0 }}>{t('help.keyboardShortcuts')}</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '6px 16px', fontSize: 13, color: 'var(--text-secondary)' }}>
-              <kbd className="help-kbd">⌘K</kbd><span>Open command palette</span>
-              <kbd className="help-kbd">?</kbd><span>Open this help dialog</span>
-              <kbd className="help-kbd">Esc</kbd><span>Close any dialog</span>
-              <kbd className="help-kbd">↑ ↓</kbd><span>Navigate palette results</span>
-              <kbd className="help-kbd">↵</kbd><span>Select palette command</span>
+              <kbd className="help-kbd">⌘K</kbd><span>{t('help.kbdOpenPalette')}</span>
+              <kbd className="help-kbd">?</kbd><span>{t('help.kbdOpenHelp')}</span>
+              <kbd className="help-kbd">Esc</kbd><span>{t('help.kbdCloseDialog')}</span>
+              <kbd className="help-kbd">↑ ↓</kbd><span>{t('help.kbdNavigatePalette')}</span>
+              <kbd className="help-kbd">↵</kbd><span>{t('help.kbdSelectPalette')}</span>
             </div>
           </div>
         </div>
 
         <div style={{ marginTop: 24, textAlign: 'center' }}>
           <button className="btn btn-primary" onClick={onClose}>
-            Got it!
+            {t('help.gotIt')}
           </button>
         </div>
       </motion.div>

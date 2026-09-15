@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 
 export function SearchFilter() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [showEntities, setShowEntities] = useState(true);
@@ -87,7 +89,7 @@ export function SearchFilter() {
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <Filter size={14} />
-          Search & Filter
+          {t('search.title')}
         </span>
         {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </div>
@@ -116,7 +118,7 @@ export function SearchFilter() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search entities, properties..."
+                  placeholder={t('search.placeholder')}
                   style={{
                     width: '100%',
                     padding: '8px 30px 8px 32px',
@@ -162,7 +164,7 @@ export function SearchFilter() {
                   color: showEntities ? 'white' : 'var(--text-secondary)'
                 }}
               >
-                Entities ({currentOntology.entityTypes.length})
+                {t('search.entities', { count: currentOntology.entityTypes.length })}
               </button>
               <button
                 onClick={() => setShowRelationships(!showRelationships)}
@@ -176,12 +178,12 @@ export function SearchFilter() {
                   color: showRelationships ? 'white' : 'var(--text-secondary)'
                 }}
               >
-                Relationships ({currentOntology.relationships.length})
+                {t('search.relationships', { count: currentOntology.relationships.length })}
               </button>
             </div>
 
             {/* Results or Quick Access */}
-            <div style={{ maxHeight: 200, overflowY: 'auto' }} tabIndex={0} aria-label="Search results">
+            <div style={{ maxHeight: 200, overflowY: 'auto' }} tabIndex={0} aria-label={t('search.results')}>
               {searchQuery && !hasResults && (
                 <div style={{ 
                   padding: 12, 
@@ -189,7 +191,7 @@ export function SearchFilter() {
                   color: 'var(--text-tertiary)',
                   fontSize: 11
                 }}>
-                  No results for "{searchQuery}"
+                  {t('search.noResults', { query: searchQuery })}
                 </div>
               )}
 
@@ -222,7 +224,7 @@ export function SearchFilter() {
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-primary)' }}>{entity.name}</div>
                     <div style={{ fontSize: 9, color: 'var(--text-secondary)' }}>
-                      {entity.properties.length} properties
+                      {t('search.properties', { count: entity.properties.length })}
                     </div>
                   </div>
                 </motion.div>

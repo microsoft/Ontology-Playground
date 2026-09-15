@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppStore, THEME_OPTIONS } from '../store/appStore';
 import { useRoute } from '../hooks/useRoute';
 import { routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
 import { Palette, Check, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info } from 'lucide-react';
+import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
 interface HeaderProps {
   onAboutClick: () => void;
@@ -19,6 +21,7 @@ interface HeaderProps {
 }
 
 export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImportExportClick, onGalleryClick, onDesignerClick, onLearnClick, onNLBuilderClick, onSummaryClick }: HeaderProps) {
+  const { t } = useTranslation();
   const { theme, setTheme, totalPoints, earnedBadges, currentOntology, dataBindings } = useAppStore();
   const route = useRoute();
   const [shareStatus, setShareStatus] = useState<'idle' | 'copying' | 'copied' | 'downloaded'>('idle');
@@ -27,9 +30,17 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const themeMenuRef = useRef<HTMLDivElement>(null);
 
-  const ontologyDisplayName = currentOntology.name || 'Untitled Ontology';
+  const ontologyDisplayName = currentOntology.name || t('header.untitled');
 
   const shareableId = route.page === 'catalogue' && route.ontologyId ? route.ontologyId : null;
+
+  const shareLabel = shareStatus === 'copied'
+    ? t('share.copied')
+    : shareStatus === 'downloaded'
+      ? t('share.downloaded')
+      : shareStatus === 'copying'
+        ? t('share.encoding')
+        : t('share.share');
 
   const handleShare = async () => {
     if (shareStatus === 'copying') return;
@@ -69,8 +80,6 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
     }
   };
 
-  const shareLabel = shareStatus === 'copied' ? 'Copied!' : shareStatus === 'downloaded' ? 'Downloaded RDF' : shareStatus === 'copying' ? 'Encoding…' : 'Share';
-
   // Close menu when clicking outside
   useEffect(() => {
     if (!menuOpen) return;
@@ -109,7 +118,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         </svg>
         <div>
           <span className="header-title">
-            Ontology Playground <span className="header-title-preview">(Preview)</span>
+            Ontology Playground <span className="header-title-preview">{t('header.preview')}</span>
           </span>
           <span className="header-context">{ontologyDisplayName}</span>
         </div>
@@ -119,12 +128,12 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         <div className="stat-item">
           <Trophy size={18} />
           <span className="stat-value">{totalPoints}</span>
-          <span>points</span>
+          <span>{t('header.points')}</span>
         </div>
         <div className="stat-item">
           <span style={{ fontSize: 18 }}>🏆</span>
           <span className="stat-value">{earnedBadges.length}</span>
-          <span>badges</span>
+          <span>{t('header.badges')}</span>
         </div>
       </div>
 
@@ -132,48 +141,48 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         <button
           className="header-text-btn"
           onClick={handleShare}
-          title={shareableId ? 'Copy shareable link to this ontology' : 'Share this ontology via link'}
+          title={shareableId ? t('share.tooltipCatalogue') : t('share.tooltipCustom')}
           style={shareStatus === 'copied' ? { color: 'var(--ms-green, #107C10)' } : shareStatus === 'downloaded' ? { color: 'var(--ms-blue, #0078D4)' } : undefined}
         >
           {shareStatus === 'downloaded' ? <Download size={16} /> : <Share2 size={16} />}
           <span>{shareLabel}</span>
         </button>
-        <button className="header-text-btn" onClick={onSummaryClick} title="View Ontology Summary">
+        <button className="header-text-btn" onClick={onSummaryClick} title={t('header.summary')}>
           <FileText size={16} />
-          <span>Summary</span>
+          <span>{t('header.summary')}</span>
         </button>
         {onNLBuilderClick && (
-          <button className="icon-btn" onClick={onNLBuilderClick} data-tooltip="AI Builder" aria-label="AI Builder">
+          <button className="icon-btn" onClick={onNLBuilderClick} data-tooltip={t('header.aiBuilder')} aria-label={t('header.aiBuilder')}>
             <Sparkles size={20} />
           </button>
         )}
-        <button className="icon-btn" onClick={onGalleryClick} data-tooltip="Catalogue" aria-label="Catalogue">
+        <button className="icon-btn" onClick={onGalleryClick} data-tooltip={t('header.catalogue')} aria-label={t('header.catalogue')}>
           <LayoutGrid size={20} />
         </button>
-        <button className="icon-btn" onClick={onDesignerClick} data-tooltip="Designer" aria-label="Designer">
+        <button className="icon-btn" onClick={onDesignerClick} data-tooltip={t('header.designer')} aria-label={t('header.designer')}>
           <PenTool size={20} />
         </button>
-        <button className="icon-btn" onClick={onLearnClick} data-tooltip="Ontology School" aria-label="Ontology School">
+        <button className="icon-btn" onClick={onLearnClick} data-tooltip={t('header.school')} aria-label={t('header.school')}>
           <BookOpen size={20} />
         </button>
-        <button className="icon-btn" onClick={onImportExportClick} data-tooltip="Import / Export" aria-label="Import / Export">
+        <button className="icon-btn" onClick={onImportExportClick} data-tooltip={t('header.importExport')} aria-label={t('header.importExport')}>
           <FileJson size={20} />
         </button>
-        <button className="icon-btn" onClick={onHelpClick} data-tooltip="Help" aria-label="Help">
+        <button className="icon-btn" onClick={onHelpClick} data-tooltip={t('header.help')} aria-label={t('header.help')}>
           <HelpCircle size={20} />
         </button>
-        <button className="icon-btn" onClick={onAboutClick} data-tooltip="About" aria-label="About">
+        <button className="icon-btn" onClick={onAboutClick} data-tooltip={t('header.about')} aria-label={t('header.about')}>
           <Info size={20} />
         </button>
-        <button className="icon-btn" onClick={onDataSourcesClick} data-tooltip="Data Sources" aria-label="Data Sources">
+        <button className="icon-btn" onClick={onDataSourcesClick} data-tooltip={t('header.dataSources')} aria-label={t('header.dataSources')}>
           <Database size={20} />
         </button>
         <div className="theme-picker" ref={themeMenuRef}>
           <button
             className="icon-btn"
             onClick={() => setThemeMenuOpen((o) => !o)}
-            data-tooltip="Theme"
-            aria-label="Theme"
+            data-tooltip={t('header.theme')}
+            aria-label={t('header.theme')}
             aria-haspopup="menu"
             aria-expanded={themeMenuOpen}
           >
@@ -190,18 +199,23 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
                   aria-checked={theme === opt.id}
                 >
                   <span className="theme-swatch" style={{ background: opt.swatch }} />
-                  {opt.label}
+                  {t(`theme.${opt.id}`)}
                   {theme === opt.id && <Check size={16} className="theme-check" />}
                 </button>
               ))}
             </div>
           )}
         </div>
-      </div>
+        </div>
 
-      {/* Mobile hamburger menu */}
-      <div className="header-mobile-menu" ref={menuRef}>
-        <button className="icon-btn header-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+        {/* Language switcher stays visible at every breakpoint (desktop + mobile) */}
+        <div className="header-lang">
+          <LanguageSwitcher />
+        </div>
+
+        {/* Mobile hamburger menu */}
+        <div className="header-mobile-menu" ref={menuRef}>
+        <button className="icon-btn header-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label={t('header.menu')}>
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
         {menuOpen && (
@@ -209,43 +223,43 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
             <div className="mobile-menu-stats">
               <Trophy size={16} />
               <span className="stat-value">{totalPoints}</span>
-              <span>points</span>
+              <span>{t('header.points')}</span>
               <span style={{ margin: '0 8px', color: 'var(--text-tertiary)' }}>·</span>
               <span>🏆</span>
               <span className="stat-value">{earnedBadges.length}</span>
-              <span>badges</span>
+              <span>{t('header.badges')}</span>
             </div>
             <button className="mobile-menu-item" onClick={menuAction(handleShare)}>
               <Share2 size={18} /> {shareLabel}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onSummaryClick)}>
-              <FileText size={18} /> Summary
+              <FileText size={18} /> {t('header.summary')}
             </button>
             {onNLBuilderClick && (
               <button className="mobile-menu-item" onClick={menuAction(onNLBuilderClick)}>
-                <Sparkles size={18} /> AI Builder
+                <Sparkles size={18} /> {t('header.aiBuilder')}
               </button>
             )}
             <button className="mobile-menu-item" onClick={menuAction(onGalleryClick)}>
-              <LayoutGrid size={18} /> Catalogue
+              <LayoutGrid size={18} /> {t('header.catalogue')}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onDesignerClick)}>
-              <PenTool size={18} /> Designer
+              <PenTool size={18} /> {t('header.designer')}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onLearnClick)}>
-              <BookOpen size={18} /> Ontology School
+              <BookOpen size={18} /> {t('header.school')}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onImportExportClick)}>
-              <FileJson size={18} /> Import / Export
+              <FileJson size={18} /> {t('header.importExport')}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onHelpClick)}>
-              <HelpCircle size={18} /> Help
+              <HelpCircle size={18} /> {t('header.help')}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onAboutClick)}>
-              <Info size={18} /> About
+              <Info size={18} /> {t('header.about')}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onDataSourcesClick)}>
-              <Database size={18} /> Data Sources
+              <Database size={18} /> {t('header.dataSources')}
             </button>
             <div className="mobile-menu-themes">
               {THEME_OPTIONS.map((opt) => (
@@ -255,7 +269,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
                   onClick={menuAction(() => setTheme(opt.id))}
                 >
                   <span className="theme-swatch" style={{ background: opt.swatch }} />
-                  {opt.label}
+                  {t(`theme.${opt.id}`)}
                   {theme === opt.id && <Check size={16} className="theme-check" />}
                 </button>
               ))}

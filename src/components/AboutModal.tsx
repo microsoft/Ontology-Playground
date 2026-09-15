@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { X, Info } from 'lucide-react';
 
 interface AboutModalProps {
@@ -6,6 +7,7 @@ interface AboutModalProps {
 }
 
 export function AboutModal({ onClose }: AboutModalProps) {
+  const { t } = useTranslation();
   return (
     <motion.div
       className="modal-overlay"
@@ -23,8 +25,8 @@ export function AboutModal({ onClose }: AboutModalProps) {
         style={{ maxWidth: 720 }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 600 }}>About Ontology Playground</h2>
-          <button className="icon-btn" onClick={onClose} aria-label="Close about dialog">
+          <h2 style={{ fontSize: 24, fontWeight: 600 }}>{t('about.title')}</h2>
+          <button className="icon-btn" onClick={onClose} aria-label={t('about.closeDialog')}>
             <X size={20} />
           </button>
         </div>
@@ -32,11 +34,10 @@ export function AboutModal({ onClose }: AboutModalProps) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="feature-card" style={{ marginBottom: 0 }}>
             <p className="feature-text" style={{ margin: 0 }}>
-              Ontology Playground is a community learning and design experience for building RDF/OWL ontologies,
-              exploring graph relationships, and preparing models compatible with Microsoft Fabric IQ workflows.
+              {t('about.description1')}
             </p>
             <p className="feature-text" style={{ margin: '10px 0 0 0' }}>
-              Learn more about Microsoft Fabric IQ:{' '}
+              {t('about.learnMore')}{' '}
               <a
                 className="about-link"
                 href="https://learn.microsoft.com/fabric/iq/overview"
@@ -58,20 +59,16 @@ export function AboutModal({ onClose }: AboutModalProps) {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
               <Info size={18} color="var(--ms-blue)" />
-              <strong style={{ color: 'var(--text-primary)' }}>Trademark Notice</strong>
+              <strong style={{ color: 'var(--text-primary)' }}>{t('about.trademarkNotice')}</strong>
             </div>
             <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--text-secondary)', margin: 0 }}>
-              Trademarks This project may contain trademarks or logos for projects, products, or services. Authorized
-              use of Microsoft trademarks or logos is subject to and must follow Microsoft’s Trademark &amp; Brand
-              Guidelines. Use of Microsoft trademarks or logos in modified versions of this project must not cause
-              confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to
-              those third-party’s policies.
+              {t('about.trademarkText')}
             </p>
           </div>
         </div>
 
         <div style={{ marginTop: 22, textAlign: 'center' }}>
-          <button className="btn btn-primary" onClick={onClose}>Close</button>
+          <button className="btn btn-primary" onClick={onClose}>{t('about.close')}</button>
         </div>
       </motion.div>
     </motion.div>

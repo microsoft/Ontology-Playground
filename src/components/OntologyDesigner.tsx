@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { useDesignerStore } from '../store/designerStore';
 import { useAppStore, themeClass } from '../store/appStore';
@@ -12,6 +13,7 @@ interface OntologyDesignerProps {
 }
 
 export function OntologyDesigner({ route }: OntologyDesignerProps) {
+  const { t } = useTranslation();
   const { ontology, setOntologyName, setOntologyDescription, loadDraft, undo, redo } = useDesignerStore();
   const theme = useAppStore((s) => s.theme);
   const isEmpty = ontology.entityTypes.length === 0 && ontology.relationships.length === 0;
@@ -57,7 +59,7 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
       {/* Top bar */}
       <div className="designer-topbar">
         <button className="designer-back-btn" onClick={() => navigate({ page: 'home' })}>
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} /> {t('designer.back')}
         </button>
         <div className="designer-meta-fields">
           <input
@@ -65,14 +67,14 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
             type="text"
             value={ontology.name}
             onChange={(e) => setOntologyName(e.target.value)}
-            placeholder="Ontology name"
+            placeholder={t('designer.ontologyName')}
           />
           <input
             className="designer-meta-desc"
             type="text"
             value={ontology.description}
             onChange={(e) => setOntologyDescription(e.target.value)}
-            placeholder="Description"
+            placeholder={t('designer.description')}
           />
         </div>
         <DesignerToolbar />

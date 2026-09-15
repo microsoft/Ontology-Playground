@@ -382,6 +382,73 @@ body {
   gap: 12px;
 }
 
+/* Persistent language control — stays visible at every breakpoint so users can
+   always reach it without opening the hamburger menu. */
+.header-lang {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+/* Language switcher (desktop header) — globe icon + transparent select + caret,
+   styled as a theme-aware pill. Mirrors the icon buttons. */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  flex-shrink: 0;
+  transition: background var(--transition-fast, 0.15s), border-color var(--transition-fast, 0.15s);
+}
+
+.lang-switch:hover {
+  background: var(--bg-hover, var(--bg-tertiary));
+  border-color: var(--border-strong, var(--border-color));
+}
+
+.lang-switch:focus-within {
+  border-color: var(--ms-blue, #0078D4);
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.25);
+}
+
+.lang-switch__globe {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.lang-switch__caret {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.lang-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 0 2px;
+  cursor: pointer;
+  max-width: 120px;
+}
+
+.lang-select option {
+  color: #1a1a1a;
+  background: #ffffff;
+}
+
 /* Icon Buttons */
 .icon-btn {
   display: flex;
@@ -1405,6 +1472,10 @@ body {
 
   .header-actions {
     display: none;
+  }
+
+  .header-lang {
+    margin-left: auto;
   }
 
   .header-mobile-menu {

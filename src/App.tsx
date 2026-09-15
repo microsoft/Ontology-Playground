@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AnimatePresence } from 'framer-motion';
-import { 
-  Header, 
-  OntologyGraph, 
-  QuestPanel, 
-  InspectorPanel, 
+import {
+  Header,
+  OntologyGraph,
+  QuestPanel,
+  InspectorPanel,
   QueryPlayground,
   SearchFilter,
   WelcomeModal,
@@ -42,6 +43,7 @@ const NLBuilderModal = AI_BUILDER_ENABLED
   : null;
 
 function App() {
+  const { t } = useTranslation();
   const route = useRoute();
 
   const [showWelcome, setShowWelcome] = useState(false);
@@ -63,14 +65,14 @@ function App() {
     if (earnedBadges.length > 0) {
       const latestBadge = earnedBadges[earnedBadges.length - 1];
       setToast({
-        message: `Quest Complete! Earned: ${latestBadge.badge}`,
+        message: t('quest.complete', { badge: latestBadge.badge }),
         icon: latestBadge.icon
       });
-      
+
       const timer = setTimeout(() => setToast(null), 4000);
       return () => clearTimeout(timer);
     }
-  }, [earnedBadges]);
+  }, [earnedBadges, t]);
 
   // Deep-link: /#/catalogue/<id> — load a specific ontology from the catalogue
   useEffect(() => {
@@ -168,16 +170,16 @@ function App() {
 
   // ── Command palette items ──────────────────────────────
   const commands = useMemo<CommandItem[]>(() => [
-    { id: 'catalogue', label: 'Open Catalogue', icon: <LayoutGrid size={18} />, action: openGallery },
-    { id: 'designer', label: 'Open Designer', icon: <PenTool size={18} />, action: openDesigner },
-    { id: 'learn', label: 'Open Ontology School', icon: <BookOpen size={18} />, action: openLearn },
-    { id: 'import-export', label: 'Import / Export', icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
-    { id: 'summary', label: 'View Summary', icon: <FileText size={18} />, action: () => setShowSummary(true) },
-    { id: 'about', label: 'About & Trademark Notice', icon: <Info size={18} />, action: () => setShowAbout(true) },
-    { id: 'help', label: 'Help', icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
-    { id: 'data-sources', label: 'Data Sources', icon: <Database size={18} />, action: () => setShowDataSources(true) },
-    { id: 'theme', label: 'Switch Theme', icon: <Palette size={18} />, action: cycleTheme },
-  ], [openGallery, openDesigner, openLearn, cycleTheme]);
+    { id: 'catalogue', label: t('command.openCatalogue'), icon: <LayoutGrid size={18} />, action: openGallery },
+    { id: 'designer', label: t('command.openDesigner'), icon: <PenTool size={18} />, action: openDesigner },
+    { id: 'learn', label: t('command.openSchool'), icon: <BookOpen size={18} />, action: openLearn },
+    { id: 'import-export', label: t('command.importExport'), icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
+    { id: 'summary', label: t('command.viewSummary'), icon: <FileText size={18} />, action: () => setShowSummary(true) },
+    { id: 'about', label: t('command.about'), icon: <Info size={18} />, action: () => setShowAbout(true) },
+    { id: 'help', label: t('command.help'), icon: <HelpCircle size={18} />, action: () => setShowHelp(true) },
+    { id: 'data-sources', label: t('command.dataSources'), icon: <Database size={18} />, action: () => setShowDataSources(true) },
+    { id: 'theme', label: t('command.switchTheme'), icon: <Palette size={18} />, action: cycleTheme },
+  ], [t, openGallery, openDesigner, openLearn, cycleTheme]);
 
   // Full-page views
   if (route.page === 'designer') {
@@ -189,9 +191,9 @@ function App() {
 
   return (
     <div className={`app-container ${themeClass(theme)}`}>
-      <Header 
+      <Header
         onAboutClick={() => setShowAbout(true)}
-        onHelpClick={() => setShowHelp(true)} 
+        onHelpClick={() => setShowHelp(true)}
         onDataSourcesClick={() => setShowDataSources(true)}
         onImportExportClick={() => setShowImportExport(true)}
         onGalleryClick={openGallery}
@@ -209,27 +211,25 @@ function App() {
         <InspectorPanel />
         <QueryPlayground />
       </div>
-
       {/* Mobile bottom tabs — visible only on small screens via CSS */}
       <div className="mobile-panel-tabs">
         <button className={`mobile-tab ${mobilePanel === 'graph' ? 'active' : ''}`} onClick={() => setMobilePanel('graph')}>
-          <Search size={18} /> Graph
+          <Search size={18} /> {t('tab.graph')}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'quests' ? 'active' : ''}`} onClick={() => setMobilePanel('quests')}>
-          <Compass size={18} /> Quests
+          <Compass size={18} /> {t('tab.quests')}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'inspector' ? 'active' : ''}`} onClick={() => setMobilePanel('inspector')}>
-          <Info size={18} /> Inspector
+          <Info size={18} /> {t('tab.inspector')}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'query' ? 'active' : ''}`} onClick={() => setMobilePanel('query')}>
-          <MessageSquare size={18} /> Query
+          <MessageSquare size={18} /> {t('tab.query')}
         </button>
       </div>
-
       {/* Mobile panel drawer — visible only on small screens when a panel is selected */}
       {mobilePanel !== 'graph' && (
         <div className="mobile-panel-drawer">
-          <button className="mobile-panel-close" onClick={() => setMobilePanel('graph')}>✕ Close</button>
+          <button className="mobile-panel-close" onClick={() => setMobilePanel('graph')}>✕ {t('tab.close')}</button>
           {mobilePanel === 'quests' && <QuestPanel />}
           {mobilePanel === 'inspector' && (
             <>
@@ -248,31 +248,24 @@ function App() {
       <AnimatePresence>
         {showWelcome && !showTour && <WelcomeModal onClose={() => setShowWelcome(false)} />}
       </AnimatePresence>
-
       <AnimatePresence>
         {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
       </AnimatePresence>
-
       <AnimatePresence>
         {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       </AnimatePresence>
-
       <AnimatePresence>
         {showDataSources && <DataSourcesModal onClose={() => setShowDataSources(false)} />}
       </AnimatePresence>
-
       <AnimatePresence>
         {showImportExport && <ImportExportModal onClose={() => setShowImportExport(false)} onFabricPush={() => { setShowImportExport(false); setShowFabricExport(true); }} />}
       </AnimatePresence>
-
       <AnimatePresence>
         {showFabricExport && <FabricExportModal onClose={() => setShowFabricExport(false)} />}
       </AnimatePresence>
-
       <AnimatePresence>
         {showGallery && <GalleryModal onClose={closeGallery} />}
       </AnimatePresence>
-
       {AI_BUILDER_ENABLED && NLBuilderModal && (
         <AnimatePresence>
           {showNLBuilder && (
@@ -282,15 +275,12 @@ function App() {
           )}
         </AnimatePresence>
       )}
-
       <AnimatePresence>
         {showSummary && <OntologySummaryModal onClose={() => setShowSummary(false)} />}
       </AnimatePresence>
-
       <AnimatePresence>
         {toast && <Toast message={toast.message} icon={toast.icon} />}
       </AnimatePresence>
-
       <AnimatePresence>
         <CommandPalette
           open={showCommandPalette}
@@ -298,7 +288,6 @@ function App() {
           commands={commands}
         />
       </AnimatePresence>
-
       <AppFooter />
     </div>
   );
