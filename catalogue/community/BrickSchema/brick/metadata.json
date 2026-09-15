@@ -1,0 +1,8 @@
+{
+  "name": "Brick Schema",
+  "description": "Brick is an open-source, BSD-licensed development effort to create a uniform schema for representing metadata in buildings.",
+  "icon": "🧱",
+  "category": "Building Automation",
+  "tags": ["Buildings", "IoT", "Metadata", "Schema", "Open Source", "Brick"],
+  "author": "Brick Community"
+}
