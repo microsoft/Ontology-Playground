@@ -1,5 +1,7 @@
 # Ontology Playground (Preview) ☕
 
+[English](README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
+
 > Note: This project was developed with AI-assisted coding.
 
 **[Try it live &#x2192; microsoft.github.io/Ontology-Playground](https://microsoft.github.io/Ontology-Playground/)**
