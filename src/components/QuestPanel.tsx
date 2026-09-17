@@ -133,7 +133,7 @@ export function QuestPanel() {
               </motion.div>
             ))}
           </div>
-          <div style={{ marginTop: 8, fontSize: 12, color: 'var(--ms-yellow)', fontWeight: 600 }}>
+          <div style={{ marginTop: 8, fontSize: 12, color: 'var(--ms-yellow-fg)', fontWeight: 600 }}>
             Total: {totalPoints} points
           </div>
         </div>
