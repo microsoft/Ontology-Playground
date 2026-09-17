@@ -1,0 +1,8 @@
+{
+  "name": "OpenIM — Open Investment Model",
+  "description": "The canonical entity model for the investment industry: funds, managers, portfolios, holdings, instruments and documents, connected by named, directed relationships with declared inverses that a program can walk one link at a time. FIBO-aligned. From the Open Investment Model (openinvestmentmodel.org).",
+  "category": "finance",
+  "icon": "📈",
+  "tags": ["investment", "asset-management", "fibo", "knowledge-graph"],
+  "author": "antikas"
+}
