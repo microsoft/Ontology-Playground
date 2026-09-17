@@ -1,0 +1,8 @@
+{
+  "name": "Elements of Thinking",
+  "description": "An ontology of the Paul-Elder critical thinking framework (Richard Paul and Linda Elder, Foundation for Critical Thinking): every act of reasoning carries eight elements of thought - purpose, question, information, inference, concepts, assumptions, implications, point of view; nine intellectual standards measure their quality; practicing the standards develops eight intellectual traits. Includes the six-stage development ladder and each trait's opposing vice.",
+  "icon": "🧠",
+  "category": "education",
+  "tags": ["critical-thinking", "paul-elder", "reasoning", "metacognition", "education"],
+  "author": "daocoding"
+}
