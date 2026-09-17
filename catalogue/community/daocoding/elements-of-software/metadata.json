@@ -1,0 +1,8 @@
+{
+  "name": "Elements of Software",
+  "description": "The essential entities of any SaaS product, modeled with ontological discipline: people, organizations and software agents as interchangeable Parties; Lead and Customer as roles a Party plays rather than entity types; one Task that nests; the subscription-invoice-payment chain; and saved views, automations, permissions and the audit trail as first-class records.",
+  "icon": "🧪",
+  "category": "technology",
+  "tags": ["saas", "patterns", "party-role", "crm", "modeling"],
+  "author": "daocoding"
+}
