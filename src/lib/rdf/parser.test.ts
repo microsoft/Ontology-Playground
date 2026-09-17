@@ -407,4 +407,99 @@ describe('parseRDF', () => {
       expect(ontology.entityTypes[0].name).toBe('Widget');
     });
   });
+
+  describe('rdf:Description typed-node syntax (#85)', () => {
+    // Serializers like Python's rdflib (used by Brick and many published
+    // ontologies) declare resources as <rdf:Description> with an rdf:type
+    // child instead of typed elements like <owl:Class>.
+    const descriptionRdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+
+    <rdf:Description rdf:about="http://example.org/desc/">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+        <rdfs:label>Description Ontology</rdfs:label>
+        <rdfs:comment>Serialized via rdf:Description</rdfs:comment>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://example.org/desc/Building">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <rdfs:label>Building</rdfs:label>
+        <rdfs:comment>A building</rdfs:comment>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://example.org/desc/Sensor">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <rdfs:label>Sensor</rdfs:label>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://example.org/desc/building_name">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/desc/Building"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://example.org/desc/hasSensor">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+        <rdfs:label>hasSensor</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/desc/Building"/>
+        <rdfs:range rdf:resource="http://example.org/desc/Sensor"/>
+    </rdf:Description>
+
+</rdf:RDF>`;
+
+    it('extracts ontology metadata from rdf:Description elements', () => {
+      const { ontology } = parseRDF(descriptionRdf);
+      expect(ontology.name).toBe('Description Ontology');
+      expect(ontology.description).toBe('Serialized via rdf:Description');
+    });
+
+    it('extracts classes declared via rdf:type', () => {
+      const { ontology } = parseRDF(descriptionRdf);
+      expect(ontology.entityTypes).toHaveLength(2);
+      const names = ontology.entityTypes.map((e) => e.name);
+      expect(names).toContain('Building');
+      expect(names).toContain('Sensor');
+    });
+
+    it('extracts datatype properties declared via rdf:type', () => {
+      const { ontology } = parseRDF(descriptionRdf);
+      const building = ontology.entityTypes.find((e) => e.name === 'Building');
+      expect(building?.properties).toHaveLength(1);
+      expect(building?.properties[0]).toMatchObject({ name: 'name', type: 'string' });
+    });
+
+    it('extracts object properties declared via rdf:type', () => {
+      const { ontology } = parseRDF(descriptionRdf);
+      expect(ontology.relationships).toHaveLength(1);
+      expect(ontology.relationships[0]).toMatchObject({ from: 'building', to: 'sensor' });
+    });
+
+    it('does not duplicate entities when typed elements and descriptions coexist', () => {
+      const mixed = descriptionRdf.replace(
+        '</rdf:RDF>',
+        `<owl:Class rdf:about="http://example.org/desc/Building">
+           <rdfs:label>Building</rdfs:label>
+         </owl:Class></rdf:RDF>`
+      );
+      const { ontology } = parseRDF(mixed);
+      expect(ontology.entityTypes).toHaveLength(2);
+    });
+  });
+
+  describe('Turtle input detection (#85)', () => {
+    it('gives an actionable error for Turtle content', () => {
+      const ttl = `@prefix brick: <https://brickschema.org/schema/Brick#> .\n@prefix owl: <http://www.w3.org/2002/07/owl#> .\n\nbrick:Building a owl:Class .`;
+      expect(() => parseRDF(ttl)).toThrow(RDFParseError);
+      expect(() => parseRDF(ttl)).toThrow(/Turtle/);
+    });
+
+    it('still reports malformed XML for non-Turtle garbage', () => {
+      expect(() => parseRDF('this is not xml at all')).toThrow(RDFParseError);
+      expect(() => parseRDF('this is not xml at all')).toThrow(/Malformed XML|No ontology metadata/);
+    });
+  });
 });
