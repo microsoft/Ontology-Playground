@@ -4,6 +4,7 @@ import fcose from 'cytoscape-fcose';
 import type { Core, EventObject, LayoutOptions } from 'cytoscape';
 import { useAppStore } from '../store/appStore';
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, Download, Crosshair } from 'lucide-react';
+import { computeExportScale, isValidPngDataUri } from '../lib/graphExport';
 
 // Register fcose layout
 cytoscape.use(fcose);
@@ -528,13 +529,23 @@ export function OntologyGraph() {
     try {
       const graphCs = containerRef.current ? getComputedStyle(containerRef.current) : null;
       const bg = (graphCs && graphCs.getPropertyValue('--graph-bg').trim()) || (darkMode ? '#1E1E1E' : '#F5F5F5');
-      const pngData = cy.png({ scale: 2, full: true, bg });
+      // Clamp the scale for large graphs: oversized canvases make the browser
+      // silently return an empty image, producing a 0-byte file (issue #87).
+      const bb = cy.elements().boundingBox();
+      const scale = computeExportScale(bb.w, bb.h);
+      const pngData = cy.png({ scale, full: true, bg });
+      if (!isValidPngDataUri(pngData)) {
+        console.error('PNG export failed: the browser returned an empty image. The graph may exceed the maximum canvas size.');
+        return;
+      }
       const link = document.createElement('a');
       link.href = pngData;
       const safeName = (currentOntology.name || 'ontology').toLowerCase().replace(/\s+/g, '-');
       link.download = `${safeName}-graph.png`;
       link.click();
-    } catch { /* ignore */ }
+    } catch (err) {
+      console.error('PNG export failed', err);
+    }
   };
 
   return (
