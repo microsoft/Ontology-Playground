@@ -145,12 +145,20 @@ function slugify(name: string): string {
 let entityCounter = 0;
 let relationshipCounter = 0;
 
-function nextEntityId(name: string): string {
-  return `${slugify(name)}-${++entityCounter}`;
+function nextEntityId(name: string, existingIds: ReadonlySet<string>): string {
+  let id: string;
+  do {
+    id = `${slugify(name)}-${++entityCounter}`;
+  } while (existingIds.has(id));
+  return id;
 }
 
-function nextRelationshipId(name: string): string {
-  return `rel-${slugify(name)}-${++relationshipCounter}`;
+function nextRelationshipId(name: string, existingIds: ReadonlySet<string>): string {
+  let id: string;
+  do {
+    id = `rel-${slugify(name)}-${++relationshipCounter}`;
+  } while (existingIds.has(id));
+  return id;
 }
 
 // ─── Default palette ─────────────────────────────────────────────────────────
@@ -255,10 +263,11 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
   // ─ Entities ─────────────────────────────────────────────────────────────
   addEntity: () => {
     const name = 'New Entity';
-    const colorIdx = get().ontology.entityTypes.length % ENTITY_COLORS.length;
-    const iconIdx = get().ontology.entityTypes.length % ENTITY_ICONS.length;
+    const entityTypes = get().ontology.entityTypes;
+    const colorIdx = entityTypes.length % ENTITY_COLORS.length;
+    const iconIdx = entityTypes.length % ENTITY_ICONS.length;
     const entity: EntityType = {
-      id: nextEntityId(name),
+      id: nextEntityId(name, new Set(entityTypes.map((existing) => existing.id))),
       name,
       description: '',
       icon: ENTITY_ICONS[iconIdx],
@@ -362,8 +371,12 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
 
   // ─ Relationships ────────────────────────────────────────────────────────
   addRelationship: (from, to) => {
+    const relationships = get().ontology.relationships;
     const rel: Relationship = {
-      id: nextRelationshipId('relates-to'),
+      id: nextRelationshipId(
+        'relates-to',
+        new Set(relationships.map((existing) => existing.id)),
+      ),
       name: 'relates_to',
       from,
       to,

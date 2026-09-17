@@ -277,6 +277,41 @@ describe('useDesignerStore actions', () => {
     expect(ontology.entityTypes[0].properties[0].isIdentifier).toBe(true);
   });
 
+  it('does not reuse an entity ID already present in an imported draft', () => {
+    useDesignerStore.getState().addEntity();
+    const seedId = useDesignerStore.getState().ontology.entityTypes[0].id;
+    const nextSuffix = Number(seedId.slice(seedId.lastIndexOf('-') + 1)) + 1;
+    const importedId = `new-entity-${nextSuffix}`;
+    useDesignerStore.getState().loadDraft({
+      name: 'Imported',
+      description: '',
+      entityTypes: [{
+        id: importedId,
+        name: 'Imported Entity',
+        description: '',
+        icon: '📦',
+        color: '#000',
+        properties: [{ name: 'id', type: 'string', isIdentifier: true }],
+      }],
+      relationships: [],
+    });
+
+    useDesignerStore.getState().addEntity();
+    const entities = useDesignerStore.getState().ontology.entityTypes;
+    const addedId = entities[0].id;
+
+    expect(new Set(entities.map((entity) => entity.id)).size).toBe(2);
+    expect(addedId).not.toBe(importedId);
+
+    useDesignerStore.getState().updateEntity(addedId, { name: 'Added Entity' });
+    expect(useDesignerStore.getState().ontology.entityTypes.find((entity) => entity.id === importedId)?.name)
+      .toBe('Imported Entity');
+
+    useDesignerStore.getState().removeEntity(addedId);
+    expect(useDesignerStore.getState().ontology.entityTypes.map((entity) => entity.id))
+      .toEqual([importedId]);
+  });
+
   it('updateEntity updates fields', () => {
     useDesignerStore.getState().addEntity();
     const id = useDesignerStore.getState().ontology.entityTypes[0].id;
@@ -334,6 +369,41 @@ describe('useDesignerStore actions', () => {
     expect(rel.from).toBe(e1);
     expect(rel.to).toBe(e2);
     expect(rel.cardinality).toBe('one-to-many');
+  });
+
+  it('does not reuse a relationship ID already present in an imported draft', () => {
+    const entityTypes: Ontology['entityTypes'] = [
+      { id: 'a', name: 'A', description: '', icon: '📦', color: '#000', properties: [] },
+      { id: 'b', name: 'B', description: '', icon: '📦', color: '#000', properties: [] },
+    ];
+    useDesignerStore.getState().loadDraft({
+      name: 'Seed',
+      description: '',
+      entityTypes,
+      relationships: [],
+    });
+    useDesignerStore.getState().addRelationship('a', 'b');
+    const seedId = useDesignerStore.getState().ontology.relationships[0].id;
+    const nextSuffix = Number(seedId.slice(seedId.lastIndexOf('-') + 1)) + 1;
+    const importedId = `rel-relates-to-${nextSuffix}`;
+    useDesignerStore.getState().loadDraft({
+      name: 'Imported',
+      description: '',
+      entityTypes,
+      relationships: [{
+        id: importedId,
+        name: 'imported_relation',
+        from: 'a',
+        to: 'b',
+        cardinality: 'one-to-many',
+      }],
+    });
+
+    useDesignerStore.getState().addRelationship('a', 'b');
+    const relationships = useDesignerStore.getState().ontology.relationships;
+
+    expect(new Set(relationships.map((relationship) => relationship.id)).size).toBe(2);
+    expect(relationships[0].id).not.toBe(importedId);
   });
 
   it('addRelationship can create a self-referencing relationship', () => {
