@@ -715,6 +715,33 @@ describe('parseRDF', () => {
       expect(ontology.relationships[1]).toMatchObject({ from: 'thing-2', to: 'thing' });
     });
 
+    it('keeps IDs unique when a class and object property share a local name', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Class rdf:about="http://example.org/Shared/shared"/>
+    <owl:Class rdf:about="http://example.org/Shared/target"/>
+    <owl:ObjectProperty rdf:about="http://example.org/Shared/shared">
+        <rdfs:domain rdf:resource="http://example.org/Shared/shared"/>
+        <rdfs:range rdf:resource="http://example.org/Shared/target"/>
+    </owl:ObjectProperty>
+</rdf:RDF>`;
+      const { ontology } = parseRDF(rdf);
+      const allIds = [
+        ...ontology.entityTypes.map((entity) => entity.id),
+        ...ontology.relationships.map((relationship) => relationship.id),
+      ];
+
+      expect(ontology.relationships[0]).toMatchObject({
+        id: 'shared-2',
+        from: 'shared',
+        to: 'target',
+      });
+      expect(new Set(allIds).size).toBe(allIds.length);
+    });
+
     it('avoids ID collisions between object properties and hierarchy edges', () => {
       const rdf = hierarchyRdf.replace(
         '</rdf:RDF>',

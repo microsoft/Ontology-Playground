@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useDesignerStore, validateOntology, isValidFabricIQName, fabricIQNameError } from './designerStore';
 import type { Ontology } from '../data/ontology';
+import { parseRDF } from '../lib/rdf/parser';
+import { serializeToRDF } from '../lib/rdf/serializer';
+
+function roundTripRdf(ontology: Ontology): Ontology {
+  return parseRDF(serializeToRDF(ontology, [])).ontology;
+}
 
 // Reset store between tests
 beforeEach(() => {
@@ -56,6 +62,21 @@ describe('validateOntology', () => {
       ],
     };
     expect(validateOntology(ontology).some((e) => e.message.includes('share the same ID'))).toBe(true);
+  });
+
+  it('reports an ID shared by an entity and relationship', () => {
+    const ontology: Ontology = {
+      name: 'Test',
+      description: '',
+      entityTypes: [
+        { id: 'shared', name: 'A', description: '', icon: '📦', color: '#000', properties: [{ name: 'id', type: 'string', isIdentifier: true }] },
+      ],
+      relationships: [
+        { id: 'shared', name: 'self', from: 'shared', to: 'shared', cardinality: 'one-to-one' },
+      ],
+    };
+
+    expect(validateOntology(ontology).some((error) => error.message.includes('designer graph'))).toBe(true);
   });
 
   it('reports relationships referencing unknown entities', () => {
@@ -277,12 +298,12 @@ describe('useDesignerStore actions', () => {
     expect(ontology.entityTypes[0].properties[0].isIdentifier).toBe(true);
   });
 
-  it('does not reuse an entity ID already present in an imported draft', () => {
+  it('does not reuse an entity ID after an RDF round trip', () => {
     useDesignerStore.getState().addEntity();
     const seedId = useDesignerStore.getState().ontology.entityTypes[0].id;
     const nextSuffix = Number(seedId.slice(seedId.lastIndexOf('-') + 1)) + 1;
     const importedId = `new-entity-${nextSuffix}`;
-    useDesignerStore.getState().loadDraft({
+    const importedDraft = roundTripRdf({
       name: 'Imported',
       description: '',
       entityTypes: [{
@@ -295,13 +316,16 @@ describe('useDesignerStore actions', () => {
       }],
       relationships: [],
     });
+    expect(importedDraft.entityTypes[0].id).toBe(importedId);
+    useDesignerStore.getState().loadDraft(importedDraft);
 
     useDesignerStore.getState().addEntity();
-    const entities = useDesignerStore.getState().ontology.entityTypes;
+    const { ontology: { entityTypes: entities }, selectedEntityId } = useDesignerStore.getState();
     const addedId = entities[0].id;
 
     expect(new Set(entities.map((entity) => entity.id)).size).toBe(2);
     expect(addedId).not.toBe(importedId);
+    expect(entities.filter((entity) => entity.id === selectedEntityId)).toHaveLength(1);
 
     useDesignerStore.getState().updateEntity(addedId, { name: 'Added Entity' });
     expect(useDesignerStore.getState().ontology.entityTypes.find((entity) => entity.id === importedId)?.name)
@@ -310,6 +334,42 @@ describe('useDesignerStore actions', () => {
     useDesignerStore.getState().removeEntity(addedId);
     expect(useDesignerStore.getState().ontology.entityTypes.map((entity) => entity.id))
       .toEqual([importedId]);
+  });
+
+  it('does not reuse a relationship ID when adding an entity', () => {
+    useDesignerStore.getState().addEntity();
+    const seedId = useDesignerStore.getState().ontology.entityTypes[0].id;
+    const nextSuffix = Number(seedId.slice(seedId.lastIndexOf('-') + 1)) + 1;
+    const collidingRelationshipId = `new-entity-${nextSuffix}`;
+    useDesignerStore.getState().loadDraft({
+      name: 'Imported',
+      description: '',
+      entityTypes: [{
+        id: 'existing',
+        name: 'Existing',
+        description: '',
+        icon: '📦',
+        color: '#000',
+        properties: [{ name: 'id', type: 'string', isIdentifier: true }],
+      }],
+      relationships: [{
+        id: collidingRelationshipId,
+        name: 'self',
+        from: 'existing',
+        to: 'existing',
+        cardinality: 'one-to-one',
+      }],
+    });
+
+    useDesignerStore.getState().addEntity();
+    const { entityTypes, relationships } = useDesignerStore.getState().ontology;
+    const allIds = [
+      ...entityTypes.map((entity) => entity.id),
+      ...relationships.map((relationship) => relationship.id),
+    ];
+
+    expect(entityTypes[0].id).not.toBe(collidingRelationshipId);
+    expect(new Set(allIds).size).toBe(allIds.length);
   });
 
   it('updateEntity updates fields', () => {
@@ -371,7 +431,7 @@ describe('useDesignerStore actions', () => {
     expect(rel.cardinality).toBe('one-to-many');
   });
 
-  it('does not reuse a relationship ID already present in an imported draft', () => {
+  it('does not reuse a relationship ID after an RDF round trip', () => {
     const entityTypes: Ontology['entityTypes'] = [
       { id: 'a', name: 'A', description: '', icon: '📦', color: '#000', properties: [] },
       { id: 'b', name: 'B', description: '', icon: '📦', color: '#000', properties: [] },
@@ -386,7 +446,7 @@ describe('useDesignerStore actions', () => {
     const seedId = useDesignerStore.getState().ontology.relationships[0].id;
     const nextSuffix = Number(seedId.slice(seedId.lastIndexOf('-') + 1)) + 1;
     const importedId = `rel-relates-to-${nextSuffix}`;
-    useDesignerStore.getState().loadDraft({
+    const importedDraft = roundTripRdf({
       name: 'Imported',
       description: '',
       entityTypes,
@@ -398,12 +458,59 @@ describe('useDesignerStore actions', () => {
         cardinality: 'one-to-many',
       }],
     });
+    expect(importedDraft.relationships[0].id).toBe(importedId);
+    useDesignerStore.getState().loadDraft(importedDraft);
 
     useDesignerStore.getState().addRelationship('a', 'b');
     const relationships = useDesignerStore.getState().ontology.relationships;
+    const addedId = relationships[0].id;
 
     expect(new Set(relationships.map((relationship) => relationship.id)).size).toBe(2);
-    expect(relationships[0].id).not.toBe(importedId);
+    expect(addedId).not.toBe(importedId);
+
+    useDesignerStore.getState().updateRelationship(addedId, { name: 'added_relation' });
+    expect(useDesignerStore.getState().ontology.relationships.find((relationship) => relationship.id === importedId)?.name)
+      .toBe('imported_relation');
+
+    useDesignerStore.getState().removeRelationship(addedId);
+    expect(useDesignerStore.getState().ontology.relationships.map((relationship) => relationship.id))
+      .toEqual([importedId]);
+  });
+
+  it('does not reuse an entity ID when adding a relationship', () => {
+    const entityTypes: Ontology['entityTypes'] = [
+      { id: 'a', name: 'A', description: '', icon: '📦', color: '#000', properties: [] },
+      { id: 'b', name: 'B', description: '', icon: '📦', color: '#000', properties: [] },
+    ];
+    useDesignerStore.getState().loadDraft({
+      name: 'Seed',
+      description: '',
+      entityTypes,
+      relationships: [],
+    });
+    useDesignerStore.getState().addRelationship('a', 'b');
+    const seedId = useDesignerStore.getState().ontology.relationships[0].id;
+    const nextSuffix = Number(seedId.slice(seedId.lastIndexOf('-') + 1)) + 1;
+    const collidingEntityId = `rel-relates-to-${nextSuffix}`;
+    useDesignerStore.getState().loadDraft({
+      name: 'Imported',
+      description: '',
+      entityTypes: [
+        ...entityTypes,
+        { id: collidingEntityId, name: 'Collision', description: '', icon: '📦', color: '#000', properties: [] },
+      ],
+      relationships: [],
+    });
+
+    useDesignerStore.getState().addRelationship('a', 'b');
+    const { entityTypes: loadedEntities, relationships } = useDesignerStore.getState().ontology;
+    const allIds = [
+      ...loadedEntities.map((entity) => entity.id),
+      ...relationships.map((relationship) => relationship.id),
+    ];
+
+    expect(relationships[0].id).not.toBe(collidingEntityId);
+    expect(new Set(allIds).size).toBe(allIds.length);
   });
 
   it('addRelationship can create a self-referencing relationship', () => {

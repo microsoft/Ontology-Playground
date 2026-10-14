@@ -351,7 +351,7 @@ one-click PR flow.
 - [x] "Preview RDF" tab shows the live RDF output as you design
 - [x] Validate the ontology before export:
   - All relationships reference existing entity IDs
-  - No duplicate entity/relationship IDs
+  - No duplicate graph element IDs, including across entities and relationships
   - At least one entity type exists
   - Each entity has at least one identifier property
 

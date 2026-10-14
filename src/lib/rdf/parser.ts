@@ -646,7 +646,7 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
 
   // --- Extract ObjectProperties → Relationships ---
   const relationships: Relationship[] = [];
-  const usedRelationshipIds = new Set<string>();
+  const usedRelationshipIds = new Set(usedEntityIds);
 
   for (let i = 0; i < objPropEls.length; i++) {
     const el = objPropEls[i];
