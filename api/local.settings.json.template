@@ -3,8 +3,12 @@
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "AzureWebJobsStorage": "",
+    "AI_PROVIDER": "azure",
     "AZURE_OPENAI_ENDPOINT": "https://YOUR-RESOURCE.openai.azure.com/",
     "AZURE_OPENAI_API_KEY": "YOUR-API-KEY",
-    "AZURE_OPENAI_DEPLOYMENT": "gpt-4o-mini"
+    "AZURE_OPENAI_DEPLOYMENT": "gpt-4o-mini",
+    "MINIMAX_BASE_URL": "https://api.minimax.io/v1",
+    "MINIMAX_API_KEY": "YOUR-API-KEY",
+    "MINIMAX_MODEL": "MiniMax-M3"
   }
 }
