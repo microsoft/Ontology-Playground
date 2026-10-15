@@ -11,6 +11,7 @@ export { AboutModal } from './AboutModal';
 export { DataSourcesModal } from './DataSourcesModal';
 export { ImportExportModal } from './ImportExportModal';
 export { FabricExportModal } from './FabricExportModal';
+export { GrafeoExportModal } from './GrafeoExportModal';
 export { GalleryModal } from './GalleryModal';
 // NLBuilderModal is not exported here — it is dynamically imported in App.tsx
 // only when the VITE_ENABLE_AI_BUILDER feature flag is enabled.
