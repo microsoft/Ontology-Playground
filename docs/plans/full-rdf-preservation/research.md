@@ -1,6 +1,7 @@
 # Full RDF Preservation Research
 
-**Recorded:** 2026-10-16  
+**Recorded:** 2026-10-16
+
 **Implementation baseline:** `f011681554d0c797206156a82a05fc0e7c2b7675`
 
 ## Decision
@@ -130,4 +131,3 @@ Chromium large-graph regression checks also passed:
   resource. Requesting it intentionally creates a modified export.
 - Generated Playground and OWL + SHACL profiles remain available only for
   Playground-authored documents.
-

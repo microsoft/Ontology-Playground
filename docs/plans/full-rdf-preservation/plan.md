@@ -1,7 +1,9 @@
 # Full RDF Preservation: Implementation Plan
 
-**Date:** 2026-10-16  
-**Priority:** P0 preservation first; P1 bounded editing second  
+**Date:** 2026-10-16
+
+**Priority:** P0 preservation first; P1 bounded editing second
+
 **Status:** Implemented and validated on `feature/full-rdf-preservation`.
 
 ## Summary and scope
