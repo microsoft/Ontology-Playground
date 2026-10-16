@@ -57,6 +57,7 @@ export interface LoadedCatalogueSource {
   mediaType: 'application/rdf+xml';
   hash: string;
   sourceArtifactUrl: string;
+  documentUrl: string;
 }
 
 export interface Catalogue {

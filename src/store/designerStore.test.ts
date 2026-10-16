@@ -3,6 +3,12 @@ import { useDesignerStore, validateOntology, isValidFabricIQName, fabricIQNameEr
 import type { Ontology } from '../data/ontology';
 import { parseRDF } from '../lib/rdf/parser';
 import { serializeToRDF } from '../lib/rdf/serializer';
+import {
+  createImportedRdfDocument,
+  exportRdfDocument,
+  isRdfDocumentDirty,
+  materializeRdfDocument,
+} from '../lib/rdf/document';
 
 function roundTripRdf(ontology: Ontology): Ontology {
   return parseRDF(serializeToRDF(ontology, [])).ontology;
@@ -20,7 +26,260 @@ describe('validateOntology', () => {
     const errors = validateOntology({ name: '', description: '', entityTypes: [], relationships: [] });
     expect(errors).toEqual([{ message: 'Add at least one entity type to your ontology.' }]);
   });
+});
 
+describe('source-backed RDF editing', () => {
+    const rdf = `<?xml version="1.0"?>
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Ontology rdf:about="https://example.com/ontology">
+      <rdfs:label>Example</rdfs:label>
+    </owl:Ontology>
+    <owl:Class rdf:about="https://example.com/Room">
+      <rdfs:label xml:lang="en">Room</rdfs:label>
+      <rdfs:label xml:lang="fr">Pièce</rdfs:label>
+      <rdfs:comment>An enclosed space</rdfs:comment>
+    </owl:Class>
+  </rdf:RDF>`;
+
+    it('updates one mapped RDF literal and restores it with undo', async () => {
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(rdf),
+        { name: 'example.rdf' },
+      );
+      useDesignerStore.getState().loadDraft(
+        loaded.ontology,
+        loaded.document,
+      );
+
+      useDesignerStore.getState().updateEntity('room', { name: 'Space' });
+      const edited = useDesignerStore.getState();
+      expect(edited.ontology.entityTypes[0].name).toBe('Space');
+      expect(edited.rdfDocument && isRdfDocumentDirty(edited.rdfDocument))
+        .toBe(true);
+      expect(
+        edited.rdfDocument
+          ? materializeRdfDocument(edited.rdfDocument)
+            .filter((quad) => quad.object.termType === 'Literal')
+            .map((quad) => quad.object.value)
+          : [],
+      ).toContain('Pièce');
+
+      edited.undo();
+      const undone = useDesignerStore.getState();
+      expect(undone.ontology.entityTypes[0].name).toBe('Room');
+      expect(undone.rdfDocument && isRdfDocumentDirty(undone.rdfDocument))
+        .toBe(false);
+      const exported = await exportRdfDocument(undone.rdfDocument!);
+      expect(exported.kind).toBe('original');
+      expect(Array.from(exported.bytes)).toEqual(
+        Array.from(new TextEncoder().encode(rdf)),
+      );
+
+      undone.redo();
+      expect(useDesignerStore.getState().ontology.entityTypes[0].name)
+        .toBe('Space');
+    });
+
+    it('blocks unsupported structural edits without changing the projection', async () => {
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(rdf),
+        { name: 'example.rdf' },
+      );
+      useDesignerStore.getState().loadDraft(
+        loaded.ontology,
+        loaded.document,
+      );
+      const before = useDesignerStore.getState().ontology;
+
+      useDesignerStore.getState().addProperty('room');
+
+      expect(useDesignerStore.getState().ontology).toBe(before);
+      expect(useDesignerStore.getState().mutationError)
+        .toMatch(/not supported/i);
+    });
+
+    it('edits and removes only the mapped direct subclass statement', async () => {
+      const hierarchyRdf = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:ex="https://example.com/">
+  <owl:Class rdf:about="https://example.com/Child">
+    <rdfs:label>Child</rdfs:label>
+    <rdfs:subClassOf rdf:resource="https://example.com/Parent"/>
+    <ex:preserved>keep me</ex:preserved>
+  </owl:Class>
+  <owl:Class rdf:about="https://example.com/Parent">
+    <rdfs:label>Parent</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="https://example.com/Alternate">
+    <rdfs:label>Alternate</rdfs:label>
+  </owl:Class>
+</rdf:RDF>`;
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(hierarchyRdf),
+        { name: 'hierarchy.rdf' },
+      );
+      useDesignerStore.getState().loadDraft(
+        loaded.ontology,
+        loaded.document,
+      );
+      const subclass = loaded.ontology.relationships.find(
+        (relationship) => relationship.kind === 'subclass',
+      )!;
+      const alternate = loaded.ontology.entityTypes.find(
+        (entity) => entity.name === 'Alternate',
+      )!;
+
+      useDesignerStore.getState().updateRelationship(
+        subclass.id,
+        { to: alternate.id },
+      );
+      const editedDocument = useDesignerStore.getState().rdfDocument!;
+      const editedQuads = materializeRdfDocument(editedDocument);
+      const subclassPredicate =
+        'http://www.w3.org/2000/01/rdf-schema#subClassOf';
+      expect(editedQuads.some((quad) =>
+        quad.subject.value === 'https://example.com/Child'
+        && quad.predicate.value === subclassPredicate
+        && quad.object.value === 'https://example.com/Parent',
+      )).toBe(false);
+      expect(editedQuads.some((quad) =>
+        quad.subject.value === 'https://example.com/Child'
+        && quad.predicate.value === subclassPredicate
+        && quad.object.value === 'https://example.com/Alternate',
+      )).toBe(true);
+      expect(editedQuads.some((quad) =>
+        quad.predicate.value === 'https://example.com/preserved'
+        && quad.object.value === 'keep me',
+      )).toBe(true);
+
+      useDesignerStore.getState().removeRelationship(subclass.id);
+      const removedQuads = materializeRdfDocument(
+        useDesignerStore.getState().rdfDocument!,
+      );
+      expect(removedQuads.some((quad) =>
+        quad.predicate.value === subclassPredicate,
+      )).toBe(false);
+      expect(removedQuads.some((quad) =>
+        quad.predicate.value === 'https://example.com/preserved',
+      )).toBe(true);
+    });
+
+    it('rejects a subclass endpoint change that would duplicate an existing statement', async () => {
+      const hierarchyRdf = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="https://example.com/Child">
+    <rdfs:label>Child</rdfs:label>
+    <rdfs:subClassOf rdf:resource="https://example.com/Parent"/>
+    <rdfs:subClassOf rdf:resource="https://example.com/Alternate"/>
+  </owl:Class>
+  <owl:Class rdf:about="https://example.com/Parent">
+    <rdfs:label>Parent</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="https://example.com/Alternate">
+    <rdfs:label>Alternate</rdfs:label>
+  </owl:Class>
+</rdf:RDF>`;
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(hierarchyRdf),
+        { name: 'duplicate-hierarchy.rdf' },
+      );
+      useDesignerStore.getState().loadDraft(
+        loaded.ontology,
+        loaded.document,
+      );
+      const relationships = loaded.ontology.relationships.filter(
+        (relationship) => relationship.kind === 'subclass',
+      );
+      const [first, second] = relationships;
+      const beforeOntology = useDesignerStore.getState().ontology;
+      const beforeDocument = useDesignerStore.getState().rdfDocument;
+
+      useDesignerStore.getState().updateRelationship(
+        first.id,
+        { to: second.to },
+      );
+
+      const state = useDesignerStore.getState();
+      expect(state.ontology).toBe(beforeOntology);
+      expect(state.rdfDocument).toBe(beforeDocument);
+      expect(state.mutationError).toMatch(/already exists/i);
+    });
+
+    it('edits object-property labels and comments without changing its semantics', async () => {
+      const associationRdf = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:ex="https://example.com/">
+  <owl:Class rdf:about="https://example.com/Container">
+    <rdfs:label>Container</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="https://example.com/Item">
+    <rdfs:label>Item</rdfs:label>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="https://example.com/contains">
+    <rdfs:label xml:lang="en">contains</rdfs:label>
+    <rdfs:comment xml:lang="en">Contains an item</rdfs:comment>
+    <rdfs:domain rdf:resource="https://example.com/Container"/>
+    <rdfs:range rdf:resource="https://example.com/Item"/>
+    <ex:preserved>keep me</ex:preserved>
+  </owl:ObjectProperty>
+</rdf:RDF>`;
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(associationRdf),
+        { name: 'association.rdf' },
+      );
+      useDesignerStore.getState().loadDraft(
+        loaded.ontology,
+        loaded.document,
+      );
+      const association = loaded.ontology.relationships.find(
+        (relationship) => relationship.kind !== 'subclass',
+      )!;
+
+      useDesignerStore.getState().updateRelationship(
+        association.id,
+        { name: 'includes' },
+      );
+      useDesignerStore.getState().updateRelationship(
+        association.id,
+        { description: 'Includes one or more items' },
+      );
+      const quads = materializeRdfDocument(
+        useDesignerStore.getState().rdfDocument!,
+      );
+      const values = quads
+        .filter((quad) => quad.object.termType === 'Literal')
+        .map((quad) => quad.object.value);
+      expect(values).toContain('includes');
+      expect(values).toContain('Includes one or more items');
+      expect(values).not.toContain('contains');
+      expect(values).not.toContain('Contains an item');
+      expect(quads.some((quad) =>
+        quad.predicate.value
+          === 'http://www.w3.org/2000/01/rdf-schema#domain'
+        && quad.object.value === 'https://example.com/Container',
+      )).toBe(true);
+      expect(quads.some((quad) =>
+        quad.predicate.value
+          === 'http://www.w3.org/2000/01/rdf-schema#range'
+        && quad.object.value === 'https://example.com/Item',
+      )).toBe(true);
+      expect(values).toContain('keep me');
+    });
+});
+
+describe('validateOntology', () => {
   it('reports missing identifier property', () => {
     const ontology: Ontology = {
       name: 'Test',

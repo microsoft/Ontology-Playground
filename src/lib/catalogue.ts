@@ -546,6 +546,7 @@ async function fetchCatalogueSource(
     mediaType: entry.sourceArtifactMediaType,
     hash: entry.sourceArtifactHash,
     sourceArtifactUrl: entry.sourceArtifactUrl,
+    documentUrl: sourceUrl.href,
   };
 }
 

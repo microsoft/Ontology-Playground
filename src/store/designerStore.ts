@@ -9,6 +9,18 @@ import { create } from 'zustand';
 import type { Ontology, EntityType, Property, Relationship, RelationshipAttribute } from '../data/ontology';
 import { validateOntology, type ValidationError } from '../lib/ontologyValidation';
 export { validateOntology, isValidFabricIQName, fabricIQNameError, type ValidationError } from '../lib/ontologyValidation';
+import type {
+  RdfProjectionResource,
+  ReadyRdfDocument,
+} from '../types/rdfDocument';
+import {
+  applyLiteralEdit,
+  applySubclassEdit,
+  applySubclassRemoval,
+} from '../lib/rdf/patch';
+const RDFS_LABEL = 'http://www.w3.org/2000/01/rdf-schema#label';
+const RDFS_COMMENT = 'http://www.w3.org/2000/01/rdf-schema#comment';
+const RDFS_COMMENT = 'http://www.w3.org/2000/01/rdf-schema#comment';
 
 // ─── Validation ──────────────────────────────────────────────────────────────
 
@@ -68,11 +80,61 @@ function cloneOntology(o: Ontology): Ontology {
   return JSON.parse(JSON.stringify(o));
 }
 
+interface DesignerSnapshot {
+  ontology: Ontology;
+  rdfDocument: ReadyRdfDocument | null;
+}
+
+function cloneRdfDocument(
+  document: ReadyRdfDocument | null,
+): ReadyRdfDocument | null {
+  if (!document) return null;
+  return {
+    ...document,
+    patches: [...document.patches],
+  };
+}
+
+function snapshot(
+  state: {
+    ontology: Ontology;
+    rdfDocument: ReadyRdfDocument | null;
+  },
+): DesignerSnapshot {
+  return {
+    ontology: cloneOntology(state.ontology),
+    rdfDocument: cloneRdfDocument(state.rdfDocument),
+  };
+}
+
 /** Returns _past/_future updates to spread into set(). Call before mutating. */
-function historyPush(s: { _past: Ontology[]; ontology: Ontology }): { _past: Ontology[]; _future: Ontology[] } {
-  const past = [...s._past, cloneOntology(s.ontology)];
+function historyPush(s: {
+  _past: DesignerSnapshot[];
+  ontology: Ontology;
+  rdfDocument: ReadyRdfDocument | null;
+}): { _past: DesignerSnapshot[]; _future: DesignerSnapshot[] } {
+  const past = [...s._past, snapshot(s)];
   if (past.length > HISTORY_LIMIT) past.shift();
   return { _past: past, _future: [] };
+}
+
+function mutationError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function unsupportedSourceEdit(action: string): string {
+  return `${action} is not supported for source-backed RDF. `
+    + 'Only unambiguous labels, comments, and direct subclass edges can be edited.';
+}
+
+function requireProjectionResource(
+  resource: RdfProjectionResource | undefined,
+  label: string,
+): RdfProjectionResource {
+  if (!resource) {
+    throw new Error(`${label} has no exact RDF resource mapping.`);
+  }
+  return resource;
 }
 
 // ─── Store ───────────────────────────────────────────────────────────────────
@@ -84,6 +146,8 @@ interface DesignerState {
   selectedRelationshipId: string | null;
   validationErrors: ValidationError[];
   _lastValidatedAt: number;
+  rdfDocument: ReadyRdfDocument | null;
+  mutationError: string | null;
 
   // Actions — ontology metadata
   setOntologyName: (name: string) => void;
@@ -111,13 +175,17 @@ interface DesignerState {
   removeRelationshipAttribute: (relId: string, index: number) => void;
 
   // Actions — bulk
-  loadDraft: (ontology: Ontology) => void;
+  loadDraft: (
+    ontology: Ontology,
+    rdfDocument?: ReadyRdfDocument | null,
+  ) => void;
   resetDraft: () => void;
   validate: () => ValidationError[];
+  clearMutationError: () => void;
 
   // History (undo / redo)
-  _past: Ontology[];
-  _future: Ontology[];
+  _past: DesignerSnapshot[];
+  _future: DesignerSnapshot[];
   undo: () => void;
   redo: () => void;
 }
@@ -137,18 +205,84 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
   selectedRelationshipId: null,
   validationErrors: [],
   _lastValidatedAt: 0,
+  rdfDocument: null,
+  mutationError: null,
   _past: [],
   _future: [],
 
   // ─ Metadata ─────────────────────────────────────────────────────────────
   setOntologyName: (name) =>
-    set((s) => ({ ...historyPush(s), ontology: { ...s.ontology, name } })),
+    set((s) => {
+      if (name === s.ontology.name) return {};
+      if (!s.rdfDocument) {
+        return {
+          ...historyPush(s),
+          ontology: { ...s.ontology, name },
+          mutationError: null,
+        };
+      }
+      try {
+        const target = requireProjectionResource(
+          s.rdfDocument.projection.ontology,
+          'Ontology',
+        );
+        return {
+          ...historyPush(s),
+          ontology: { ...s.ontology, name },
+          rdfDocument: applyLiteralEdit(
+            s.rdfDocument,
+            target,
+            RDFS_LABEL,
+            s.ontology.name,
+            name,
+            'Edit ontology label',
+          ),
+          mutationError: null,
+        };
+      } catch (error) {
+        return { mutationError: mutationError(error) };
+      }
+    }),
 
   setOntologyDescription: (description) =>
-    set((s) => ({ ...historyPush(s), ontology: { ...s.ontology, description } })),
+    set((s) => {
+      if (description === s.ontology.description) return {};
+      if (!s.rdfDocument) {
+        return {
+          ...historyPush(s),
+          ontology: { ...s.ontology, description },
+          mutationError: null,
+        };
+      }
+      try {
+        const target = requireProjectionResource(
+          s.rdfDocument.projection.ontology,
+          'Ontology',
+        );
+        return {
+          ...historyPush(s),
+          ontology: { ...s.ontology, description },
+          rdfDocument: applyLiteralEdit(
+            s.rdfDocument,
+            target,
+            RDFS_COMMENT,
+            s.ontology.description,
+            description,
+            'Edit ontology comment',
+          ),
+          mutationError: null,
+        };
+      } catch (error) {
+        return { mutationError: mutationError(error) };
+      }
+    }),
 
   // ─ Entities ─────────────────────────────────────────────────────────────
   addEntity: () => {
+    if (get().rdfDocument) {
+      set({ mutationError: unsupportedSourceEdit('Adding an entity') });
+      return;
+    }
     const name = 'New Entity';
     const ontology = get().ontology;
     const entityTypes = ontology.entityTypes;
@@ -171,18 +305,67 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
   },
 
   updateEntity: (id, updates) =>
-    set((s) => ({
-      ...historyPush(s),
-      ontology: {
-        ...s.ontology,
-        entityTypes: s.ontology.entityTypes.map((e) =>
-          e.id === id ? { ...e, ...updates } : e,
-        ),
-      },
-    })),
+    set((s) => {
+      const entity = s.ontology.entityTypes.find((item) => item.id === id);
+      if (!entity) return {};
+      if (!s.rdfDocument) {
+        return {
+          ...historyPush(s),
+          ontology: {
+            ...s.ontology,
+            entityTypes: s.ontology.entityTypes.map((item) =>
+              item.id === id ? { ...item, ...updates } : item,
+            ),
+          },
+          mutationError: null,
+        };
+      }
+      const keys = Object.keys(updates);
+      if (
+        keys.length !== 1
+        || (keys[0] !== 'name' && keys[0] !== 'description')
+      ) {
+        return {
+          mutationError: unsupportedSourceEdit('This entity change'),
+        };
+      }
+      const field = keys[0] as 'name' | 'description';
+      const nextValue = updates[field];
+      if (typeof nextValue !== 'string' || nextValue === entity[field]) {
+        return {};
+      }
+      try {
+        const target = requireProjectionResource(
+          s.rdfDocument.projection.entities[id],
+          `Entity "${entity.name}"`,
+        );
+        return {
+          ...historyPush(s),
+          ontology: {
+            ...s.ontology,
+            entityTypes: s.ontology.entityTypes.map((item) =>
+              item.id === id ? { ...item, [field]: nextValue } : item,
+            ),
+          },
+          rdfDocument: applyLiteralEdit(
+            s.rdfDocument,
+            target,
+            field === 'name' ? RDFS_LABEL : RDFS_COMMENT,
+            entity[field],
+            nextValue,
+            `Edit ${entity.name} ${field}`,
+          ),
+          mutationError: null,
+        };
+      } catch (error) {
+        return { mutationError: mutationError(error) };
+      }
+    }),
 
   removeEntity: (id) =>
-    set((s) => ({
+    set((s) => s.rdfDocument ? {
+      mutationError: unsupportedSourceEdit('Deleting an entity'),
+    } : ({
       ...historyPush(s),
       ontology: {
         ...s.ontology,
@@ -192,6 +375,7 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
         ),
       },
       selectedEntityId: s.selectedEntityId === id ? null : s.selectedEntityId,
+      mutationError: null,
     })),
 
   selectEntity: (id) =>
@@ -199,7 +383,9 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
 
   // ─ Properties ───────────────────────────────────────────────────────────
   addProperty: (entityId) =>
-    set((s) => ({
+    set((s) => s.rdfDocument ? {
+      mutationError: unsupportedSourceEdit('Adding a property'),
+    } : ({
       ...historyPush(s),
       ontology: {
         ...s.ontology,
@@ -209,10 +395,13 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
             : e,
         ),
       },
+      mutationError: null,
     })),
 
   updateProperty: (entityId, index, updates) =>
-    set((s) => ({
+    set((s) => s.rdfDocument ? {
+      mutationError: unsupportedSourceEdit('Editing a property'),
+    } : ({
       ...historyPush(s),
       ontology: {
         ...s.ontology,
@@ -227,10 +416,13 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
             : e,
         ),
       },
+      mutationError: null,
     })),
 
   removeProperty: (entityId, index) =>
-    set((s) => ({
+    set((s) => s.rdfDocument ? {
+      mutationError: unsupportedSourceEdit('Deleting a property'),
+    } : ({
       ...historyPush(s),
       ontology: {
         ...s.ontology,
@@ -240,10 +432,13 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
             : e,
         ),
       },
+      mutationError: null,
     })),
 
   moveProperty: (entityId, fromIndex, toIndex) =>
-    set((s) => ({
+    set((s) => s.rdfDocument ? {
+      mutationError: unsupportedSourceEdit('Reordering properties'),
+    } : ({
       ...historyPush(s),
       ontology: {
         ...s.ontology,
@@ -255,10 +450,15 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
           return { ...e, properties: props };
         }),
       },
+      mutationError: null,
     })),
 
   // ─ Relationships ────────────────────────────────────────────────────────
   addRelationship: (from, to) => {
+    if (get().rdfDocument) {
+      set({ mutationError: unsupportedSourceEdit('Adding a relationship') });
+      return;
+    }
     const ontology = get().ontology;
     const rel: Relationship = {
       id: nextRelationshipId(
@@ -280,31 +480,179 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
   },
 
   updateRelationship: (id, updates) =>
-    set((s) => ({
-      ...historyPush(s),
-      ontology: {
-        ...s.ontology,
-        relationships: s.ontology.relationships.map((r) =>
-          r.id === id ? { ...r, ...updates } : r,
-        ),
-      },
-    })),
+    set((s) => {
+      const relationship = s.ontology.relationships
+        .find((item) => item.id === id);
+      if (!relationship) return {};
+      if (!s.rdfDocument) {
+        return {
+          ...historyPush(s),
+          ontology: {
+            ...s.ontology,
+            relationships: s.ontology.relationships.map((item) =>
+              item.id === id ? { ...item, ...updates } : item,
+            ),
+          },
+          mutationError: null,
+        };
+      }
+
+      const mapping = s.rdfDocument.projection.relationships[id];
+      if (!mapping) {
+        return {
+          mutationError: 'This relationship has no exact RDF statement mapping.',
+        };
+      }
+      const keys = Object.keys(updates);
+      try {
+        let rdfDocument = s.rdfDocument;
+        if (mapping.kind === 'subclass') {
+          if (
+            keys.length === 0
+            || keys.some((key) => key !== 'from' && key !== 'to')
+          ) {
+            return {
+              mutationError: unsupportedSourceEdit(
+                'This subclass change',
+              ),
+            };
+          }
+          const oldChild = requireProjectionResource(
+            s.rdfDocument.projection.entities[relationship.from],
+            'Subclass',
+          ).term;
+          const oldParent = requireProjectionResource(
+            s.rdfDocument.projection.entities[relationship.to],
+            'Parent class',
+          ).term;
+          const newFrom = updates.from ?? relationship.from;
+          const newTo = updates.to ?? relationship.to;
+          const newChild = requireProjectionResource(
+            s.rdfDocument.projection.entities[newFrom],
+            'Subclass',
+          ).term;
+          const newParent = requireProjectionResource(
+            s.rdfDocument.projection.entities[newTo],
+            'Parent class',
+          ).term;
+          rdfDocument = applySubclassEdit(
+            rdfDocument,
+            oldChild,
+            oldParent,
+            newChild,
+            newParent,
+            'Edit subclass edge',
+          );
+        } else {
+          if (
+            keys.length !== 1
+            || (keys[0] !== 'name' && keys[0] !== 'description')
+            || !mapping.term
+          ) {
+            return {
+              mutationError: unsupportedSourceEdit(
+                'This relationship change',
+              ),
+            };
+          }
+          const field = keys[0] as 'name' | 'description';
+          const oldValue = relationship[field] ?? '';
+          const newValue = updates[field];
+          if (typeof newValue !== 'string' || newValue === oldValue) {
+            return {};
+          }
+          rdfDocument = applyLiteralEdit(
+            rdfDocument,
+            { term: mapping.term },
+            field === 'name' ? RDFS_LABEL : RDFS_COMMENT,
+            oldValue,
+            newValue,
+            `Edit ${relationship.name} ${field}`,
+          );
+        }
+        return {
+          ...historyPush(s),
+          ontology: {
+            ...s.ontology,
+            relationships: s.ontology.relationships.map((item) =>
+              item.id === id ? { ...item, ...updates } : item,
+            ),
+          },
+          rdfDocument,
+          mutationError: null,
+        };
+      } catch (error) {
+        return { mutationError: mutationError(error) };
+      }
+    }),
 
   removeRelationship: (id) =>
-    set((s) => ({
+    set((s) => {
+      if (s.rdfDocument) {
+        const relationship = s.ontology.relationships
+          .find((item) => item.id === id);
+        const mapping = s.rdfDocument.projection.relationships[id];
+        if (
+          !relationship
+          || !mapping
+          || mapping.kind !== 'subclass'
+        ) {
+          return {
+            mutationError: unsupportedSourceEdit(
+              'Deleting this relationship',
+            ),
+          };
+        }
+        try {
+          const child = requireProjectionResource(
+            s.rdfDocument.projection.entities[relationship.from],
+            'Subclass',
+          ).term;
+          const parent = requireProjectionResource(
+            s.rdfDocument.projection.entities[relationship.to],
+            'Parent class',
+          ).term;
+          return {
+            ...historyPush(s),
+            ontology: {
+              ...s.ontology,
+              relationships: s.ontology.relationships
+                .filter((item) => item.id !== id),
+            },
+            rdfDocument: applySubclassRemoval(
+              s.rdfDocument,
+              child,
+              parent,
+              'Delete subclass edge',
+            ),
+            selectedRelationshipId:
+              s.selectedRelationshipId === id
+                ? null
+                : s.selectedRelationshipId,
+            mutationError: null,
+          };
+        } catch (error) {
+          return { mutationError: mutationError(error) };
+        }
+      }
+      return {
       ...historyPush(s),
       ontology: {
         ...s.ontology,
         relationships: s.ontology.relationships.filter((r) => r.id !== id),
       },
       selectedRelationshipId: s.selectedRelationshipId === id ? null : s.selectedRelationshipId,
-    })),
+        mutationError: null,
+      };
+    }),
 
   selectRelationship: (id) =>
     set({ selectedRelationshipId: id, selectedEntityId: null }),
 
   addRelationshipAttribute: (relId) =>
-    set((s) => ({
+    set((s) => s.rdfDocument ? {
+      mutationError: unsupportedSourceEdit('Adding a relationship attribute'),
+    } : ({
       ...historyPush(s),
       ontology: {
         ...s.ontology,
@@ -314,10 +662,13 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
             : r,
         ),
       },
+      mutationError: null,
     })),
 
   updateRelationshipAttribute: (relId, index, updates) =>
-    set((s) => ({
+    set((s) => s.rdfDocument ? {
+      mutationError: unsupportedSourceEdit('Editing a relationship attribute'),
+    } : ({
       ...historyPush(s),
       ontology: {
         ...s.ontology,
@@ -332,10 +683,13 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
             : r,
         ),
       },
+      mutationError: null,
     })),
 
   removeRelationshipAttribute: (relId, index) =>
-    set((s) => ({
+    set((s) => s.rdfDocument ? {
+      mutationError: unsupportedSourceEdit('Deleting a relationship attribute'),
+    } : ({
       ...historyPush(s),
       ontology: {
         ...s.ontology,
@@ -345,40 +699,68 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
             : r,
         ),
       },
+      mutationError: null,
     })),
 
   // ─ Bulk ─────────────────────────────────────────────────────────────────
-  loadDraft: (ontology) =>
-    set({ ontology, _past: [], _future: [], selectedEntityId: null, selectedRelationshipId: null, validationErrors: [] }),
+  loadDraft: (ontology, rdfDocument = null) =>
+    set({
+      ontology,
+      rdfDocument,
+      mutationError: null,
+      _past: [],
+      _future: [],
+      selectedEntityId: null,
+      selectedRelationshipId: null,
+      validationErrors: [],
+    }),
 
   resetDraft: () =>
-    set({ ontology: emptyOntology(), _past: [], _future: [], selectedEntityId: null, selectedRelationshipId: null, validationErrors: [] }),
+    set({
+      ontology: emptyOntology(),
+      rdfDocument: null,
+      mutationError: null,
+      _past: [],
+      _future: [],
+      selectedEntityId: null,
+      selectedRelationshipId: null,
+      validationErrors: [],
+    }),
 
   validate: () => {
-    const errors = validateOntology(get().ontology);
+    const state = get();
+    const errors = state.rdfDocument
+      ? []
+      : validateOntology(state.ontology);
     set({ validationErrors: errors, _lastValidatedAt: Date.now() });
     return errors;
   },
 
+  clearMutationError: () => set({ mutationError: null }),
+
   // ─ Undo / Redo ─────────────────────────────────────────────────────────
   undo: () => {
-    const { _past, _future, ontology } = get();
+    const { _past, _future, ontology, rdfDocument } = get();
     if (_past.length === 0) return;
     const previous = _past[_past.length - 1];
     set({
-      ontology: previous,
+      ontology: previous.ontology,
+      rdfDocument: previous.rdfDocument,
+      mutationError: null,
       _past: _past.slice(0, -1),
-      _future: [cloneOntology(ontology), ..._future],
+      _future: [snapshot({ ontology, rdfDocument }), ..._future],
     });
   },
 
   redo: () => {
-    const { _past, _future, ontology } = get();
+    const { _past, _future, ontology, rdfDocument } = get();
     if (_future.length === 0) return;
     const next = _future[0];
     set({
-      ontology: next,
-      _past: [..._past, cloneOntology(ontology)],
+      ontology: next.ontology,
+      rdfDocument: next.rdfDocument,
+      mutationError: null,
+      _past: [..._past, snapshot({ ontology, rdfDocument })],
       _future: _future.slice(1),
     });
   },
