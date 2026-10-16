@@ -1,0 +1,33 @@
+metadata:
+  generated: "2026-10-16"
+  source_spec: "plan.md#requirements (user discussion)"
+  target_plan: "../plan.md"
+summary:
+  total_requirements: 8
+  covered_requirements: 8
+  missing_requirements: 0
+  coverage_percentage: 100.0
+requirements:
+  - req_id: REQ-001
+    plan_items: ["1.1", "2.1", "4.1", "6.1", "7.1"]
+  - req_id: REQ-002
+    plan_items: ["1.1", "2.1", "7.1"]
+  - req_id: REQ-003
+    plan_items: ["1.1", "3.1", "4.1", "5.1", "7.1"]
+  - req_id: REQ-004
+    plan_items: ["1.1", "2.1", "3.1", "7.1"]
+  - req_id: REQ-005
+    plan_items: ["1.1", "3.1", "4.1", "7.1"]
+  - req_id: REQ-006
+    plan_items: ["1.1", "5.1", "6.1", "7.1"]
+  - req_id: REQ-007
+    plan_items: ["1.1", "6.1", "7.1"]
+  - req_id: REQ-008
+    plan_items: ["1.1", "4.1", "7.1"]
+missing_requirements: []
+orphan_plan_items: []
+validation:
+  passed: true
+  errors: []
+  warnings:
+    - "Traceability only; implementation baseline, adapter feasibility, and performance gates remain open."

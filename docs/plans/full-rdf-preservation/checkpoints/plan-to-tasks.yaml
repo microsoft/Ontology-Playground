@@ -1,0 +1,41 @@
+metadata:
+  generated: "2026-10-16"
+  source_plan: "../plan.md"
+  target_tasks: "../plan.md#implementation-steps-and-task-breakdown"
+summary:
+  total_plan_items: 7
+  covered_plan_items: 7
+  missing_plan_items: 0
+  coverage_percentage: 100.0
+  total_tasks_generated: 14
+  orphan_tasks: 0
+phases:
+  - phase_id: "P0"
+    phase_name: "Full-document preservation"
+    items:
+      - item_id: "1.1"
+        tasks: [T001, T002]
+      - item_id: "2.1"
+        tasks: [T003, T004]
+      - item_id: "3.1"
+        tasks: [T005, T006]
+      - item_id: "4.1"
+        tasks: [T007, T008]
+  - phase_id: "P1"
+    phase_name: "Bounded editing"
+    items:
+      - item_id: "5.1"
+        tasks: [T009, T010]
+      - item_id: "6.1"
+        tasks: [T011, T012]
+  - phase_id: "Release"
+    phase_name: "Validate and document each milestone"
+    items:
+      - item_id: "7.1"
+        tasks: [T013, T014]
+missing_plan_items: []
+orphan_tasks: []
+validation:
+  passed: true
+  errors: []
+  warnings: []

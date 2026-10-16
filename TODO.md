@@ -11,6 +11,19 @@
 RDF import and export are implemented in `src/lib/rdf/`. The completed work
 below covers the supported visual model, not arbitrary RDF dataset editing.
 
+### Priority: full RDF preservation
+
+Full-document preservation takes priority over expanding RDF editing features.
+See the [implementation plan](docs/plans/full-rdf-preservation/plan.md) for
+requirements, dependencies, tasks, and release gates.
+
+- [x] Plan complete-document preservation separately from bounded editing.
+- [ ] P0: retain original bytes and the complete parsed RDF graph across all
+  source-backed workflows; export untouched files byte-for-byte and keep
+  source-backed semantic editing read-only until the patch path is ready.
+- [ ] P1: enable only explicitly mapped edits with atomic undo/redo and
+  complete-graph export; preserve unsupported constructs without editing them.
+
 ### 1.1 Extract RDF serialization module
 - [x] Create `src/lib/rdf/serializer.ts` — move the existing `exportAsRDF()`
   logic out of `ImportExportModal.tsx` into a pure function
