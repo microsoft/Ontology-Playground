@@ -4,6 +4,9 @@
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "FUNCTIONS_NODE_BLOCK_ON_ENTRY_POINT_ERROR": "true",
     "AzureWebJobsStorage": "",
+    "AI_CONNECTORS_ENABLED": "false",
+    "AI_CONNECTOR": "azure-openai",
+    "AI_ALLOWED_ORIGIN": "http://localhost:5173",
     "AZURE_OPENAI_ENDPOINT": "https://YOUR-RESOURCE.openai.azure.com/",
     "AZURE_OPENAI_API_KEY": "YOUR-API-KEY",
     "AZURE_OPENAI_DEPLOYMENT": "gpt-4o-mini"

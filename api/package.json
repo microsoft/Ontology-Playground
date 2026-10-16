@@ -17,7 +17,7 @@
     "typescript": "^5.0.0",
     "vitest": "^4.1.11"
   },
-  "main": "dist/src/functions/*.js",
+  "main": "dist/api/src/functions/*.js",
   "engines": {
     "node": ">=20"
   }

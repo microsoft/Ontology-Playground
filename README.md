@@ -297,12 +297,12 @@ They do not deploy managed Azure Functions.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VITE_ENABLE_AI_BUILDER` | `false` | Enable the Azure OpenAI ontology builder |
+| `VITE_ENABLE_AI_BUILDER` | `false` | Show the opt-in connector-based AI builder; requires a protected generation gateway |
 | `VITE_ENABLE_LEGACY_FORMATS` | `false` | Enable JSON/YAML/CSV import/export formats |
 | `VITE_BASE_PATH` | `/` | Base path for the app (set automatically for GitHub Pages) |
 | `VITE_GITHUB_CLIENT_ID` | *(empty)* | GitHub OAuth App client ID for one-click catalogue PRs ([setup guide](docs/github-oauth-setup.md)) |
 | `VITE_GITHUB_OAUTH_BASE` | *(empty)* | External OAuth proxy URL for GitHub Pages deployments (e.g. Cloudflare Worker URL) |
-| `VITE_API_BASE` | `/api` | Base URL for separately deployed API routes (e.g. `https://example.azurewebsites.net/api`) |
+| `VITE_API_BASE` | `/api` | Base URL for separately deployed API routes; AI requests must use an authenticated, quota-enforcing gateway |
 
 ### Optional Azure Functions API
 
@@ -322,17 +322,47 @@ npm --prefix api test
 npm --prefix api start
 ```
 
-The AI builder requires `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_API_KEY`.
-`AZURE_OPENAI_DEPLOYMENT` defaults to `gpt-4o-mini`. Keep
-`FUNCTIONS_NODE_BLOCK_ON_ENTRY_POINT_ERROR=true` so registration failures stop
-the Functions host instead of leaving routes unavailable. For a static
-frontend, set `VITE_API_BASE` to the Function App's `/api` URL for the AI
-builder and `VITE_GITHUB_OAUTH_BASE` to its `/api/github-oauth` URL for the
-GitHub device flow. Configure the Function App to allow the frontend origin
-through CORS. Set the repository Actions variable `VITE_ENABLE_AI_BUILDER` to
-`true` when the deployed frontend should expose the AI builder. Generated and
-edited ontologies must pass the Designer's Fabric IQ validation rules before
-they can be applied; validation failures remain in the builder for correction.
+AI generation uses an explicit deployment-time connector registry. Azure
+OpenAI is the reference adapter; operators can add reviewed server-side
+adapters without changing the builder or core orchestration. There are no
+remote plugins, request-supplied endpoints, or automatic provider fallbacks.
+
+**Generation is disabled by default on both frontend and backend.** Both AI
+Functions now require function keys, intentionally replacing the former
+anonymous generation route. A function key is not end-user authentication:
+before enabling this feature, deploy an authenticated, generation-authorizing,
+quota-enforcing gateway with server-side key injection and block direct
+backend bypass. Never put function keys or provider secrets in Vite variables,
+URLs, or browser storage. The repository does not provision this gateway or
+enable a public AI service.
+
+| API route | Method | Access |
+|-----------|--------|--------|
+| `/api/generation-connector` | GET | Protected connector disclosure, no provider invocation |
+| `/api/generate-ontology` | POST | Protected, identity/revision-pinned generation |
+
+Configure `AI_CONNECTORS_ENABLED=true`, `AI_ALLOWED_ORIGIN` (one exact frontend
+origin), and optionally `AI_CONNECTOR` (default `azure-openai`) only after the
+gateway's authentication, CSRF, distributed quotas, and spending controls have
+been verified. Azure retains `AZURE_OPENAI_ENDPOINT`,
+`AZURE_OPENAI_API_KEY`, and `AZURE_OPENAI_DEPLOYMENT` (default `gpt-4o-mini`).
+The reference adapter accepts only HTTPS resource endpoints under
+`openai.azure.com` and rejects credential-bearing redirects.
+
+Set `VITE_API_BASE` to the protected gateway's `/api` base and
+`VITE_ENABLE_AI_BUILDER=true` to display the builder. Users see the configured
+provider and processing destination and must consent before a description is
+submitted. Do not submit secrets or sensitive personal information. Generated
+output receives server-side shape, size, graph, and Fabric IQ validation;
+the builder retains preview/edit/apply validation and human review.
+
+Keep `FUNCTIONS_NODE_BLOCK_ON_ENTRY_POINT_ERROR=true` so registration failures
+stop the host. The API compiles the same dependency-free ontology schema and
+validation helpers used by the frontend; its entry point is
+`dist/api/src/functions/*.js`. GitHub OAuth remains separately configured via
+`VITE_GITHUB_OAUTH_BASE`; the connector changes do not change its access policy.
+See [Connector authoring and secure deployment](docs/generation-connectors.md)
+for the extension contract, request limits, and mandatory launch checks.
 
 ## Project Structure
 

@@ -102,6 +102,13 @@ the official public deployment target; Azure SWA remains an optional static
 hosting choice for forks and review previews.
 
 ### 2.1 Remove runtime API dependency
+- [x] Keep optional AI generation disabled by default and expose reviewed
+  deployment-time generation connectors with Azure OpenAI as the reference
+  adapter, explicit destination consent, protected routes, bounded validation,
+  cancellation, and no provider fallback
+- [ ] Public AI launch: provision and verify a generation-authorizing gateway,
+  distributed quotas/spending limits, and direct-backend access restrictions;
+  this repository does not deploy or certify that infrastructure
 - [x] The Azure OpenAI feature is already behind `VITE_ENABLE_AI_BUILDER` —
   confirm the build produces zero `/api` calls when the flag is off
 - [x] Audit all `fetch()` calls; ensure none target a dynamic backend when

@@ -6,7 +6,7 @@ const generateOntology: HttpHandler = (request, context) =>
 
 app.http('generateOntology', {
   methods: ['POST'],
-  authLevel: 'anonymous',
+  authLevel: 'function',
   route: 'generate-ontology',
   handler: generateOntology,
 });

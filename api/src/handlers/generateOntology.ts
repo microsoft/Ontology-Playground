@@ -1,243 +1,234 @@
-import type {
-  HttpRequest,
-  HttpResponseInit,
-  InvocationContext,
-} from '@azure/functions';
-import type { Environment, FetchFunction } from './http';
+import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+import { parseOntologyValue } from '../../../src/lib/ontologySchema';
+import { validateOntology } from '../../../src/lib/ontologyValidation';
+import { resolveConnector } from '../connectors';
+import { readBoundedText } from '../connectors/http';
+import {
+  ConnectorError,
+  GENERATION_TIMEOUT_MS,
+  MAX_DESCRIPTION_LENGTH,
+  MAX_REQUEST_BYTES,
+  MAX_RESPONSE_BYTES,
+  type ConnectorDependencies,
+  type ConnectorFactory,
+} from '../connectors/types';
 
-interface GeneratedOntology {
-  name: string;
-  entityTypes: unknown[];
-  relationships: unknown[];
+export interface GenerateOntologyDependencies extends ConnectorDependencies {
+  factories?: ReadonlyMap<string, ConnectorFactory>;
+  timeoutMs?: number;
 }
 
-export interface GenerateOntologyDependencies {
-  fetch: FetchFunction;
-  environment: Environment;
-}
+type GenerationRequest = Pick<HttpRequest, 'body' | 'headers'>;
+type GenerationContext = Pick<InvocationContext, 'error'>;
 
-type GenerateOntologyRequest = Pick<HttpRequest, 'json'>;
-type GenerateOntologyContext = Pick<InvocationContext, 'error'>;
-
-const SYSTEM_PROMPT = `You are an expert ontology extraction system. Given a business scenario description, extract entities, relationships, and properties to create a complete ontology.
-
-Output ONLY valid JSON matching this exact schema:
-{
-  "name": "string - Name for this ontology",
-  "entityTypes": [
-    {
-      "id": "string - lowercase, snake_case identifier",
-      "name": "string - Display name",
-      "description": "string - Brief description",
-      "properties": [
-        {
-          "name": "string - camelCase property name",
-          "type": "string|integer|decimal|boolean|date|datetime|enum",
-          "isIdentifier": boolean (true for primary key),
-          "values": ["array of enum values if type is enum"],
-          "unit": "string - optional unit like USD, kg, etc."
-        }
-      ],
-      "icon": "string - single emoji representing this entity",
-      "color": "string - hex color code like #0078D4, #107C10, #5C2D91, #FFB900, #D83B01, #00A9E0"
-    }
-  ],
-  "relationships": [
-    {
-      "id": "string - lowercase identifier like entity1_verb_entity2",
-      "name": "string - verb describing the relationship",
-      "from": "string - id of source entity",
-      "to": "string - id of target entity",
-      "cardinality": "one-to-one|one-to-many|many-to-one|many-to-many",
-      "description": "string - optional description"
-    }
-  ]
-}
-
-Rules:
-1. Extract nouns as entities, verbs as relationships
-2. Each entity MUST have at least one property with isIdentifier: true
-3. Include 3-6 meaningful properties per entity
-4. Use appropriate cardinality based on business logic
-5. Generate descriptive relationship names (verbs like "places", "contains", "manages")
-6. Use relevant emojis for icons
-7. Assign unique hex colors to each entity (use Microsoft palette: #0078D4, #107C10, #5C2D91, #FFB900, #D83B01, #00A9E0, #8764B8, #00B294)
-8. Output ONLY the JSON, no explanations`;
-
-const defaultDependencies: GenerateOntologyDependencies = {
-  fetch: (input, init) => globalThis.fetch(input, init),
+const defaults: GenerateOntologyDependencies = {
   environment: process.env,
+  fetch: (input, init) => globalThis.fetch(input, init),
 };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+const COLORS = ['#0078D4', '#107C10', '#D83B01', '#5C2D91', '#00A9E0', '#FFB900', '#E81123', '#008272'];
+const RESERVED_IDS = new Set(['__proto__', 'constructor', 'prototype']);
+let activeRequests = 0;
+
+function result(status: number, jsonBody: unknown, origin?: string): HttpResponseInit {
+  return {
+    status,
+    jsonBody,
+    headers: {
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'Vary': 'Origin',
+      ...(origin ? {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Credentials': 'true',
+      } : {}),
+    },
+  };
 }
 
-function errorName(error: unknown): string {
-  return error instanceof Error ? error.name : 'UnknownError';
-}
-
-function readOpenAIContent(value: unknown): string | undefined {
-  if (!isRecord(value) || !Array.isArray(value.choices)) return undefined;
-
-  const firstChoice = value.choices[0];
-  if (!isRecord(firstChoice) || !isRecord(firstChoice.message)) {
-    return undefined;
+function allowedOrigin(dependencies: GenerateOntologyDependencies): string {
+  const origin = dependencies.environment.AI_ALLOWED_ORIGIN;
+  if (!origin) throw new ConnectorError('configuration');
+  let url: URL;
+  try {
+    url = new URL(origin);
+  } catch {
+    throw new ConnectorError('configuration');
   }
-
-  return typeof firstChoice.message.content === 'string'
-    ? firstChoice.message.content
-    : undefined;
+  const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+  if (url.origin !== origin || url.username || url.password
+    || (url.protocol !== 'https:' && !(local && url.protocol === 'http:'))) {
+    throw new ConnectorError('configuration');
+  }
+  return origin;
 }
 
-function isGeneratedOntology(value: unknown): value is GeneratedOntology {
-  return isRecord(value)
-    && typeof value.name === 'string'
-    && value.name.trim().length > 0
-    && Array.isArray(value.entityTypes)
-    && Array.isArray(value.relationships);
+function preflight(
+  request: GenerationRequest,
+  dependencies: GenerateOntologyDependencies,
+  requireOrigin: boolean,
+): { origin: string } | HttpResponseInit {
+  if (dependencies.environment.AI_CONNECTORS_ENABLED !== 'true') {
+    return result(503, { error: 'Ontology generation is disabled.' });
+  }
+  const origin = allowedOrigin(dependencies);
+  const requestOrigin = request.headers.get('origin');
+  if ((requireOrigin || requestOrigin !== null) && requestOrigin !== origin) {
+    return result(403, { error: 'Request origin is not allowed.' });
+  }
+  if (request.headers.get('x-ontology-request') !== 'generate') {
+    return result(403, { error: 'Required request header is missing.' }, origin);
+  }
+  return { origin };
 }
 
-function buildAzureOpenAIUrl(endpoint: string, deployment: string): URL {
-  const baseUrl = endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
-  const url = new URL(
-    `openai/deployments/${encodeURIComponent(deployment)}/chat/completions`,
-    baseUrl,
-  );
-  url.searchParams.set('api-version', '2024-02-15-preview');
-  return url;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function validatedOutput(value: unknown) {
+  if (!isRecord(value) || value.rdfMetadata !== undefined
+    || !Array.isArray(value.entityTypes) || value.entityTypes.length > 100
+    || !Array.isArray(value.relationships) || value.relationships.length > 500) {
+    throw new ConnectorError('invalid_output');
+  }
+  for (const entity of value.entityTypes) {
+    if (!isRecord(entity) || !Array.isArray(entity.properties)
+      || entity.properties.length > 50) throw new ConnectorError('invalid_output');
+  }
+  if (Buffer.byteLength(JSON.stringify(value), 'utf8') > MAX_RESPONSE_BYTES) {
+    throw new ConnectorError('too_large');
+  }
+  const checkBudget = (item: unknown, depth: number): void => {
+    if (depth > 12 || (typeof item === 'string' && item.length > 8000)
+      || (Array.isArray(item) && item.length > 500)) {
+      throw new ConnectorError('invalid_output');
+    }
+    if (typeof item === 'object' && item !== null) {
+      const entries = Object.entries(item);
+      if (entries.length > 500) throw new ConnectorError('invalid_output');
+      for (const [key, child] of entries) {
+        if (RESERVED_IDS.has(key)) throw new ConnectorError('invalid_output');
+        checkBudget(child, depth + 1);
+      }
+    }
+  };
+  checkBudget(value, 0);
+  const parsed = parseOntologyValue(value, { defaultEntityColors: COLORS });
+  if (!parsed.ontology || parsed.issues.length
+    || !parsed.ontology.name.trim() || parsed.ontology.name.length > 120
+    || validateOntology(parsed.ontology).length) {
+    throw new ConnectorError('invalid_output');
+  }
+  const ontology = parsed.ontology;
+  const validId = (id: string) => /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/.test(id)
+    && !RESERVED_IDS.has(id);
+  if (ontology.entityTypes.some((entity) =>
+    !validId(entity.id) || entity.icon.length > 32
+    || !/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(entity.color))
+    || ontology.relationships.some((relationship) =>
+      !validId(relationship.id) || !relationship.name.trim())) {
+    throw new ConnectorError('invalid_output');
+  }
+  return ontology;
+}
+
+function failure(error: unknown, context: GenerationContext, origin?: string): HttpResponseInit {
+  const code = error instanceof ConnectorError ? error.code : 'upstream';
+  context.error('Ontology connector request failed', code);
+  if (code === 'configuration') {
+    return result(503, { error: 'Ontology connector is not configured correctly.' }, origin);
+  }
+  return result(502, { error: 'Ontology connector could not produce a valid ontology.' }, origin);
+}
+
+export async function handleGenerationConnector(
+  request: GenerationRequest,
+  context: GenerationContext,
+  dependencies: GenerateOntologyDependencies = defaults,
+): Promise<HttpResponseInit> {
+  let origin: string | undefined;
+  try {
+    const checked = preflight(request, dependencies, false);
+    if (!('origin' in checked)) return checked;
+    origin = checked.origin;
+    const connector = resolveConnector(dependencies, dependencies.factories);
+    return result(200, { connector: connector.descriptor }, origin);
+  } catch (error) {
+    return failure(error, context, origin);
+  }
 }
 
 export async function handleGenerateOntology(
-  request: GenerateOntologyRequest,
-  context: GenerateOntologyContext,
-  dependencies: GenerateOntologyDependencies = defaultDependencies,
+  request: GenerationRequest,
+  context: GenerationContext,
+  dependencies: GenerateOntologyDependencies = defaults,
 ): Promise<HttpResponseInit> {
-  let body: unknown;
+  let origin: string | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const controller = new AbortController();
   try {
-    body = await request.json();
-  } catch {
-    return {
-      status: 400,
-      jsonBody: { error: 'Request body must be valid JSON' },
-    };
-  }
-
-  const description = isRecord(body) ? body.description : undefined;
-  if (typeof description !== 'string' || description.trim().length === 0) {
-    return {
-      status: 400,
-      jsonBody: { error: "Missing 'description' in request body" },
-    };
-  }
-
-  const endpoint = dependencies.environment.AZURE_OPENAI_ENDPOINT;
-  const apiKey = dependencies.environment.AZURE_OPENAI_API_KEY;
-  const deployment = dependencies.environment.AZURE_OPENAI_DEPLOYMENT
-    || 'gpt-4o-mini';
-
-  if (!endpoint || !apiKey) {
-    return {
-      status: 500,
-      jsonBody: {
-        error: 'Azure OpenAI not configured. Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY.',
-      },
-    };
-  }
-
-  let requestUrl: URL;
-  try {
-    requestUrl = buildAzureOpenAIUrl(endpoint, deployment);
-  } catch (error) {
-    context.error(
-      'Invalid Azure OpenAI endpoint configuration',
-      errorName(error),
-    );
-    return {
-      status: 500,
-      jsonBody: { error: 'Azure OpenAI endpoint is not configured correctly' },
-    };
-  }
-
-  let response: Response;
-  try {
-    response = await dependencies.fetch(requestUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': apiKey,
-      },
-      body: JSON.stringify({
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: description.trim() },
-        ],
-        temperature: 0.3,
-        max_tokens: 4000,
-        response_format: { type: 'json_object' },
-      }),
+    const checked = preflight(request, dependencies, true);
+    if (!('origin' in checked)) return checked;
+    origin = checked.origin;
+    if (request.headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase()
+      !== 'application/json') {
+      return result(415, { error: 'Content-Type must be application/json.' }, origin);
+    }
+    const connector = resolveConnector(dependencies, dependencies.factories);
+    if (activeRequests >= 2) {
+      return result(429, { error: 'Ontology generation is busy. Try again later.' }, origin);
+    }
+    activeRequests++;
+    const work = (async (): Promise<HttpResponseInit> => {
+      let body: unknown;
+      try {
+        const text = await readBoundedText(request.body, MAX_REQUEST_BYTES, controller.signal);
+        body = JSON.parse(text);
+      } catch (error) {
+        if (error instanceof ConnectorError && error.code === 'too_large') {
+          return result(413, { error: 'Generation request exceeds the size limit.' }, origin);
+        }
+        if (controller.signal.aborted) throw error;
+        return result(400, { error: 'Generation request must contain valid JSON.' }, origin);
+      }
+      if (!isRecord(body)
+        || Object.keys(body).some((key) => !['description', 'connectorId', 'revision'].includes(key))
+        || typeof body.description !== 'string' || !body.description.trim()
+        || body.description.length > MAX_DESCRIPTION_LENGTH
+        || typeof body.connectorId !== 'string' || typeof body.revision !== 'string') {
+        return result(400, { error: 'A description (1-8000 characters) and connector identity are required.' }, origin);
+      }
+      if (body.connectorId !== connector.descriptor.id
+        || body.revision !== connector.descriptor.revision) {
+        return result(409, { error: 'The connector has changed. Reload its details and consent again.' }, origin);
+      }
+      controller.signal.throwIfAborted();
+      const value = await connector.generate({
+        description: body.description.trim(),
+        signal: controller.signal,
+      });
+      controller.signal.throwIfAborted();
+      const ontology = validatedOutput(value);
+      return result(200, {
+        ontology,
+        connector: { id: connector.descriptor.id, revision: connector.descriptor.revision },
+      }, origin);
+    })();
+    // A non-cooperative adapter retains its slot until it actually settles.
+    void work.then(() => { activeRequests--; }, () => { activeRequests--; });
+    const timeout = new Promise<HttpResponseInit>((resolve) => {
+      timer = setTimeout(() => {
+        controller.abort();
+        context.error('Ontology connector request failed', 'timeout');
+        resolve(result(504, { error: 'Ontology generation timed out.' }, origin));
+      }, dependencies.timeoutMs ?? GENERATION_TIMEOUT_MS);
     });
+    return await Promise.race([work, timeout]);
   } catch (error) {
-    context.error('Azure OpenAI request failed', errorName(error));
-    return {
-      status: 502,
-      jsonBody: { error: 'Failed to generate ontology from Azure OpenAI' },
-    };
+    return failure(error, context, origin);
+  } finally {
+    if (timer) clearTimeout(timer);
+    controller.abort();
   }
-
-  if (!response.ok) {
-    context.error('Azure OpenAI returned an error response', response.status);
-    return {
-      status: 502,
-      jsonBody: { error: 'Failed to generate ontology from Azure OpenAI' },
-    };
-  }
-
-  let data: unknown;
-  try {
-    data = await response.json();
-  } catch (error) {
-    context.error('Azure OpenAI returned malformed JSON', errorName(error));
-    return {
-      status: 502,
-      jsonBody: { error: 'Invalid response from Azure OpenAI' },
-    };
-  }
-
-  const content = readOpenAIContent(data);
-  if (!content) {
-    context.error('Azure OpenAI response did not contain message content');
-    return {
-      status: 502,
-      jsonBody: { error: 'Invalid response from Azure OpenAI' },
-    };
-  }
-
-  let ontology: unknown;
-  try {
-    ontology = JSON.parse(content);
-  } catch (error) {
-    context.error(
-      'Azure OpenAI returned invalid ontology JSON',
-      errorName(error),
-    );
-    return {
-      status: 502,
-      jsonBody: { error: 'Invalid ontology returned by Azure OpenAI' },
-    };
-  }
-
-  if (!isGeneratedOntology(ontology)) {
-    context.error('Azure OpenAI returned an invalid ontology structure');
-    return {
-      status: 502,
-      jsonBody: { error: 'Invalid ontology returned by Azure OpenAI' },
-    };
-  }
-
-  return {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-    jsonBody: { ontology },
-  };
 }
