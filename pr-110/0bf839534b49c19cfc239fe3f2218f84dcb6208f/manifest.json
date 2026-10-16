@@ -1,0 +1,52 @@
+{
+  "prNumber": 110,
+  "headSha": "0bf839534b49c19cfc239fe3f2218f84dcb6208f",
+  "repository": "microsoft/Ontology-Playground",
+  "previews": [
+    {
+      "id": "community/aala-ali/telecom-customer-insights",
+      "file": "community-aala-ali-telecom-customer-insights.png",
+      "bytes": 280795
+    },
+    {
+      "id": "community/antikas/openim",
+      "file": "community-antikas-openim.png",
+      "bytes": 2177496
+    },
+    {
+      "id": "community/daocoding/elements-of-software",
+      "file": "community-daocoding-elements-of-software.png",
+      "bytes": 567738
+    },
+    {
+      "id": "external/brick-schema/brick",
+      "file": "external-brick-schema-brick.png",
+      "bytes": 1292890
+    },
+    {
+      "id": "external/pizza-ontology/pizza",
+      "file": "external-pizza-ontology-pizza.png",
+      "bytes": 138651
+    },
+    {
+      "id": "external/schema-org/creative-work",
+      "file": "external-schema-org-creative-work.png",
+      "bytes": 130484
+    },
+    {
+      "id": "external/schema-org/event",
+      "file": "external-schema-org-event.png",
+      "bytes": 117471
+    },
+    {
+      "id": "external/schema-org/local-business",
+      "file": "external-schema-org-local-business.png",
+      "bytes": 131859
+    },
+    {
+      "id": "external/schema-org/medical-entity",
+      "file": "external-schema-org-medical-entity.png",
+      "bytes": 125056
+    }
+  ]
+}
