@@ -18,11 +18,12 @@ Replace `YOUR_SITE_URL` with the URL where your Ontology Playground app is deplo
 
 That's it! The widget loads the lightweight catalogue index, fetches only the
 selected ontology's content-addressed payload, verifies its hash, and renders
-an interactive graph. Concurrent widgets for the same entry share the cached
-request and parsed payload. Its RDF tab is generated from that visual model;
-for external standards it is labelled as a subset and does not reproduce
-source-only SHACL rules or unsupported triples. The widget never fetches
-`owl:imports`.
+an interactive graph. It also lazily fetches and verifies that entry's
+content-addressed RDF source for the **Complete RDF source** tab. Concurrent
+widgets for the same entry share cached catalogue requests. The graph remains a
+visual projection, while the RDF tab displays and copies the complete decoded
+source, including source-only SHACL and unsupported statements. The widget
+never fetches `owl:imports` or executes SHACL.
 
 ## Available Ontologies
 
@@ -107,6 +108,11 @@ Include the script **once** at the bottom, then add as many embed divs as you wa
 </div>
 ```
 
+For an RDF/XML URL, the widget retains the fetched source text for its complete
+RDF tab and uses the URL as the document base when resolving relative IRIs.
+JSON URLs and inline JSON have no source graph, so their RDF tab uses the
+Playground-generated visual-model profile.
+
 ### Inline (base64-encoded JSON)
 
 Encode your ontology JSON as base64 and pass it directly:
@@ -158,8 +164,8 @@ This scans the DOM for new `.ontology-embed` elements and mounts widgets on any 
   off-thumb track clicks, dragging, touch, and arrow-key adjustments are all
   supported
 - **Inspector overlay** — click any entity or relationship to see its properties
-- **Generated RDF tab** — view and copy RDF/XML serialized from the supported
-  visual model; external catalogue entries disclose when this is a subset
+- **Complete/source-aware RDF tab** — catalogue and RDF/XML URL embeds view and
+  copy complete source RDF; JSON and inline authored embeds show generated RDF
 - **Dark & light themes** — match your site's design
 - **Self-contained** — single JS file, no external CSS needed
 

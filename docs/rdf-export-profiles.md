@@ -1,12 +1,71 @@
 # RDF export profiles
 
-Ontology Playground exposes two RDF/XML export profiles with different
-contracts. Choose the profile based on whether the file needs to return to the
+Ontology Playground exposes two distinct RDF/XML export paths with different
+contracts:
+
+1. **Complete source-backed export** for imported files and catalogue sources.
+2. **Generated profiles** for ontologies authored in the Playground.
+
+Choose the path or profile based on whether the file needs to return to the
 editor or be consumed primarily by standards-based RDF tooling.
 For generator-side input requirements, supported declarations, and parser
 limits, see [Generating RDF from External Tools](external-rdf-generators.md).
 
-## Playground round-trip
+The generated profile selector is intentionally hidden for source-backed
+documents so a complete source is never silently reduced to the visual model.
+
+## Complete source-backed export
+
+RDF/XML imports retain both the exact original bytes and the complete parsed
+RDF graph. The visual `Ontology` is a projection, not the export authority.
+
+- An untouched document downloads as the original `Uint8Array` byte-for-byte.
+- Undoing all net semantic edits restores exact-original eligibility.
+- A modified document exports the complete graph plus intentional patches.
+- Modified output may use different whitespace, prefixes, statement order, and
+  blank-node labels; parse-write-parse graph semantics remain equivalent except
+  for the requested patches.
+- Export diagnostics report source hash, source and exported statement counts,
+  patch count, and whether optional provenance was included.
+
+Source-backed editing is deliberately bounded. The Designer enables only an
+existing label or comment that maps to exactly one RDF literal, and direct
+named-class `rdfs:subClassOf` endpoint changes or removal. Language tags and
+datatypes on edited literals remain unchanged. Ambiguous multilingual values,
+unmapped values, term renaming, class/property creation or deletion,
+domain/range and cardinality changes, blank-node structure changes, and
+arbitrary graph editing remain read-only.
+
+An off-by-default export control can add:
+
+```text
+<mapped ontology> prov:wasDerivedFrom <urn:sha256:source-hash>
+```
+
+Selecting it intentionally creates a modified/derived export. The Playground
+never injects this statement automatically.
+
+### Source safety and limits
+
+- RDF/XML is the supported source syntax; Turtle is reported as unsupported.
+- Sources are limited to 8 MiB and 250,000 unique RDF statements.
+- Named nodes, blank nodes, arbitrary predicates, literal lexical forms,
+  languages, datatypes, restrictions, lists, and SHACL statements are retained.
+- `owl:imports`, SHACL, and referenced IRIs are inert. They are not fetched or
+  executed.
+- `DOCTYPE` declarations are rejected.
+- RDF/XML cannot represent named graphs, so the writer rejects them rather than
+  flattening them.
+- A valid document with no visually projectable classes remains available for
+  complete export.
+
+## Generated profiles for authored documents
+
+Choose a generated profile based on whether a Playground-authored document
+needs to return to the editor or be consumed primarily by standards-based RDF
+tooling.
+
+### Playground round-trip
 
 The **Playground round-trip** profile is the default. It preserves the editable
 visual model, including:
@@ -33,7 +92,7 @@ This profile is valid RDF/XML, but its Playground metadata requires knowledge of
 the project vocabulary. It is intended for lossless editor round trips rather
 than as a standards-neutral interchange contract.
 
-## Standards-oriented OWL + SHACL
+### Standards-oriented OWL + SHACL
 
 The **standards-oriented OWL + SHACL** profile omits Playground-only
 presentation and binding metadata. It retains only the minimal Playground
@@ -70,7 +129,7 @@ subclass of `rdf:Statement`, identifies the related predicate with
 `dcterms:relation`, and constrains its subject, predicate, and object through OWL
 restrictions.
 
-## Import behavior and limits
+### Generated-profile import behavior and limits
 
 The importer understands the generated OWL, SHACL order, enum lists,
 `owl:hasKey`, cardinality shapes, and association classes. Statement order may
@@ -78,20 +137,11 @@ change in a triplestore without changing the reconstructed property order. It
 also accepts equivalent RDF/XML that references RDF lists and inverse SHACL
 paths through blank nodes.
 
-Both profiles mint a generated base IRI from the ontology name and retain the
-ontology label and description. When RDF was imported from a catalogue source,
-the editable model also retains its ontology IRI, version IRI and label,
-license, and import IRIs. Generated RDF records those values as provenance
-rather than declaring that the reduced graph is the authoritative upstream
-ontology or version. In particular, recorded source imports are not emitted as
-active `owl:imports` on the generated subset.
-
-Unsupported source triples remain only in the catalogue's byte-preserving
-original artifact. Source SHACL is inert: it is not copied into a generated
-profile unless represented by supported visual-model constraints, and the
-Playground does not execute a SHACL validation engine.
+Both generated profiles mint a base IRI from the ontology name and retain the
+ontology label and description. They are for Playground-authored documents,
+not for replacing an imported source graph.
 
 The standards-oriented profile intentionally omits icons, colors, units, data
 bindings, and other editor-only values that have no selected standards mapping.
 Use the round-trip profile when those values must be preserved. Neither
-generated profile substitutes for retaining the original imported source file.
+generated profile substitutes for the complete source-backed export path.

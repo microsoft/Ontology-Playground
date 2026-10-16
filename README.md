@@ -40,14 +40,16 @@ This summary does not provide keyboard navigation of canvas nodes.
 A curated library of official and community-contributed ontologies spanning six
 domains (Retail, E-Commerce, Healthcare, Finance, Manufacturing, Education).
 Browse by category, search by name or tags, load any ontology with one click,
-and compare its exact reviewed RDF source with Playground-generated RDF.
+and inspect or download its exact reviewed RDF source.
 Catalogue cards preserve and display available license, upstream source, and
 version attribution for external standards and adapted community entries. The
 gallery downloads a lightweight metadata index; each versioned graph payload
 and original source is published separately at an immutable,
 content-addressed URL and verified by SHA-256 when requested. Original files
 remain byte-for-byte intact, including source-only SHACL rules and unsupported
-triples. Every ontology has a shareable deep link
+triples. The graph is a visual projection; opening a catalogue entry in the
+Designer carries the complete verified source with it. Every ontology has a
+shareable deep link
 (`/#/catalogue/official/cosmic-coffee`).
 
 ### Visual Ontology Designer
@@ -58,29 +60,37 @@ properties; define relationships with cardinalities; see a live graph preview
 that updates as you work, including reconnecting edges when a relationship's
 From or To entity changes without repositioning existing nodes.
 Includes undo/redo (50 levels), real-time validation,
-and export to RDF/XML or JSON.
+and export to RDF/XML or JSON. Source-backed RDF uses a bounded editing mode:
+only unambiguous existing labels, comments, and direct named-class
+`rdfs:subClassOf` edges can be changed. Unsupported controls stay read-only,
+and undo/redo updates both the graph projection and RDF statement patches
+atomically.
 
 ### RDF Import & Export
 
-Import and export the Playground's supported RDF/XML subset: OWL classes,
-datatype properties, object properties, and internal `rdfs:subClassOf`
-hierarchies. The importer accepts typed elements and the equivalent
-`rdf:Description` / `rdf:type` syntax. Exports can use either the lossless
+RDF/XML imports retain the exact original bytes and a complete semantic graph
+alongside the Playground's visual projection. Untouched downloads are
+byte-for-byte identical, including BOM, encoding, formatting, and unsupported
+statements. After a supported edit, export serializes the complete patched
+graph rather than regenerating only the visible subset; all unrelated
+statements remain present. Undoing every net edit restores exact-original
+download eligibility.
+
+The complete parser retains named and blank nodes, arbitrary predicates,
+literal lexical forms, language tags, datatypes, OWL restrictions, RDF lists,
+and SHACL statements. Imports and SHACL remain inert: external resources are
+never fetched and rules are never executed. RDF/XML `DOCTYPE` input and named
+graph output are rejected explicitly. Current resource limits are 8 MiB and
+250,000 unique statements.
+
+For ontologies created in the Playground, exports can use either the
 Playground round-trip profile or a standards-oriented OWL + SHACL profile. The
 standards profile represents property order, enums, identifiers, relationship
 cardinality, and relationship attributes with interoperable vocabulary instead
-of treating Playground metadata as Fabric vocabulary. Imported class
-hierarchies remain `rdfs:subClassOf` statements on export and are not
-misrepresented as Fabric relationship types. Ontology IRI, version IRI,
-version information, license, and `owl:imports` declarations are retained in
-the editable model and recorded as source provenance in generated RDF; imports
-are recorded but never fetched. Generated subsets use their own derived
-ontology identity rather than claiming to be the authoritative upstream
-version.
-For external standards, the graph, Designer, generated exports, and embed RDF
-tab are explicitly labelled as a supported visual subset. Use the catalogue's
-verified original download when source-only semantics such as SHACL rules must
-remain complete.
+of treating Playground metadata as Fabric vocabulary. These generated profiles
+are not offered for source-backed documents. Modified source exports are
+labelled as derived, report source/export statement counts and patch counts,
+and can optionally add an explicit `prov:wasDerivedFrom` source-hash statement.
 
 Graph rendering graduates automatically with ontology size: small ontologies
 remain complete, dense ontologies retain all data with reduced label noise, and
@@ -124,13 +134,17 @@ contracts and limitations.
 Sign in with GitHub (device flow) and submit your ontology to the community
 catalogue directly from the designer — the app forks the repo, creates a
 branch, commits the RDF + metadata, and opens a pull request automatically.
+This projection-oriented submission flow is available for Playground-authored
+documents; source-backed documents must first be exported and reviewed as a
+deliberate derived artifact.
 
 ### Embeddable Widget
 
 A self-contained JavaScript file (`ontology-embed.js`) that renders an
 interactive ontology viewer on any web page with a single `<script>` tag.
 Supports dark/light themes, multiple loading methods (catalogue ID, URL,
-inline base64), and click-to-inspect. See the
+inline base64), click-to-inspect, and complete source RDF display/copy for
+catalogue and RDF/XML URL sources. See the
 [Embedding Guide](docs/embed-guide.md) for details.
 
 ### Ontology School

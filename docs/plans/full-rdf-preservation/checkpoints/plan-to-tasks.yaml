@@ -9,6 +9,7 @@ summary:
   coverage_percentage: 100.0
   total_tasks_generated: 14
   orphan_tasks: 0
+  completed_tasks: 14
 phases:
   - phase_id: "P0"
     phase_name: "Full-document preservation"

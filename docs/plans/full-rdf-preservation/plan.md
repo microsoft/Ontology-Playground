@@ -2,8 +2,7 @@
 
 **Date:** 2026-10-16  
 **Priority:** P0 preservation first; P1 bounded editing second  
-**Status:** Planning complete; implementation not started. Baseline and adapter
-feasibility gates must pass before dependent implementation.
+**Status:** Implemented and validated on `feature/full-rdf-preservation`.
 
 ## Summary and scope
 
@@ -22,8 +21,9 @@ conversation. The numbered requirements below record that scope for execution.
 No separate feature specification, constitution, topology, or approved adapter
 design was supplied or found under `.github/`. Repository `AGENTS.md` governs
 changes. This is not a migration pipeline; no upstream architecture artifacts
-are being claimed as available. Task T001 resolves the implementation baseline;
-T002 gates the concrete parser/writer choice before dependent work.
+are being claimed as available. The implementation baseline is
+`f011681554d0c797206156a82a05fc0e7c2b7675`; adapter decisions and measurements
+are recorded in `research.md`.
 
 ## Requirements
 
@@ -79,12 +79,12 @@ T002 gates the concrete parser/writer choice before dependent work.
 
 **Plan item 1.1; requirements:** REQ-001 through REQ-008.
 
-This checkout predates the lazy catalogue/source-artifact work shown in the
-other agent's `ontology-disclosure-ux` checkout. Do not implement against a
-stale branch or copy another worktree's uncommitted changes.
+Implementation uses the current `origin/main` baseline in an isolated worktree.
+It incorporates the merged lazy catalogue/source-artifact behavior without
+copying changes from another dirty worktree.
 
-- [ ] T001 [Plan:1.1] Identify the approved integration commit containing the current catalogue/source changes; reconcile `src/types/catalogue.ts`, `scripts/compile-catalogue.ts`, and RDF entry points on a dedicated implementation branch. Record the baseline commit, source-backed versus authored behavior, accepted input/base-IRI rules, and numeric performance gates in this plan before dependent work.
-- [ ] T002 [Plan:1.1] Evaluate a browser/worker-compatible RDF/XML parser and writer for `src/lib/rdf/` and `package.json`. Prove complete graph retention, literal lexical preservation, base resolution, blank-node handling, no external-resource fetching, and real-artifact round trips. Record the selected libraries and measured size/time/memory before adding production dependencies.
+- [x] T001 [Plan:1.1] Identify the approved integration commit containing the current catalogue/source changes; reconcile `src/types/catalogue.ts`, `scripts/compile-catalogue.ts`, and RDF entry points on a dedicated implementation branch. Record the baseline commit, source-backed versus authored behavior, accepted input/base-IRI rules, and numeric performance gates in this plan before dependent work.
+- [x] T002 [Plan:1.1] Evaluate a browser/worker-compatible RDF/XML parser and writer for `src/lib/rdf/` and `package.json`. Prove complete graph retention, literal lexical preservation, base resolution, blank-node handling, no external-resource fetching, and real-artifact round trips. Record the selected libraries and measured size/time/memory before adding production dependencies.
 
 **Gate:** adapter feasibility and concrete performance budgets must be recorded.
 If RDF/XML cannot serialize a parsed graph faithfully, report an explicit
@@ -99,8 +99,8 @@ Source parsing success must not depend on finding a visible OWL class: valid
 RDF with no projectable classes remains a preserved document with an empty
 graph and an explanatory message.
 
-- [ ] T003 [Plan:2.1] Add document types in `src/types/rdfDocument.ts` and source-byte/dataset operations in `src/lib/rdf/document.ts`; distinguish source-backed documents from authored projections, preserve effective base context and integrity metadata, and expose explicit loading/error states.
-- [ ] T004 [Plan:2.1] Implement the selected adapter in `src/lib/rdf/dataset.ts` and worker boundary in `src/lib/rdf/rdf.worker.ts`; adapt `src/lib/rdf/parser.ts` to derive the visual projection from the complete graph while retaining compatibility for existing authored callers. Reject unsupported syntax explicitly and keep imports/SHACL inert.
+- [x] T003 [Plan:2.1] Add document types in `src/types/rdfDocument.ts` and source-byte/dataset operations in `src/lib/rdf/document.ts`; distinguish source-backed documents from authored projections, preserve effective base context and integrity metadata, and expose explicit loading/error states.
+- [x] T004 [Plan:2.1] Implement the selected adapter in `src/lib/rdf/dataset.ts` and worker boundary in `src/lib/rdf/rdf.worker.ts`; adapt `src/lib/rdf/parser.ts` to derive the visual projection from the complete graph while retaining compatibility for existing authored callers. Reject unsupported syntax explicitly and keep imports/SHACL inert.
 
 **Gate:** independent graph-equivalence checks must pass for supported source
 graphs; projection omissions must not remove statements from the dataset.
@@ -113,8 +113,8 @@ Use one document context/revision across stores and views. Keep worker datasets
 out of JSON-cloned visual history; source identity must survive passing a
 document to Designer, not just its `Ontology` projection.
 
-- [ ] T005 [Plan:3.1] Wire document identity and load/reset transitions through `src/store/appStore.ts`, `src/store/designerStore.ts`, and `src/components/ImportExportModal.tsx`. Preserve bytes from file input before decoding; ignore stale async loads using document revision/cancellation. Preserve the active document on failed replacement.
-- [ ] T006 [Plan:3.1] Update `src/types/catalogue.ts`, `scripts/compile-catalogue.ts`, `src/components/GalleryModal.tsx`, `src/components/OntologyDesigner.tsx`, and `src/components/EmbedWidget.tsx` to carry verified lazy source references without embedding datasets or bytes in gallery summaries. Reuse baseline source loaders where present; report missing/hash-mismatched artifacts without generated-RDF fallback.
+- [x] T005 [Plan:3.1] Wire document identity and load/reset transitions through `src/store/appStore.ts`, `src/store/designerStore.ts`, and `src/components/ImportExportModal.tsx`. Preserve bytes from file input before decoding; ignore stale async loads using document revision/cancellation. Preserve the active document on failed replacement.
+- [x] T006 [Plan:3.1] Update `src/types/catalogue.ts`, `scripts/compile-catalogue.ts`, `src/components/GalleryModal.tsx`, `src/components/OntologyDesigner.tsx`, and `src/components/EmbedWidget.tsx` to carry verified lazy source references without embedding datasets or bytes in gallery summaries. Reuse baseline source loaders where present; report missing/hash-mismatched artifacts without generated-RDF fallback.
 
 **Lifecycle boundary:** preserve context through existing in-session navigation
 and draft operations. This does not introduce autosave or persistent browser
@@ -130,8 +130,8 @@ preview/copy may display decoded text but must be labeled separately from the
 byte-exact download. A hash verifies the pinned bytes; it does not prove
 publisher authority.
 
-- [ ] T007 [Plan:4.1] Centralize source-aware export routing in `src/lib/rdf/document.ts`; wire `src/components/Header.tsx`, `src/components/ImportExportModal.tsx`, `src/components/GalleryModal.tsx`, `src/components/EmbedWidget.tsx`, `src/components/designer/DesignerActions.tsx`, `src/components/designer/DesignerPreview.tsx`, and `src/components/designer/SubmitCatalogueModal.tsx`. Untouched source downloads return original bytes; authored documents retain current profile serializers.
-- [ ] T008 [Plan:4.1] Enforce source-backed read-only behavior in `src/store/designerStore.ts` and Designer controls, including RDF text replacement, bulk actions, and catalogue submission. Explain unsupported editing in the UI; do not rely only on disabled buttons or silently convert imported RDF to an authored projection.
+- [x] T007 [Plan:4.1] Centralize source-aware export routing in `src/lib/rdf/document.ts`; wire `src/components/Header.tsx`, `src/components/ImportExportModal.tsx`, `src/components/GalleryModal.tsx`, `src/components/EmbedWidget.tsx`, `src/components/designer/DesignerActions.tsx`, `src/components/designer/DesignerPreview.tsx`, and `src/components/designer/SubmitCatalogueModal.tsx`. Untouched source downloads return original bytes; authored documents retain current profile serializers.
+- [x] T008 [Plan:4.1] Enforce source-backed preservation guards in `src/store/designerStore.ts` and Designer controls. Disable unsupported semantic and structural mutations, validate complete RDF text replacement as a new source document, and block catalogue submission without silently converting imported RDF to an authored projection.
 
 **Milestone A release gate:** complete source/dataset retention and all source
 surfaces work; source-backed editing is explicitly unavailable. A separate
@@ -146,8 +146,8 @@ Start with editing a selected existing label/comment and direct named-class
 `rdfs:subClassOf` edges. Do not initially enable term renaming, arbitrary
 domain/range edits, resource deletion/cascades, or blank-node structure editing.
 
-- [ ] T009 [Plan:5.1] Add statement-level provenance and operation preconditions in `src/lib/rdf/projection.ts` and `src/lib/rdf/patch.ts`. Map visible fields/edges to their exact supporting quads, retain language/datatype distinctions, identify shared/ambiguous mappings, and refuse edits that cannot be resolved explicitly.
-- [ ] T010 [Plan:5.1] Integrate patch transactions with `src/store/designerStore.ts` and relevant Designer controls: apply graph changes, reproject affected data, and update document revision/history atomically; undo/redo restores both representations. Failed preconditions leave the document unchanged with an explicit error.
+- [x] T009 [Plan:5.1] Add statement-level mappings and operation preconditions in `src/types/rdfDocument.ts`, `src/lib/rdf/parser.ts`, and `src/lib/rdf/patch.ts`. Map visible fields/edges to their exact supporting quads, retain language/datatype distinctions, identify shared/ambiguous mappings, and refuse edits that cannot be resolved explicitly.
+- [x] T010 [Plan:5.1] Integrate patch transactions with `src/store/designerStore.ts` and relevant Designer controls: apply graph changes, reproject affected data, and update document revision/history atomically; undo/redo restores both representations. Failed preconditions leave the document unchanged with an explicit error.
 
 **Patch boundary:** operations initially stay inside one pinned document and
 its dataset; blank-node IDs are not portable identifiers. Do not offer RDF
@@ -162,8 +162,8 @@ Edited export serializes the complete dataset after the intentional net patch.
 Unchanged statements remain, but this is not a promise that an intentional
 semantic change has no wider logical consequences.
 
-- [ ] T011 [Plan:6.1] Extend `src/lib/rdf/document.ts` and `src/lib/rdf/patch.ts` to serialize the complete patched graph; retain the original artifact for source download, derive dirty status from actual semantic changes, and keep original-byte export available when all edits have been undone.
-- [ ] T012 [Plan:6.1] Update source-aware export and Designer UI to distinguish original from modified documents, retain source hash/revision and edit diagnostics, and provide deliberate derivation metadata options. Do not automatically rename ontology/term IRIs, claim a modified artifact is an official upstream release, or inject provenance into the graph without an explicit action.
+- [x] T011 [Plan:6.1] Extend `src/lib/rdf/document.ts` and `src/lib/rdf/patch.ts` to serialize the complete patched graph; retain the original artifact for source download, derive dirty status from actual semantic changes, and keep original-byte export available when all edits have been undone.
+- [x] T012 [Plan:6.1] Update source-aware export and Designer UI to distinguish original from modified documents, retain source hash/revision and edit diagnostics, and provide deliberate derivation metadata options. Do not automatically rename ontology/term IRIs, claim a modified artifact is an official upstream release, or inject provenance into the graph without an explicit action.
 
 **Milestone B release gate:** only supported edits are enabled, after end-to-end
 patch, history, and whole-graph export checks pass. Unsupported operations stay
@@ -173,8 +173,8 @@ blocked even after this milestone.
 
 **Plan item 7.1; requirements:** REQ-001 through REQ-008.
 
-- [ ] T013 [Plan:7.1] Verify the acceptance matrix below using the repository's existing validation tooling, the pinned real artifact, and baseline measurements. Record measured results and run the required read-only branch review before enabling either milestone.
-- [ ] T014 [Plan:7.1] Update `README.md`, `docs/rdf-export-profiles.md`, `docs/embed-guide.md`, and `TODO.md` with the implemented milestone's scope and limitations; mark only verified implementation tasks complete here.
+- [x] T013 [Plan:7.1] Verify the acceptance matrix below using the repository's existing validation tooling, the pinned real artifact, and baseline measurements. Record measured results and run the required read-only branch review before enabling either milestone.
+- [x] T014 [Plan:7.1] Update `README.md`, `README.zh-CN.md`, `README.ja.md`, `docs/rdf-export-profiles.md`, `docs/embed-guide.md`, and `TODO.md` with the implemented milestone's scope and limitations; mark only verified implementation tasks complete here.
 
 ## Dependencies and execution order
 
@@ -187,45 +187,43 @@ before release; repeat them for Milestone B.
 
 ## Acceptance and validation matrix
 
-These are implementation release checks, not claims that they have run.
-Use existing test runners; no new testing framework is planned.
+All release checks below passed on 2026-10-16.
 
-| Check | Required outcome |
-|-------|------------------|
-| Untouched import/export | Byte equality with the pinned input, including encoding/BOM/newlines; valid relative IRIs use recorded base context. |
-| Complete graph retention | Parse/write/parse is graph-isomorphic using an independent oracle; compare complete terms, not only counts or visual entities. |
-| Complex RDF | Restrictions, lists, anonymous expressions, property chains, SHACL, arbitrary predicates, multilingual and typed literals survive. |
-| Empty projection | Valid non-projectable RDF stays available for original export; UI explains the empty visual graph. |
-| Lifecycle/surfaces | File import, gallery load, graph-to-Designer, preview/copy/download, embed, reset, and failed/stale loads preserve the correct document context. |
-| Read-only enforcement | Source-backed mutations cannot bypass guards via store calls or text preview; authored workflows still work. |
-| Exact edits | Selected label/comment or hierarchy edit yields only the intended net delete/add set; other labels and shared statements are handled explicitly. |
-| Undo/redo | Dataset, projection, source identity, and dirty status agree; undo-all restores original-byte export eligibility. |
-| Failure behavior | Malformed/unsupported input, missing source, hash mismatch, worker failure, and unserializable graphs are explicit errors, never subset success. |
-| Inert imports/rules | No import/external-entity requests and no SHACL execution during parsing, projection, or export. |
-| Real artifact | Pin actual Brick version, source reference, SHA-256, bytes, and independently measured triple count; do not assume the earlier reply's figures. |
-| Performance | Record numeric gallery payload, initial bundle, load, parse/export, memory, and main-thread responsiveness budgets in T001/T002; all must pass before release. |
-| Regression/build | Run focused RDF/store/component checks, then TypeScript and `npm run build` including catalogue and embed builds; review the branch against milestone criteria. |
+| Check | Result | Evidence |
+|-------|--------|----------|
+| Untouched import/export | Passed | Exact byte tests cover UTF-8, UTF-16, BOM, and unchanged Designer reloads; relative IRIs retain their recorded base. |
+| Complete graph retention | Passed | RDF canonicalization tests compare the full parsed and reserialized graphs. |
+| Complex RDF | Passed | Restrictions, lists, blank nodes, SHACL, arbitrary predicates, language tags, datatypes, lexical forms, and literal carriage returns are covered. |
+| Empty projection | Passed | Valid non-projectable RDF retains its complete document and exact export. |
+| Lifecycle/surfaces | Passed | File import, catalogue, application store, Designer, gallery, preview, sharing, embed, and stale/cancelled replacement paths have regression coverage. |
+| Preservation guards | Passed | Unsupported source-backed mutations and catalogue submission are blocked while mapped labels/comments and direct subclass edits remain available. |
+| Exact edits | Passed | Literal and hierarchy tests assert exact statement deltas, ambiguity rejection, duplicate-edge rejection, and unrelated-statement retention. |
+| Undo/redo | Passed | Atomic projection/document history and undo-to-original-byte eligibility are covered. |
+| Failure behavior | Passed | Malformed input, DOCTYPE, missing/hash-mismatched sources, named graphs, oversized input, and unsafe mappings fail explicitly. |
+| Inert imports/rules | Passed | Tests verify no import/external-resource requests and no SHACL execution. |
+| Real artifact | Passed | Brick: 5,179,865 bytes, SHA-256 `655939e9b655b7bb890e47c2015d046f41cb2dc6f314895490ebe6c14c5fc423`, 53,957 unique RDF 1.1 quads. |
+| Performance | Passed | Brick parse 175.2 ms, serialize 43.4 ms, retained heap 54.9 MiB; Chromium performance suite 3/3 passed. |
+| Regression/build | Passed | 51 files / 726 tests, TypeScript, ESLint, production/worker/embed build, RDF validation, deployment validation, and 3 Chromium checks passed. |
 
-## Planned file additions
+## Implemented file additions
 
 ```text
 src/types/rdfDocument.ts
 src/lib/rdf/document.ts
 src/lib/rdf/dataset.ts
 src/lib/rdf/rdf.worker.ts
-src/lib/rdf/projection.ts       # P1 statement-level mappings
 src/lib/rdf/patch.ts            # P1 bounded transactions
 ```
 
-Existing source loaders/helpers should be reused after baseline reconciliation.
-Do not duplicate modules merely to match these proposed filenames.
+Statement-level projection mappings live in `src/types/rdfDocument.ts` and
+`src/lib/rdf/parser.ts`; no redundant `projection.ts` module was needed.
 
 ## Requirement mapping
 
-Implementation evidence below is planned, not completed.
+Implementation evidence below was validated by the acceptance matrix.
 
-| Requirement | Plan items | Tasks | Planned evidence |
-|-------------|------------|-------|------------------|
+| Requirement | Plan items | Tasks | Implementation evidence |
+|-------------|------------|-------|-------------------------|
 | REQ-001 | 1.1, 2.1, 4.1, 6.1, 7.1 | T001-T004, T007, T008, T011-T014 | Original-byte document/export path and byte comparisons |
 | REQ-002 | 1.1, 2.1, 7.1 | T001-T004, T013, T014 | Complete dataset adapter and independent graph checks |
 | REQ-003 | 1.1, 3.1, 4.1, 5.1, 7.1 | T001, T002, T005-T010, T013, T014 | Store document context and every source/export surface |

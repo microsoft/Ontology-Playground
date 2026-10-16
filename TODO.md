@@ -18,11 +18,16 @@ See the [implementation plan](docs/plans/full-rdf-preservation/plan.md) for
 requirements, dependencies, tasks, and release gates.
 
 - [x] Plan complete-document preservation separately from bounded editing.
-- [ ] P0: retain original bytes and the complete parsed RDF graph across all
+- [x] P0: retain original bytes and the complete parsed RDF graph across all
   source-backed workflows; export untouched files byte-for-byte and keep
   source-backed semantic editing read-only until the patch path is ready.
-- [ ] P1: enable only explicitly mapped edits with atomic undo/redo and
+- [x] P1: enable only explicitly mapped edits with atomic undo/redo and
   complete-graph export; preserve unsupported constructs without editing them.
+
+RDF is a first-class source document. Imports retain exact bytes plus a complete
+graph, while Playground-authored documents continue to use generated profiles.
+Source-backed editing is limited to exact labels/comments and direct subclass
+edges; unsupported semantics remain preserved and read-only.
 
 ### 1.1 Extract RDF serialization module
 - [x] Create `src/lib/rdf/serializer.ts` — move the existing `exportAsRDF()`

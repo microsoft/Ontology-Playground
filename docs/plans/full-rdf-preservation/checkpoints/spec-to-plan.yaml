@@ -29,5 +29,4 @@ orphan_plan_items: []
 validation:
   passed: true
   errors: []
-  warnings:
-    - "Traceability only; implementation baseline, adapter feasibility, and performance gates remain open."
+  warnings: []
