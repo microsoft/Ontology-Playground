@@ -7,6 +7,21 @@ import type {
   DataBinding,
   OntologyRdfMetadata,
 } from '../../data/ontology';
+import type {
+  RdfNamedNode,
+  RdfProjectionMap,
+} from '../../types/rdfDocument';
+
+export interface RdfParseOptions {
+  allowEmptyProjection?: boolean;
+  baseIri?: string;
+}
+
+export interface RdfParseResult {
+  ontology: Ontology;
+  bindings: DataBinding[];
+  projection: RdfProjectionMap;
+}
 
 export class RDFParseError extends Error {
   constructor(message: string) {
@@ -181,8 +196,58 @@ const RDFS_NS = 'http://www.w3.org/2000/01/rdf-schema#';
 const OWL_NS = 'http://www.w3.org/2002/07/owl#';
 const SHACL_NS = 'http://www.w3.org/ns/shacl#';
 const DCTERMS_NS = 'http://purl.org/dc/terms/';
+const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 const PLAYGROUND_METADATA_NS =
   'https://microsoft.github.io/Ontology-Playground/ns/metadata#';
+
+function resolveProjectionIri(
+  value: string,
+  baseIri: string | undefined,
+): RdfNamedNode {
+  if (!baseIri || /^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)) {
+    return { termType: 'NamedNode', value };
+  }
+  try {
+    return {
+      termType: 'NamedNode',
+      value: new URL(value, baseIri).href,
+    };
+  } catch {
+    return { termType: 'NamedNode', value };
+  }
+}
+
+function hasNestedXmlBase(
+  element: Element,
+  root: Element,
+): boolean {
+  let current: Element | null = element;
+  while (current && current !== root) {
+    if (current.hasAttributeNS(XML_NS, 'base')) return true;
+    current = current.parentElement;
+  }
+  return false;
+}
+
+function childResourceHasXmlBase(
+  parent: Element,
+  localName: string,
+  namespace: string,
+  resource: string,
+): boolean {
+  for (let index = 0; index < parent.children.length; index += 1) {
+    const child = parent.children[index];
+    if (
+      child.localName === localName
+      && child.namespaceURI === namespace
+      && child.getAttributeNS(RDF_NS, 'resource') === resource
+      && child.hasAttributeNS(XML_NS, 'base')
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
 
 /**
  * Collect all elements declaring a resource of the given type, supporting both
@@ -440,7 +505,10 @@ function inferPropertyType(property: ParsedDatatypeProperty): PropertyType {
 /**
  * Parse an RDF/XML (OWL) string into an Ontology and optional DataBindings.
  */
-export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBinding[] } {
+export function parseRDF(
+  rdfXml: string,
+  options: RdfParseOptions = {},
+): RdfParseResult {
   // Give Turtle input a clear, actionable error instead of an XML parse error.
   const sniff = rdfXml.trimStart();
   if (!sniff.startsWith('<') && /^(@prefix|@base|PREFIX\s|BASE\s)/m.test(sniff)) {
@@ -460,6 +528,14 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   }
 
   const root = doc.documentElement;
+  const xmlBase = root.getAttributeNS(XML_NS, 'base') || undefined;
+  const effectiveBaseIri = xmlBase
+    ? resolveProjectionIri(xmlBase, options.baseIri).value
+    : options.baseIri;
+  const projection: RdfProjectionMap = {
+    entities: {},
+    relationships: {},
+  };
   const rdfNodeIndex = indexRdfNodes(root);
   const descriptionTypeIndex = rdfNodeIndex.descriptionsByType;
   const shaclPathMetadata = parseShaclPathMetadata(
@@ -478,6 +554,12 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   const ontologyEls = getTypedElements(root, OWL_NS, 'Ontology', descriptionTypeIndex);
   if (ontologyEls.length > 0) {
     const ontEl = ontologyEls[0];
+    const ontologyTerm = getRdfAttribute(ontEl, 'about');
+    if (ontologyTerm !== null && !hasNestedXmlBase(ontEl, root)) {
+      projection.ontology = {
+        term: resolveProjectionIri(ontologyTerm, effectiveBaseIri),
+      };
+    }
     ontologyName = getChildText(ontEl, 'label', RDFS_NS) || '';
     ontologyDescription = getChildText(ontEl, 'comment', RDFS_NS) || '';
     const generatedSubset = getDirectChildText(
@@ -503,7 +585,7 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
         generatedSubset
           ? getChildResource(ontEl, 'source', DCTERMS_NS)
           : null
-      ) || getRdfAttribute(ontEl, 'about') || undefined,
+      ) || projection.ontology?.term.value || undefined,
       versionIri: (
         getChildResource(
           ontEl,
@@ -605,6 +687,11 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
       color,
       properties: [],
     });
+    if (!hasNestedXmlBase(el, root)) {
+      projection.entities[entityId] = {
+        term: resolveProjectionIri(about, effectiveBaseIri),
+      };
+    }
   }
 
   // --- Extract DatatypeProperties → Properties + Relationship Attributes ---
@@ -795,6 +882,12 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
     if (!rel.from || !rel.to) continue;
 
     relationships.push(rel);
+    if (!hasNestedXmlBase(el, root)) {
+      projection.relationships[rel.id] = {
+        kind: 'association',
+        term: resolveProjectionIri(about, effectiveBaseIri),
+      };
+    }
   }
 
   // --- Extract rdfs:subClassOf hierarchy → Relationships (#101) ---
@@ -814,6 +907,14 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
 
     const superUris = getChildResources(el, 'subClassOf', RDFS_NS);
     for (const superUri of superUris) {
+      if (childResourceHasXmlBase(
+        el,
+        'subClassOf',
+        RDFS_NS,
+        superUri,
+      )) {
+        continue;
+      }
       // Only link classes that were imported as entities; skip external
       // references (owl:Thing, other vocabularies) and self-references.
       const superEntity = entityMap.get(superUri);
@@ -823,17 +924,27 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
       if (seenSubClassEdges.has(edgeKey)) continue;
       seenSubClassEdges.add(edgeKey);
 
-      relationships.push({
-        id: createUniqueId(
+      const relationshipId = createUniqueId(
           `${subEntity.id}-subClassOf-${superEntity.id}`,
           usedRelationshipIds,
-        ),
+        );
+      relationships.push({
+        id: relationshipId,
         name: 'subClassOf',
         from: subEntity.id,
         to: superEntity.id,
         cardinality: 'many-to-one',
         kind: 'subclass',
       });
+      if (
+        !hasNestedXmlBase(el, root)
+      ) {
+        projection.relationships[relationshipId] = {
+          kind: 'subclass',
+          subject: resolveProjectionIri(about, effectiveBaseIri),
+          object: resolveProjectionIri(superUri, effectiveBaseIri),
+        };
+      }
     }
   }
 
@@ -865,7 +976,11 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   // --- Build the Ontology ---
   const entityTypes = Array.from(entityMap.values());
 
-  if (!ontologyName && entityTypes.length === 0) {
+  if (
+    !options.allowEmptyProjection
+    && !ontologyName
+    && entityTypes.length === 0
+  ) {
     throw new RDFParseError('No ontology metadata or OWL classes found in the RDF document.');
   }
 
@@ -877,5 +992,5 @@ export function parseRDF(rdfXml: string): { ontology: Ontology; bindings: DataBi
   };
   if (rdfMetadata) ontology.rdfMetadata = rdfMetadata;
 
-  return { ontology, bindings };
+  return { ontology, bindings, projection };
 }

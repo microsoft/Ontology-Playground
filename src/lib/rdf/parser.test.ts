@@ -840,6 +840,54 @@ describe('parseRDF', () => {
         'hVAC-subClassOf-equipment-2'
       );
     });
+
+    it('does not create unsafe edit mappings across nested xml:base scopes', () => {
+      const rdf = `<?xml version="1.0"?>
+<rdf:RDF
+    xml:base="https://example.com/root/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Class xml:base="https://example.com/nested/" rdf:about="Room">
+      <rdfs:label>Room</rdfs:label>
+    </owl:Class>
+    <owl:Class rdf:about="Child">
+      <rdfs:label>Child</rdfs:label>
+      <rdfs:subClassOf
+        xml:base="https://example.com/external/"
+        rdf:resource="Room"/>
+    </owl:Class>
+</rdf:RDF>`;
+
+      const parsed = parseRDF(rdf);
+
+      expect(parsed.ontology.entityTypes.map((entity) => entity.name))
+        .toEqual(['Room', 'Child']);
+      expect(parsed.projection.entities.room).toBeUndefined();
+      expect(parsed.ontology.relationships).toEqual([]);
+    });
+
+    it('maps an empty ontology rdf:about to the effective base IRI', () => {
+      const rdf = `<?xml version="1.0"?>
+<rdf:RDF
+    xml:base="https://example.com/ontology"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Ontology rdf:about="">
+    <rdfs:label>Base ontology</rdfs:label>
+  </owl:Ontology>
+</rdf:RDF>`;
+
+      const parsed = parseRDF(rdf);
+
+      expect(parsed.ontology.rdfMetadata?.ontologyIri)
+        .toBe('https://example.com/ontology');
+      expect(parsed.projection.ontology?.term).toEqual({
+        termType: 'NamedNode',
+        value: 'https://example.com/ontology',
+      });
+    });
   });
 
   describe('standards-tool RDF/XML forms', () => {
