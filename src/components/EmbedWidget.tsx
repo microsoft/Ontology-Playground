@@ -29,9 +29,12 @@ import type {
 import type { Ontology, EntityType, Relationship } from '../data/ontology';
 import { serializeToRDF } from '../lib/rdf/serializer';
 import { parseRDF } from '../lib/rdf/parser';
+import { decodeRdfBytes } from '../lib/rdf/dataset';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rdf/highlighter';
-import { loadCatalogueEntry } from '../lib/catalogue';
-import type { CatalogueEntry } from '../types/catalogue';
+import {
+  loadCatalogueEntry,
+  loadCatalogueSource,
+} from '../lib/catalogue';
 import {
   BOUNDED_LABEL_ZOOM_THRESHOLD,
   createGraphView,
@@ -76,8 +79,7 @@ interface SelectedItem {
 
 export function EmbedWidget({ config }: { config: EmbedConfig }) {
   const [ontology, setOntology] = useState<Ontology | null>(null);
-  const [catalogueEntry, setCatalogueEntry] =
-    useState<CatalogueEntry | null>(null);
+  const [rdfSource, setRdfSource] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>('graph');
@@ -91,6 +93,9 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
     let cancelled = false;
 
     async function load() {
+      setLoading(true);
+      setError(null);
+      setRdfSource(null);
       try {
         let ont: Ontology | null = null;
 
@@ -105,25 +110,35 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
             || window.location.origin + '/';
           const entry = await loadCatalogueEntry(config.catalogueId, base);
           ont = entry.ontology;
-          if (!cancelled) setCatalogueEntry(entry);
+          const source = await loadCatalogueSource(entry.id, base);
+          if (!cancelled) {
+            setRdfSource(source.text);
+          }
         } else if (config.ontologyUrl) {
           // Fetch from URL
           const res = await fetch(config.ontologyUrl);
           if (!res.ok) throw new Error(`Failed to fetch ontology (${res.status})`);
-          const text = await res.text();
+          const text = decodeRdfBytes(
+            new Uint8Array(await res.arrayBuffer()),
+          );
           // Detect format: RDF/XML starts with < or has xml prologue
           if (text.trimStart().startsWith('<')) {
-            const result = parseRDF(text);
+            const result = parseRDF(text, {
+              baseIri: config.ontologyUrl,
+              allowEmptyProjection: true,
+            });
             ont = result.ontology;
+            if (!cancelled) setRdfSource(text);
           } else {
             ont = JSON.parse(text) as Ontology;
+            if (!cancelled) setRdfSource(null);
           }
         } else {
           throw new Error('No ontology source specified. Use data-catalogue-id, data-ontology-url, or data-ontology-inline.');
         }
 
         if (!cancelled) {
-          if (!config.catalogueId) setCatalogueEntry(null);
+          if (config.ontologyInline) setRdfSource(null);
           setOntology(ont);
           setLoading(false);
         }
@@ -182,9 +197,11 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
         setTab={setTab}
         theme={theme}
         copied={copied}
-        isSubset={catalogueEntry?.source === 'external'}
+        hasCompleteSource={rdfSource !== null}
         onCopyRdf={() => {
-          navigator.clipboard.writeText(serializeToRDF(ontology, [])).then(() => {
+          navigator.clipboard.writeText(
+            rdfSource ?? serializeToRDF(ontology, []),
+          ).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           });
@@ -197,9 +214,9 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
           <EmbedGraph ontology={ontology} theme={theme} selected={selected} setSelected={setSelected} />
         ) : (
           <EmbedRdfSource
-            ontology={ontology}
+            rdf={rdfSource ?? serializeToRDF(ontology, [])}
             theme={theme}
-            isSubset={catalogueEntry?.source === 'external'}
+            hasCompleteSource={rdfSource !== null}
           />
         )}
       </div>
@@ -220,7 +237,7 @@ interface EmbedHeaderProps {
   setTab: (t: Tab) => void;
   theme: EmbedThemeTokens;
   copied: boolean;
-  isSubset: boolean;
+  hasCompleteSource: boolean;
   onCopyRdf: () => void;
 }
 
@@ -230,7 +247,7 @@ function EmbedHeader({
   setTab,
   theme,
   copied,
-  isSubset,
+  hasCompleteSource,
   onCopyRdf,
 }: EmbedHeaderProps) {
   const tabStyle = (active: boolean): React.CSSProperties => ({
@@ -259,7 +276,7 @@ function EmbedHeader({
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <button style={tabStyle(tab === 'graph')} onClick={() => setTab('graph')}>Graph</button>
         <button style={tabStyle(tab === 'rdf')} onClick={() => setTab('rdf')}>
-          {isSubset ? 'Generated RDF subset' : 'Generated RDF'}
+          {hasCompleteSource ? 'Complete RDF source' : 'Generated RDF'}
         </button>
         {tab === 'rdf' && (
           <button
@@ -270,7 +287,11 @@ function EmbedHeader({
               border: `1px solid ${theme.border}`, borderRadius: 4, cursor: 'pointer',
             }}
           >
-            {copied ? 'Copied!' : 'Copy generated RDF'}
+            {copied
+              ? 'Copied!'
+              : hasCompleteSource
+                ? 'Copy complete RDF'
+                : 'Copy generated RDF'}
           </button>
         )}
       </div>
@@ -1071,22 +1092,21 @@ function EmbedLargeGraphControls({
 // ─── RDF Source ──────────────────────────────────────────────────────────────
 
 function EmbedRdfSource({
-  ontology,
+  rdf,
   theme,
-  isSubset,
+  hasCompleteSource,
 }: {
-  ontology: Ontology;
+  rdf: string;
   theme: EmbedThemeTokens;
-  isSubset: boolean;
+  hasCompleteSource: boolean;
 }) {
-  const rdf = useMemo(() => serializeToRDF(ontology, []), [ontology]);
   const isDark = theme === EMBED_THEMES.dark;
   const hlTheme = isDark ? RDF_HIGHLIGHT_DARK : RDF_HIGHLIGHT_LIGHT;
   const highlighted = useMemo(() => highlightRdf(rdf, hlTheme), [rdf, hlTheme]);
 
   return (
     <div style={{ height: '100%', overflow: 'auto', background: theme.bg }}>
-      {isSubset && (
+      {hasCompleteSource && (
         <div
           role="note"
           style={{
@@ -1098,9 +1118,8 @@ function EmbedRdfSource({
             padding: '8px 16px',
           }}
         >
-          Generated from the visual subset, not the complete upstream ontology.
-          Source-only RDF remains in the reviewed source and is not executed
-          here; imports are recorded but not fetched.
+          This is the complete source RDF. Imports and referenced resources are
+          preserved as statements but are not fetched or executed.
         </div>
       )}
       <pre style={{

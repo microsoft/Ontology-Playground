@@ -4,6 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { ImportExportModal } from './ImportExportModal';
 import { useAppStore } from '../store/appStore';
 import { serializeToRDF } from '../lib/rdf/serializer';
+import {
+  createCatalogueRdfDocumentReference,
+  createImportedRdfDocument,
+} from '../lib/rdf/document';
 import type { Ontology } from '../data/ontology';
 import type { CatalogueEntry } from '../types/catalogue';
 
@@ -118,6 +122,7 @@ describe('ImportExportModal integration', () => {
       testOntology,
       [],
       externalCatalogueEntry,
+      createCatalogueRdfDocumentReference(externalCatalogueEntry),
     );
 
     render(<ImportExportModal onClose={onClose} />);
@@ -126,10 +131,10 @@ describe('ImportExportModal integration', () => {
     expect(note.classList.contains('source-fidelity-note')).toBe(true);
     expect(note.querySelector('.lucide-info')).toBeTruthy();
     expect(note.textContent).toContain(
-      'About this download',
+      'Complete RDF preservation',
     );
     expect(note.textContent).toContain(
-      'Source-only RDF remains intact in the reviewed source',
+      'exact original bytes',
     );
   });
 
@@ -261,5 +266,64 @@ describe('ImportExportModal integration', () => {
       expect(state.dataBindings[0].source).toBe('WidgetSource');
       expect(state.dataBindings[0].table).toBe('WidgetTable');
     });
+  });
+
+  it('downloads exact original bytes for an untouched source-backed document', async () => {
+    const source = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="https://example.com/Widget">
+    <rdfs:label>Widget</rdfs:label>
+  </owl:Class>
+</rdf:RDF>
+`;
+    const parsed = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      { name: 'exact.rdf' },
+    );
+    useAppStore.getState().loadOntology(
+      parsed.ontology,
+      parsed.bindings,
+      null,
+      parsed.document,
+    );
+    let downloadedBlob: Blob | null = null;
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn((blob: Blob) => {
+        downloadedBlob = blob;
+        return 'blob:exact-rdf';
+      }),
+    });
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      configurable: true,
+      value: vi.fn(),
+    });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    render(<ImportExportModal onClose={onClose} />);
+
+    await userEvent.click(screen.getByRole('button', {
+      name: 'Download complete RDF',
+    }));
+
+    await waitFor(() => expect(downloadedBlob).not.toBeNull());
+    const downloadedBytes = await new Promise<Uint8Array>(
+      (resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(reader.error);
+        reader.onload = () => resolve(
+          new Uint8Array(reader.result as ArrayBuffer),
+        );
+        reader.readAsArrayBuffer(downloadedBlob!);
+      },
+    );
+    expect(Array.from(downloadedBytes)).toEqual(
+      Array.from(new TextEncoder().encode(source)),
+    );
+    expect(click).toHaveBeenCalledTimes(1);
+    click.mockRestore();
   });
 });

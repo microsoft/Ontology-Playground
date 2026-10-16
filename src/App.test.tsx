@@ -3,6 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { useAppStore } from './store/appStore';
 import { loadCatalogueEntry } from './lib/catalogue';
+import {
+  createCatalogueRdfDocumentReference,
+} from './lib/rdf/document';
 import type { LoadedCatalogueEntry } from './types/catalogue';
 
 vi.mock('./hooks/useRoute', () => {
@@ -106,6 +109,7 @@ describe('catalogue deep links', () => {
       linkedEntry.ontology,
       linkedEntry.bindings,
       linkedEntry,
+      createCatalogueRdfDocumentReference(linkedEntry),
     );
     expect(useAppStore.getState().currentCatalogueEntry).toBe(linkedEntry);
   });

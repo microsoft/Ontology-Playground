@@ -5,6 +5,7 @@ import type { Ontology } from '../../data/ontology';
 import { useAppStore } from '../../store/appStore';
 import { useDesignerStore } from '../../store/designerStore';
 import type { CatalogueEntry } from '../../types/catalogue';
+import { createImportedRdfDocument } from '../../lib/rdf/document';
 import { DesignerToolbar } from './DesignerActions';
 
 vi.mock('../../lib/router', () => ({
@@ -72,6 +73,35 @@ describe('DesignerToolbar', () => {
     await userEvent.click(screen.getByTitle('Load in Playground'));
 
     expect(useAppStore.getState().currentOntology).toBe(ontology);
+    expect(useAppStore.getState().currentCatalogueEntry).toBe(
+      externalEntry,
+    );
+  });
+
+  it('retains a complete source document and disables projection-only actions', async () => {
+    const parsed = await createImportedRdfDocument(
+      new TextEncoder().encode(`<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="https://example.com/Equipment">
+    <rdfs:label>Equipment</rdfs:label>
+  </owl:Class>
+</rdf:RDF>`),
+      { name: 'equipment.rdf' },
+    );
+    useDesignerStore.getState().loadDraft(ontology, parsed.document);
+    render(<DesignerToolbar catalogueEntry={externalEntry} />);
+
+    expect(screen.queryByLabelText('RDF export profile')).toBeNull();
+    expect(screen.getByTitle(
+      'Source-backed RDF submission is not supported',
+    )).toBeDisabled();
+
+    await userEvent.click(screen.getByTitle('Load in Playground'));
+
+    expect(useAppStore.getState().rdfDocument).toBe(parsed.document);
     expect(useAppStore.getState().currentCatalogueEntry).toBe(
       externalEntry,
     );

@@ -6,9 +6,15 @@ import {
   serializeToRDF,
   type RdfExportProfile,
 } from '../lib/rdf/serializer';
-import { parseRDF, RDFParseError } from '../lib/rdf/parser';
+import { RDFParseError } from '../lib/rdf/parser';
 import type { Ontology, DataBinding } from '../data/ontology';
+import type { RdfExportResult } from '../types/rdfDocument';
 import { SourceFidelityNote } from './SourceFidelityNote';
+import {
+  createImportedRdfDocument,
+  exportRdfDocument,
+} from '../lib/rdf/document';
+import { decodeRdfBytes } from '../lib/rdf/dataset';
 
 const LEGACY_FORMATS_ENABLED = import.meta.env.VITE_ENABLE_LEGACY_FORMATS === 'true';
 
@@ -52,7 +58,9 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
     currentOntology,
     dataBindings,
     currentCatalogueEntry,
+    rdfDocument,
     loadOntology,
+    ensureCurrentRdfDocument,
     resetToDefault,
     exportOntology,
   } = useAppStore();
@@ -62,15 +70,26 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
   const [copied, setCopied] = useState(false);
   const [exportFormat, setExportFormat] = useState<'json' | 'yaml' | 'csv' | 'rdf'>('rdf');
   const [rdfExportProfile, setRdfExportProfile] = useState<RdfExportProfile>('playground');
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [includeDerivationMetadata, setIncludeDerivationMetadata] =
+    useState(false);
+  const [lastRdfExport, setLastRdfExport] =
+    useState<RdfExportResult | null>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
-        const content = event.target?.result as string;
+        const result = event.target?.result;
+        if (!(result instanceof ArrayBuffer)) {
+          throw new Error('The selected file could not be read as bytes.');
+        }
+        const bytes = new Uint8Array(result);
+        const content = decodeRdfBytes(bytes);
         const fileName = file.name.toLowerCase();
         const trimmed = content.trimStart();
         const isRdfExt = fileName.endsWith('.rdf') || fileName.endsWith('.owl') || fileName.endsWith('.iq');
@@ -80,10 +99,12 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
         let bindings: DataBinding[] = [];
 
         if (isRdfExt || isXmlContent) {
-          // Parse as RDF/OWL
-          const result = parseRDF(content);
-          ontology = result.ontology;
-          bindings = result.bindings;
+          const parsed = await createImportedRdfDocument(bytes, {
+            name: file.name,
+          });
+          ontology = parsed.ontology;
+          bindings = parsed.bindings;
+          loadOntology(ontology, bindings, null, parsed.document);
         } else if (LEGACY_FORMATS_ENABLED && (fileName.endsWith('.json') || trimmed.startsWith('{'))) {
           // Parse as JSON (legacy)
           const parsed = JSON.parse(content);
@@ -94,6 +115,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
 
           ontology = parsed.ontology;
           bindings = parsed.bindings || [];
+          loadOntology(ontology, bindings);
         } else {
           const supported = LEGACY_FORMATS_ENABLED
             ? 'an RDF/OWL (.rdf, .owl, .iq) or JSON (.json)'
@@ -106,7 +128,6 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
           ontology.name = file.name.replace(/\.[^.]+$/, '');
         }
 
-        loadOntology(ontology, bindings);
         setImportStatus('success');
         setErrorMessage('');
         
@@ -121,49 +142,78 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
         }
       }
     };
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
   };
 
-  const handleExport = () => {
-    let content: string;
-    let mimeType: string;
-    let extension: string;
+  const handleExport = async () => {
+    setIsExporting(true);
+    setExportError(null);
+    try {
+      let content: string | Uint8Array;
+      let mimeType: string;
+      let extension: string;
+      let suffix: string;
 
-    if (exportFormat === 'yaml') {
-      content = exportAsYAML();
-      mimeType = 'text/yaml';
-      extension = 'yaml';
-    } else if (exportFormat === 'csv') {
-      content = exportAsCSV();
-      mimeType = 'text/csv';
-      extension = 'csv';
-    } else if (exportFormat === 'rdf') {
-      content = serializeToRDF(
-        currentOntology,
-        dataBindings,
-        { profile: rdfExportProfile },
+      if (exportFormat === 'yaml') {
+        content = exportAsYAML();
+        mimeType = 'text/yaml';
+        extension = 'yaml';
+        suffix = 'ontology';
+      } else if (exportFormat === 'csv') {
+        content = exportAsCSV();
+        mimeType = 'text/csv';
+        extension = 'csv';
+        suffix = 'ontology';
+      } else if (exportFormat === 'rdf' && rdfDocument) {
+        const ready = await ensureCurrentRdfDocument();
+        if (!ready) {
+          throw new Error('The complete RDF source is not available.');
+        }
+        const exported = await exportRdfDocument(ready, {
+          includeDerivationMetadata,
+        });
+        setLastRdfExport(exported);
+        content = exported.bytes;
+        mimeType = exported.mediaType;
+        extension = 'rdf';
+        suffix = exported.kind === 'original' ? 'original' : 'derived';
+      } else if (exportFormat === 'rdf') {
+        content = serializeToRDF(
+          currentOntology,
+          dataBindings,
+          { profile: rdfExportProfile },
+        );
+        mimeType = 'application/rdf+xml';
+        extension = 'rdf';
+        suffix = rdfExportProfile === 'standards'
+          ? 'owl-shacl'
+          : 'playground';
+      } else {
+        content = exportOntology();
+        mimeType = 'application/json';
+        extension = 'json';
+        suffix = 'ontology';
+      }
+
+      const blobPart = typeof content === 'string'
+        ? content
+        : content.slice().buffer;
+      const blob = new Blob([blobPart], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${currentOntology.name.toLowerCase().replace(/\s+/g, '-')}-${suffix}.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setExportError(
+        error instanceof Error ? error.message : 'RDF export failed',
       );
-      mimeType = 'application/rdf+xml';
-      extension = 'rdf';
-    } else {
-      content = exportOntology();
-      mimeType = 'application/json';
-      extension = 'json';
+    } finally {
+      setIsExporting(false);
     }
-
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    const rdfSuffix = rdfExportProfile === 'standards'
-      ? 'owl-shacl'
-      : 'playground';
-    const suffix = exportFormat === 'rdf' ? rdfSuffix : 'ontology';
-    link.download = `${currentOntology.name.toLowerCase().replace(/\s+/g, '-')}-${suffix}.${extension}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   };
 
   // Simple YAML exporter (no external dependencies)
@@ -496,15 +546,52 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
               </div>
             )}
 
-            {exportFormat === 'rdf' && currentCatalogueEntry?.source === 'external' && (
-              <SourceFidelityNote className="import-export-source-fidelity-note">
-                <strong>About this download:</strong> This RDF represents the
-                editable visual subset of {currentCatalogueEntry.name}.
-                Source-only RDF remains intact in the reviewed source.
-              </SourceFidelityNote>
+            {exportFormat === 'rdf' && rdfDocument && (
+              <>
+                <SourceFidelityNote className="import-export-source-fidelity-note">
+                  <strong>Complete RDF preservation:</strong>{' '}
+                  {currentCatalogueEntry?.name ?? currentOntology.name} will
+                  download as its exact original bytes until a supported semantic
+                  edit is made. Modified exports retain every unrelated RDF
+                  statement.
+                </SourceFidelityNote>
+                <label style={{
+                  alignItems: 'flex-start',
+                  display: 'flex',
+                  fontSize: 11,
+                  gap: 6,
+                  margin: '8px 0 12px',
+                  textAlign: 'left',
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={includeDerivationMetadata}
+                    onChange={(event) =>
+                      setIncludeDerivationMetadata(event.target.checked)}
+                  />
+                  Add an explicit <code>prov:wasDerivedFrom</code> statement
+                  to this export. This intentionally produces a modified file.
+                </label>
+                {lastRdfExport && (
+                  <div style={{
+                    fontSize: 10,
+                    marginBottom: 12,
+                    textAlign: 'left',
+                  }}>
+                    Last export: {lastRdfExport.kind}; source statements:{' '}
+                    {lastRdfExport.sourceTripleCount.toLocaleString()};
+                    exported statements:{' '}
+                    {lastRdfExport.exportedTripleCount.toLocaleString()};
+                    patches: {lastRdfExport.patchCount.toLocaleString()};
+                    provenance: {lastRdfExport.derivationMetadataIncluded
+                      ? 'included'
+                      : 'not included'}.
+                  </div>
+                )}
+              </>
             )}
 
-            {exportFormat === 'rdf' && (
+            {exportFormat === 'rdf' && !rdfDocument && (
               <fieldset style={{
                 border: 0,
                 margin: '0 0 12px',
@@ -579,11 +666,23 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
             
             <button 
               className="btn btn-primary"
-              onClick={handleExport}
+              onClick={() => void handleExport()}
+              disabled={isExporting}
               style={{ width: '100%' }}
             >
-              {LEGACY_FORMATS_ENABLED ? `Download .${exportFormat}` : 'Download RDF/OWL'}
+              {isExporting
+                ? 'Preparing complete RDF…'
+                : rdfDocument && exportFormat === 'rdf'
+                  ? 'Download complete RDF'
+                  : LEGACY_FORMATS_ENABLED
+                    ? `Download .${exportFormat}`
+                    : 'Download RDF/OWL'}
             </button>
+            {exportError && (
+              <div role="alert" className="import-status error">
+                <AlertCircle size={14} /> {exportError}
+              </div>
+            )}
 
             {onFabricPush && (
               <button

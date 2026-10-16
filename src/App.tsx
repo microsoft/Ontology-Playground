@@ -32,6 +32,9 @@ import { useRoute } from './hooks/useRoute';
 import { navigate } from './lib/router';
 import { decodeSharePayload } from './lib/shareCodec';
 import { loadCatalogueEntry } from './lib/catalogue';
+import {
+  createCatalogueRdfDocumentReference,
+} from './lib/rdf/document';
 import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Database, Palette, FileText } from 'lucide-react';
 import './styles/app.css';
 
@@ -81,7 +84,12 @@ function App() {
       loadCatalogueEntry(id)
         .then((entry) => {
           if (!cancelled) {
-            loadOntology(entry.ontology, entry.bindings, entry);
+            loadOntology(
+              entry.ontology,
+              entry.bindings,
+              entry,
+              createCatalogueRdfDocumentReference(entry),
+            );
           }
         })
         .catch((error) => {
@@ -105,14 +113,25 @@ function App() {
   // Deep-link: /#/share/<data> — decode an inline-shared ontology
   useEffect(() => {
     if (route.page === 'share' && route.data) {
+      let cancelled = false;
       decodeSharePayload(route.data)
         .then(({ ontology, bindings }) => {
-          loadOntology(ontology, bindings);
+          if (!cancelled) loadOntology(ontology, bindings);
         })
-        .catch(() => {
-          // Corrupt or invalid share link — go home
-          navigate({ page: 'home' });
+        .catch((error) => {
+          if (!cancelled) {
+            setToast({
+              message: error instanceof Error
+                ? error.message
+                : 'Failed to decode shared ontology',
+              icon: '!',
+            });
+            navigate({ page: 'home' });
+          }
         });
+      return () => {
+        cancelled = true;
+      };
     }
   }, [route, loadOntology]);
 
@@ -127,10 +146,25 @@ function App() {
     navigate({ page: 'catalogue' });
   }, []);
 
-  const openDesigner = useCallback(() => {
+  const openDesigner = useCallback(async () => {
     // Load the current playground ontology into the designer
-    const { currentOntology } = useAppStore.getState();
-    useDesignerStore.getState().loadDraft(currentOntology);
+    const state = useAppStore.getState();
+    let rdfDocument = null;
+    try {
+      rdfDocument = await state.ensureCurrentRdfDocument();
+    } catch (error) {
+      setToast({
+        message: error instanceof Error
+          ? error.message
+          : 'Failed to load complete RDF source',
+        icon: '!',
+      });
+      return;
+    }
+    useDesignerStore.getState().loadDraft(
+      state.currentOntology,
+      rdfDocument,
+    );
     setShowWelcome(false);
     navigate({ page: 'designer' });
   }, []);

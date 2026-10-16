@@ -74,7 +74,7 @@ const fakePayloads: Record<string, CatalogueEntryPayload> = {
 const fakeSources: Record<string, string> = Object.fromEntries(
   Object.keys(fakePayloads).map((id) => [
     id,
-    `<?xml version="1.0" encoding="UTF-8"?>\n<rdf:RDF data-id="${id}" />\n`,
+    `<?xml version="1.0" encoding="UTF-8"?>\n<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" data-id="${id}" />\n`,
   ]),
 );
 
@@ -578,7 +578,7 @@ describe('GalleryModal', () => {
     )).toBe(false);
   });
 
-  it('labels external graph and generated RDF as a subset', async () => {
+  it('labels external graphs as projections and presents complete RDF', async () => {
     mockFetchSuccess();
     const user = userEvent.setup();
     render(<GalleryModal onClose={onClose} />);
@@ -588,25 +588,22 @@ describe('GalleryModal', () => {
     expect(note.classList.contains('source-fidelity-note')).toBe(true);
     expect(note.querySelector('.lucide-info')).toBeTruthy();
     expect(note.textContent).toContain(
-      'The graph, Designer, and generated RDF use a visual subset',
+      'The graph is a visual projection',
     );
     expect(note.textContent).toContain(
-      'remain intact in the reviewed source',
+      'Designer preserves the complete verified RDF source',
     );
 
     await user.click(screen.getByRole('button', {
-      name: 'View generated RDF for Finance Ledger',
+      name: 'View original RDF source for Finance Ledger',
     }));
 
     expect(await screen.findByText(
-      'Playground-generated RDF subset',
+      'Original reviewed RDF source',
     )).toBeTruthy();
-    expect(screen.getByText(
-      /not the complete upstream ontology/,
-    )).toBeTruthy();
-    expect(screen.getByText(
-      /Source-only RDF remains in the reviewed source/,
-    )).toBeTruthy();
+    expect(document.querySelector('pre')?.textContent).toBe(
+      fakeSources['official/finance-ledger'],
+    );
   });
 
   it('displays entity and relationship counts', async () => {

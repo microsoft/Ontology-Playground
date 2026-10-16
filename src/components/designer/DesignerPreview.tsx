@@ -6,8 +6,13 @@ import { syncGraphElements, type PreviewOntology } from './syncGraphElements';
 import { useDesignerStore } from '../../store/designerStore';
 import { useAppStore, type ThemeId } from '../../store/appStore';
 import { serializeToRDF } from '../../lib/rdf/serializer';
-import { parseRDF } from '../../lib/rdf/parser';
+import {
+  createImportedRdfDocument,
+  exportRdfDocument,
+} from '../../lib/rdf/document';
+import { decodeRdfBytes } from '../../lib/rdf/dataset';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../../lib/rdf/highlighter';
+import type { ReadyRdfDocument } from '../../types/rdfDocument';
 import {
   isLargeOntologyGraph,
   ontologyGraphElementCount,
@@ -23,7 +28,12 @@ export function DesignerPreview({
   onOntologyReplaced,
 }: DesignerPreviewProps = {}) {
   const [activeTab, setActiveTab] = useState<'graph' | 'rdf'>('graph');
-  const { ontology, selectEntity, selectRelationship } = useDesignerStore();
+  const {
+    ontology,
+    rdfDocument,
+    selectEntity,
+    selectRelationship,
+  } = useDesignerStore();
   const theme = useAppStore((s) => s.theme);
 
   return (
@@ -53,8 +63,9 @@ export function DesignerPreview({
       ) : (
         <RdfPreview
           ontology={ontology}
-          onImported={() => {
-            onOntologyReplaced?.();
+          rdfDocument={rdfDocument}
+          onImported={(replaced) => {
+            if (replaced) onOntologyReplaced?.();
             setActiveTab('graph');
           }}
         />
@@ -199,60 +210,151 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
 
 interface RdfPreviewProps {
   ontology: GraphPreviewProps['ontology'] & { name: string; description: string };
-  onImported: () => void;
+  rdfDocument: ReadyRdfDocument | null;
+  onImported: (replaced: boolean) => void;
 }
 
-function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
+export function RdfPreview({
+  ontology,
+  rdfDocument,
+  onImported,
+}: RdfPreviewProps) {
   const [copied, setCopied] = useState(false);
   const [importMode, setImportMode] = useState(false);
   const [importText, setImportText] = useState('');
   const [importError, setImportError] = useState<string | null>(null);
+  const [rdfOutput, setRdfOutput] = useState('');
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [isLoadingRdf, setIsLoadingRdf] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const importRequestId = useRef(0);
   const loadDraft = useDesignerStore((s) => s.loadDraft);
 
-  let rdfOutput: string;
-  try {
-    rdfOutput = serializeToRDF(ontology as Parameters<typeof serializeToRDF>[0], []);
-  } catch {
-    rdfOutput = '<!-- Ontology is incomplete or invalid; fix errors to see RDF output -->';
-  }
+  useEffect(() => () => {
+    importRequestId.current += 1;
+  }, []);
+
+  useEffect(() => {
+    importRequestId.current += 1;
+    setIsImporting(false);
+  }, [rdfDocument?.id, rdfDocument?.revision]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setPreviewError(null);
+    if (!rdfDocument) {
+      try {
+        setRdfOutput(
+          serializeToRDF(
+            ontology as Parameters<typeof serializeToRDF>[0],
+            [],
+          ),
+        );
+      } catch {
+        setRdfOutput(
+          '<!-- Ontology is incomplete or invalid; fix errors to see RDF output -->',
+        );
+      }
+      setIsLoadingRdf(false);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setIsLoadingRdf(true);
+    void exportRdfDocument(rdfDocument)
+      .then((result) => {
+        if (!cancelled) setRdfOutput(decodeRdfBytes(result.bytes));
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setPreviewError(
+            error instanceof Error
+              ? error.message
+              : 'Failed to prepare complete RDF',
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingRdf(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ontology, rdfDocument]);
 
   const darkMode = useAppStore((s) => s.darkMode);
   const hlTheme = darkMode ? RDF_HIGHLIGHT_DARK : RDF_HIGHLIGHT_LIGHT;
   const highlightedRdf = useMemo(() => highlightRdf(rdfOutput, hlTheme), [rdfOutput, hlTheme]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(rdfOutput).then(() => {
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(rdfOutput);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    } catch (error) {
+      setPreviewError(
+        error instanceof Error ? error.message : 'Failed to copy RDF',
+      );
+    }
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     const trimmed = importText.trim();
     if (!trimmed) {
       setImportError('Paste RDF/XML content first');
       return;
     }
+    const requestId = ++importRequestId.current;
+    setIsImporting(true);
     try {
-      const { ontology: parsed } = parseRDF(trimmed);
-      if (isLargeOntologyGraph(parsed)) {
+      if (rdfDocument && importText === rdfOutput) {
+        setImportMode(false);
+        setImportText('');
+        setImportError(null);
+        onImported(false);
+        return;
+      }
+      const normalizedText = importText.replace(
+        /(<\?xml\b[^>]*\bencoding\s*=\s*["'])[^"']+(["'][^>]*\?>)/i,
+        '$1UTF-8$2',
+      );
+      const parsed = await createImportedRdfDocument(
+        new TextEncoder().encode(normalizedText),
+        {
+          name: rdfDocument?.source.name ?? 'designer-import.rdf',
+          baseIri: rdfDocument?.source.baseIri,
+        },
+      );
+      if (requestId !== importRequestId.current) return;
+      if (isLargeOntologyGraph(parsed.ontology)) {
         setImportError(
-          `This ontology contains ${ontologyGraphElementCount(parsed).toLocaleString()} graph elements, ` +
+          `This ontology contains ${ontologyGraphElementCount(parsed.ontology).toLocaleString()} graph elements, ` +
           'which is too large for safe all-at-once editing. Import it in the main viewer instead.'
         );
         return;
       }
-      loadDraft(parsed);
+      loadDraft(parsed.ontology, parsed.document);
       setImportMode(false);
       setImportText('');
       setImportError(null);
-      onImported();
+      onImported(true);
     } catch (err) {
-      setImportError(err instanceof Error ? err.message : 'Failed to parse RDF');
+      if (requestId === importRequestId.current) {
+        setImportError(
+          err instanceof Error ? err.message : 'Failed to parse RDF',
+        );
+      }
+    } finally {
+      if (requestId === importRequestId.current) {
+        setIsImporting(false);
+      }
     }
   };
 
   const handleCancel = () => {
+    importRequestId.current += 1;
+    setIsImporting(false);
     setImportMode(false);
     setImportText('');
     setImportError(null);
@@ -263,8 +365,12 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
       <div className="designer-rdf-toolbar">
         {importMode ? (
           <>
-            <button className="designer-add-btn small" onClick={handleImport}>
-              Load into Designer
+            <button
+              className="designer-add-btn small"
+              onClick={() => void handleImport()}
+              disabled={isImporting}
+            >
+              {isImporting ? 'Loading…' : 'Load into Designer'}
             </button>
             <button className="designer-add-btn small secondary" onClick={handleCancel}>
               Cancel
@@ -272,17 +378,30 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
           </>
         ) : (
           <>
-            <button className="designer-add-btn small" onClick={() => { setImportMode(true); setImportText(rdfOutput); }}>
+            <button
+              className="designer-add-btn small"
+              disabled={isLoadingRdf}
+              onClick={() => {
+                setImportMode(true);
+                setImportText(rdfOutput);
+              }}
+            >
               Edit RDF
             </button>
-            <button className="designer-add-btn small" onClick={handleCopy}>
+            <button
+              className="designer-add-btn small"
+              onClick={() => void handleCopy()}
+              disabled={isLoadingRdf}
+            >
               {copied ? 'Copied!' : 'Copy RDF'}
             </button>
           </>
         )}
       </div>
-      {importError && (
-        <div className="designer-import-error">{importError}</div>
+      {(importError || previewError) && (
+        <div role="alert" className="designer-import-error">
+          {importError ?? previewError}
+        </div>
       )}
       {importMode ? (
         <textarea
@@ -294,7 +413,9 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
           spellCheck={false}
         />
       ) : (
-        <pre className="designer-rdf-source">{highlightedRdf}</pre>
+        <pre className="designer-rdf-source">
+          {isLoadingRdf ? 'Loading complete RDF…' : highlightedRdf}
+        </pre>
       )}
     </div>
   );

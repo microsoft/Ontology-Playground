@@ -11,7 +11,25 @@ const REPO_URL = 'https://github.com/microsoft/Ontology-Playground';
 
 export function SubmitCatalogueModal({ onClose }: SubmitCatalogueModalProps) {
   const ontology = useDesignerStore((s) => s.ontology);
+  const rdfDocument = useDesignerStore((s) => s.rdfDocument);
   const [downloaded, setDownloaded] = useState(false);
+
+  if (rdfDocument) {
+    return (
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content submit-catalogue-modal" onClick={(event) => event.stopPropagation()}>
+          <button className="modal-close" onClick={onClose}><X size={18} /></button>
+          <h2 className="modal-title">
+            <Github size={20} /> Submit to Catalogue
+          </h2>
+          <div role="alert" className="designer-import-error">
+            Source-backed RDF cannot be submitted through the projection-only
+            catalogue workflow. Export the complete RDF document instead.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleDownloadRdf = () => {
     const rdf = serializeToRDF(ontology, []);

@@ -4,6 +4,12 @@ import { useDesignerStore } from '../store/designerStore';
 import { useAppStore, themeClass } from '../store/appStore';
 import { navigate } from '../lib/router';
 import { loadCatalogueEntry } from '../lib/catalogue';
+import {
+  canEditLiteral,
+  createCatalogueRdfDocumentReference,
+  ensureRdfDocumentReady,
+  materializeRdfDocument,
+} from '../lib/rdf/document';
 import { EntityForm, RelationshipForm, DesignerPreview, DesignerToolbar, DesignerValidation, TemplatePicker } from './designer';
 import type { Route } from '../lib/router';
 import type { CatalogueEntry } from '../types/catalogue';
@@ -18,12 +24,34 @@ interface OntologyDesignerProps {
 }
 
 export function OntologyDesigner({ route }: OntologyDesignerProps) {
-  const { ontology, setOntologyName, setOntologyDescription, loadDraft, undo, redo } = useDesignerStore();
+  const {
+    ontology,
+    rdfDocument,
+    mutationError,
+    clearMutationError,
+    setOntologyName,
+    setOntologyDescription,
+    loadDraft,
+    undo,
+    redo,
+  } = useDesignerStore();
   const theme = useAppStore((s) => s.theme);
   const currentCatalogueEntry = useAppStore(
     (s) => s.currentCatalogueEntry,
   );
   const isEmpty = ontology.entityTypes.length === 0 && ontology.relationships.length === 0;
+  const canEditOntologyName = !rdfDocument || canEditLiteral(
+    rdfDocument,
+    rdfDocument.projection.ontology,
+    'http://www.w3.org/2000/01/rdf-schema#label',
+    ontology.name,
+  );
+  const canEditOntologyDescription = !rdfDocument || canEditLiteral(
+    rdfDocument,
+    rdfDocument.projection.ontology,
+    'http://www.w3.org/2000/01/rdf-schema#comment',
+    ontology.description,
+  );
   const [loadError, setLoadError] = useState<string | null>(null);
   const [routeCatalogueEntry, setRouteCatalogueEntry] =
     useState<CatalogueEntry | null>(null);
@@ -67,8 +95,9 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
     setRouteCatalogueEntry(null);
     setLoadError(null);
 
-    loadCatalogueEntry(id)
-      .then((entry) => {
+    void (async () => {
+      try {
+        const entry = await loadCatalogueEntry(id);
         if (cancelled) return;
         if (isLargeOntologyGraph(entry.ontology)) {
           setLoadError(
@@ -77,10 +106,14 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
           );
           return;
         }
+        const reference = createCatalogueRdfDocumentReference(entry);
+        const document = reference
+          ? await ensureRdfDocumentReady(reference)
+          : null;
+        if (cancelled) return;
         setRouteCatalogueEntry(entry);
-        loadDraft(entry.ontology);
-      })
-      .catch((error) => {
+        loadDraft(entry.ontology, document);
+      } catch (error) {
         if (!cancelled) {
           setLoadError(
             error instanceof Error
@@ -88,7 +121,8 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
               : 'Failed to load catalogue ontology.',
           );
         }
-      });
+      }
+    })();
 
     return () => {
       cancelled = true;
@@ -109,6 +143,10 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
             value={ontology.name}
             onChange={(e) => setOntologyName(e.target.value)}
             placeholder="Ontology name"
+            disabled={!canEditOntologyName}
+            title={!canEditOntologyName
+              ? 'This value has no unambiguous RDF label mapping'
+              : undefined}
           />
           <input
             className="designer-meta-desc"
@@ -116,6 +154,10 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
             value={ontology.description}
             onChange={(e) => setOntologyDescription(e.target.value)}
             placeholder="Description"
+            disabled={!canEditOntologyDescription}
+            title={!canEditOntologyDescription
+              ? 'This value has no unambiguous RDF comment mapping'
+              : undefined}
           />
         </div>
         <DesignerToolbar
@@ -124,11 +166,23 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
         />
       </div>
       {loadError && <div role="alert" className="designer-import-error">{loadError}</div>}
-      {editingCatalogueEntry?.source === 'external' && (
+      {mutationError && (
+        <div role="alert" className="designer-import-error">
+          {mutationError}{' '}
+          <button type="button" onClick={clearMutationError}>Dismiss</button>
+        </div>
+      )}
+      {rdfDocument && (
         <SourceFidelityNote className="designer-source-fidelity-note">
-          <strong>About this draft:</strong> You are editing the visual subset
-          of {editingCatalogueEntry.name}. Its generated RDF reflects this
-          subset; source-only RDF remains intact in the reviewed source.
+          <strong>Complete RDF mode:</strong> The full source for{' '}
+          {editingCatalogueEntry?.name ?? ontology.name} remains authoritative.
+          Only unambiguous labels, comments, and direct subclass edges are
+          editable; all other RDF statements remain preserved and read-only.
+          {' '}Source SHA-256: <code>{rdfDocument.source.hash}</code>;
+          source statements: {rdfDocument.originalQuads.length.toLocaleString()};
+          current statements:{' '}
+          {materializeRdfDocument(rdfDocument).length.toLocaleString()};
+          patches: {rdfDocument.patches.length.toLocaleString()}.
         </SourceFidelityNote>
       )}
 

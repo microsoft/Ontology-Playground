@@ -4,6 +4,7 @@ import { useRoute } from '../hooks/useRoute';
 import { routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
+import { exportRdfDocument } from '../lib/rdf/document';
 import { Palette, Check, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info } from 'lucide-react';
 
 interface HeaderProps {
@@ -19,9 +20,18 @@ interface HeaderProps {
 }
 
 export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImportExportClick, onGalleryClick, onDesignerClick, onLearnClick, onNLBuilderClick, onSummaryClick }: HeaderProps) {
-  const { theme, setTheme, totalPoints, earnedBadges, currentOntology, dataBindings } = useAppStore();
+  const {
+    theme,
+    setTheme,
+    totalPoints,
+    earnedBadges,
+    currentOntology,
+    dataBindings,
+    rdfDocument,
+  } = useAppStore();
   const route = useRoute();
   const [shareStatus, setShareStatus] = useState<'idle' | 'copying' | 'copied' | 'downloaded'>('idle');
+  const [shareError, setShareError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
@@ -33,39 +43,67 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
 
   const handleShare = async () => {
     if (shareStatus === 'copying') return;
+    setShareError(null);
+    try {
 
-    if (shareableId) {
-      // Catalogue ontology — use the short deep link
-      const url = `${window.location.origin}${window.location.pathname}#/catalogue/${shareableId}`;
-      await navigator.clipboard.writeText(url);
-      setShareStatus('copied');
-      setTimeout(() => setShareStatus('idle'), 2000);
-      return;
-    }
+      if (shareableId) {
+        // Catalogue ontology — use the short deep link
+        const url = `${window.location.origin}${window.location.pathname}#/catalogue/${shareableId}`;
+        await navigator.clipboard.writeText(url);
+        setShareStatus('copied');
+        setTimeout(() => setShareStatus('idle'), 2000);
+        return;
+      }
 
-    // Custom ontology — compress and encode into a share URL
-    setShareStatus('copying');
-    const encoded = await encodeSharePayload(currentOntology, dataBindings);
-    if (encoded) {
-      const url = `${window.location.origin}${window.location.pathname}#/share/${encoded}`;
-      await navigator.clipboard.writeText(url);
-      history.replaceState(null, '', routeToHash({ page: 'share', data: encoded }));
-      setShareStatus('copied');
-      setTimeout(() => setShareStatus('idle'), 2000);
-    } else {
-      // Too large for URL — download the RDF file instead
-      const content = serializeToRDF(currentOntology, dataBindings);
-      const blob = new Blob([content], { type: 'application/rdf+xml' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${currentOntology.name.toLowerCase().replace(/\s+/g, '-')}-ontology.rdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      setShareStatus('downloaded');
-      setTimeout(() => setShareStatus('idle'), 3000);
+      if (rdfDocument) {
+        setShareStatus('copying');
+        const result = await exportRdfDocument(rdfDocument);
+        const blob = new Blob(
+          [result.bytes.slice().buffer],
+          { type: result.mediaType },
+        );
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${currentOntology.name.toLowerCase().replace(/\s+/g, '-')}-${result.kind === 'original' ? 'original' : 'derived'}.rdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        setShareStatus('downloaded');
+        setTimeout(() => setShareStatus('idle'), 3000);
+        return;
+      }
+
+      // Custom ontology — compress and encode into a share URL
+      setShareStatus('copying');
+      const encoded = await encodeSharePayload(currentOntology, dataBindings);
+      if (encoded) {
+        const url = `${window.location.origin}${window.location.pathname}#/share/${encoded}`;
+        await navigator.clipboard.writeText(url);
+        history.replaceState(null, '', routeToHash({ page: 'share', data: encoded }));
+        setShareStatus('copied');
+        setTimeout(() => setShareStatus('idle'), 2000);
+      } else {
+        // Too large for URL — download the RDF file instead
+        const content = serializeToRDF(currentOntology, dataBindings);
+        const blob = new Blob([content], { type: 'application/rdf+xml' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${currentOntology.name.toLowerCase().replace(/\s+/g, '-')}-ontology.rdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        setShareStatus('downloaded');
+        setTimeout(() => setShareStatus('idle'), 3000);
+      }
+    } catch (error) {
+      setShareStatus('idle');
+      setShareError(
+        error instanceof Error ? error.message : 'Unable to share RDF',
+      );
     }
   };
 
@@ -138,6 +176,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
           {shareStatus === 'downloaded' ? <Download size={16} /> : <Share2 size={16} />}
           <span>{shareLabel}</span>
         </button>
+        {shareError && <span role="alert">{shareError}</span>}
         <button className="header-text-btn" onClick={onSummaryClick} title="View Ontology Summary">
           <FileText size={16} />
           <span>Summary</span>
