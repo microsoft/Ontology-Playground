@@ -218,6 +218,7 @@ GitHub Pages build so asset paths resolve correctly.
 The `generate-ontology` function selects its language model provider from
 `AI_PROVIDER` (default `azure`). Configure these in `api/local.settings.json`
 (local) or the Function App application settings (deployed).
+The submitted business description is sent to the selected third-party provider.
 
 | Variable | Default | Description |
 |----------|---------|-------------|

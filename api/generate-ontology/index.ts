@@ -66,7 +66,7 @@ Rules:
 // remains the default so existing deployments keep working; set AI_PROVIDER to
 // switch to another OpenAI-compatible backend. Returns an error string when the
 // selected provider is missing required configuration.
-function resolveProvider(): { request?: ProviderRequest; error?: string } {
+export function resolveProvider(): { request?: ProviderRequest; error?: string } {
   const provider = (process.env.AI_PROVIDER || "azure").trim().toLowerCase();
 
   if (provider === "minimax") {
@@ -94,6 +94,10 @@ function resolveProvider(): { request?: ProviderRequest; error?: string } {
         model,
       },
     };
+  }
+
+  if (provider !== "azure") {
+    return { error: `Unsupported AI provider: ${provider}. Set AI_PROVIDER to azure or minimax.` };
   }
 
   // Default provider: Azure OpenAI.
