@@ -328,7 +328,7 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 26
+  ahead_origin_main: 29
   staged_files: 0
   committed_by_batch: true
   publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
