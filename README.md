@@ -64,7 +64,11 @@ and export to RDF/XML or JSON. Source-backed RDF uses a bounded editing mode:
 only unambiguous existing labels, comments, and direct named-class
 `rdfs:subClassOf` edges can be changed. Unsupported controls stay read-only,
 and undo/redo updates both the graph projection and RDF statement patches
-atomically.
+atomically. Source-backed documents stay in this complete mode even when they
+have no projectable classes, so authored starter templates cannot silently
+replace their preserved graph. Ontologies with 1,000 or more projected graph
+elements remain available in the viewer but are not opened in the all-at-once
+Designer.
 
 ### RDF Import & Export
 
@@ -80,15 +84,18 @@ The complete parser retains named and blank nodes, arbitrary predicates,
 literal lexical forms, language tags, datatypes, OWL restrictions, RDF lists,
 and SHACL statements. Standalone RDF/XML node roots retain their subject,
 unknown `rdf:parseType` values follow XML-literal fallback semantics, and
-valid XML 1.0 Unicode predicate names remain serializable. Imports and SHACL
-remain inert: external resources are never fetched and rules are never
-executed. RDF/XML `DOCTYPE` input and named graph output are rejected
-explicitly. Current resource limits are 8 MiB and 250,000 unique statements.
-File imports reject the declared file size before allocating its contents and
-abort obsolete reads. Async download paths verify the initiating document and
-component lifetime before exposing output. Large complete-source views fall
-back to one plain text node instead of constructing an unbounded syntax-token
-tree; copy and download still use the complete source.
+valid XML 1.0 Unicode predicate names remain serializable. RDF-looking markup
+inside XML literals is retained as literal data but excluded from visual
+projection discovery; optional derivation metadata also requires an
+authoritative `rdf:type owl:Ontology` statement. Imports and SHACL remain inert:
+external resources are never fetched and rules are never executed. RDF/XML
+`DOCTYPE` input and named graph output are rejected explicitly. Current
+resource limits are 8 MiB and 250,000 unique statements. File imports reject
+the declared file size before allocating its contents and abort obsolete
+reads. Async download and share paths verify the initiating document,
+component lifetime, and route before exposing output. Large complete-source
+views fall back to one plain text node instead of constructing an unbounded
+syntax-token tree; copy and download still use the complete source.
 RDF/XML loaded by URL embeds uses the same preflight and complete-graph parser;
 oversized response streams are cancelled before projection.
 

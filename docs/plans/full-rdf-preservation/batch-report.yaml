@@ -73,6 +73,26 @@ finding_disposition:
     root_cause: "The authored branch checked identity after encoding but not after awaiting clipboard completion."
     resolution: "Identity and mount state are rechecked immediately after clipboard completion and before history replacement."
     evidence: "Deferred clipboard tests cover both active-ontology replacement and Header unmount."
+  - finding: "XML-literal markup entered the visual projection"
+    status: "confirmed_fixed"
+    root_cause: "Projection discovery traversed descendants of Literal and unknown rdf:parseType property elements as if their markup were live RDF/XML."
+    resolution: "Every projection discovery helper excludes XML-literal descendants, imported projection mappings are retained only when backed by authoritative quads, and provenance requires an asserted owl:Ontology type."
+    evidence: "Independent graph expectations prove the markup remains one XMLLiteral while projection and provenance targeting stay empty."
+  - finding: "An empty source-backed projection offered authored templates"
+    status: "confirmed_fixed"
+    root_cause: "The template picker tested only projected entity and relationship counts."
+    resolution: "Templates are offered only for an empty authored draft with no RDF document; source-only documents remain in complete RDF mode."
+    evidence: "A source-only Designer regression retains document identity and confirms no template replacement control is rendered."
+  - finding: "Header sharing and download could complete after route-only navigation"
+    status: "confirmed_fixed"
+    root_cause: "Async completion guards tracked component, ontology, and document identity but not route identity."
+    resolution: "The initiating canonical route participates in every completion check and route changes invalidate the active request."
+    evidence: "Deferred source-export and authored-clipboard regressions navigate without changing ontology state and expose no stale output."
+  - finding: "Some large-ontology Designer entry paths bypassed the safety limit"
+    status: "confirmed_fixed"
+    root_cause: "Only Designer deep links applied the 1,000-element all-at-once editing threshold."
+    resolution: "A shared scale policy now guards deep links, Header entry, and Gallery edit; oversized catalogue edit controls are disabled while viewing remains available."
+    evidence: "Header and Gallery regressions prevent draft loading and Designer navigation at the threshold."
 
 files_changed:
   T004:
@@ -141,13 +161,13 @@ traceability:
 test_results:
   affected:
     command: "npx vitest run <6 final-review regression files>"
-    passed: 90
+    passed: 101
     failed: 0
     skipped: 0
   full:
     command: "npm test"
     files_passed: 60
-    passed: 898
+    passed: 907
     failed: 0
     skipped: 0
   browser:
@@ -162,7 +182,7 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 481.78 kB / 133.60 kB gzip; self-contained embed 1,248.00 kB / 375.01 kB gzip"
+    result: "passed; RDF-bearing app chunk 483.57 kB / 134.13 kB gzip; self-contained embed 1,249.30 kB / 375.36 kB gzip"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
@@ -173,16 +193,16 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 12
+  ahead_origin_main: 13
   staged_files: 0
   committed_by_batch: true
-  pushed_by_batch: true
+  publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
 
 independent_review:
-  scope: "origin/main...HEAD plus all unstaged and relevant untracked remediation"
+  scope: "origin/main...HEAD including the four final follow-up remediations"
   initial_findings: 5
-  follow_up_findings: 2
-  final_disposition: "No high-confidence findings"
+  follow_up_findings: 6
+  final_disposition: "pending exact-head review"
   reviewer_reused: true
 
 remaining_risks:
