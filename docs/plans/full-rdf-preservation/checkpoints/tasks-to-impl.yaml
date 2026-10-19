@@ -46,7 +46,7 @@ tasks:
       - "Synchronized every visual field backed by one edited RDF literal."
       - "Allowed each share request's own route transition without weakening route-stale output guards."
       - "Required catalogue deep links to match the active catalogue entry and source document."
-      - "Cached materialized graph indexes per immutable document revision for Designer render probes and counts."
+      - "Cached materialized graph indexes and dirty state per immutable document revision for Designer render probes and counts."
       - "Rejected oversized files before buffering and aborted obsolete readers."
     verification: "Deferred navigation, draft replacement, stale download, file preflight/abort, cancellation, text-lock, and reverse-completion tests pass."
 
@@ -60,6 +60,7 @@ tasks:
       - "Inlined the RDF worker so HTTPS pages can consume a cross-origin embed bundle."
       - "Allowed self and Blob workers in the deployed application Content Security Policy."
       - "Rendered multi-megabyte complete sources as one bounded plain-text node."
+      - "Rendered verified catalogue payloads before lazily loading optional complete RDF sources, with explicit generated-RDF fallback on source failure."
     verification: "Unit and native Chromium checks cover same/cross-origin worker execution, the pinned 5.18 MB source view, limits, and pre-worker DOCTYPE rejection."
 
   - task_id: "T008"
@@ -75,7 +76,7 @@ tasks:
     description: "Run complete preservation release gates on the rebased worktree."
     status: "completed"
     requirements: ["REQ-001", "REQ-002", "REQ-003", "REQ-004", "REQ-005", "REQ-006", "REQ-007", "REQ-008"]
-    verification: "930 unit/integration tests, type-check, lint, builds, RDF/deployment validation, and 10 Chromium checks pass."
+    verification: "931 unit/integration tests, type-check, lint, builds, RDF/deployment validation, and 10 Chromium checks pass."
 
   - task_id: "T014"
     description: "Document the final preservation behavior, constraints, and measurements."

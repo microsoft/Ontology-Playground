@@ -23,7 +23,9 @@ content-addressed RDF source for the **Complete RDF source** tab. Concurrent
 widgets for the same entry share cached catalogue requests. The graph remains a
 visual projection, while the RDF tab displays and copies the complete decoded
 source, including source-only SHACL and unsupported statements. The widget
-never fetches `owl:imports` or executes SHACL.
+never fetches `owl:imports` or executes SHACL. If the optional complete source
+cannot be loaded, the verified graph remains interactive and the RDF tab
+reports the source error while retaining generated RDF as an explicit fallback.
 
 ## Available Ontologies
 

@@ -173,6 +173,16 @@ finding_disposition:
     root_cause: "Editability probes simulated patches and the statement count independently materialized the full dataset on every render."
     resolution: "One WeakMap cache per immutable document revision stores materialized quads and their key index; editability performs an exact indexed mapping check and counts reuse the cached length."
     evidence: "Two editability checks and a statement-count query invoke materialization once for a document revision."
+  - finding: "Designer dirty-state checks still rescanned complete graphs"
+    status: "confirmed_fixed"
+    root_cause: "isRdfDocumentDirty independently rebuilt original keys, copied materialized quads, and re-keyed every statement on each toolbar render."
+    resolution: "The immutable-document materialization cache now computes net dirty state once alongside quads and their key index."
+    evidence: "Repeated editability, count, and dirty-state calls for one document revision invoke materialization exactly once."
+  - finding: "Catalogue embeds blocked graph rendering on optional source retrieval"
+    status: "confirmed_fixed"
+    root_cause: "The catalogue load path awaited the complete RDF artifact before publishing the already verified visual payload."
+    resolution: "The graph renders after index/payload verification; opening the RDF tab starts one guarded source request, and source errors remain in that tab with explicit generated RDF fallback."
+    evidence: "The initial catalogue graph performs only index and payload requests; a failed source request leaves the graph interactive and reports the failure above generated RDF."
 
 files_changed:
   T004:
@@ -242,14 +252,14 @@ traceability:
 
 test_results:
   affected:
-    command: "npm test -- --run <5 exact-head review regression files>"
-    passed: 133
+    command: "npm test -- --run <6 final exact-head regression files>"
+    passed: 155
     failed: 0
     skipped: 0
   full:
     command: "npm test"
     files_passed: 60
-    passed: 930
+    passed: 931
     failed: 0
     skipped: 0
   browser:
@@ -264,7 +274,7 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 494.36 kB / 137.38 kB gzip; self-contained embed 1,258.42 kB / 378.06 kB gzip"
+    result: "passed; RDF-bearing app chunk 494.38 kB / 137.38 kB gzip; self-contained embed 1,259.62 kB / 378.29 kB gzip"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
@@ -275,15 +285,15 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 20
+  ahead_origin_main: 22
   staged_files: 0
   committed_by_batch: true
   publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
 
 independent_review:
-  scope: "origin/main...HEAD including the six exact-head review remediations"
+  scope: "origin/main...HEAD including the two final follow-up remediations"
   initial_findings: 5
-  follow_up_findings: 22
+  follow_up_findings: 24
   final_disposition: "pending exact-head review"
   reviewer_reused: true
 

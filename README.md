@@ -106,13 +106,13 @@ declarations must agree, and unsupported encodings fail explicitly. File
 imports reject the declared file size before allocating contents and abort
 obsolete reads. The bounded dataset parse must succeed before the main-thread
 visual projection starts. Designer editability and statement counts share a
-revision-indexed graph cache rather than rescanning large preserved graphs on
-each render. Async download and share paths verify the active catalogue entry,
-source document, initiating component lifetime, and route before exposing
-output, while accepting the share route transition initiated by a successful
-request. Large complete-source views fall back to one plain text node instead
-of constructing an unbounded syntax-token tree; copy and download still use the
-complete source.
+revision-indexed graph cache with dirty-state checks rather than rescanning
+large preserved graphs on each render. Async download and share paths verify
+the active catalogue entry, source document, initiating component lifetime,
+and route before exposing output, while accepting the share route transition
+initiated by a successful request. Large complete-source views fall back to one
+plain text node instead of constructing an unbounded syntax-token tree; copy
+and download still use the complete source.
 RDF/XML loaded by URL embeds uses the same preflight and complete-graph parser;
 oversized response streams are cancelled before projection.
 
