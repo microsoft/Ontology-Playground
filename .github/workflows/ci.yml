@@ -53,7 +53,7 @@ jobs:
         run: npm --prefix api run build && npm --prefix api test
 
       - name: Build
-        run: npx vite build
+        run: npx vite build && npm run build:embed
 
       - name: Install Chromium for performance budgets
         run: npx playwright install --with-deps chromium
