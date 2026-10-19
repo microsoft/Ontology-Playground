@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   applyLiteralEdit,
+  canEditLiteral,
   createImportedRdfDocument,
   exportRdfDocument,
   isRdfDocumentDirty,
@@ -236,6 +237,126 @@ describe('RDF document preservation', () => {
         value: 'Space',
       }),
     }));
+  });
+
+  it('retains parseType reification when an unrelated mapped label is edited', async () => {
+    const source = `<rdf:RDF
+  xml:base="https://example.com/model"
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}"
+  xmlns:ex="https://example.com/ns#">
+  <owl:Class rdf:about="#Editable">
+    <rdfs:label>Editable</rdfs:label>
+  </owl:Class>
+  <rdf:Description rdf:about="urn:subject">
+    <ex:resource rdf:parseType="Resource" rdf:ID="resource-statement">
+      <ex:value>nested</ex:value>
+    </ex:resource>
+    <ex:collection rdf:parseType="Collection" rdf:ID="collection-statement">
+      <rdf:Description rdf:about="urn:item"/>
+    </ex:collection>
+    <ex:empty rdf:parseType="Collection" rdf:ID="empty-statement"/>
+  </rdf:Description>
+</rdf:RDF>`;
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      { name: 'reification.rdf' },
+    );
+    const edited = applyLiteralEdit(
+      loaded.document,
+      loaded.document.projection.entities.editable,
+      `${RDFS}label`,
+      'Editable',
+      'Edited',
+      'Unrelated label edit',
+    );
+    const exported = await exportRdfDocument(edited);
+    const quads = await parseRdfXmlDataset(
+      decodeRdfBytes(exported.bytes),
+      'https://example.com/export.rdf',
+    );
+
+    for (const id of [
+      'resource-statement',
+      'collection-statement',
+      'empty-statement',
+    ]) {
+      const statement = `https://example.com/model#${id}`;
+      expect(quads.filter((quad) =>
+        quad.subject.termType === 'NamedNode'
+        && quad.subject.value === statement
+      )).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          predicate: { termType: 'NamedNode', value: `${RDF}type` },
+          object: { termType: 'NamedNode', value: `${RDF}Statement` },
+        }),
+        expect.objectContaining({
+          predicate: { termType: 'NamedNode', value: `${RDF}subject` },
+          object: { termType: 'NamedNode', value: 'urn:subject' },
+        }),
+      ]));
+      expect(quads.filter((quad) =>
+        quad.subject.termType === 'NamedNode'
+        && quad.subject.value === statement
+      )).toHaveLength(4);
+    }
+  });
+
+  it('keeps an exact language-tagged literal mapping after colliding lexical edits', async () => {
+    const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}">
+  <owl:Class rdf:about="https://example.com/Room">
+    <rdfs:label xml:lang="en">Room</rdfs:label>
+    <rdfs:label xml:lang="fr">Salle</rdfs:label>
+  </owl:Class>
+</rdf:RDF>`;
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      { name: 'language-collision.rdf' },
+    );
+    const target = loaded.document.projection.entities.room;
+    const collided = applyLiteralEdit(
+      loaded.document,
+      target,
+      `${RDFS}label`,
+      'Room',
+      'Salle',
+      'Collide label text',
+    );
+
+    expect(canEditLiteral(
+      collided,
+      collided.projection.entities.room,
+      `${RDFS}label`,
+      'Salle',
+    )).toBe(true);
+    const edited = applyLiteralEdit(
+      collided,
+      collided.projection.entities.room,
+      `${RDFS}label`,
+      'Salle',
+      'Chamber',
+      'Edit exact English label',
+    );
+    const labels = materializeRdfDocument(edited)
+      .filter((quad) => quad.predicate.value === `${RDFS}label`)
+      .map((quad) => quad.object);
+
+    expect(labels).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        termType: 'Literal',
+        value: 'Chamber',
+        language: 'en',
+      }),
+      expect.objectContaining({
+        termType: 'Literal',
+        value: 'Salle',
+        language: 'fr',
+      }),
+    ]));
   });
 
   it.each([

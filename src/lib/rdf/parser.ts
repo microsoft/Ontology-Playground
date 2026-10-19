@@ -406,6 +406,17 @@ function getProjectionNodeIdentity(
   return null;
 }
 
+function projectionIdentityKey(identity: ProjectionNodeIdentity): string {
+  return identity.term?.value ?? identity.reference;
+}
+
+function resolveProjectionReference(
+  value: string | null,
+  baseIri: string | undefined,
+): string | null {
+  return value === null ? null : resolveRdfIri(value, baseIri);
+}
+
 function getDirectChild(parent: Element, localName: string): Element | null {
   for (let i = 0; i < parent.children.length; i++) {
     const child = parent.children[i];
@@ -495,6 +506,7 @@ function parseShaclPathMetadata(
   root: Element,
   descriptionTypeIndex: Map<string, Element[]>,
   nodesById: ReadonlyMap<string, Element>,
+  baseIri: string | undefined,
 ): Map<string, ShaclPathMetadata> {
   const metadataByPath = new Map<string, ShaclPathMetadata>();
   const propertyShapes = getTypedElements(
@@ -530,6 +542,7 @@ function parseShaclPathMetadata(
       inverse = Boolean(pathUri);
     }
     if (!pathUri) continue;
+    pathUri = resolveRdfIri(pathUri, baseIri);
 
     const metadata = metadataByPath.get(pathUri) ?? {
       forwardMaxOne: false,
@@ -638,6 +651,7 @@ export function parseRDF(
     root,
     descriptionTypeIndex,
     rdfNodeIndex.nodesById,
+    effectiveBaseIri,
   );
 
   // --- Extract ontology metadata ---
@@ -732,7 +746,10 @@ export function parseRDF(
   const objectPropertyUris = new Set(
     objPropEls
       .map((element) =>
-        getProjectionNodeIdentity(element, effectiveBaseIri)?.reference)
+        getProjectionNodeIdentity(element, effectiveBaseIri))
+      .filter((identity): identity is ProjectionNodeIdentity =>
+        identity !== null)
+      .map(projectionIdentityKey)
       .filter((uri): uri is string => uri !== undefined),
   );
   const entityMap = new Map<string, EntityType>();
@@ -743,19 +760,23 @@ export function parseRDF(
   for (const el of classEls) {
     const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
     if (!identity) continue;
-    const about = identity.reference;
+    const about = projectionIdentityKey(identity);
 
     const isStatementAssociation = getChildResources(el, 'subClassOf')
       .includes(`${RDF_NS}Statement`);
     const relatedRelationship = getChildResource(el, 'relation');
+    const relatedRelationshipKey = resolveProjectionReference(
+      relatedRelationship,
+      effectiveBaseIri,
+    );
     if (
       isStatementAssociation
-      && relatedRelationship
-      && objectPropertyUris.has(relatedRelationship)
+      && relatedRelationshipKey
+      && objectPropertyUris.has(relatedRelationshipKey)
     ) {
       associationRelationshipByClass.set(
         about,
-        localNameFromUri(relatedRelationship),
+        localNameFromUri(relatedRelationshipKey),
       );
     }
 
@@ -765,26 +786,39 @@ export function parseRDF(
       rdfNodeIndex.nodesById,
     );
     if (identifierProperties.length > 0) {
-      identifierPropertiesByClass.set(about, new Set(identifierProperties));
+      identifierPropertiesByClass.set(
+        about,
+        new Set(identifierProperties.map((resource) =>
+          resolveRdfIri(resource, effectiveBaseIri))),
+      );
     }
   }
 
   for (let i = 0; i < classEls.length; i++) {
     const el = classEls[i];
     const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
-    if (!identity || associationRelationshipByClass.has(identity.reference)) {
+    if (
+      !identity
+      || associationRelationshipByClass.has(projectionIdentityKey(identity))
+    ) {
       continue;
     }
-    const about = identity.reference;
+    const about = projectionIdentityKey(identity);
 
-    const className = localNameFromUri(about);
+    const className = localNameFromUri(identity.reference);
     const existingEntity = entityMap.get(about);
     const entityId = existingEntity?.id
       ?? createUniqueId(uncapitalize(className) || 'entity', usedEntityIds);
-    const label = getChildText(el, 'label', RDFS_NS) || className;
-    const description = getChildText(el, 'comment', RDFS_NS) || '';
-    const icon = getChildText(el, 'icon') || '📦';
-    const color = getChildText(el, 'color') || '#0078D4';
+    const label = getChildText(el, 'label', RDFS_NS)
+      || existingEntity?.name
+      || className;
+    const description = getChildText(el, 'comment', RDFS_NS)
+      || existingEntity?.description
+      || '';
+    const icon = getChildText(el, 'icon') || existingEntity?.icon || '📦';
+    const color = getChildText(el, 'color')
+      || existingEntity?.color
+      || '#0078D4';
 
     entityMap.set(about, {
       id: entityId,
@@ -814,12 +848,15 @@ export function parseRDF(
     const el = dtPropEls[i];
     const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
     if (!identity) continue;
-    const about = identity.reference;
+    const about = projectionIdentityKey(identity);
 
     const comments = getChildTexts(el, 'comment');
     const hasIdentifierComment = comments.some(c => /^identifier\s+property$/i.test(c.trim()));
     const descriptionComment = comments.find(c => !/^identifier\s+property$/i.test(c.trim())) ?? null;
-    const domainUri = getChildResource(el, 'domain', RDFS_NS);
+    const domainUri = resolveProjectionReference(
+      getChildResource(el, 'domain', RDFS_NS),
+      effectiveBaseIri,
+    );
     const legacyEnumValues = getChildText(el, 'enumValues');
     const shapeMetadata = shaclPathMetadata.get(about);
 
@@ -827,7 +864,10 @@ export function parseRDF(
       about,
       label: getChildText(el, 'label', RDFS_NS) || localNameFromUri(about),
       domainUri,
-      rangeUri: getChildResource(el, 'range', RDFS_NS),
+      rangeUri: resolveProjectionReference(
+        getChildResource(el, 'range', RDFS_NS),
+        effectiveBaseIri,
+      ),
       comment: descriptionComment,
       isIdentifier: (
         getChildText(el, 'isIdentifier') === 'true'
@@ -924,7 +964,7 @@ export function parseRDF(
     const el = objPropEls[i];
     const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
     if (!identity) continue;
-    const about = identity.reference;
+    const about = projectionIdentityKey(identity);
 
     const sourceRelId = localNameFromUri(about) || 'relationship';
     const relId = createUniqueId(sourceRelId, usedRelationshipIds);
@@ -937,14 +977,20 @@ export function parseRDF(
     let toId = uncapitalize(getChildText(el, 'toEntityId') || '');
 
     if (!fromId) {
-      const domainUri = getChildResource(el, 'domain', RDFS_NS);
+      const domainUri = resolveProjectionReference(
+        getChildResource(el, 'domain', RDFS_NS),
+        effectiveBaseIri,
+      );
       if (domainUri) {
         fromId = entityMap.get(domainUri)?.id
           ?? uncapitalize(localNameFromUri(domainUri));
       }
     }
     if (!toId) {
-      const rangeUri = getChildResource(el, 'range', RDFS_NS);
+      const rangeUri = resolveProjectionReference(
+        getChildResource(el, 'range', RDFS_NS),
+        effectiveBaseIri,
+      );
       if (rangeUri) {
         toId = entityMap.get(rangeUri)?.id
           ?? uncapitalize(localNameFromUri(rangeUri));
@@ -1010,21 +1056,22 @@ export function parseRDF(
     const el = classEls[i];
     const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
     if (!identity) continue;
-    const about = identity.reference;
+    const about = projectionIdentityKey(identity);
 
     const subEntity = entityMap.get(about);
     if (!subEntity) continue;
 
     const superUris = getChildResources(el, 'subClassOf', RDFS_NS);
-    for (const superUri of superUris) {
+    for (const rawSuperUri of superUris) {
       if (childResourceHasXmlBase(
         el,
         'subClassOf',
         RDFS_NS,
-        superUri,
+        rawSuperUri,
       )) {
         continue;
       }
+      const superUri = resolveRdfIri(rawSuperUri, effectiveBaseIri);
       // Only link classes that were imported as entities; skip external
       // references (owl:Thing, other vocabularies) and self-references.
       const superEntity = entityMap.get(superUri);

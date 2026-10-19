@@ -22,6 +22,8 @@ const XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string';
 const RDF_LANG_STRING = `${RDF_NS}langString`;
 const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
 const MAX_RDF_QUADS = 250_000;
+const MAX_EXPANDED_RDF_TERM_CHARACTERS = 16_384;
+const MAX_RETAINED_RDF_CHARACTERS = 32 * 1024 * 1024;
 
 interface RdfJsTerm {
   termType: string;
@@ -299,6 +301,16 @@ class PreservationRdfXmlParser extends RdfXmlParser {
       literalDepth !== null && depth > literalDepth;
     const closesLiteralProperty = literalDepth === depth;
     const activePropertyTag = this.activePropertyTags.get(depth);
+    const emptyReifiedCollection = Boolean(
+      (
+        activePropertyTag?.reifiedStatementId
+        || activePropertyTag?.reifier
+      )
+      && activePropertyTag.predicate
+      && activePropertyTag.childrenCollectionSubject
+      && activePropertyTag.childrenCollectionPredicate
+        ?.equals(activePropertyTag.predicate),
+    );
 
     if (closesLiteralProperty) {
       const value = this.xmlLiteralValues[this.xmlLiteralIndex];
@@ -314,6 +326,23 @@ class PreservationRdfXmlParser extends RdfXmlParser {
       activePropertyTag.childrenStringTags.length = 0;
       activePropertyTag.childrenStringTags.push(value);
       this.xmlLiteralIndex += 1;
+    }
+    if (
+      emptyReifiedCollection
+      && activePropertyTag?.predicate
+      && activePropertyTag.childrenCollectionSubject
+      && activePropertyTag.childrenCollectionPredicate
+    ) {
+      this.emitTriple(
+        activePropertyTag.childrenCollectionSubject,
+        activePropertyTag.childrenCollectionPredicate,
+        new DataFactory().namedNode(`${RdfXmlParser.RDF}nil`),
+        activePropertyTag.reifiedStatementId,
+        activePropertyTag.childrenTripleTerms,
+        activePropertyTag.reifier,
+      );
+      activePropertyTag.childrenCollectionSubject = undefined;
+      activePropertyTag.predicateEmitted = true;
     }
 
     super.onCloseTag();
@@ -376,30 +405,46 @@ class PreservationRdfXmlParser extends RdfXmlParser {
     const contextAttributeNames = new Set(
       contextAttributes.map((attribute) => attribute.name),
     );
+    const normalizedAttributes = attributes
+      .map((attribute) => {
+        const isUnknownParseType =
+          attribute.uri === RdfXmlParser.RDF
+          && attribute.local === 'parseType'
+          && attribute.value !== 'Resource'
+          && attribute.value !== 'Collection'
+          && attribute.value !== 'Literal'
+          && attribute.value !== 'Triple';
+        return isUnknownParseType
+          ? { ...attribute, value: 'Literal' }
+          : attribute;
+      })
+      .sort((left, right) => {
+        const priority = (attribute: SaxesAttributeNS) => {
+          if (contextAttributeNames.has(attribute.name)) return 0;
+          if (
+            attribute.uri === RdfXmlParser.RDF
+            && (
+              attribute.local === 'ID'
+              || attribute.local === 'annotation'
+              || attribute.local === 'annotationNodeID'
+            )
+          ) return 1;
+          if (
+            attribute.uri === RdfXmlParser.RDF
+            && attribute.local === 'parseType'
+          ) return 3;
+          return 2;
+        };
+        return priority(left) - priority(right);
+      });
     const normalizedTag: SaxesTagNS = {
       ...tag,
-      attributes: Object.fromEntries([
-        ...contextAttributes.map((attribute) => [
+      attributes: Object.fromEntries(
+        normalizedAttributes.map((attribute) => [
           attribute.name,
           attribute,
         ]),
-        ...attributes
-          .filter((attribute) =>
-            !contextAttributeNames.has(attribute.name))
-          .map((attribute) => {
-            const isUnknownParseType =
-              attribute.uri === RdfXmlParser.RDF
-              && attribute.local === 'parseType'
-              && attribute.value !== 'Resource'
-              && attribute.value !== 'Collection'
-              && attribute.value !== 'Literal'
-              && attribute.value !== 'Triple';
-            const normalizedAttribute = isUnknownParseType
-              ? { ...attribute, value: 'Literal' }
-              : attribute;
-            return [normalizedAttribute.name, normalizedAttribute];
-          }),
-      ]),
+      ),
     };
     super.onTagProperty(normalizedTag, activeTag, parentTag);
     this.activePropertyTags.set(this.namespaceScopes.length, activeTag);
@@ -498,6 +543,31 @@ export function rdfQuadKey(quad: RdfQuad): string {
   ]);
 }
 
+function assertNoDoctypeDeclaration(rdfXml: string): void {
+  const parser = new SaxesParser({ xmlns: true, position: true });
+  let reachedRoot = false;
+  parser.on('doctype', () => {
+    throw new RdfDatasetError(
+      'RDF/XML documents with DOCTYPE declarations are not accepted.',
+    );
+  });
+  parser.on('opentag', () => {
+    reachedRoot = true;
+  });
+  parser.on('error', () => {
+    reachedRoot = true;
+  });
+
+  const chunkSize = 4_096;
+  for (
+    let offset = 0;
+    offset < rdfXml.length && !reachedRoot;
+    offset += chunkSize
+  ) {
+    parser.write(rdfXml.slice(offset, offset + chunkSize));
+  }
+}
+
 export function assertSupportedRdfXmlSource(rdfXml: string): void {
   const sniff = rdfXml.trimStart();
   if (
@@ -508,11 +578,45 @@ export function assertSupportedRdfXmlSource(rdfXml: string): void {
       'This file appears to be Turtle; full preservation currently accepts RDF/XML only.',
     );
   }
-  if (/<!DOCTYPE/i.test(rdfXml)) {
-    throw new RdfDatasetError(
-      'RDF/XML documents with DOCTYPE declarations are not accepted.',
-    );
+  assertNoDoctypeDeclaration(rdfXml);
+}
+
+function assertExpandedTermLength(term: RdfJsTerm): void {
+  const values = term.termType === 'Literal'
+    ? [term.datatype?.value ?? '', term.language ?? '']
+    : [term.value];
+  for (const value of values) {
+    if (value.length > MAX_EXPANDED_RDF_TERM_CHARACTERS) {
+      throw new RdfDatasetError(
+        `Expanded RDF term exceeds the ${MAX_EXPANDED_RDF_TERM_CHARACTERS.toLocaleString()} character limit`,
+      );
+    }
   }
+}
+
+function retainedQuadCharacterCount(
+  source: RdfJsQuad,
+  quad: RdfQuad,
+  key: string,
+): number {
+  for (const term of [
+    source.subject,
+    source.predicate,
+    source.object,
+    source.graph,
+  ]) {
+    assertExpandedTermLength(term);
+  }
+  return key.length
+    + quad.subject.value.length
+    + quad.predicate.value.length
+    + quad.object.value.length
+    + quad.graph.value.length
+    + (
+      quad.object.termType === 'Literal'
+        ? quad.object.language.length + quad.object.datatype.value.length
+        : 0
+    );
 }
 
 export async function parseRdfXmlDataset(
@@ -531,6 +635,7 @@ export async function parseRdfXmlDataset(
     });
     parser.setXmlLiteralValues(xmlLiteralValues);
     const quads = new Map<string, RdfQuad>();
+    let retainedCharacters = 0;
     let settled = false;
 
     const fail = (error: unknown) => {
@@ -544,7 +649,21 @@ export async function parseRdfXmlDataset(
     parser.on('data', (value: RdfJsQuad) => {
       try {
         const quad = plainQuad(value);
-        quads.set(rdfQuadKey(quad), quad);
+        const key = rdfQuadKey(quad);
+        if (!quads.has(key)) {
+          const retained = retainedQuadCharacterCount(value, quad, key);
+          if (
+            retainedCharacters + retained
+            > MAX_RETAINED_RDF_CHARACTERS
+          ) {
+            parser.destroy(new RdfDatasetError(
+              `RDF document exceeds the ${MAX_RETAINED_RDF_CHARACTERS.toLocaleString()} character expanded RDF term budget`,
+            ));
+            return;
+          }
+          retainedCharacters += retained;
+          quads.set(key, quad);
+        }
         if (quads.size > MAX_RDF_QUADS) {
           parser.destroy(new RdfDatasetError(
             `RDF document exceeds the ${MAX_RDF_QUADS.toLocaleString()} statement limit`,

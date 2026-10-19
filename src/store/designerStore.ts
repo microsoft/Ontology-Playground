@@ -562,7 +562,10 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
           }
           rdfDocument = applyLiteralEdit(
             rdfDocument,
-            { term: mapping.term },
+            {
+              term: mapping.term,
+              literals: mapping.literals,
+            },
             field === 'name' ? RDFS_LABEL : RDFS_COMMENT,
             oldValue,
             newValue,

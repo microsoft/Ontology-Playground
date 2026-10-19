@@ -33,8 +33,14 @@ export interface RdfQuad {
   graph: RdfGraph;
 }
 
+export interface RdfProjectionLiteral {
+  object: RdfLiteral;
+  graph: RdfGraph;
+}
+
 export interface RdfProjectionResource {
   term: RdfNamedNode;
+  literals?: Record<string, RdfProjectionLiteral>;
 }
 
 export interface RdfProjectionRelationship {
@@ -42,6 +48,7 @@ export interface RdfProjectionRelationship {
   term?: RdfNamedNode;
   subject?: RdfNamedNode;
   object?: RdfNamedNode;
+  literals?: Record<string, RdfProjectionLiteral>;
 }
 
 export interface RdfProjectionMap {

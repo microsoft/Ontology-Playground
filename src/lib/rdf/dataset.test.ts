@@ -166,6 +166,77 @@ describe('complete RDF/XML dataset adapter', () => {
     )).rejects.toThrow(/DOCTYPE declarations are not accepted/);
   });
 
+  it.each([
+    {
+      context: 'CDATA',
+      value: '<![CDATA[<!DOCTYPE rdf:RDF>]]>',
+      expected: '<!DOCTYPE rdf:RDF>',
+    },
+    {
+      context: 'an XML comment',
+      value: '<!-- <!DOCTYPE rdf:RDF> -->preserved',
+      expected: 'preserved',
+    },
+  ])(
+    'allows inert DOCTYPE text inside $context',
+    async ({ value, expected }) => {
+      const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:ex="https://example.com/">
+  <rdf:Description rdf:about="https://example.com/subject">
+    <ex:value>${value}</ex:value>
+  </rdf:Description>
+</rdf:RDF>`;
+
+      const quads = await parseRdfXmlDataset(
+        source,
+        'https://example.com/source.rdf',
+      );
+
+      expect(quads).toHaveLength(1);
+      expect(quads[0].object).toMatchObject({
+        termType: 'Literal',
+        value: expected,
+      });
+    },
+  );
+
+  it('rejects cumulative expanded RDF terms before retaining an amplified dataset', async () => {
+    const namespace = `https://example.com/${'n'.repeat(8_000)}/`;
+    const properties = Array.from(
+      { length: 2_500 },
+      (_, index) => `<long:p${index}>value</long:p${index}>`,
+    ).join('');
+    const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:long="${namespace}">
+  <rdf:Description rdf:about="https://example.com/subject">
+    ${properties}
+  </rdf:Description>
+</rdf:RDF>`;
+
+    await expect(parseRdfXmlDataset(
+      source,
+      'https://example.com/source.rdf',
+    )).rejects.toThrow(/expanded RDF term budget/);
+  });
+
+  it('rejects one excessively expanded RDF term', async () => {
+    const namespace = `https://example.com/${'n'.repeat(17_000)}/`;
+    const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:long="${namespace}">
+  <rdf:Description rdf:about="https://example.com/subject">
+    <long:value>preserved</long:value>
+  </rdf:Description>
+</rdf:RDF>`;
+
+    await expect(parseRdfXmlDataset(
+      source,
+      'https://example.com/source.rdf',
+    )).rejects.toThrow(/Expanded RDF term exceeds/);
+  });
+
   it('preserves carriage returns in literal lexical values', async () => {
     const source = `<rdf:RDF
   xmlns:rdf="${RDF}"
@@ -450,6 +521,76 @@ describe('complete RDF/XML dataset adapter', () => {
       }),
     }));
   });
+
+  it.each([
+    {
+      parseType: 'Resource',
+      content: '<eg:value>nested</eg:value>',
+      expectedObjectType: 'BlankNode',
+    },
+    {
+      parseType: 'Collection',
+      content: '<rdf:Description rdf:about="urn:item"/>',
+      expectedObjectType: 'BlankNode',
+    },
+    {
+      parseType: 'Collection',
+      content: '',
+      expectedObjectType: 'NamedNode',
+    },
+  ])(
+    'reifies rdf:parseType="$parseType" independently of XML attribute order',
+    async ({ parseType, content, expectedObjectType }) => {
+      const source = (attributes: string) => `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:eg="http://example.org/"
+  xml:base="http://example.com/">
+  <rdf:Description rdf:about="urn:subject">
+    <eg:prop ${attributes}>${content}</eg:prop>
+  </rdf:Description>
+</rdf:RDF>`;
+      const idFirst = await parseRdfXmlDataset(
+        source(`rdf:ID="statement-${parseType}-${content.length}" rdf:parseType="${parseType}"`),
+        'https://example.com/source.rdf',
+      );
+      const parseTypeFirst = await parseRdfXmlDataset(
+        source(`rdf:parseType="${parseType}" rdf:ID="statement-${parseType}-${content.length}"`),
+        'https://example.com/source.rdf',
+      );
+      const statement =
+        `http://example.com/#statement-${parseType}-${content.length}`;
+
+      expect(await canonicalize(parseTypeFirst))
+        .toBe(await canonicalize(idFirst));
+      expect(parseTypeFirst).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          subject: { termType: 'NamedNode', value: statement },
+          predicate: { termType: 'NamedNode', value: `${RDF}type` },
+          object: { termType: 'NamedNode', value: `${RDF}Statement` },
+        }),
+        expect.objectContaining({
+          subject: { termType: 'NamedNode', value: statement },
+          predicate: { termType: 'NamedNode', value: `${RDF}subject` },
+          object: { termType: 'NamedNode', value: 'urn:subject' },
+        }),
+        expect.objectContaining({
+          subject: { termType: 'NamedNode', value: statement },
+          predicate: { termType: 'NamedNode', value: `${RDF}predicate` },
+          object: {
+            termType: 'NamedNode',
+            value: 'http://example.org/prop',
+          },
+        }),
+        expect.objectContaining({
+          subject: { termType: 'NamedNode', value: statement },
+          predicate: { termType: 'NamedNode', value: `${RDF}object` },
+          object: expect.objectContaining({
+            termType: expectedObjectType,
+          }),
+        }),
+      ]));
+    },
+  );
 
   it('preserves independent XML literal infosets across namespace scope changes', async () => {
     const source = `<rdf:RDF

@@ -73,7 +73,10 @@ export function RelationshipForm() {
         const toEntity = entities.find((e) => e.id === rel.to);
         const mapping = rdfDocument?.projection.relationships[rel.id];
         const literalTarget = mapping?.term
-          ? { term: mapping.term }
+          ? {
+              term: mapping.term,
+              literals: mapping.literals,
+            }
           : undefined;
         const canEditName = !rdfDocument || !isSelected || canEditLiteral(
           rdfDocument,

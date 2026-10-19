@@ -1009,6 +1009,38 @@ describe('parseRDF', () => {
       ]);
     });
 
+    it('coalesces equivalent relative spellings of one RDF resource', () => {
+      const rdf = `<?xml version="1.0"?>
+<rdf:RDF
+    xml:base="https://example.org/model/"
+    xmlns:rdf="${RDF_NS}"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="Thing">
+    <rdfs:label>Thing</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="./Thing">
+    <rdfs:comment>The same resource</rdfs:comment>
+  </owl:Class>
+</rdf:RDF>`;
+
+      const parsed = parseRDF(rdf);
+
+      expect(parsed.ontology.entityTypes).toHaveLength(1);
+      expect(parsed.ontology.entityTypes[0]).toMatchObject({
+        id: 'thing',
+        description: 'The same resource',
+      });
+      expect(parsed.projection.entities).toEqual({
+        thing: {
+          term: {
+            termType: 'NamedNode',
+            value: 'https://example.org/model/Thing',
+          },
+        },
+      });
+    });
+
     it('resolves dot segments and colons in relative projection IRIs', () => {
       const rdf = `<?xml version="1.0"?>
 <rdf:RDF

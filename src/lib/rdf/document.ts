@@ -6,6 +6,7 @@ import type {
   RdfExportOptions,
   RdfExportResult,
   RdfNamedNode,
+  RdfProjectionLiteral,
   RdfProjectionResource,
   RdfProjectionMap,
   RdfQuad,
@@ -31,6 +32,8 @@ export const MAX_RDF_SOURCE_BYTES = 8 * 1024 * 1024;
 const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 const RDFS_SUBCLASS_OF =
   'http://www.w3.org/2000/01/rdf-schema#subClassOf';
+const RDFS_LABEL = 'http://www.w3.org/2000/01/rdf-schema#label';
+const RDFS_COMMENT = 'http://www.w3.org/2000/01/rdf-schema#comment';
 const OWL_CLASS = 'http://www.w3.org/2002/07/owl#Class';
 const OWL_OBJECT_PROPERTY =
   'http://www.w3.org/2002/07/owl#ObjectProperty';
@@ -74,28 +77,26 @@ function fallbackOntologyName(name: string): string {
 }
 
 function hasAuthoritativeQuad(
-  quads: readonly RdfQuad[],
+  quadKeys: ReadonlySet<string>,
   subject: RdfNamedNode,
   predicate: string,
   object: RdfNamedNode,
 ): boolean {
-  return quads.some((quad) =>
-    quad.graph.termType === 'DefaultGraph'
-    && quad.subject.termType === 'NamedNode'
-    && quad.subject.value === subject.value
-    && quad.predicate.value === predicate
-    && quad.object.termType === 'NamedNode'
-    && quad.object.value === object.value
-  );
+  return quadKeys.has(rdfQuadKey({
+    subject,
+    predicate: { termType: 'NamedNode', value: predicate },
+    object,
+    graph: { termType: 'DefaultGraph', value: '' },
+  }));
 }
 
 function retainAuthoritativeProjectionMappings(
   projection: RdfProjectionMap,
-  quads: readonly RdfQuad[],
+  quadKeys: ReadonlySet<string>,
 ): RdfProjectionMap {
   const ontology = projection.ontology
     && hasAuthoritativeQuad(
-      quads,
+      quadKeys,
       projection.ontology.term,
       RDF_TYPE,
       { termType: 'NamedNode', value: OWL_ONTOLOGY },
@@ -105,7 +106,7 @@ function retainAuthoritativeProjectionMappings(
   const entities = Object.fromEntries(
     Object.entries(projection.entities).filter(([, resource]) =>
       hasAuthoritativeQuad(
-        quads,
+        quadKeys,
         resource.term,
         RDF_TYPE,
         { termType: 'NamedNode', value: OWL_CLASS },
@@ -118,7 +119,7 @@ function retainAuthoritativeProjectionMappings(
         return Boolean(
           relationship.term
           && hasAuthoritativeQuad(
-            quads,
+            quadKeys,
             relationship.term,
             RDF_TYPE,
             { termType: 'NamedNode', value: OWL_OBJECT_PROPERTY },
@@ -129,7 +130,7 @@ function retainAuthoritativeProjectionMappings(
         relationship.subject
         && relationship.object
         && hasAuthoritativeQuad(
-          quads,
+          quadKeys,
           relationship.subject,
           RDFS_SUBCLASS_OF,
           relationship.object,
@@ -142,6 +143,147 @@ function retainAuthoritativeProjectionMappings(
     entities,
     relationships,
   };
+}
+
+function findLiteralMapping(
+  literalIndex: ReadonlyMap<string, readonly RdfQuad[]>,
+  subject: RdfNamedNode,
+  predicate: string,
+  value: string,
+): RdfProjectionLiteral | undefined {
+  const matches = literalIndex.get(
+    JSON.stringify([subject.value, predicate, value]),
+  );
+  if (
+    matches?.length !== 1
+    || matches[0].object.termType !== 'Literal'
+  ) {
+    return undefined;
+  }
+  return {
+    object: {
+      ...matches[0].object,
+      datatype: { ...matches[0].object.datatype },
+    },
+    graph: { ...matches[0].graph },
+  };
+}
+
+function withLiteralMappings(
+  resource: RdfProjectionResource,
+  values: readonly [predicate: string, value: string][],
+  literalIndex: ReadonlyMap<string, readonly RdfQuad[]>,
+): RdfProjectionResource {
+  const literals = Object.fromEntries(
+    values.flatMap(([predicate, value]) => {
+      const mapping = findLiteralMapping(
+        literalIndex,
+        resource.term,
+        predicate,
+        value,
+      );
+      return mapping ? [[predicate, mapping]] : [];
+    }),
+  );
+  return {
+    ...resource,
+    ...(Object.keys(literals).length > 0 ? { literals } : {}),
+  };
+}
+
+function attachProjectionLiteralMappings(
+  projection: RdfProjectionMap,
+  ontology: ParsedRdfDocument['ontology'],
+  literalIndex: ReadonlyMap<string, readonly RdfQuad[]>,
+): RdfProjectionMap {
+  const entitiesById = new Map(
+    ontology.entityTypes.map((entity) => [entity.id, entity]),
+  );
+  const relationshipsById = new Map(
+    ontology.relationships.map((relationship) => [
+      relationship.id,
+      relationship,
+    ]),
+  );
+  const ontologyResource = projection.ontology
+    ? withLiteralMappings(
+        projection.ontology,
+        [
+          [RDFS_LABEL, ontology.name],
+          [RDFS_COMMENT, ontology.description],
+        ],
+        literalIndex,
+      )
+    : undefined;
+  const entities = Object.fromEntries(
+    Object.entries(projection.entities).map(([id, resource]) => {
+      const entity = entitiesById.get(id);
+      return [
+        id,
+        entity
+          ? withLiteralMappings(
+              resource,
+              [
+                [RDFS_LABEL, entity.name],
+                [RDFS_COMMENT, entity.description],
+              ],
+              literalIndex,
+            )
+          : resource,
+      ];
+    }),
+  );
+  const relationships = Object.fromEntries(
+    Object.entries(projection.relationships).map(([id, relationship]) => {
+      const visualRelationship = relationshipsById.get(id);
+      if (!relationship.term || !visualRelationship) {
+        return [id, relationship];
+      }
+      const resource = withLiteralMappings(
+        { term: relationship.term },
+        [
+          [RDFS_LABEL, visualRelationship.name],
+          [RDFS_COMMENT, visualRelationship.description ?? ''],
+        ],
+        literalIndex,
+      );
+      return [
+        id,
+        {
+          ...relationship,
+          ...(resource.literals ? { literals: resource.literals } : {}),
+        },
+      ];
+    }),
+  );
+  return {
+    ...(ontologyResource ? { ontology: ontologyResource } : {}),
+    entities,
+    relationships,
+  };
+}
+
+function indexLiteralQuads(
+  quads: readonly RdfQuad[],
+): ReadonlyMap<string, readonly RdfQuad[]> {
+  const index = new Map<string, RdfQuad[]>();
+  for (const quad of quads) {
+    if (
+      quad.subject.termType !== 'NamedNode'
+      || quad.object.termType !== 'Literal'
+    ) {
+      continue;
+    }
+    const key = JSON.stringify([
+      quad.subject.value,
+      quad.predicate.value,
+      quad.object.value,
+    ]);
+    const matches = index.get(key) ?? [];
+    matches.push(quad);
+    index.set(key, matches);
+  }
+  return index;
 }
 
 async function createReadyRdfDocument(
@@ -190,9 +332,15 @@ async function createReadyRdfDocument(
       baseIri: source.baseIri,
     })),
   ]);
-  projectionResult.projection = retainAuthoritativeProjectionMappings(
-    projectionResult.projection,
-    originalQuads,
+  const authoritativeQuadKeys = new Set(originalQuads.map(rdfQuadKey));
+  const literalIndex = indexLiteralQuads(originalQuads);
+  projectionResult.projection = attachProjectionLiteralMappings(
+    retainAuthoritativeProjectionMappings(
+      projectionResult.projection,
+      authoritativeQuadKeys,
+    ),
+    projectionResult.ontology,
+    literalIndex,
   );
   if (
     projectionResult.ontology.name === 'Imported Ontology'
@@ -355,7 +503,7 @@ export async function exportRdfDocument(
     if (
       !ontology
       || !hasAuthoritativeQuad(
-        quads,
+        new Set(quads.map(rdfQuadKey)),
         ontology,
         RDF_TYPE,
         { termType: 'NamedNode', value: OWL_ONTOLOGY },
