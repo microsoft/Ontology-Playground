@@ -1,20 +1,33 @@
-import { render, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { useAppStore } from './store/appStore';
+import { useDesignerStore } from './store/designerStore';
 import { loadCatalogueEntry } from './lib/catalogue';
+import { navigate } from './lib/router';
 import {
   createCatalogueRdfDocumentReference,
 } from './lib/rdf/document';
 import type { LoadedCatalogueEntry } from './types/catalogue';
 
-vi.mock('./hooks/useRoute', () => {
-  const route = {
+const appMocks = vi.hoisted(() => ({
+  route: {
     page: 'catalogue' as const,
     ontologyId: 'official/deep-link-test',
-  };
-  return { useRoute: () => route };
-});
+  } as {
+    page: string;
+    ontologyId?: string;
+  },
+}));
+
+vi.mock('./hooks/useRoute', () => ({
+  useRoute: () => appMocks.route,
+}));
+
+vi.mock('./lib/router', () => ({
+  navigate: vi.fn(),
+}));
 
 vi.mock('./lib/catalogue', () => ({
   loadCatalogueEntry: vi.fn(),
@@ -23,7 +36,15 @@ vi.mock('./lib/catalogue', () => ({
 vi.mock('./components', () => {
   const Stub = () => null;
   return {
-    Header: Stub,
+    Header: ({
+      onDesignerClick,
+    }: {
+      onDesignerClick: () => void;
+    }) => (
+      <button type="button" onClick={onDesignerClick}>
+        Open Designer
+      </button>
+    ),
     OntologyGraph: Stub,
     QuestPanel: Stub,
     InspectorPanel: Stub,
@@ -85,8 +106,14 @@ const linkedEntry: LoadedCatalogueEntry = {
 
 describe('catalogue deep links', () => {
   beforeEach(() => {
+    appMocks.route = {
+      page: 'catalogue',
+      ontologyId: 'official/deep-link-test',
+    };
     vi.mocked(loadCatalogueEntry).mockReset();
+    vi.mocked(navigate).mockReset();
     useAppStore.getState().resetToDefault();
+    useDesignerStore.getState().resetDraft();
   });
 
   afterEach(() => {
@@ -112,5 +139,69 @@ describe('catalogue deep links', () => {
       createCatalogueRdfDocumentReference(linkedEntry),
     );
     expect(useAppStore.getState().currentCatalogueEntry).toBe(linkedEntry);
+  });
+
+  it('does not open the Designer after newer navigation supersedes a pending source load', async () => {
+    appMocks.route = { page: 'home' };
+    let resolveDocument: ((value: null) => void) | undefined;
+    const pendingDocument = new Promise<null>((resolve) => {
+      resolveDocument = resolve;
+    });
+    const ensureCurrentRdfDocument = vi.spyOn(
+      useAppStore.getState(),
+      'ensureCurrentRdfDocument',
+    ).mockReturnValue(pendingDocument);
+    const loadDraft = vi.spyOn(
+      useDesignerStore.getState(),
+      'loadDraft',
+    );
+    const user = userEvent.setup();
+    const view = render(<App />);
+
+    await user.click(screen.getByText('Open Designer'));
+    expect(ensureCurrentRdfDocument).toHaveBeenCalledTimes(1);
+
+    appMocks.route = { page: 'learn' };
+    view.rerender(<App />);
+    await act(async () => {
+      resolveDocument?.(null);
+      await pendingDocument;
+    });
+
+    expect(loadDraft).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalledWith({ page: 'designer' });
+  });
+
+  it('does not overwrite a newer ontology while Designer entry is pending', async () => {
+    appMocks.route = { page: 'home' };
+    let resolveDocument: ((value: null) => void) | undefined;
+    const pendingDocument = new Promise<null>((resolve) => {
+      resolveDocument = resolve;
+    });
+    vi.spyOn(
+      useAppStore.getState(),
+      'ensureCurrentRdfDocument',
+    ).mockReturnValue(pendingDocument);
+    const loadDraft = vi.spyOn(
+      useDesignerStore.getState(),
+      'loadDraft',
+    );
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Open Designer'));
+    useAppStore.getState().loadOntology({
+      name: 'Newer Ontology',
+      description: '',
+      entityTypes: [],
+      relationships: [],
+    });
+    await act(async () => {
+      resolveDocument?.(null);
+      await pendingDocument;
+    });
+
+    expect(loadDraft).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalledWith({ page: 'designer' });
   });
 });

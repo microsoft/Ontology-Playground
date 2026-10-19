@@ -9,6 +9,7 @@ import {
   FabricApiError,
   type FabricOntologyResponse,
 } from '../lib/fabric';
+import { SourceFidelityNote } from './SourceFidelityNote';
 
 interface FabricExportModalProps {
   onClose: () => void;
@@ -16,8 +17,11 @@ interface FabricExportModalProps {
 
 type Step = 'credentials' | 'workspace' | 'pushing' | 'done' | 'error';
 
+const FABRIC_FIDELITY_ERROR =
+  'Fabric currently accepts only the visual projection, so pushing this source-backed document would omit preserved RDF statements. Download the complete RDF instead.';
+
 export function FabricExportModal({ onClose }: FabricExportModalProps) {
-  const { currentOntology } = useAppStore();
+  const { currentOntology, rdfDocument } = useAppStore();
 
   const [step, setStep] = useState<Step>('credentials');
   const [token, setToken] = useState('');
@@ -30,6 +34,10 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
   const [loading, setLoading] = useState(false);
 
   const handleLoadWorkspace = useCallback(async () => {
+    if (useAppStore.getState().rdfDocument) {
+      setError(FABRIC_FIDELITY_ERROR);
+      return;
+    }
     if (!token.trim() || !workspaceId.trim()) {
       setError('Both token and workspace ID are required.');
       return;
@@ -61,6 +69,11 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
   }, [token, workspaceId]);
 
   const handlePush = useCallback(async () => {
+    if (useAppStore.getState().rdfDocument) {
+      setError(FABRIC_FIDELITY_ERROR);
+      setStep('error');
+      return;
+    }
     setStep('pushing');
     setError('');
 
@@ -144,6 +157,12 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
           </span>
         </div>
 
+        {rdfDocument && (
+          <SourceFidelityNote>
+            {FABRIC_FIDELITY_ERROR}
+          </SourceFidelityNote>
+        )}
+
         {/* Error display */}
         {error && (
           <div style={{
@@ -170,6 +189,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 type="text"
                 value={workspaceId}
                 onChange={(e) => setWorkspaceId(e.target.value)}
+                disabled={Boolean(rdfDocument)}
                 placeholder="00000000-0000-0000-0000-000000000000"
                 spellCheck={false}
                 style={{
@@ -195,6 +215,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 type="password"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
+                disabled={Boolean(rdfDocument)}
                 placeholder="Paste your bearer token here"
                 spellCheck={false}
                 style={{
@@ -216,7 +237,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
             <button
               className="btn btn-primary"
               onClick={handleLoadWorkspace}
-              disabled={loading}
+              disabled={loading || Boolean(rdfDocument)}
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
             >
               {loading ? <><Loader2 size={14} className="spin" /> Connecting...</> : 'Connect to Workspace'}
@@ -301,7 +322,10 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
               <button
                 className="btn btn-primary"
                 onClick={handlePush}
-                disabled={mode === 'update' && !selectedOntologyId}
+                disabled={
+                  Boolean(rdfDocument)
+                  || (mode === 'update' && !selectedOntologyId)
+                }
                 style={{ flex: 2 }}
               >
                 {mode === 'create' ? 'Create & Push' : 'Update Definition'}

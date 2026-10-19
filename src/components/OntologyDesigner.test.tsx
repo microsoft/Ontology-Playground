@@ -6,6 +6,7 @@ import { useDesignerStore } from '../store/designerStore';
 import { useAppStore } from '../store/appStore';
 import type { CatalogueEntry } from '../types/catalogue';
 import { createImportedRdfDocument } from '../lib/rdf/document';
+import { loadCatalogueEntry } from '../lib/catalogue';
 import { OntologyDesigner } from './OntologyDesigner';
 
 vi.mock('../lib/catalogue', () => ({
@@ -132,5 +133,44 @@ describe('OntologyDesigner catalogue provenance', () => {
     expect(useAppStore.getState().currentCatalogueEntry).toBe(
       externalEntry,
     );
+  });
+
+  it('does not replace a newer draft when a deep-link load finishes late', async () => {
+    let resolveEntry: ((entry: CatalogueEntry & {
+      ontology: Ontology;
+      bindings: [];
+    }) => void) | undefined;
+    vi.mocked(loadCatalogueEntry).mockReturnValue(new Promise((resolve) => {
+      resolveEntry = resolve;
+    }));
+    const lateOntology: Ontology = {
+      name: 'Late Catalogue Ontology',
+      description: '',
+      entityTypes: [],
+      relationships: [],
+    };
+    const user = userEvent.setup();
+    render(<OntologyDesigner route={{
+      page: 'designer',
+      ontologyId: 'external/late',
+    }} />);
+
+    await user.click(screen.getByText('Replace draft'));
+    resolveEntry?.({
+      ...externalEntry,
+      id: 'external/late',
+      name: lateOntology.name,
+      ontology: lateOntology,
+      bindings: [],
+      sourceArtifactUrl: undefined,
+      sourceArtifactHash: undefined,
+      sourceArtifactByteLength: undefined,
+      sourceArtifactMediaType: undefined,
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(useDesignerStore.getState().ontology.name).toBe('Replacement');
+    expect(screen.getByText('No catalogue context')).toBeTruthy();
   });
 });

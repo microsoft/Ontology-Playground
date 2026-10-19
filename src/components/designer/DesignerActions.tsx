@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Download, AlertTriangle, CheckCircle, Upload, Github, FilePlus, Undo2, Redo2 } from 'lucide-react';
 import { useDesignerStore } from '../../store/designerStore';
 import type { ValidationError } from '../../store/designerStore';
@@ -14,6 +14,7 @@ import type { RdfExportResult } from '../../types/rdfDocument';
 import {
   exportRdfDocument,
   isRdfDocumentDirty,
+  isSameRdfDocumentRevision,
 } from '../../lib/rdf/document';
 
 interface DesignerToolbarProps {
@@ -47,6 +48,8 @@ export function DesignerToolbar({
     useState(false);
   const [lastRdfExport, setLastRdfExport] =
     useState<RdfExportResult | null>(null);
+  const exportRequestId = useRef(0);
+  const mounted = useRef(true);
   const canUndo = _past.length > 0;
   const canRedo = _future.length > 0;
 
@@ -56,6 +59,19 @@ export function DesignerToolbar({
 
   const handleExportRDF = async () => {
     const errors = validate();
+    const requestId = ++exportRequestId.current;
+    const ontologyAtStart = ontology;
+    const documentAtStart = rdfDocument;
+    const isCurrentRequest = () => {
+      const activeState = useDesignerStore.getState();
+      return mounted.current
+        && requestId === exportRequestId.current
+        && activeState.ontology === ontologyAtStart
+        && isSameRdfDocumentRevision(
+          activeState.rdfDocument,
+          documentAtStart,
+        );
+    };
     setExportError(null);
     setIsExporting(true);
     try {
@@ -64,6 +80,7 @@ export function DesignerToolbar({
             includeDerivationMetadata,
           })
         : null;
+      if (!isCurrentRequest()) return;
       const content = sourceExport
         ? sourceExport.bytes
         : serializeToRDF(ontology, [], { profile: rdfExportProfile });
@@ -83,13 +100,24 @@ export function DesignerToolbar({
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
+      if (!isCurrentRequest()) return;
       setExportError(
         error instanceof Error ? error.message : 'RDF export failed',
       );
     } finally {
-      setIsExporting(false);
+      if (isCurrentRequest()) setIsExporting(false);
     }
   };
+
+  useEffect(() => () => {
+    mounted.current = false;
+    exportRequestId.current += 1;
+  }, []);
+
+  useEffect(() => {
+    exportRequestId.current += 1;
+    setIsExporting(false);
+  }, [ontology, rdfDocument?.id, rdfDocument?.revision]);
 
   const handleLoadInPlayground = () => {
     const errors = validate();

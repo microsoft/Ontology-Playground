@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useDesignerStore } from '../store/designerStore';
 import { useAppStore, themeClass } from '../store/appStore';
@@ -57,12 +57,14 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
     useState<CatalogueEntry | null>(null);
   const [designerContextCleared, setDesignerContextCleared] =
     useState(false);
+  const routeLoadGeneration = useRef(0);
   const editingCatalogueEntry = route.ontologyId
     ? routeCatalogueEntry
     : designerContextCleared
       ? null
       : currentCatalogueEntry;
   const clearDesignerCatalogueContext = () => {
+    routeLoadGeneration.current += 1;
     setRouteCatalogueEntry(null);
     setDesignerContextCleared(true);
   };
@@ -85,20 +87,27 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
 
   // Load existing ontology into the designer when editing via /#/designer/<id>
   useEffect(() => {
+    const generation = routeLoadGeneration.current + 1;
+    routeLoadGeneration.current = generation;
     if (!route.ontologyId) {
       setRouteCatalogueEntry(null);
       setDesignerContextCleared(false);
       return;
     }
     const id = route.ontologyId;
+    const draftAtStart = useDesignerStore.getState().ontology;
     let cancelled = false;
+    const isCurrentLoad = () =>
+      !cancelled
+      && routeLoadGeneration.current === generation
+      && useDesignerStore.getState().ontology === draftAtStart;
     setRouteCatalogueEntry(null);
     setLoadError(null);
 
     void (async () => {
       try {
         const entry = await loadCatalogueEntry(id);
-        if (cancelled) return;
+        if (!isCurrentLoad()) return;
         if (isLargeOntologyGraph(entry.ontology)) {
           setLoadError(
             `${entry.name} contains ${ontologyGraphElementCount(entry.ontology).toLocaleString()} graph elements, ` +
@@ -110,11 +119,11 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
         const document = reference
           ? await ensureRdfDocumentReady(reference)
           : null;
-        if (cancelled) return;
+        if (!isCurrentLoad()) return;
         setRouteCatalogueEntry(entry);
         loadDraft(entry.ontology, document);
       } catch (error) {
-        if (!cancelled) {
+        if (isCurrentLoad()) {
           setLoadError(
             error instanceof Error
               ? error.message

@@ -224,24 +224,54 @@ export function RdfPreview({
   const [importText, setImportText] = useState('');
   const [importError, setImportError] = useState<string | null>(null);
   const [rdfOutput, setRdfOutput] = useState('');
-  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewPreparationError, setPreviewPreparationError] =
+    useState<string | null>(null);
+  const [copyError, setCopyError] = useState<string | null>(null);
   const [isLoadingRdf, setIsLoadingRdf] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const importRequestId = useRef(0);
+  const importTextRevision = useRef(0);
+  const copyRequestId = useRef(0);
+  const editBaseline = useRef<{
+    ontology: RdfPreviewProps['ontology'];
+    rdfDocument: ReadyRdfDocument | null;
+  } | null>(null);
   const loadDraft = useDesignerStore((s) => s.loadDraft);
 
   useEffect(() => () => {
     importRequestId.current += 1;
+    copyRequestId.current += 1;
   }, []);
 
   useEffect(() => {
     importRequestId.current += 1;
+    copyRequestId.current += 1;
     setIsImporting(false);
-  }, [rdfDocument?.id, rdfDocument?.revision]);
+    setCopied(false);
+    setCopyError(null);
+    if (
+      importMode
+      && editBaseline.current
+      && (
+        editBaseline.current.ontology !== ontology
+        || editBaseline.current.rdfDocument !== rdfDocument
+      )
+    ) {
+      setImportError(
+        'The Designer draft changed after this RDF editor was opened. Close and reopen it before loading RDF.',
+      );
+    }
+  }, [
+    importMode,
+    ontology,
+    rdfDocument,
+    rdfDocument?.id,
+    rdfDocument?.revision,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
-    setPreviewError(null);
+    setPreviewPreparationError(null);
     if (!rdfDocument) {
       try {
         setRdfOutput(
@@ -261,6 +291,7 @@ export function RdfPreview({
       };
     }
 
+    setRdfOutput('');
     setIsLoadingRdf(true);
     void exportRdfDocument(rdfDocument)
       .then((result) => {
@@ -268,7 +299,7 @@ export function RdfPreview({
       })
       .catch((error) => {
         if (!cancelled) {
-          setPreviewError(
+          setPreviewPreparationError(
             error instanceof Error
               ? error.message
               : 'Failed to prepare complete RDF',
@@ -288,34 +319,63 @@ export function RdfPreview({
   const highlightedRdf = useMemo(() => highlightRdf(rdfOutput, hlTheme), [rdfOutput, hlTheme]);
 
   const handleCopy = async () => {
+    if (
+      isLoadingRdf
+      || previewPreparationError
+      || !rdfOutput
+    ) {
+      return;
+    }
+    const requestId = ++copyRequestId.current;
+    setCopyError(null);
     try {
       await navigator.clipboard.writeText(rdfOutput);
+      if (requestId !== copyRequestId.current) return;
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => {
+        if (requestId === copyRequestId.current) setCopied(false);
+      }, 2000);
     } catch (error) {
-      setPreviewError(
+      if (requestId !== copyRequestId.current) return;
+      setCopyError(
         error instanceof Error ? error.message : 'Failed to copy RDF',
       );
     }
   };
 
   const handleImport = async () => {
-    const trimmed = importText.trim();
+    const submittedText = importText;
+    const submittedTextRevision = importTextRevision.current;
+    const trimmed = submittedText.trim();
     if (!trimmed) {
       setImportError('Paste RDF/XML content first');
       return;
     }
     const requestId = ++importRequestId.current;
+    const startingDraft = useDesignerStore.getState();
+    const baseline = editBaseline.current;
+    if (
+      !baseline
+      || baseline.ontology !== startingDraft.ontology
+      || baseline.rdfDocument !== startingDraft.rdfDocument
+    ) {
+      setImportError(
+        'The Designer draft changed after this RDF editor was opened. Close and reopen it before loading RDF.',
+      );
+      setIsImporting(false);
+      return;
+    }
     setIsImporting(true);
     try {
-      if (rdfDocument && importText === rdfOutput) {
+      if (rdfDocument && submittedText === rdfOutput) {
+        editBaseline.current = null;
         setImportMode(false);
         setImportText('');
         setImportError(null);
         onImported(false);
         return;
       }
-      const normalizedText = importText.replace(
+      const normalizedText = submittedText.replace(
         /(<\?xml\b[^>]*\bencoding\s*=\s*["'])[^"']+(["'][^>]*\?>)/i,
         '$1UTF-8$2',
       );
@@ -327,6 +387,19 @@ export function RdfPreview({
         },
       );
       if (requestId !== importRequestId.current) return;
+      if (submittedTextRevision !== importTextRevision.current) {
+        setImportError(
+          'The RDF text changed while it was loading. Review the current text and load it again.',
+        );
+        return;
+      }
+      const activeDraft = useDesignerStore.getState();
+      if (
+        activeDraft.ontology !== startingDraft.ontology
+        || activeDraft.rdfDocument !== startingDraft.rdfDocument
+      ) {
+        return;
+      }
       if (isLargeOntologyGraph(parsed.ontology)) {
         setImportError(
           `This ontology contains ${ontologyGraphElementCount(parsed.ontology).toLocaleString()} graph elements, ` +
@@ -335,6 +408,7 @@ export function RdfPreview({
         return;
       }
       loadDraft(parsed.ontology, parsed.document);
+      editBaseline.current = null;
       setImportMode(false);
       setImportText('');
       setImportError(null);
@@ -354,6 +428,7 @@ export function RdfPreview({
 
   const handleCancel = () => {
     importRequestId.current += 1;
+    editBaseline.current = null;
     setIsImporting(false);
     setImportMode(false);
     setImportText('');
@@ -368,7 +443,18 @@ export function RdfPreview({
             <button
               className="designer-add-btn small"
               onClick={() => void handleImport()}
-              disabled={isImporting}
+              disabled={
+                isImporting
+                || isLoadingRdf
+                || Boolean(previewPreparationError)
+                || (
+                  Boolean(editBaseline.current)
+                  && (
+                    editBaseline.current?.ontology !== ontology
+                    || editBaseline.current?.rdfDocument !== rdfDocument
+                  )
+                )
+              }
             >
               {isImporting ? 'Loading…' : 'Load into Designer'}
             </button>
@@ -380,10 +466,18 @@ export function RdfPreview({
           <>
             <button
               className="designer-add-btn small"
-              disabled={isLoadingRdf}
+              disabled={
+                isLoadingRdf
+                || Boolean(previewPreparationError)
+                || !rdfOutput
+              }
               onClick={() => {
+                editBaseline.current = { ontology, rdfDocument };
+                importTextRevision.current += 1;
                 setImportMode(true);
                 setImportText(rdfOutput);
+                setImportError(null);
+                setCopyError(null);
               }}
             >
               Edit RDF
@@ -391,24 +485,34 @@ export function RdfPreview({
             <button
               className="designer-add-btn small"
               onClick={() => void handleCopy()}
-              disabled={isLoadingRdf}
+              disabled={
+                isLoadingRdf
+                || Boolean(previewPreparationError)
+                || !rdfOutput
+              }
             >
               {copied ? 'Copied!' : 'Copy RDF'}
             </button>
           </>
         )}
       </div>
-      {(importError || previewError) && (
+      {(importError || previewPreparationError || copyError) && (
         <div role="alert" className="designer-import-error">
-          {importError ?? previewError}
+          {importError ?? previewPreparationError ?? copyError}
         </div>
       )}
       {importMode ? (
         <textarea
           className="designer-rdf-source designer-rdf-textarea"
           value={importText}
-          onChange={(e) => { setImportText(e.target.value); setImportError(null); }}
+          onChange={(e) => {
+            importTextRevision.current += 1;
+            setImportText(e.target.value);
+            setImportError(null);
+          }}
           placeholder="Paste or edit RDF/XML content here…"
+          disabled={isImporting}
+          aria-busy={isImporting}
           autoFocus
           spellCheck={false}
         />

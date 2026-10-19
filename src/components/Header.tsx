@@ -4,7 +4,10 @@ import { useRoute } from '../hooks/useRoute';
 import { routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
-import { exportRdfDocument } from '../lib/rdf/document';
+import {
+  exportRdfDocument,
+  isSameRdfDocumentRevision,
+} from '../lib/rdf/document';
 import { Palette, Check, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info } from 'lucide-react';
 
 interface HeaderProps {
@@ -36,6 +39,8 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
   const menuRef = useRef<HTMLDivElement>(null);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const themeMenuRef = useRef<HTMLDivElement>(null);
+  const shareRequestId = useRef(0);
+  const mounted = useRef(true);
 
   const ontologyDisplayName = currentOntology.name || 'Untitled Ontology';
 
@@ -43,6 +48,19 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
 
   const handleShare = async () => {
     if (shareStatus === 'copying') return;
+    const requestId = ++shareRequestId.current;
+    const ontologyAtStart = currentOntology;
+    const documentAtStart = rdfDocument;
+    const isCurrentRequest = () => {
+      const activeState = useAppStore.getState();
+      return mounted.current
+        && requestId === shareRequestId.current
+        && activeState.currentOntology === ontologyAtStart
+        && isSameRdfDocumentRevision(
+          activeState.rdfDocument,
+          documentAtStart,
+        );
+    };
     setShareError(null);
     try {
 
@@ -50,14 +68,18 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         // Catalogue ontology — use the short deep link
         const url = `${window.location.origin}${window.location.pathname}#/catalogue/${shareableId}`;
         await navigator.clipboard.writeText(url);
+        if (!isCurrentRequest()) return;
         setShareStatus('copied');
-        setTimeout(() => setShareStatus('idle'), 2000);
+        setTimeout(() => {
+          if (isCurrentRequest()) setShareStatus('idle');
+        }, 2000);
         return;
       }
 
       if (rdfDocument) {
         setShareStatus('copying');
         const result = await exportRdfDocument(rdfDocument);
+        if (!isCurrentRequest()) return;
         const blob = new Blob(
           [result.bytes.slice().buffer],
           { type: result.mediaType },
@@ -71,19 +93,25 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
         setShareStatus('downloaded');
-        setTimeout(() => setShareStatus('idle'), 3000);
+        setTimeout(() => {
+          if (isCurrentRequest()) setShareStatus('idle');
+        }, 3000);
         return;
       }
 
       // Custom ontology — compress and encode into a share URL
       setShareStatus('copying');
       const encoded = await encodeSharePayload(currentOntology, dataBindings);
+      if (!isCurrentRequest()) return;
       if (encoded) {
         const url = `${window.location.origin}${window.location.pathname}#/share/${encoded}`;
         await navigator.clipboard.writeText(url);
+        if (!isCurrentRequest()) return;
         history.replaceState(null, '', routeToHash({ page: 'share', data: encoded }));
         setShareStatus('copied');
-        setTimeout(() => setShareStatus('idle'), 2000);
+        setTimeout(() => {
+          if (isCurrentRequest()) setShareStatus('idle');
+        }, 2000);
       } else {
         // Too large for URL — download the RDF file instead
         const content = serializeToRDF(currentOntology, dataBindings);
@@ -97,15 +125,29 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
         setShareStatus('downloaded');
-        setTimeout(() => setShareStatus('idle'), 3000);
+        setTimeout(() => {
+          if (isCurrentRequest()) setShareStatus('idle');
+        }, 3000);
       }
     } catch (error) {
+      if (!isCurrentRequest()) return;
       setShareStatus('idle');
       setShareError(
         error instanceof Error ? error.message : 'Unable to share RDF',
       );
     }
   };
+
+  useEffect(() => () => {
+    mounted.current = false;
+    shareRequestId.current += 1;
+  }, []);
+
+  useEffect(() => {
+    shareRequestId.current += 1;
+    setShareStatus('idle');
+    setShareError(null);
+  }, [currentOntology, rdfDocument?.id, rdfDocument?.revision]);
 
   const shareLabel = shareStatus === 'copied' ? 'Copied!' : shareStatus === 'downloaded' ? 'Downloaded RDF' : shareStatus === 'copying' ? 'Encoding…' : 'Share';
 
@@ -254,7 +296,13 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
               <span className="stat-value">{earnedBadges.length}</span>
               <span>badges</span>
             </div>
-            <button className="mobile-menu-item" onClick={menuAction(handleShare)}>
+            <button
+              className="mobile-menu-item"
+              onClick={() => {
+                setMenuOpen(false);
+                void handleShare();
+              }}
+            >
               <Share2 size={18} /> {shareLabel}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onSummaryClick)}>

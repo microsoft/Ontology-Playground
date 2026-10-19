@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ImportExportModal } from './ImportExportModal';
 import { useAppStore } from '../store/appStore';
@@ -8,8 +14,10 @@ import {
   createCatalogueRdfDocumentReference,
   createImportedRdfDocument,
 } from '../lib/rdf/document';
+import * as rdfDocumentModule from '../lib/rdf/document';
 import type { Ontology } from '../data/ontology';
 import type { CatalogueEntry } from '../types/catalogue';
+import type { RdfExportResult } from '../types/rdfDocument';
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
@@ -89,10 +97,19 @@ function createRdfFile(rdfContent: string, fileName = 'test-ontology.rdf'): File
   return new File([rdfContent], fileName, { type: 'application/rdf+xml' });
 }
 
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
+
 describe('ImportExportModal integration', () => {
   const onClose = vi.fn();
 
   beforeEach(() => {
+    vi.restoreAllMocks();
     onClose.mockClear();
     // Reset the store to default before each test
     useAppStore.getState().resetToDefault();
@@ -138,6 +155,39 @@ describe('ImportExportModal integration', () => {
     );
   });
 
+  it('blocks projection-only Fabric push for a source-backed document', async () => {
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(serializeToRDF(testOntology, [])),
+      {
+        name: 'fabric-source.rdf',
+        baseIri: 'https://example.com/fabric-source.rdf',
+      },
+    );
+    useAppStore.getState().loadOntology(
+      loaded.ontology,
+      [],
+      null,
+      loaded.document,
+    );
+    const onFabricPush = vi.fn();
+
+    render(
+      <ImportExportModal
+        onClose={onClose}
+        onFabricPush={onFabricPush}
+      />,
+    );
+
+    const button = screen.getByRole('button', {
+      name: /Push to Microsoft Fabric/,
+    });
+    expect(button).toBeDisabled();
+    expect(screen.getByText(/Fabric currently accepts only the visual projection/))
+      .toBeTruthy();
+    fireEvent.click(button);
+    expect(onFabricPush).not.toHaveBeenCalled();
+  });
+
   it('imports a valid RDF file and updates the store', async () => {
     const rdfContent = serializeToRDF(testOntology);
     const file = createRdfFile(rdfContent);
@@ -163,6 +213,185 @@ describe('ImportExportModal integration', () => {
 
     // Success message should be shown
     expect(screen.getByText('Ontology loaded successfully!')).toBeTruthy();
+  });
+
+  it('keeps the newest import when an older parse finishes later', async () => {
+    const olderOntology = { ...testOntology, name: 'Older ontology' };
+    const newerOntology = { ...testOntology, name: 'Newer ontology' };
+    const olderSource = serializeToRDF(olderOntology);
+    const newerSource = serializeToRDF(newerOntology);
+    const older = await createImportedRdfDocument(
+      new TextEncoder().encode(olderSource),
+      { name: 'older.rdf' },
+    );
+    const newer = await createImportedRdfDocument(
+      new TextEncoder().encode(newerSource),
+      { name: 'newer.rdf' },
+    );
+    const olderParse = deferred<typeof older>();
+    const newerParse = deferred<typeof newer>();
+    vi.spyOn(rdfDocumentModule, 'createImportedRdfDocument')
+      .mockImplementation((_bytes, source) =>
+        source.name === 'older.rdf'
+          ? olderParse.promise
+          : newerParse.promise);
+    render(<ImportExportModal onClose={onClose} />);
+    const input = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+
+    fireEvent.change(input, {
+      target: { files: [createRdfFile(olderSource, 'older.rdf')] },
+    });
+    await waitFor(() => {
+      expect(rdfDocumentModule.createImportedRdfDocument)
+        .toHaveBeenCalledTimes(1);
+    });
+    fireEvent.change(input, {
+      target: { files: [createRdfFile(newerSource, 'newer.rdf')] },
+    });
+    await waitFor(() => {
+      expect(rdfDocumentModule.createImportedRdfDocument)
+        .toHaveBeenCalledTimes(2);
+    });
+
+    await act(async () => {
+      newerParse.resolve(newer);
+      await newerParse.promise;
+    });
+    expect(useAppStore.getState().currentOntology.name)
+      .toBe('Newer ontology');
+    await act(async () => {
+      olderParse.resolve(older);
+      await olderParse.promise;
+    });
+    expect(useAppStore.getState().currentOntology.name)
+      .toBe('Newer ontology');
+    expect(useAppStore.getState().rdfDocument?.source.name)
+      .toBe('newer.rdf');
+  });
+
+  it('does not apply a pending import after reset, dismissal, unmount, or external replacement', async () => {
+    const source = serializeToRDF({
+      ...testOntology,
+      name: 'Pending ontology',
+    });
+    const pendingResult = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      { name: 'pending.rdf' },
+    );
+
+    for (const invalidate of [
+      'reset',
+      'dismiss',
+      'unmount',
+      'external',
+    ] as const) {
+      const pendingParse = deferred<typeof pendingResult>();
+      vi.spyOn(rdfDocumentModule, 'createImportedRdfDocument')
+        .mockImplementationOnce(() => pendingParse.promise);
+      const rendered = render(<ImportExportModal onClose={onClose} />);
+      const input = document.querySelector(
+        'input[type="file"]',
+      ) as HTMLInputElement;
+      fireEvent.change(input, {
+        target: { files: [createRdfFile(source, 'pending.rdf')] },
+      });
+      await waitFor(() => {
+        expect(rdfDocumentModule.createImportedRdfDocument)
+          .toHaveBeenCalled();
+      });
+
+      if (invalidate === 'reset') {
+        fireEvent.click(screen.getByText('Reset to Default'));
+      } else if (invalidate === 'dismiss') {
+        fireEvent.click(screen.getByText('Done'));
+      } else if (invalidate === 'external') {
+        act(() => {
+          useAppStore.getState().loadOntology({
+            ...testOntology,
+            name: 'External replacement',
+          });
+        });
+      } else {
+        rendered.unmount();
+      }
+      await act(async () => {
+        pendingParse.resolve(pendingResult);
+        await pendingParse.promise;
+      });
+
+      expect(useAppStore.getState().currentOntology.name)
+        .toBe(
+          invalidate === 'external'
+            ? 'External replacement'
+            : 'Fourth Coffee',
+        );
+      rendered.unmount();
+      vi.restoreAllMocks();
+      useAppStore.getState().resetToDefault();
+    }
+  });
+
+  it('does not let an old reset timeout cancel a newer pending import', async () => {
+    const source = serializeToRDF({
+      ...testOntology,
+      name: 'Newer ontology',
+    });
+    const parsed = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      { name: 'newer.rdf' },
+    );
+    const pendingParse = deferred<typeof parsed>();
+    vi.spyOn(rdfDocumentModule, 'createImportedRdfDocument')
+      .mockImplementationOnce(() => pendingParse.promise);
+    const nativeSetTimeout = window.setTimeout.bind(window);
+    const inertTimer = nativeSetTimeout(() => {}, 60_000);
+    let resetClose: (() => void) | undefined;
+    const timeoutSpy = vi.spyOn(window, 'setTimeout')
+      .mockImplementation((handler, timeout) => {
+        if (
+          timeout === 1_000
+          && typeof handler === 'function'
+          && !resetClose
+        ) {
+          resetClose = handler;
+          return inertTimer;
+        }
+        if (timeout === 1_500) return inertTimer;
+        return nativeSetTimeout(handler, timeout);
+      });
+
+    try {
+      render(<ImportExportModal onClose={onClose} />);
+      fireEvent.click(screen.getByText('Reset to Default'));
+      expect(resetClose).toBeDefined();
+      const input = document.querySelector(
+        'input[type="file"]',
+      ) as HTMLInputElement;
+      fireEvent.change(input, {
+        target: { files: [createRdfFile(source, 'newer.rdf')] },
+      });
+      await waitFor(() => {
+        expect(rdfDocumentModule.createImportedRdfDocument)
+          .toHaveBeenCalledTimes(1);
+      });
+
+      act(() => resetClose?.());
+      await act(async () => {
+        pendingParse.resolve(parsed);
+        await pendingParse.promise;
+      });
+
+      expect(onClose).not.toHaveBeenCalled();
+      expect(useAppStore.getState().currentOntology.name)
+        .toBe('Newer ontology');
+      expect(useAppStore.getState().rdfDocument?.source.name)
+        .toBe('newer.rdf');
+    } finally {
+      window.clearTimeout(inertTimer);
+      timeoutSpy.mockRestore();
+    }
   });
 
   it('shows an error for malformed RDF', async () => {
@@ -247,6 +476,53 @@ describe('ImportExportModal integration', () => {
     });
   });
 
+  it('rejects an oversized file before FileReader allocates its contents', () => {
+    const read = vi.spyOn(FileReader.prototype, 'readAsArrayBuffer');
+    const file = createRdfFile('<rdf:RDF/>', 'oversized.rdf');
+    Object.defineProperty(file, 'size', {
+      configurable: true,
+      value: (8 * 1024 * 1024) + 1,
+    });
+    render(<ImportExportModal onClose={onClose} />);
+
+    const fileInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    expect(screen.getByText(/between 1 byte and 8,388,608 bytes/))
+      .toBeTruthy();
+    expect(read).not.toHaveBeenCalled();
+  });
+
+  it('aborts an obsolete file read on replacement and unmount', () => {
+    const read = vi.spyOn(
+      FileReader.prototype,
+      'readAsArrayBuffer',
+    ).mockImplementation(() => {});
+    const abort = vi.spyOn(
+      FileReader.prototype,
+      'abort',
+    ).mockImplementation(() => {});
+    const rendered = render(<ImportExportModal onClose={onClose} />);
+    const fileInput = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+
+    fireEvent.change(fileInput, {
+      target: { files: [createRdfFile('<rdf:RDF/>', 'first.rdf')] },
+    });
+    fireEvent.change(fileInput, {
+      target: { files: [createRdfFile('<rdf:RDF/>', 'second.rdf')] },
+    });
+
+    expect(read).toHaveBeenCalledTimes(2);
+    expect(abort).toHaveBeenCalledTimes(1);
+
+    rendered.unmount();
+    expect(abort).toHaveBeenCalledTimes(2);
+  });
+
   it('imports data bindings from RDF', async () => {
     const bindings = [
       { entityTypeId: 'widget', source: 'WidgetSource', table: 'WidgetTable', columnMappings: { widget_id: 'WidgetID' } },
@@ -325,5 +601,45 @@ describe('ImportExportModal integration', () => {
     );
     expect(click).toHaveBeenCalledTimes(1);
     click.mockRestore();
+  });
+
+  it('does not download an async export after the active document changes', async () => {
+    const parsed = await createImportedRdfDocument(
+      new TextEncoder().encode(serializeToRDF(testOntology, [])),
+      { name: 'stale.rdf' },
+    );
+    useAppStore.getState().loadOntology(
+      parsed.ontology,
+      parsed.bindings,
+      null,
+      parsed.document,
+    );
+    const pending = deferred<RdfExportResult>();
+    vi.spyOn(rdfDocumentModule, 'exportRdfDocument')
+      .mockReturnValueOnce(pending.promise);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    render(<ImportExportModal onClose={onClose} />);
+
+    await userEvent.click(screen.getByRole('button', {
+      name: 'Download complete RDF',
+    }));
+    act(() => useAppStore.getState().resetToDefault());
+    pending.resolve({
+      kind: 'original',
+      bytes: new TextEncoder().encode('<rdf:RDF/>'),
+      mediaType: 'application/rdf+xml',
+      sourceHash: parsed.document.source.hash,
+      sourceTripleCount: parsed.document.originalQuads.length,
+      exportedTripleCount: parsed.document.originalQuads.length,
+      patchCount: 0,
+      derivationMetadataIncluded: false,
+    });
+
+    await act(async () => {
+      await pending.promise;
+      await Promise.resolve();
+    });
+    expect(click).not.toHaveBeenCalled();
   });
 });

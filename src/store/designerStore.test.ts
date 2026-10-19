@@ -83,6 +83,50 @@ describe('source-backed RDF editing', () => {
         .toBe('Space');
     });
 
+    it('rejects XML-forbidden literal edits atomically and accepts supplementary characters', async () => {
+      for (const invalidName of ['Bad\u0001Value', 'Bad\uD800Value']) {
+        const loaded = await createImportedRdfDocument(
+          new TextEncoder().encode(rdf),
+          { name: 'invalid-literal.rdf' },
+        );
+        useDesignerStore.getState().loadDraft(
+          loaded.ontology,
+          loaded.document,
+        );
+        const before = useDesignerStore.getState();
+
+        useDesignerStore.getState().updateEntity(
+          'room',
+          { name: invalidName },
+        );
+
+        const after = useDesignerStore.getState();
+        expect(after.ontology).toBe(before.ontology);
+        expect(after.rdfDocument).toBe(before.rdfDocument);
+        expect(after.rdfDocument?.revision).toBe(0);
+        expect(after._past).toHaveLength(0);
+        expect(after.mutationError).toMatch(/XML-forbidden character/);
+      }
+
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(rdf),
+        { name: 'valid-literal.rdf' },
+      );
+      useDesignerStore.getState().loadDraft(
+        loaded.ontology,
+        loaded.document,
+      );
+      useDesignerStore.getState().updateEntity(
+        'room',
+        { name: 'Room 🧪' },
+      );
+
+      expect(useDesignerStore.getState().ontology.entityTypes[0].name)
+        .toBe('Room 🧪');
+      expect(useDesignerStore.getState().rdfDocument?.revision).toBe(1);
+      expect(useDesignerStore.getState().mutationError).toBeNull();
+    });
+
     it('blocks unsupported structural edits without changing the projection', async () => {
       const loaded = await createImportedRdfDocument(
         new TextEncoder().encode(rdf),

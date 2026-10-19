@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { 
   Header, 
@@ -46,6 +46,8 @@ const NLBuilderModal = AI_BUILDER_ENABLED
 
 function App() {
   const route = useRoute();
+  const openDesignerGeneration = useRef(0);
+  const routeIdentity = JSON.stringify(route);
 
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTour, setShowTour] = useState(() => !isTourDismissed());
@@ -60,6 +62,13 @@ function App() {
   const [mobilePanel, setMobilePanel] = useState<'graph' | 'quests' | 'inspector' | 'query'>('graph');
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const { theme, setTheme, earnedBadges, loadOntology } = useAppStore();
+
+  useEffect(() => {
+    openDesignerGeneration.current += 1;
+    return () => {
+      openDesignerGeneration.current += 1;
+    };
+  }, [routeIdentity]);
 
   // Show toast when a new badge is earned
   useEffect(() => {
@@ -147,12 +156,21 @@ function App() {
   }, []);
 
   const openDesigner = useCallback(async () => {
-    // Load the current playground ontology into the designer
+    const generation = openDesignerGeneration.current + 1;
+    openDesignerGeneration.current = generation;
     const state = useAppStore.getState();
+    const ontologyAtStart = state.currentOntology;
+    const documentAtStart = state.rdfDocument
+      ? {
+          id: state.rdfDocument.id,
+          revision: state.rdfDocument.revision,
+        }
+      : null;
     let rdfDocument = null;
     try {
       rdfDocument = await state.ensureCurrentRdfDocument();
     } catch (error) {
+      if (openDesignerGeneration.current !== generation) return;
       setToast({
         message: error instanceof Error
           ? error.message
@@ -161,8 +179,23 @@ function App() {
       });
       return;
     }
+    const current = useAppStore.getState();
+    const currentDocumentIdentity = current.rdfDocument
+      ? {
+          id: current.rdfDocument.id,
+          revision: current.rdfDocument.revision,
+        }
+      : null;
+    if (
+      openDesignerGeneration.current !== generation
+      || current.currentOntology !== ontologyAtStart
+      || currentDocumentIdentity?.id !== documentAtStart?.id
+      || currentDocumentIdentity?.revision !== documentAtStart?.revision
+    ) {
+      return;
+    }
     useDesignerStore.getState().loadDraft(
-      state.currentOntology,
+      current.currentOntology,
       rdfDocument,
     );
     setShowWelcome(false);
