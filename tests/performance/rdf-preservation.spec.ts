@@ -5,6 +5,20 @@ const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 const RDFS = 'http://www.w3.org/2000/01/rdf-schema#';
 const OWL = 'http://www.w3.org/2002/07/owl#';
 
+function deploymentAssetPath(relativePath: string): string {
+  const configuredBase = process.env.VITE_BASE_PATH
+    || (
+      process.env.GITHUB_ACTIONS === 'true'
+      && process.env.GITHUB_REPOSITORY
+        ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/`
+        : '/'
+    );
+  const base = configuredBase.endsWith('/')
+    ? configuredBase
+    : `${configuredBase}/`;
+  return `${base}${relativePath.replace(/^\/+/, '')}`;
+}
+
 function utf16LeBytes(value: string): Buffer {
   return Buffer.concat([
     Buffer.from([0xff, 0xfe]),
@@ -18,7 +32,7 @@ function normalizeNewlines(value: string): string {
 
 function embedPage(
   sourceUrl: string,
-  scriptUrl = '/embed/ontology-embed.js',
+  scriptUrl = deploymentAssetPath('embed/ontology-embed.js'),
 ): string {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -313,8 +327,10 @@ test('native embed renders the pinned large complete source', async ({
     route.fulfill({
       contentType: 'text/html',
       body: embedPage(
-        '/catalogue-sources/external/brick-schema/brick/'
+        deploymentAssetPath(
+          'catalogue-sources/external/brick-schema/brick/'
         + '655939e9b655b7bb890e47c2015d046f41cb2dc6f314895490ebe6c14c5fc423.rdf',
+        ),
       ),
     }));
 

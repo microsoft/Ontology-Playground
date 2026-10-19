@@ -218,6 +218,11 @@ finding_disposition:
     root_cause: "The CI build step invoked only the app Vite build, which clears build/ and never runs the repository's build:embed script."
     resolution: "CI now runs the existing embed build immediately after the app build, before native embed performance checks."
     evidence: "The prior CI run passed all 937 tests and app build, then four native embed checks failed because build/embed/ontology-embed.js was absent."
+  - finding: "Native embed fixtures ignored the GitHub Pages base path"
+    status: "confirmed_fixed"
+    root_cause: "Same-origin fixture pages hard-coded root-relative embed and catalogue-source URLs while GitHub Actions builds and previews the app under /Ontology-Playground/."
+    resolution: "Performance fixtures derive deployment asset paths from VITE_BASE_PATH or the same GitHub repository environment used by the Vite config."
+    evidence: "Cross-origin embed execution already passed; the remaining same-origin failures all waited on root-relative assets outside the configured preview base."
 
 files_changed:
   T004:
@@ -315,20 +320,22 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 495.92 kB / 137.81 kB gzip; self-contained embed 1,260.41 kB / 378.60 kB gzip"
+    result: "passed; GitHub-base RDF-bearing app chunk 496.06 kB / 137.82 kB gzip; self-contained embed 1,260.41 kB / 378.60 kB gzip"
   - command: "CI=true npx -y node@20 ./node_modules/vitest/vitest.mjs run"
     result: "60 files / 937 tests passed, including the explicit cross-realm regression and catalogue compilation"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
     result: "8 workflows passed"
+  - command: "GITHUB_ACTIONS=true GITHUB_REPOSITORY=microsoft/Ontology-Playground npx vite build && npm run build:embed && GITHUB_ACTIONS=true GITHUB_REPOSITORY=microsoft/Ontology-Playground npm run test:performance"
+    result: "GitHub Pages base build passed and all 10 Chromium checks passed"
   - command: "git diff --check"
     result: "passed"
 
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 29
+  ahead_origin_main: 30
   staged_files: 0
   committed_by_batch: true
   publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
@@ -336,7 +343,7 @@ branch_state:
 independent_review:
   scope: "origin/main...ce2d1f0, before the Node 20 CI portability correction"
   initial_findings: 5
-  follow_up_findings: 31
+  follow_up_findings: 32
   final_disposition: "clean at ce2d1f0; pending exact-head review after CI correction"
   reviewer_reused: true
 
