@@ -248,36 +248,49 @@ function resolveProjectionIri(
   };
 }
 
-function hasNestedXmlBase(
+function elementBaseIri(
   element: Element,
   root: Element,
-): boolean {
+  rootBaseIri: string | undefined,
+): string | undefined {
+  const nestedBases: string[] = [];
   let current: Element | null = element;
   while (current && current !== root) {
-    if (current.hasAttributeNS(XML_NS, 'base')) return true;
+    const xmlBase = current.getAttributeNS(XML_NS, 'base');
+    if (xmlBase !== null) nestedBases.push(xmlBase);
     current = current.parentElement;
   }
-  return false;
+  let baseIri = rootBaseIri;
+  for (let index = nestedBases.length - 1; index >= 0; index -= 1) {
+    baseIri = resolveRdfIri(nestedBases[index], baseIri);
+  }
+  return baseIri;
 }
 
-function childResourceHasXmlBase(
+function getResolvedChildResource(
   parent: Element,
   localName: string,
-  namespace: string,
-  resource: string,
-): boolean {
+  namespace: string | undefined,
+  root: Element,
+  rootBaseIri: string | undefined,
+): string | null {
   for (let index = 0; index < parent.children.length; index += 1) {
     const child = parent.children[index];
+    const childLocal = child.localName || child.tagName.split(':').pop();
     if (
-      child.localName === localName
-      && child.namespaceURI === namespace
-      && child.getAttributeNS(RDF_NS, 'resource') === resource
-      && child.hasAttributeNS(XML_NS, 'base')
-    ) {
-      return true;
+      childLocal !== localName
+      || (namespace !== undefined && child.namespaceURI !== namespace)
+      || isInsideXmlLiteralProperty(child, parent)
+    ) continue;
+    const resource = child.getAttributeNS(RDF_NS, 'resource');
+    if (resource !== null) {
+      return resolveRdfIri(
+        resource,
+        elementBaseIri(child, root, rootBaseIri),
+      );
     }
   }
-  return false;
+  return null;
 }
 
 /**
@@ -373,8 +386,10 @@ interface ProjectionNodeIdentity {
 
 function getProjectionNodeIdentity(
   element: Element,
-  baseIri: string | undefined,
+  root: Element,
+  rootBaseIri: string | undefined,
 ): ProjectionNodeIdentity | null {
+  const baseIri = elementBaseIri(element, root, rootBaseIri);
   const about = getRdfAttribute(element, 'about');
   if (about !== null) {
     return {
@@ -408,13 +423,6 @@ function getProjectionNodeIdentity(
 
 function projectionIdentityKey(identity: ProjectionNodeIdentity): string {
   return identity.term?.value ?? identity.reference;
-}
-
-function resolveProjectionReference(
-  value: string | null,
-  baseIri: string | undefined,
-): string | null {
-  return value === null ? null : resolveRdfIri(value, baseIri);
 }
 
 function getDirectChild(parent: Element, localName: string): Element | null {
@@ -666,12 +674,10 @@ export function parseRDF(
     const ontEl = ontologyEls[0];
     const ontologyIdentity = getProjectionNodeIdentity(
       ontEl,
+      root,
       effectiveBaseIri,
     );
-    if (
-      ontologyIdentity?.term
-      && !hasNestedXmlBase(ontEl, root)
-    ) {
+    if (ontologyIdentity?.term) {
       projection.ontology = {
         term: ontologyIdentity.term,
       };
@@ -746,7 +752,7 @@ export function parseRDF(
   const objectPropertyUris = new Set(
     objPropEls
       .map((element) =>
-        getProjectionNodeIdentity(element, effectiveBaseIri))
+        getProjectionNodeIdentity(element, root, effectiveBaseIri))
       .filter((identity): identity is ProjectionNodeIdentity =>
         identity !== null)
       .map(projectionIdentityKey)
@@ -758,15 +764,21 @@ export function parseRDF(
   const identifierPropertiesByClass = new Map<string, Set<string>>();
 
   for (const el of classEls) {
-    const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
+    const identity = getProjectionNodeIdentity(
+      el,
+      root,
+      effectiveBaseIri,
+    );
     if (!identity) continue;
     const about = projectionIdentityKey(identity);
 
     const isStatementAssociation = getChildResources(el, 'subClassOf')
       .includes(`${RDF_NS}Statement`);
-    const relatedRelationship = getChildResource(el, 'relation');
-    const relatedRelationshipKey = resolveProjectionReference(
-      relatedRelationship,
+    const relatedRelationshipKey = getResolvedChildResource(
+      el,
+      'relation',
+      undefined,
+      root,
       effectiveBaseIri,
     );
     if (
@@ -796,7 +808,11 @@ export function parseRDF(
 
   for (let i = 0; i < classEls.length; i++) {
     const el = classEls[i];
-    const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
+    const identity = getProjectionNodeIdentity(
+      el,
+      root,
+      effectiveBaseIri,
+    );
     if (
       !identity
       || associationRelationshipByClass.has(projectionIdentityKey(identity))
@@ -828,7 +844,7 @@ export function parseRDF(
       color,
       properties: [],
     });
-    if (identity.term && !hasNestedXmlBase(el, root)) {
+    if (identity.term) {
       projection.entities[entityId] = {
         term: identity.term,
       };
@@ -846,15 +862,22 @@ export function parseRDF(
 
   for (let i = 0; i < dtPropEls.length; i++) {
     const el = dtPropEls[i];
-    const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
+    const identity = getProjectionNodeIdentity(
+      el,
+      root,
+      effectiveBaseIri,
+    );
     if (!identity) continue;
     const about = projectionIdentityKey(identity);
 
     const comments = getChildTexts(el, 'comment');
     const hasIdentifierComment = comments.some(c => /^identifier\s+property$/i.test(c.trim()));
     const descriptionComment = comments.find(c => !/^identifier\s+property$/i.test(c.trim())) ?? null;
-    const domainUri = resolveProjectionReference(
-      getChildResource(el, 'domain', RDFS_NS),
+    const domainUri = getResolvedChildResource(
+      el,
+      'domain',
+      RDFS_NS,
+      root,
       effectiveBaseIri,
     );
     const legacyEnumValues = getChildText(el, 'enumValues');
@@ -864,8 +887,11 @@ export function parseRDF(
       about,
       label: getChildText(el, 'label', RDFS_NS) || localNameFromUri(about),
       domainUri,
-      rangeUri: resolveProjectionReference(
-        getChildResource(el, 'range', RDFS_NS),
+      rangeUri: getResolvedChildResource(
+        el,
+        'range',
+        RDFS_NS,
+        root,
         effectiveBaseIri,
       ),
       comment: descriptionComment,
@@ -962,7 +988,11 @@ export function parseRDF(
 
   for (let i = 0; i < objPropEls.length; i++) {
     const el = objPropEls[i];
-    const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
+    const identity = getProjectionNodeIdentity(
+      el,
+      root,
+      effectiveBaseIri,
+    );
     if (!identity) continue;
     const about = projectionIdentityKey(identity);
 
@@ -977,8 +1007,11 @@ export function parseRDF(
     let toId = uncapitalize(getChildText(el, 'toEntityId') || '');
 
     if (!fromId) {
-      const domainUri = resolveProjectionReference(
-        getChildResource(el, 'domain', RDFS_NS),
+      const domainUri = getResolvedChildResource(
+        el,
+        'domain',
+        RDFS_NS,
+        root,
         effectiveBaseIri,
       );
       if (domainUri) {
@@ -987,8 +1020,11 @@ export function parseRDF(
       }
     }
     if (!toId) {
-      const rangeUri = resolveProjectionReference(
-        getChildResource(el, 'range', RDFS_NS),
+      const rangeUri = getResolvedChildResource(
+        el,
+        'range',
+        RDFS_NS,
+        root,
         effectiveBaseIri,
       );
       if (rangeUri) {
@@ -1037,7 +1073,7 @@ export function parseRDF(
     if (!rel.from || !rel.to) continue;
 
     relationships.push(rel);
-    if (identity.term && !hasNestedXmlBase(el, root)) {
+    if (identity.term) {
       projection.relationships[rel.id] = {
         kind: 'association',
         term: identity.term,
@@ -1054,24 +1090,32 @@ export function parseRDF(
 
   for (let i = 0; i < classEls.length; i++) {
     const el = classEls[i];
-    const identity = getProjectionNodeIdentity(el, effectiveBaseIri);
+    const identity = getProjectionNodeIdentity(
+      el,
+      root,
+      effectiveBaseIri,
+    );
     if (!identity) continue;
     const about = projectionIdentityKey(identity);
 
     const subEntity = entityMap.get(about);
     if (!subEntity) continue;
 
-    const superUris = getChildResources(el, 'subClassOf', RDFS_NS);
-    for (const rawSuperUri of superUris) {
-      if (childResourceHasXmlBase(
-        el,
-        'subClassOf',
-        RDFS_NS,
-        rawSuperUri,
-      )) {
-        continue;
-      }
-      const superUri = resolveRdfIri(rawSuperUri, effectiveBaseIri);
+    const superResources = Array.from(el.children)
+      .filter((child) =>
+        child.localName === 'subClassOf'
+        && child.namespaceURI === RDFS_NS
+        && child.hasAttributeNS(RDF_NS, 'resource')
+      )
+      .map((child) => ({
+        element: child,
+        resource: child.getAttributeNS(RDF_NS, 'resource')!,
+      }));
+    for (const { element, resource } of superResources) {
+      const superUri = resolveRdfIri(
+        resource,
+        elementBaseIri(element, root, effectiveBaseIri),
+      );
       // Only link classes that were imported as entities; skip external
       // references (owl:Thing, other vocabularies) and self-references.
       const superEntity = entityMap.get(superUri);
@@ -1093,15 +1137,11 @@ export function parseRDF(
         cardinality: 'many-to-one',
         kind: 'subclass',
       });
-      if (
-        !hasNestedXmlBase(el, root)
-      ) {
-        projection.relationships[relationshipId] = {
-          kind: 'subclass',
-          subject: resolveProjectionIri(about, effectiveBaseIri),
-          object: resolveProjectionIri(superUri, effectiveBaseIri),
-        };
-      }
+      projection.relationships[relationshipId] = {
+        kind: 'subclass',
+        subject: resolveProjectionIri(about, effectiveBaseIri),
+        object: resolveProjectionIri(superUri, effectiveBaseIri),
+      };
     }
   }
 

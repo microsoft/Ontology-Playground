@@ -188,6 +188,27 @@ describe('Header RDF sharing', () => {
     expect(replaceState).not.toHaveBeenCalled();
   });
 
+  it('accepts its own share route transition for completion and later shares', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    vi.spyOn(shareCodecModule, 'encodeSharePayload')
+      .mockResolvedValue('encoded-current-ontology');
+    render(<Header {...callbacks} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Share' }));
+    await screen.findByRole('button', { name: 'Copied!' });
+    expect(window.location.hash)
+      .toBe('#/share/encoded-current-ontology');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Copied!' }));
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2));
+    expect(screen.getByRole('button', { name: 'Copied!' }))
+      .toBeInTheDocument();
+  });
+
   it('does not navigate to an authored share after unmount during clipboard write', async () => {
     const clipboard = deferred<void>();
     const writeText = vi.fn(() => clipboard.promise);

@@ -325,13 +325,14 @@ async function createReadyRdfDocument(
     throw new RdfDocumentError('RDF source integrity check failed.');
   }
 
-  const [originalQuads, projectionResult] = await Promise.all([
-    parseRdfDatasetOffMainThread(rdfXml, source.baseIri),
-    Promise.resolve().then(() => parseRDF(rdfXml, {
-      allowEmptyProjection: true,
-      baseIri: source.baseIri,
-    })),
-  ]);
+  const originalQuads = await parseRdfDatasetOffMainThread(
+    rdfXml,
+    source.baseIri,
+  );
+  const projectionResult = parseRDF(rdfXml, {
+    allowEmptyProjection: true,
+    baseIri: source.baseIri,
+  });
   const authoritativeQuadKeys = new Set(originalQuads.map(rdfQuadKey));
   const literalIndex = indexLiteralQuads(originalQuads);
   projectionResult.projection = attachProjectionLiteralMappings(

@@ -936,30 +936,68 @@ describe('parseRDF', () => {
       );
     });
 
-    it('does not create unsafe edit mappings across nested xml:base scopes', () => {
+    it('resolves nested xml:base scopes before coalescing projection identity', () => {
       const rdf = `<?xml version="1.0"?>
 <rdf:RDF
     xml:base="https://example.com/root/"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:owl="http://www.w3.org/2002/07/owl#">
-    <owl:Class xml:base="https://example.com/nested/" rdf:about="Room">
+    <owl:Class xml:base="../model/" rdf:about="Thing">
       <rdfs:label>Room</rdfs:label>
     </owl:Class>
-    <owl:Class rdf:about="Child">
-      <rdfs:label>Child</rdfs:label>
-      <rdfs:subClassOf
-        xml:base="https://example.com/external/"
-        rdf:resource="Room"/>
+    <owl:Class rdf:about="../model/Thing">
+      <rdfs:comment>The same class</rdfs:comment>
     </owl:Class>
 </rdf:RDF>`;
 
       const parsed = parseRDF(rdf);
 
-      expect(parsed.ontology.entityTypes.map((entity) => entity.name))
-        .toEqual(['Room', 'Child']);
-      expect(parsed.projection.entities.room).toBeUndefined();
+      expect(parsed.ontology.entityTypes).toEqual([
+        expect.objectContaining({
+          id: 'thing',
+          name: 'Room',
+          description: 'The same class',
+        }),
+      ]);
+      expect(parsed.projection.entities.thing?.term).toEqual({
+        termType: 'NamedNode',
+        value: 'https://example.com/model/Thing',
+      });
       expect(parsed.ontology.relationships).toEqual([]);
+    });
+
+    it('resolves property resources against their inherited xml:base', () => {
+      const rdf = `<?xml version="1.0"?>
+<rdf:RDF
+    xml:base="https://example.com/root/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="../model/Source"/>
+  <owl:Class rdf:about="../model/Target"/>
+  <owl:ObjectProperty xml:base="../model/" rdf:about="connects">
+    <rdfs:domain rdf:resource="Source"/>
+    <rdfs:range rdf:resource="Target"/>
+  </owl:ObjectProperty>
+</rdf:RDF>`;
+
+      const parsed = parseRDF(rdf);
+
+      expect(parsed.ontology.relationships).toEqual([
+        expect.objectContaining({
+          from: 'source',
+          to: 'target',
+          name: 'connects',
+        }),
+      ]);
+      expect(parsed.projection.relationships.connects).toEqual({
+        kind: 'association',
+        term: {
+          termType: 'NamedNode',
+          value: 'https://example.com/model/connects',
+        },
+      });
     });
 
     it('maps an empty ontology rdf:about to the effective base IRI', () => {

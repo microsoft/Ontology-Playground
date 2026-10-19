@@ -52,12 +52,12 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
     const requestId = ++shareRequestId.current;
     const ontologyAtStart = currentOntology;
     const documentAtStart = rdfDocument;
-    const routeAtStart = routeIdentity;
+    let acceptedRoute = routeToHash(currentRoute());
     const isCurrentRequest = () => {
       const activeState = useAppStore.getState();
       return mounted.current
         && requestId === shareRequestId.current
-        && routeToHash(currentRoute()) === routeAtStart
+        && routeToHash(currentRoute()) === acceptedRoute
         && activeState.currentOntology === ontologyAtStart
         && isSameRdfDocumentRevision(
           activeState.rdfDocument,
@@ -117,7 +117,9 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         if (!isCurrentRequest()) return;
         await navigator.clipboard.writeText(url);
         if (!isCurrentRequest()) return;
-        history.replaceState(null, '', routeToHash({ page: 'share', data: encoded }));
+        const shareRoute = routeToHash({ page: 'share', data: encoded });
+        history.replaceState(null, '', shareRoute);
+        acceptedRoute = shareRoute;
         setShareStatus('copied');
         setTimeout(() => {
           if (isCurrentRequest()) setShareStatus('idle');

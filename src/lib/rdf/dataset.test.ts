@@ -237,6 +237,22 @@ describe('complete RDF/XML dataset adapter', () => {
     )).rejects.toThrow(/Expanded RDF term exceeds/);
   });
 
+  it('bounds expanded-term work before deduplicating repeated statements', async () => {
+    const namespace = `https://example.com/${'n'.repeat(8_000)}/`;
+    const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:long="${namespace}">
+  <rdf:Description rdf:about="https://example.com/subject">
+    ${'<long:value>same</long:value>'.repeat(10_000)}
+  </rdf:Description>
+</rdf:RDF>`;
+
+    await expect(parseRdfXmlDataset(
+      source,
+      'https://example.com/source.rdf',
+    )).rejects.toThrow(/processed RDF term budget/);
+  });
+
   it('preserves carriage returns in literal lexical values', async () => {
     const source = `<rdf:RDF
   xmlns:rdf="${RDF}"

@@ -216,7 +216,10 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
         if (err instanceof RDFParseError) {
           setErrorMessage(`RDF parse error: ${err.message}`);
         } else {
-          setErrorMessage(err instanceof Error ? err.message : 'Failed to parse file');
+          const message = err instanceof Error
+            ? err.message
+            : 'Failed to parse file';
+          setErrorMessage(`RDF parse error: ${message}`);
         }
       }
     };

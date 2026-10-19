@@ -194,6 +194,23 @@ describe('RDF source safety', () => {
     }));
   });
 
+  it.each([
+    '<!-- <!DOCTYPE rdf:RDF> --><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>',
+    `<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about="urn:subject">
+        <rdf:value><![CDATA[<!DOCTYPE rdf:RDF>]]></rdf:value>
+      </rdf:Description>
+    </rdf:RDF>`,
+  ])('allows inert DOCTYPE text in catalogue RDF', (source) => {
+    const report = validateRdfSource(
+      new TextEncoder().encode(source),
+    );
+
+    expect(report.errors).not.toContainEqual(expect.objectContaining({
+      code: 'source-active-xml',
+    }));
+  });
+
   it('rejects invalid UTF-8', () => {
     const report = validateRdfSource(
       new Uint8Array([0xc3, 0x28]),

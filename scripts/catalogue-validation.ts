@@ -1,4 +1,5 @@
 import type { Ontology } from '../src/data/ontology';
+import { assertSupportedRdfXmlSource } from '../src/lib/rdf/dataset';
 import { validateOntology } from '../src/store/designerStore';
 
 export const CATALOGUE_TIERS = [
@@ -54,7 +55,6 @@ export const DEFAULT_VALIDATION_LIMITS: ValidationLimits = {
 };
 
 const FABRIC_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
-const ACTIVE_XML_PATTERN = /<!\s*(?:DOCTYPE|ENTITY)\b/i;
 const RDF_NS = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 const RDFS_NS = 'http://www.w3.org/2000/01/rdf-schema#';
 const OWL_NS = 'http://www.w3.org/2002/07/owl#';
@@ -595,17 +595,23 @@ export function validateRdfSource(
   }
   report.text = source;
 
-  if (ACTIVE_XML_PATTERN.test(source)) {
-    report.errors.push(issue(
-      'error',
-      'source-active-xml',
-      'DOCTYPE and ENTITY declarations are not allowed in catalogue RDF.',
-    ));
-    return report;
-  }
-
   if (!source.trimStart().startsWith('<')) {
     return report;
+  }
+  try {
+    assertSupportedRdfXmlSource(source);
+  } catch (error) {
+    if (
+      error instanceof Error
+      && error.message.includes('DOCTYPE declarations are not accepted')
+    ) {
+      report.errors.push(issue(
+        'error',
+        'source-active-xml',
+        'DOCTYPE declarations are not allowed in catalogue RDF.',
+      ));
+      return report;
+    }
   }
 
   const document = new DOMParser().parseFromString(

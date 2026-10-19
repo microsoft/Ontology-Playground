@@ -112,6 +112,35 @@ describe('RDF document preservation', () => {
     }
   });
 
+  it('rejects expanded-term work before constructing the visual DOM projection', async () => {
+    const namespace = `https://example.com/${'n'.repeat(8_000)}/`;
+    const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:long="${namespace}">
+  <rdf:Description rdf:about="https://example.com/subject">
+    ${'<long:value>same</long:value>'.repeat(10_000)}
+  </rdf:Description>
+</rdf:RDF>`;
+    const originalDomParser = globalThis.DOMParser;
+    const domParserSpy = vi.fn();
+    Object.defineProperty(globalThis, 'DOMParser', {
+      configurable: true,
+      value: domParserSpy,
+    });
+    try {
+      await expect(createImportedRdfDocument(
+        new TextEncoder().encode(source),
+        { name: 'expanded-work.rdf' },
+      )).rejects.toThrow(/processed RDF term budget/);
+      expect(domParserSpy).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(globalThis, 'DOMParser', {
+        configurable: true,
+        value: originalDomParser,
+      });
+    }
+  });
+
   it('patches one exact language-tagged label and preserves unrelated statements', async () => {
     const loaded = await createImportedRdfDocument(
       new TextEncoder().encode(SOURCE),

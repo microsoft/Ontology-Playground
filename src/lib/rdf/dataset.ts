@@ -23,6 +23,7 @@ const RDF_LANG_STRING = `${RDF_NS}langString`;
 const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
 const MAX_RDF_QUADS = 250_000;
 const MAX_EXPANDED_RDF_TERM_CHARACTERS = 16_384;
+const MAX_PROCESSED_RDF_TERM_CHARACTERS = 64 * 1024 * 1024;
 const MAX_RETAINED_RDF_CHARACTERS = 32 * 1024 * 1024;
 
 interface RdfJsTerm {
@@ -594,11 +595,8 @@ function assertExpandedTermLength(term: RdfJsTerm): void {
   }
 }
 
-function retainedQuadCharacterCount(
-  source: RdfJsQuad,
-  quad: RdfQuad,
-  key: string,
-): number {
+function expandedQuadCharacterCount(source: RdfJsQuad): number {
+  let characters = 0;
   for (const term of [
     source.subject,
     source.predicate,
@@ -606,7 +604,19 @@ function retainedQuadCharacterCount(
     source.graph,
   ]) {
     assertExpandedTermLength(term);
+    characters += term.value.length;
+    if (term.termType === 'Literal') {
+      characters += (term.language?.length ?? 0)
+        + (term.datatype?.value.length ?? 0);
+    }
   }
+  return characters;
+}
+
+function retainedQuadCharacterCount(
+  quad: RdfQuad,
+  key: string,
+): number {
   return key.length
     + quad.subject.value.length
     + quad.predicate.value.length
@@ -635,6 +645,8 @@ export async function parseRdfXmlDataset(
     });
     parser.setXmlLiteralValues(xmlLiteralValues);
     const quads = new Map<string, RdfQuad>();
+    let emittedQuads = 0;
+    let processedTermCharacters = 0;
     let retainedCharacters = 0;
     let settled = false;
 
@@ -648,10 +660,27 @@ export async function parseRdfXmlDataset(
 
     parser.on('data', (value: RdfJsQuad) => {
       try {
+        emittedQuads += 1;
+        if (emittedQuads > MAX_RDF_QUADS) {
+          parser.destroy(new RdfDatasetError(
+            `RDF document exceeds the ${MAX_RDF_QUADS.toLocaleString()} emitted statement work limit`,
+          ));
+          return;
+        }
+        processedTermCharacters += expandedQuadCharacterCount(value);
+        if (
+          processedTermCharacters
+          > MAX_PROCESSED_RDF_TERM_CHARACTERS
+        ) {
+          parser.destroy(new RdfDatasetError(
+            `RDF document exceeds the ${MAX_PROCESSED_RDF_TERM_CHARACTERS.toLocaleString()} character processed RDF term budget`,
+          ));
+          return;
+        }
         const quad = plainQuad(value);
         const key = rdfQuadKey(quad);
         if (!quads.has(key)) {
-          const retained = retainedQuadCharacterCount(value, quad, key);
+          const retained = retainedQuadCharacterCount(quad, key);
           if (
             retainedCharacters + retained
             > MAX_RETAINED_RDF_CHARACTERS
