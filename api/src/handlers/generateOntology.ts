@@ -1,6 +1,6 @@
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 import { parseOntologyValue } from '../../../src/lib/ontologySchema';
-import { validateOntology } from '../../../src/lib/ontologyValidation';
+import { validateGeneratedOntology } from '../../../src/lib/ontologyValidation';
 import { resolveConnector } from '../connectors';
 import { readBoundedText } from '../connectors/http';
 import {
@@ -117,7 +117,7 @@ function validatedOutput(value: unknown) {
   const parsed = parseOntologyValue(value, { defaultEntityColors: COLORS });
   if (!parsed.ontology || parsed.issues.length
     || !parsed.ontology.name.trim() || parsed.ontology.name.length > 120
-    || validateOntology(parsed.ontology).length) {
+    || validateGeneratedOntology(parsed.ontology).length) {
     throw new ConnectorError('invalid_output');
   }
   const ontology = parsed.ontology;

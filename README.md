@@ -354,7 +354,10 @@ Set `VITE_API_BASE` to the protected gateway's `/api` base and
 provider and processing destination and must consent before a description is
 submitted. Do not submit secrets or sensitive personal information. Generated
 output receives server-side shape, size, graph, and Fabric IQ validation;
-the builder retains preview/edit/apply validation and human review.
+the builder retains preview/edit/apply validation and human review. Generation
+and edited JSON also require nonempty, Fabric-valid property names unique within
+each entity. The same name and type may be reused across different entities;
+incomplete Designer draft editing remains unchanged.
 
 Keep `FUNCTIONS_NODE_BLOCK_ON_ENTRY_POINT_ERROR=true` so registration failures
 stop the host. The API compiles the same dependency-free ontology schema and

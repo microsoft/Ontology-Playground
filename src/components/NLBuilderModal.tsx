@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Sparkles, Send, Loader2, Check, AlertCircle, Edit3, Mic, MicOff } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
-import { validateOntology } from '../store/designerStore';
+import { validateGeneratedOntology } from '../lib/ontologyValidation';
 import type { ValidationError } from '../store/designerStore';
 import type { Ontology } from '../data/ontology';
 import { buildApiUrl } from '../lib/api';
@@ -365,9 +365,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         isRecord(data) ? data.ontology : undefined,
       );
       
-      // Run the same Fabric IQ rule set the designer uses (issue #84):
-      // consistent attribute types, identifier type restrictions, required identifiers.
-      const validationErrors = validateOntology(ontology);
+      const validationErrors = validateGeneratedOntology(ontology);
       if (validationErrors.length > 0) {
         throw new Error(formatValidationErrors(validationErrors));
       }
@@ -399,7 +397,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         ? JSON.parse(editedJson)
         : generatedOntology;
       const ontologyToApply = parseBuilderOntology(candidate);
-      const validationErrors = validateOntology(ontologyToApply);
+      const validationErrors = validateGeneratedOntology(ontologyToApply);
       if (validationErrors.length > 0) {
         setError(formatValidationErrors(validationErrors));
         return;

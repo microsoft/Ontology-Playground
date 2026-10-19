@@ -262,6 +262,29 @@ describe('generation input and browser CSRF boundary', () => {
 
 describe('untrusted provider output', () => {
   it.each([
+    [{ name: '', type: 'string', isIdentifier: true }],
+    [{ name: 'productId', type: 'string', isIdentifier: true }, { name: '', type: 'string' }],
+    [{ name: 'product id', type: 'string', isIdentifier: true }],
+    [
+      { name: 'productId', type: 'string', isIdentifier: true },
+      { name: 'label', type: 'string' }, { name: 'label', type: 'string' },
+    ],
+    [{ name: 'productId', type: 'string', isIdentifier: true }, { name: 'productId', type: 'string' }],
+  ].map((properties) => [properties]))('rejects ambiguous property names %j', async (properties) => {
+    const base = ontology();
+    const value = { ...base, entityTypes: [{ ...base.entityTypes[0], properties }] };
+    const response = await handleGenerateOntology(request(body()), context(), dependencies(value));
+    expect(response.status).toBe(502);
+    expect(response.jsonBody).not.toHaveProperty('ontology');
+  });
+
+  it('accepts the same property name and type on distinct entities', async () => {
+    const value = ontology();
+    value.entityTypes.push({ ...value.entityTypes[0], id: 'other', name: 'Other' });
+    expect((await handleGenerateOntology(request(body()), context(), dependencies(value))).status).toBe(200);
+  });
+
+  it.each([
     null, {}, { ...ontology(), entityTypes: [] },
     { ...ontology(), entityTypes: [{ ...ontology().entityTypes[0], properties: [] }] },
     { ...ontology(), entityTypes: [{ ...ontology().entityTypes[0], id: 'constructor' }] },

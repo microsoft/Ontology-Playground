@@ -98,3 +98,26 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
   }
   return errors;
 }
+
+// Designer drafts allow unnamed properties while editing; generated definitions do not.
+export function validateGeneratedOntology(ontology: Ontology): ValidationError[] {
+  const errors = validateOntology(ontology);
+  for (const entity of ontology.entityTypes) {
+    const propertyNames = new Set<string>();
+    for (const property of entity.properties) {
+      if (!property.name) {
+        errors.push({
+          message: `Property name on "${entity.name}" must not be empty.`,
+          entityId: entity.id,
+        });
+      } else if (propertyNames.has(property.name)) {
+        errors.push({
+          message: `Property "${property.name}" is repeated on "${entity.name}". Property names must be unique within an entity.`,
+          entityId: entity.id,
+        });
+      }
+      propertyNames.add(property.name);
+    }
+  }
+  return errors;
+}

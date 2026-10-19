@@ -106,6 +106,8 @@ hosting choice for forks and review previews.
   deployment-time generation connectors with Azure OpenAI as the reference
   adapter, explicit destination consent, protected routes, bounded validation,
   cancellation, and no provider fallback
+- [x] Reject blank or duplicate per-entity property names at shared generation,
+  preview, and edited-JSON apply boundaries without changing Designer drafts
 - [ ] Public AI launch: provision and verify a generation-authorizing gateway,
   distributed quotas/spending limits, and direct-backend access restrictions;
   this repository does not deploy or certify that infrastructure

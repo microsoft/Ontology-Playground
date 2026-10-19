@@ -79,6 +79,24 @@ function mockGeneratedOntology(ontology: unknown): void {
   fetchMock.mockResolvedValue(response({ ontology, connector: { id: connector.id, revision: connector.revision } }));
 }
 
+const invalidPropertySets: Array<[string, Ontology['entityTypes'][number]['properties']]> = [
+  ['blank identifier name', [{ name: '', type: 'string', isIdentifier: true }]],
+  ['blank nonidentifier name', [
+    { name: 'productId', type: 'string', isIdentifier: true },
+    { name: '', type: 'string' },
+  ]],
+  ['invalid name', [{ name: 'product id', type: 'string', isIdentifier: true }]],
+  ['duplicate same-type names', [
+    { name: 'productId', type: 'string', isIdentifier: true },
+    { name: 'label', type: 'string' },
+    { name: 'label', type: 'string' },
+  ]],
+  ['duplicate identifier/nonidentifier names', [
+    { name: 'productId', type: 'string', isIdentifier: true },
+    { name: 'productId', type: 'string' },
+  ]],
+];
+
 describe('NLBuilderModal validation', () => {
   const onClose = vi.fn();
 
@@ -93,6 +111,42 @@ describe('NLBuilderModal validation', () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllGlobals();
+  });
+
+  it.each(invalidPropertySets)('rejects generated %s before preview or apply', async (_label, properties) => {
+    const invalid = createOntology();
+    invalid.entityTypes[0].properties = properties;
+    mockGeneratedOntology(invalid);
+    const before = useAppStore.getState().currentOntology;
+    render(<NLBuilderModal onClose={onClose} />);
+    await consentToConnector();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Track inventory' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Generate Ontology' }));
+
+    expect(await screen.findByText('Generation Failed')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Apply Ontology' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Generated Inventory')).not.toBeInTheDocument();
+    expect(useAppStore.getState().currentOntology).toBe(before);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it.each(invalidPropertySets)('rejects edited JSON with %s without changing the current ontology', async (_label, properties) => {
+    mockGeneratedOntology(createOntology());
+    const before = useAppStore.getState().currentOntology;
+    render(<NLBuilderModal onClose={onClose} />);
+    await consentToConnector();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Track inventory' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Generate Ontology' }));
+    await screen.findByText('Generated Inventory');
+    await userEvent.click(screen.getByRole('button', { name: 'Edit JSON' }));
+    const invalid = createOntology();
+    invalid.entityTypes[0].properties = properties;
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: JSON.stringify(invalid) } });
+    await userEvent.click(screen.getByRole('button', { name: 'Apply Ontology' }));
+
+    expect(screen.getByText(/Property name|Property "/)).toBeInTheDocument();
+    expect(useAppStore.getState().currentOntology).toBe(before);
+    expect(onClose).not.toHaveBeenCalled();
   });
 
   it('rejects invalid generated ontologies before previewing them', async () => {
@@ -198,6 +252,27 @@ describe('NLBuilderModal validation', () => {
 
     expect(useAppStore.getState().currentOntology.name).toBe('Generated Inventory');
     expect(useAppStore.getState().currentOntology.entityTypes[0].color).toBe('#0078D4');
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('previews and applies valid edited JSON with shared same-type property names across entities', async () => {
+    const valid = createOntology();
+    valid.entityTypes.push({ ...valid.entityTypes[0], id: 'other', name: 'Other' });
+    mockGeneratedOntology(valid);
+    render(<NLBuilderModal onClose={onClose} />);
+    await consentToConnector();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Track inventory' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Generate Ontology' }));
+    await screen.findByText('Generated Inventory');
+    await userEvent.click(screen.getByRole('button', { name: 'Edit JSON' }));
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: JSON.stringify({ ...valid, name: 'Edited Inventory' }) },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Apply Ontology' }));
+
+    expect(useAppStore.getState().currentOntology.name).toBe('Edited Inventory');
+    expect(useAppStore.getState().currentOntology.entityTypes.map((entity) =>
+      entity.properties[0].name)).toEqual(['productId', 'productId']);
     expect(onClose).toHaveBeenCalledOnce();
   });
 

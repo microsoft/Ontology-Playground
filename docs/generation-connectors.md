@@ -102,7 +102,14 @@ prompts, and generated text are not logged by these handlers.
   underscore characters (starting alphanumeric, excluding prototype-sensitive IDs).
 - The shared frontend schema and Designer/Fabric IQ validator also apply:
   valid property types/cardinalities, identifiers, unique graph IDs, and existing
-  relationship endpoints. Generated output cannot claim preserved RDF metadata.
+  relationship endpoints. A shared strict generation validator additionally
+  requires nonempty property names and rejects repeated names within an entity,
+  including identifier/nonidentifier pairs, before server acceptance, browser
+  preview, and edited-JSON apply. Names must satisfy the Fabric naming rules;
+  there is no silent renaming or deduplication. Same-name, same-type properties
+  across different entities remain valid; cross-entity type conflicts remain
+  invalid. Designer drafts still permit unnamed properties while being edited.
+  Generated output cannot claim preserved RDF metadata.
 - One 30-second server deadline covers request reading, provider response headers,
   and streaming body consumption. The signal is passed to the adapter/fetch.
   Browsers abandon stale/closed requests and time out after 45 seconds;
