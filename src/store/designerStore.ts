@@ -20,7 +20,6 @@ import {
 } from '../lib/rdf/patch';
 const RDFS_LABEL = 'http://www.w3.org/2000/01/rdf-schema#label';
 const RDFS_COMMENT = 'http://www.w3.org/2000/01/rdf-schema#comment';
-const RDFS_COMMENT = 'http://www.w3.org/2000/01/rdf-schema#comment';
 
 // ─── Validation ──────────────────────────────────────────────────────────────
 
