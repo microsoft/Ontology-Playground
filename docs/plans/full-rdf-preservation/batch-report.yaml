@@ -143,6 +143,36 @@ finding_disposition:
     root_cause: "The request compared the actual post-replaceState route with an immutable initiating route captured from stale rendered router state."
     resolution: "Each request starts from the actual current route and explicitly accepts only the share route transition it performs itself."
     evidence: "A successful authored share reaches Copied state and a second share completes instead of remaining at Encoding."
+  - finding: "XML-literal preprocessing could amplify memory before dataset budgets"
+    status: "confirmed_fixed"
+    root_cause: "The independent XML-literal extraction pass reconstructed complete fragments before expanded-term, total-output, or event budgets applied."
+    resolution: "Reconstruction computes escaped tag lengths before allocation and incrementally enforces per-literal, cumulative-output, and event limits for tags, text, comments, CDATA, and processing instructions."
+    evidence: "A 20,210-character long-namespace fixture rejects in 8.9 ms with about 1.14 MiB heap growth at the 16,384-character XML-literal limit."
+  - finding: "One edited RDF literal could leave dependent visual fields stale"
+    status: "confirmed_fixed"
+    root_cause: "Patch projection mappings advanced atomically, but Designer actions updated only the field that initiated the shared-statement edit."
+    resolution: "The same history transaction now synchronizes ontology, entity, and association fields whose exact literal mappings changed."
+    evidence: "A resource typed as both owl:Ontology and owl:Class can be renamed from either visual role repeatedly without stale fields or lost editability."
+  - finding: "An imported document on a catalogue route could share the previous catalogue link"
+    status: "confirmed_fixed"
+    root_cause: "Header selected a short link from the route alone before considering the active catalogue entry and source document."
+    resolution: "Short catalogue links require the route, active entry, and any active RDF source catalogue identity to agree; otherwise source-backed sharing downloads the active complete RDF."
+    evidence: "An imported source displayed on a stale catalogue hash downloads its own RDF and never writes the old deep link to the clipboard."
+  - finding: "XML encoding declarations could disagree with authoritative source bytes"
+    status: "confirmed_fixed"
+    root_cause: "Decoding selected UTF-16 only from a BOM and otherwise assumed UTF-8 without validating the leading XML declaration."
+    resolution: "Decoding recognizes UTF-8 BOM and UTF-16 BOM/byte signatures, accepts only UTF-8/UTF-16 declarations, and rejects unsupported or byte-conflicting declarations."
+    evidence: "BOM-less UTF-16 decodes correctly; ISO-8859-1 and UTF-8-BOM/UTF-16 conflicts fail explicitly while untouched valid UTF-16 bytes still export exactly."
+  - finding: "Designer encoding normalization could mutate processing instructions"
+    status: "confirmed_fixed"
+    root_cause: "A document-wide XML-like regex rewrote the first encoding attribute even when it belonged to an XMLLiteral processing instruction."
+    resolution: "Normalization is anchored to an actual leading XML declaration after an optional BOM and never scans document content."
+    evidence: "An unrelated label edit preserves an xml-model processing instruction with encoding=\"ISO-8859-1\" inside an XML literal."
+  - finding: "Designer renders repeatedly materialized and indexed complete graphs"
+    status: "confirmed_fixed"
+    root_cause: "Editability probes simulated patches and the statement count independently materialized the full dataset on every render."
+    resolution: "One WeakMap cache per immutable document revision stores materialized quads and their key index; editability performs an exact indexed mapping check and counts reuse the cached length."
+    evidence: "Two editability checks and a statement-count query invoke materialization once for a document revision."
 
 files_changed:
   T004:
@@ -163,6 +193,8 @@ files_changed:
     - "src/components/designer/DesignerActions.test.tsx"
     - "src/components/designer/DesignerPreview.tsx"
     - "src/components/designer/DesignerPreview.test.tsx"
+    - "src/store/designerStore.ts"
+    - "src/store/designerStore.test.ts"
   T006:
     - "src/components/EmbedWidget.tsx"
     - "src/components/EmbedWidget.test.tsx"
@@ -210,14 +242,14 @@ traceability:
 
 test_results:
   affected:
-    command: "npm test -- --run <5 final-review regression files>"
-    passed: 135
+    command: "npm test -- --run <5 exact-head review regression files>"
+    passed: 133
     failed: 0
     skipped: 0
   full:
     command: "npm test"
     files_passed: 60
-    passed: 923
+    passed: 930
     failed: 0
     skipped: 0
   browser:
@@ -232,7 +264,7 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 490.12 kB / 135.99 kB gzip; self-contained embed 1,255.26 kB / 377.05 kB gzip"
+    result: "passed; RDF-bearing app chunk 494.36 kB / 137.38 kB gzip; self-contained embed 1,258.42 kB / 378.06 kB gzip"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
@@ -243,15 +275,15 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 18
+  ahead_origin_main: 20
   staged_files: 0
   committed_by_batch: true
   publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
 
 independent_review:
-  scope: "origin/main...HEAD including the four final follow-up remediations"
+  scope: "origin/main...HEAD including the six exact-head review remediations"
   initial_findings: 5
-  follow_up_findings: 16
+  follow_up_findings: 22
   final_disposition: "pending exact-head review"
   reviewer_reused: true
 

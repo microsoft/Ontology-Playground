@@ -90,7 +90,8 @@ is independent of XML attribute order, including resource and empty/non-empty
 collection parse types. Equivalent relative IRI spellings resolve to one visual
 resource without WHATWG URL canonicalization. RDF-looking markup inside XML
 literals is retained as literal data but excluded from visual projection
-discovery; optional derivation metadata also requires an authoritative
+discovery. One RDF literal mapped to multiple visual fields updates every
+dependent field atomically. Optional derivation metadata also requires an authoritative
 `rdf:type owl:Ontology` statement. Imports and SHACL remain inert: external
 resources are never fetched and rules are never executed. Actual RDF/XML
 `DOCTYPE` declarations and named graph output are rejected explicitly, while
@@ -98,14 +99,20 @@ the same text inside comments or character data remains ordinary inert
 content. Current resource limits are 8 MiB, 250,000 unique statements, 16,384
 characters per expanded RDF IRI-like term, 67,108,864 processed term
 characters before deduplication, and 33,554,432 retained term/key characters
-per dataset. File imports reject the declared file size before allocating its
-contents and abort obsolete reads. The bounded dataset parse must succeed
-before the main-thread visual projection starts. Async download and share paths
-verify the initiating document, component lifetime, and route before exposing
+per dataset. XML-literal reconstruction applies the same 16,384-character term
+limit plus bounded total output and event counts before allocating reconstructed
+fragments. Input may use UTF-8 or UTF-16; byte signatures, BOMs, and XML
+declarations must agree, and unsupported encodings fail explicitly. File
+imports reject the declared file size before allocating contents and abort
+obsolete reads. The bounded dataset parse must succeed before the main-thread
+visual projection starts. Designer editability and statement counts share a
+revision-indexed graph cache rather than rescanning large preserved graphs on
+each render. Async download and share paths verify the active catalogue entry,
+source document, initiating component lifetime, and route before exposing
 output, while accepting the share route transition initiated by a successful
 request. Large complete-source views fall back to one plain text node instead
-of constructing an unbounded syntax-token tree; copy and download still use
-the complete source.
+of constructing an unbounded syntax-token tree; copy and download still use the
+complete source.
 RDF/XML loaded by URL embeds uses the same preflight and complete-graph parser;
 oversized response streams are cancelled before projection.
 

@@ -102,9 +102,13 @@ never injects this statement automatically.
   text node, avoiding argument-limit failures and enormous React token trees
   while preserving complete copy and download data.
 - Clipboard and RDF editor surfaces expose decoded Unicode text, not original
-  source bytes. Exact bytes remain the download contract; live Chromium checks
-  cover UTF-16 declarations, CRLF normalization, astral characters, edited
-  worker output, and clipboard retry behavior.
+  source bytes. Exact bytes remain the download contract. UTF-8 and UTF-16 byte
+  signatures, BOMs, and leading XML declarations must agree; unsupported or
+  conflicting declarations fail instead of associating bytes with a different
+  graph. Editor normalization changes only the actual leading XML declaration,
+  never processing instructions in XML literals. Live Chromium checks cover
+  UTF-16 declarations, CRLF normalization, astral characters, edited worker
+  output, and clipboard retry behavior.
 - RDF/XML URL embeds use bounded response streaming and the same complete
   ingestion, `DOCTYPE`, source-size, and statement-count checks as file
   imports. JSON URL embeds remain supported within the same byte limit. The
