@@ -171,6 +171,8 @@ describe('RDF document preservation', () => {
       )).toBe(true);
       expect(rdfDocumentStatementCount(loaded.document))
         .toBe(loaded.document.originalQuads.length);
+      expect(isRdfDocumentDirty(loaded.document)).toBe(false);
+      expect(isRdfDocumentDirty(loaded.document)).toBe(false);
       expect(materialize).toHaveBeenCalledTimes(1);
     } finally {
       materialize.mockRestore();

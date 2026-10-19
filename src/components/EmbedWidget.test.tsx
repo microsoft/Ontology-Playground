@@ -264,7 +264,10 @@ describe('EmbedWidget', () => {
     await waitFor(() => {
       expect(screen.getByText('Test Ontology')).toBeTruthy();
     });
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls.some(([input]) =>
+      input.toString().endsWith(fakeCatalogue.entries[0].sourceArtifactUrl!),
+    )).toBe(false);
   });
 
   it('loads ontology from inline base64 JSON', async () => {
@@ -488,9 +491,9 @@ describe('EmbedWidget', () => {
     }} />);
 
     await screen.findByText('Test Ontology');
-    await user.click(screen.getByText('Complete RDF source'));
+    await user.click(screen.getByText('Generated RDF'));
 
-    expect(screen.getByRole('note').textContent).toContain(
+    expect((await screen.findByRole('note')).textContent).toContain(
       'complete source RDF',
     );
     expect(screen.getByRole('note').textContent).toContain(
@@ -498,6 +501,37 @@ describe('EmbedWidget', () => {
     );
     expect(document.querySelector('pre')?.textContent).toBe(fakeSource);
     expect(screen.getByText('Copy complete RDF')).toBeTruthy();
+  });
+
+  it('keeps the catalogue graph available when complete source loading fails', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = input.toString();
+      if (url.endsWith('/catalogue.json')) {
+        return new Response(JSON.stringify(fakeCatalogue), { status: 200 });
+      }
+      if (url.endsWith(fakeCatalogue.entries[0].payloadUrl)) {
+        return new Response(fakePayloadContent, { status: 200 });
+      }
+      if (url.endsWith(fakeCatalogue.entries[0].sourceArtifactUrl!)) {
+        return new Response('source unavailable', { status: 503 });
+      }
+      return new Response('not found', { status: 404 });
+    });
+    const user = userEvent.setup();
+    render(<EmbedWidget config={{
+      catalogueId: 'official/test',
+      theme: 'dark',
+      height: '400px',
+    }} />);
+
+    await screen.findByText('Test Ontology');
+    await user.click(screen.getByText('Generated RDF'));
+
+    await screen.findByText(/Complete RDF source is unavailable/);
+    expect(document.querySelector('pre')?.textContent)
+      .toMatch(/owl:Ontology/);
+    await user.click(screen.getByText('Graph'));
+    expect(screen.getByText('Test Ontology')).toBeTruthy();
   });
 
   it('renders with light theme', async () => {

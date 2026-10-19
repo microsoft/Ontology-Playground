@@ -134,11 +134,16 @@ interface SelectedItem {
 export function EmbedWidget({ config }: { config: EmbedConfig }) {
   const [ontology, setOntology] = useState<Ontology | null>(null);
   const [rdfSource, setRdfSource] = useState<string | null>(null);
+  const [rdfSourceStatus, setRdfSourceStatus] =
+    useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [rdfSourceError, setRdfSourceError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>('graph');
   const [selected, setSelected] = useState<SelectedItem | null>(null);
   const [copied, setCopied] = useState(false);
+  const rdfSourceRequestId = useRef(0);
+  const rdfSourceRequestActive = useRef(false);
 
   const theme = EMBED_THEMES[config.theme] || EMBED_THEMES.dark;
 
@@ -151,6 +156,11 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
       setLoading(true);
       setError(null);
       setRdfSource(null);
+      setRdfSourceStatus('idle');
+      setRdfSourceError(null);
+      setTab('graph');
+      rdfSourceRequestId.current += 1;
+      rdfSourceRequestActive.current = false;
       try {
         let ont: Ontology | null = null;
 
@@ -165,10 +175,6 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
             || window.location.origin + '/';
           const entry = await loadCatalogueEntry(config.catalogueId, base);
           ont = entry.ontology;
-          const source = await loadCatalogueSource(entry.id, base);
-          if (!cancelled) {
-            setRdfSource(source.text);
-          }
         } else if (config.ontologyUrl) {
           // Fetch from URL
           const res = await fetch(config.ontologyUrl, {
@@ -190,7 +196,10 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
               baseIri: sourceUrl.href,
             });
             ont = result.ontology;
-            if (!cancelled) setRdfSource(text);
+            if (!cancelled) {
+              setRdfSource(text);
+              setRdfSourceStatus('ready');
+            }
           } else {
             ont = JSON.parse(text) as Ontology;
             if (!cancelled) setRdfSource(null);
@@ -215,9 +224,51 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
     load();
     return () => {
       cancelled = true;
+      rdfSourceRequestId.current += 1;
+      rdfSourceRequestActive.current = false;
       abortController.abort();
     };
   }, [config.catalogueId, config.ontologyUrl, config.ontologyInline, config.catalogueBaseUrl]);
+
+  const handleTabChange = (nextTab: Tab) => {
+    setTab(nextTab);
+    if (
+      nextTab !== 'rdf'
+      || !config.catalogueId
+      || rdfSourceStatus !== 'idle'
+      || rdfSourceRequestActive.current
+    ) {
+      return;
+    }
+    const base = config.catalogueBaseUrl
+      || (document.currentScript as HTMLScriptElement | null)
+        ?.src.replace(/\/[^/]+$/, '/')
+      || window.location.origin + '/';
+    const requestId = ++rdfSourceRequestId.current;
+    rdfSourceRequestActive.current = true;
+    setRdfSourceStatus('loading');
+    setRdfSourceError(null);
+    void loadCatalogueSource(config.catalogueId, base)
+      .then((source) => {
+        if (requestId !== rdfSourceRequestId.current) return;
+        setRdfSource(source.text);
+        setRdfSourceStatus('ready');
+      })
+      .catch((sourceError: unknown) => {
+        if (requestId !== rdfSourceRequestId.current) return;
+        setRdfSourceError(
+          sourceError instanceof Error
+            ? sourceError.message
+            : String(sourceError),
+        );
+        setRdfSourceStatus('error');
+      })
+      .finally(() => {
+        if (requestId === rdfSourceRequestId.current) {
+          rdfSourceRequestActive.current = false;
+        }
+      });
+  };
 
   // ─ Render ───────────────────────────────────────────────────────────────
   const containerStyle: React.CSSProperties = {
@@ -259,10 +310,11 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
       <EmbedHeader
         ontology={ontology}
         tab={tab}
-        setTab={setTab}
+        setTab={handleTabChange}
         theme={theme}
         copied={copied}
         hasCompleteSource={rdfSource !== null}
+        sourceLoading={rdfSourceStatus === 'loading'}
         onCopyRdf={() => {
           navigator.clipboard.writeText(
             rdfSource ?? serializeToRDF(ontology, []),
@@ -282,6 +334,8 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
             rdf={rdfSource ?? serializeToRDF(ontology, [])}
             theme={theme}
             hasCompleteSource={rdfSource !== null}
+            sourceLoading={rdfSourceStatus === 'loading'}
+            sourceError={rdfSourceError}
           />
         )}
       </div>
@@ -303,6 +357,7 @@ interface EmbedHeaderProps {
   theme: EmbedThemeTokens;
   copied: boolean;
   hasCompleteSource: boolean;
+  sourceLoading: boolean;
   onCopyRdf: () => void;
 }
 
@@ -313,6 +368,7 @@ function EmbedHeader({
   theme,
   copied,
   hasCompleteSource,
+  sourceLoading,
   onCopyRdf,
 }: EmbedHeaderProps) {
   const tabStyle = (active: boolean): React.CSSProperties => ({
@@ -341,7 +397,11 @@ function EmbedHeader({
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <button style={tabStyle(tab === 'graph')} onClick={() => setTab('graph')}>Graph</button>
         <button style={tabStyle(tab === 'rdf')} onClick={() => setTab('rdf')}>
-          {hasCompleteSource ? 'Complete RDF source' : 'Generated RDF'}
+          {hasCompleteSource
+            ? 'Complete RDF source'
+            : sourceLoading
+              ? 'Loading complete RDF…'
+              : 'Generated RDF'}
         </button>
         {tab === 'rdf' && (
           <button
@@ -1160,10 +1220,14 @@ function EmbedRdfSource({
   rdf,
   theme,
   hasCompleteSource,
+  sourceLoading,
+  sourceError,
 }: {
   rdf: string;
   theme: EmbedThemeTokens;
   hasCompleteSource: boolean;
+  sourceLoading: boolean;
+  sourceError: string | null;
 }) {
   const isDark = theme === EMBED_THEMES.dark;
   const hlTheme = isDark ? RDF_HIGHLIGHT_DARK : RDF_HIGHLIGHT_LIGHT;
@@ -1185,6 +1249,35 @@ function EmbedRdfSource({
         >
           This is the complete source RDF. Imports and referenced resources are
           preserved as statements but are not fetched or executed.
+        </div>
+      )}
+      {sourceLoading && (
+        <div
+          role="status"
+          style={{
+            background: theme.bgSecondary,
+            borderBottom: `1px solid ${theme.border}`,
+            color: theme.textSecondary,
+            fontSize: 11,
+            padding: '8px 16px',
+          }}
+        >
+          Loading the complete source. Generated RDF is available meanwhile.
+        </div>
+      )}
+      {sourceError && (
+        <div
+          role="alert"
+          style={{
+            background: theme.bgSecondary,
+            borderBottom: `1px solid ${theme.border}`,
+            color: '#E81123',
+            fontSize: 11,
+            padding: '8px 16px',
+          }}
+        >
+          Complete RDF source is unavailable: {sourceError} Generated RDF is
+          shown instead.
         </div>
       )}
       <pre style={{

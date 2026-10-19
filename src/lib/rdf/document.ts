@@ -459,6 +459,7 @@ export async function ensureRdfDocumentReady(
 interface MaterializedRdfState {
   quads: RdfQuad[];
   quadKeys: Set<string>;
+  dirty: boolean;
 }
 
 const materializedRdfCache =
@@ -473,9 +474,16 @@ function materializedRdfState(
     document.originalQuads,
     document.patches,
   );
+  const originalKeys = document.patches.length === 0
+    ? null
+    : new Set(document.originalQuads.map(rdfQuadKey));
   const state = {
     quads,
     quadKeys: new Set(quads.map(rdfQuadKey)),
+    dirty: originalKeys !== null && (
+      originalKeys.size !== quads.length
+      || quads.some((quad) => !originalKeys.has(rdfQuadKey(quad)))
+    ),
   };
   materializedRdfCache.set(document, state);
   return state;
@@ -496,13 +504,7 @@ export function rdfDocumentStatementCount(
 export function isRdfDocumentDirty(
   document: ReadyRdfDocument,
 ): boolean {
-  if (document.patches.length === 0) return false;
-  const original = new Set(
-    document.originalQuads.map(rdfQuadKey),
-  );
-  const materialized = materializeRdfDocument(document);
-  if (original.size !== materialized.length) return true;
-  return materialized.some((quad) => !original.has(rdfQuadKey(quad)));
+  return materializedRdfState(document).dirty;
 }
 
 export async function exportRdfDocument(
