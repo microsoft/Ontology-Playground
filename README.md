@@ -96,13 +96,16 @@ resources are never fetched and rules are never executed. Actual RDF/XML
 `DOCTYPE` declarations and named graph output are rejected explicitly, while
 the same text inside comments or character data remains ordinary inert
 content. Current resource limits are 8 MiB, 250,000 unique statements, 16,384
-characters per expanded RDF IRI-like term, and 33,554,432 retained term/key
-characters per dataset. File imports reject the declared file size before
-allocating its contents and abort obsolete reads. Async download and share
-paths verify the initiating document, component lifetime, and route before
-exposing output. Large complete-source views fall back to one plain text node
-instead of constructing an unbounded syntax-token tree; copy and download
-still use the complete source.
+characters per expanded RDF IRI-like term, 67,108,864 processed term
+characters before deduplication, and 33,554,432 retained term/key characters
+per dataset. File imports reject the declared file size before allocating its
+contents and abort obsolete reads. The bounded dataset parse must succeed
+before the main-thread visual projection starts. Async download and share paths
+verify the initiating document, component lifetime, and route before exposing
+output, while accepting the share route transition initiated by a successful
+request. Large complete-source views fall back to one plain text node instead
+of constructing an unbounded syntax-token tree; copy and download still use
+the complete source.
 RDF/XML loaded by URL embeds uses the same preflight and complete-graph parser;
 oversized response streams are cancelled before projection.
 

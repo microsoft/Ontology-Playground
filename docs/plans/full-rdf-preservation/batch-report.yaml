@@ -123,6 +123,26 @@ finding_disposition:
     root_cause: "Mapping validation used Array.some over the complete dataset per projected resource."
     resolution: "One quad-key set and one literal index serve constant-time authority and exact-literal lookups; visual entities and relationships are also indexed by ID."
     evidence: "A measured 3,000-mapping / 36,000-quad authority index-and-filter pass completed in 24.7 ms."
+  - finding: "Duplicate statements bypassed expanded-term work limits"
+    status: "confirmed_fixed"
+    root_cause: "Expanded-term accounting occurred only when a deduplicated quad was retained, and visual DOM projection started concurrently with dataset validation."
+    resolution: "Every emitted quad consumes a 250,000-emission and 67,108,864-character processed-term budget before key construction; bounded dataset parsing completes before visual projection begins."
+    evidence: "A 10,000-emission long-IRI duplicate fixture rejects in 199.5 ms and a DOMParser spy proves projection never starts."
+  - finding: "Nested xml:base split one RDF resource into duplicate visual entities"
+    status: "confirmed_fixed"
+    root_cause: "Projection identities used only the root base and suppressed mappings after the incorrect key had already been created."
+    resolution: "Node identities resolve every ancestor and element xml:base in document order, and subclass resources resolve their own element base before semantic indexing."
+    evidence: "A nested ../model/ Thing declaration coalesces with ../model/Thing into one authoritative mapped entity, and inherited domain/range resources resolve to mapped endpoints."
+  - finding: "Catalogue validation rejected inert DOCTYPE text"
+    status: "confirmed_fixed"
+    root_cause: "The catalogue path retained a raw DOCTYPE/ENTITY substring regex after runtime parsing moved to tokenized declaration detection."
+    resolution: "Catalogue validation reuses the bounded SAX prolog preflight and reports only actual DOCTYPE declarations as active XML."
+    evidence: "Catalogue tests reject a real declaration while accepting identical text in an XML comment and CDATA."
+  - finding: "Successful authored sharing invalidated its own route guard"
+    status: "confirmed_fixed"
+    root_cause: "The request compared the actual post-replaceState route with an immutable initiating route captured from stale rendered router state."
+    resolution: "Each request starts from the actual current route and explicitly accepts only the share route transition it performs itself."
+    evidence: "A successful authored share reaches Copied state and a second share completes instead of remaining at Encoding."
 
 files_changed:
   T004:
@@ -190,14 +210,14 @@ traceability:
 
 test_results:
   affected:
-    command: "npx vitest run <7 final-review regression files>"
-    passed: 136
+    command: "npm test -- --run <5 final-review regression files>"
+    passed: 135
     failed: 0
     skipped: 0
   full:
     command: "npm test"
     files_passed: 60
-    passed: 917
+    passed: 923
     failed: 0
     skipped: 0
   browser:
@@ -212,7 +232,7 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 489.07 kB / 135.65 kB gzip; self-contained embed 1,254.11 kB / 376.75 kB gzip"
+    result: "passed; RDF-bearing app chunk 490.12 kB / 135.99 kB gzip; self-contained embed 1,255.26 kB / 377.05 kB gzip"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
@@ -223,7 +243,7 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 16
+  ahead_origin_main: 18
   staged_files: 0
   committed_by_batch: true
   publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
@@ -231,7 +251,7 @@ branch_state:
 independent_review:
   scope: "origin/main...HEAD including the four final follow-up remediations"
   initial_findings: 5
-  follow_up_findings: 12
+  follow_up_findings: 16
   final_disposition: "pending exact-head review"
   reviewer_reused: true
 
