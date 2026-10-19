@@ -154,6 +154,64 @@ describe('parseRDF', () => {
       expect(ontology.entityTypes[0].icon).toBe('📦');
       expect(ontology.entityTypes[0].color).toBe('#0078D4');
     });
+
+    it.each([
+      {
+        identity: 'rdf:ID="Room"',
+        expectedIri: 'https://example.com/model.rdf#Room',
+        expectedEntityId: 'room',
+      },
+      {
+        identity: 'rdf:about=""',
+        expectedIri: 'https://example.com/model.rdf',
+        expectedEntityId: 'entity',
+      },
+    ])(
+      'projects a standalone root with $identity',
+      ({ identity, expectedIri, expectedEntityId }) => {
+        const rdf = `<owl:Class
+  xmlns:rdf="${RDF_NS}"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  ${identity}>
+  <rdfs:label>Room</rdfs:label>
+</owl:Class>`;
+
+        const parsed = parseRDF(rdf, {
+          baseIri: 'https://example.com/model.rdf',
+        });
+
+        expect(parsed.ontology.entityTypes).toEqual([
+          expect.objectContaining({
+            id: expectedEntityId,
+            name: 'Room',
+          }),
+        ]);
+        expect(parsed.projection.entities[expectedEntityId]?.term).toEqual({
+          termType: 'NamedNode',
+          value: expectedIri,
+        });
+      },
+    );
+
+    it('projects a standalone blank-node class as read-only', () => {
+      const rdf = `<owl:Class
+  xmlns:rdf="${RDF_NS}"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  rdf:nodeID="room">
+  <rdfs:label>Room</rdfs:label>
+</owl:Class>`;
+
+      const parsed = parseRDF(rdf, {
+        baseIri: 'https://example.com/model.rdf',
+      });
+
+      expect(parsed.ontology.entityTypes).toEqual([
+        expect.objectContaining({ name: 'Room' }),
+      ]);
+      expect(parsed.projection.entities).toEqual({});
+    });
   });
 
   describe('properties', () => {
@@ -887,6 +945,61 @@ describe('parseRDF', () => {
         termType: 'NamedNode',
         value: 'https://example.com/ontology',
       });
+    });
+
+    it('preserves RDF IRI identity when resolving projection resources', () => {
+      const rdf = `<?xml version="1.0"?>
+<rdf:RDF
+    xml:base="https://EXAMPLE.com:443/café/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="Thing">
+    <rdfs:label>Thing</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="https://example.com/caf%C3%A9/Thing">
+    <rdfs:label>Thing</rdfs:label>
+  </owl:Class>
+</rdf:RDF>`;
+
+      const parsed = parseRDF(rdf);
+      const projectedTerms = parsed.ontology.entityTypes.map((entity) =>
+        parsed.projection.entities[entity.id]?.term.value);
+
+      expect(projectedTerms).toEqual([
+        'https://EXAMPLE.com:443/café/Thing',
+        'https://example.com/caf%C3%A9/Thing',
+      ]);
+    });
+
+    it('resolves dot segments and colons in relative projection IRIs', () => {
+      const rdf = `<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="${RDF_NS}"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="../archive.../Thing">
+    <rdfs:label>Archived</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="/a/../C">
+    <rdfs:label>Root</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="dir/name:thing">
+    <rdfs:label>Colon</rdfs:label>
+  </owl:Class>
+</rdf:RDF>`;
+
+      const parsed = parseRDF(rdf, {
+        baseIri: 'https://example.org/a/base.rdf',
+      });
+      const projectedTerms = parsed.ontology.entityTypes.map((entity) =>
+        parsed.projection.entities[entity.id]?.term.value);
+
+      expect(projectedTerms).toEqual([
+        'https://example.org/archive.../Thing',
+        'https://example.org/C',
+        'https://example.org/a/dir/name:thing',
+      ]);
     });
   });
 

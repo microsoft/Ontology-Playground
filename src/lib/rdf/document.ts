@@ -10,6 +10,7 @@ import type {
 } from '../../types/rdfDocument';
 import { loadCatalogueSource } from '../catalogue';
 import {
+  assertSupportedRdfXmlSource,
   decodeRdfBytes,
   materializeRdfPatches,
   rdfQuadKey,
@@ -23,7 +24,15 @@ import {
 
 export { applyLiteralEdit } from './patch';
 
-const MAX_RDF_SOURCE_BYTES = 8 * 1024 * 1024;
+export const MAX_RDF_SOURCE_BYTES = 8 * 1024 * 1024;
+
+export function isSameRdfDocumentRevision(
+  left: RdfDocument | null | undefined,
+  right: RdfDocument | null | undefined,
+): boolean {
+  if (!left || !right) return left === right;
+  return left.id === right.id && left.revision === right.revision;
+}
 
 export class RdfDocumentError extends Error {
   constructor(message: string) {
@@ -86,6 +95,7 @@ async function createReadyRdfDocument(
       }`,
     );
   }
+  assertSupportedRdfXmlSource(rdfXml);
 
   const hash = await hashBytes(bytes);
   if (source.expectedHash && hash !== source.expectedHash) {
@@ -306,7 +316,7 @@ export function canEditLiteral(
       target,
       predicateIri,
       value,
-      `${value}\u0000probe`,
+      `${value}\u{1F9EA}`,
       'Probe RDF mapping',
     );
     return true;

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   applyLiteralEdit,
   createImportedRdfDocument,
@@ -88,6 +88,29 @@ describe('RDF document preservation', () => {
       .toEqual(Array.from(bytes));
   });
 
+  it('rejects DOCTYPE before constructing the visual DOM parser', async () => {
+    const originalDomParser = globalThis.DOMParser;
+    const domParserSpy = vi.fn();
+    Object.defineProperty(globalThis, 'DOMParser', {
+      configurable: true,
+      value: domParserSpy,
+    });
+    try {
+      await expect(createImportedRdfDocument(
+        new TextEncoder().encode(`<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [<!ENTITY value "expanded">]>
+<rdf:RDF xmlns:rdf="${RDF}"/>`),
+        { name: 'doctype.rdf' },
+      )).rejects.toThrow(/DOCTYPE declarations are not accepted/);
+      expect(domParserSpy).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(globalThis, 'DOMParser', {
+        configurable: true,
+        value: originalDomParser,
+      });
+    }
+  });
+
   it('patches one exact language-tagged label and preserves unrelated statements', async () => {
     const loaded = await createImportedRdfDocument(
       new TextEncoder().encode(SOURCE),
@@ -151,6 +174,191 @@ describe('RDF document preservation', () => {
         value: 'Space',
         language: 'en',
       }),
+    }));
+  });
+
+  it('retains a standalone node-root subject through a mapped edit', async () => {
+    const source = `<owl:Class
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}"
+  xmlns:ex="https://example.com/ns#"
+  rdf:about="https://example.com/ns#Room">
+  <rdfs:label>Room</rdfs:label>
+  <ex:unmapped>preserve me</ex:unmapped>
+</owl:Class>`;
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      {
+        name: 'standalone.rdf',
+        baseIri: 'https://example.com/standalone.rdf',
+      },
+    );
+    const edited = applyLiteralEdit(
+      loaded.document,
+      loaded.document.projection.entities.room,
+      `${RDFS}label`,
+      'Room',
+      'Space',
+      'Rename Room',
+    );
+    const exported = await exportRdfDocument(edited);
+    const reparsed = await parseRdfXmlDataset(
+      decodeRdfBytes(exported.bytes),
+      'https://example.com/export.rdf',
+    );
+
+    expect(reparsed).toContainEqual(expect.objectContaining({
+      subject: {
+        termType: 'NamedNode',
+        value: 'https://example.com/ns#Room',
+      },
+      predicate: {
+        termType: 'NamedNode',
+        value: 'https://example.com/ns#unmapped',
+      },
+      object: expect.objectContaining({
+        termType: 'Literal',
+        value: 'preserve me',
+      }),
+    }));
+    expect(reparsed).toContainEqual(expect.objectContaining({
+      subject: {
+        termType: 'NamedNode',
+        value: 'https://example.com/ns#Room',
+      },
+      predicate: {
+        termType: 'NamedNode',
+        value: `${RDFS}label`,
+      },
+      object: expect.objectContaining({
+        termType: 'Literal',
+        value: 'Space',
+      }),
+    }));
+  });
+
+  it.each([
+    {
+      identity: 'rdf:ID="Room"',
+      expectedSubject: 'https://example.com/model.rdf#Room',
+      entityId: 'room',
+    },
+    {
+      identity: 'rdf:about=""',
+      expectedSubject: 'https://example.com/model.rdf',
+      entityId: 'entity',
+    },
+  ])(
+    'retains standalone $identity identity through a mapped edit',
+    async ({ identity, expectedSubject, entityId }) => {
+      const source = `<owl:Class
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}"
+  xmlns:ex="https://example.com/ns#"
+  ${identity}>
+  <rdfs:label>Room</rdfs:label>
+  <ex:unmapped>preserve me</ex:unmapped>
+</owl:Class>`;
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(source),
+        {
+          name: 'standalone-identity.rdf',
+          baseIri: 'https://example.com/model.rdf',
+        },
+      );
+      const edited = applyLiteralEdit(
+        loaded.document,
+        loaded.document.projection.entities[entityId],
+        `${RDFS}label`,
+        'Room',
+        'Space',
+        'Rename Room',
+      );
+      const exported = await exportRdfDocument(edited);
+      const reparsed = await parseRdfXmlDataset(
+        decodeRdfBytes(exported.bytes),
+        'https://example.com/export.rdf',
+      );
+
+      expect(reparsed).toContainEqual(expect.objectContaining({
+        subject: {
+          termType: 'NamedNode',
+          value: expectedSubject,
+        },
+        predicate: {
+          termType: 'NamedNode',
+          value: 'https://example.com/ns#unmapped',
+        },
+        object: expect.objectContaining({
+          termType: 'Literal',
+          value: 'preserve me',
+        }),
+      }));
+      expect(reparsed).toContainEqual(expect.objectContaining({
+        subject: {
+          termType: 'NamedNode',
+          value: expectedSubject,
+        },
+        predicate: {
+          termType: 'NamedNode',
+          value: `${RDFS}label`,
+        },
+        object: expect.objectContaining({
+          termType: 'Literal',
+          value: 'Space',
+        }),
+      }));
+    },
+  );
+
+  it('retains unknown parseType XML literals through an unrelated edit', async () => {
+    const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}"
+  xmlns:ex="https://example.com/ns#"
+  xmlns:c="urn:content:">
+  <owl:Class rdf:about="https://example.com/ns#Room">
+    <rdfs:label>Room</rdfs:label>
+    <ex:markup rdf:parseType="Other"><c:item>preserve me</c:item></ex:markup>
+  </owl:Class>
+</rdf:RDF>`;
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      {
+        name: 'unknown-parse-type.rdf',
+        baseIri: 'https://example.com/unknown-parse-type.rdf',
+      },
+    );
+    const edited = applyLiteralEdit(
+      loaded.document,
+      loaded.document.projection.entities.room,
+      `${RDFS}label`,
+      'Room',
+      'Space',
+      'Rename Room',
+    );
+    const reparsed = await parseRdfXmlDataset(
+      decodeRdfBytes((await exportRdfDocument(edited)).bytes),
+      'https://example.com/export.rdf',
+    );
+
+    expect(reparsed).toContainEqual(expect.objectContaining({
+      predicate: {
+        termType: 'NamedNode',
+        value: 'https://example.com/ns#markup',
+      },
+      object: {
+        termType: 'Literal',
+        value: '<c:item xmlns:c="urn:content:">preserve me</c:item>',
+        language: '',
+        datatype: {
+          termType: 'NamedNode',
+          value: `${RDF}XMLLiteral`,
+        },
+      },
     }));
   });
 
@@ -224,6 +432,344 @@ describe('RDF document preservation', () => {
         value: 'http://www.w3.org/ns/prov#wasDerivedFrom',
       },
     }));
+  });
+
+  it('patches and adds provenance to the exact RDF IRI without URL normalization', async () => {
+    const source = `<?xml version="1.0"?>
+<rdf:RDF
+  xml:base="https://EXAMPLE.com:443/café/"
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}">
+  <owl:Ontology rdf:about="">
+    <rdfs:label>Ontology</rdfs:label>
+  </owl:Ontology>
+  <owl:Class rdf:about="Thing">
+    <rdfs:label>Thing</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="https://example.com/caf%C3%A9/Thing">
+    <rdfs:label>Thing</rdfs:label>
+  </owl:Class>
+</rdf:RDF>`;
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      { name: 'iri-identity.rdf' },
+    );
+    const firstEntity = loaded.ontology.entityTypes[0];
+    const edited = applyLiteralEdit(
+      loaded.document,
+      loaded.document.projection.entities[firstEntity.id],
+      `${RDFS}label`,
+      'Thing',
+      'Renamed',
+      'Rename exact class',
+    );
+
+    expect(materializeRdfDocument(edited)).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        subject: {
+          termType: 'NamedNode',
+          value: 'https://EXAMPLE.com:443/café/Thing',
+        },
+        object: expect.objectContaining({ value: 'Renamed' }),
+      }),
+      expect.objectContaining({
+        subject: {
+          termType: 'NamedNode',
+          value: 'https://example.com/caf%C3%A9/Thing',
+        },
+        object: expect.objectContaining({ value: 'Thing' }),
+      }),
+    ]));
+
+    const exported = await exportRdfDocument(edited, {
+      includeDerivationMetadata: true,
+    });
+    const exportedQuads = await parseRdfXmlDataset(
+      decodeRdfBytes(exported.bytes),
+      'https://example.com/export.rdf',
+    );
+    expect(exportedQuads).toContainEqual(expect.objectContaining({
+      subject: {
+        termType: 'NamedNode',
+        value: 'https://EXAMPLE.com:443/café/',
+      },
+      predicate: {
+        termType: 'NamedNode',
+        value: 'http://www.w3.org/ns/prov#wasDerivedFrom',
+      },
+    }));
+  });
+
+  it('preserves exact relative IRI resolution through an unrelated edited export', async () => {
+    const source = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}">
+  <owl:Class rdf:about="../archive.../Thing">
+    <rdfs:label>Archived</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="/a/../C">
+    <rdfs:label>Root</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="dir/name:thing">
+    <rdfs:label>Colon</rdfs:label>
+  </owl:Class>
+</rdf:RDF>`;
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      {
+        name: 'relative-iris.rdf',
+        baseIri: 'https://example.org/a/base.rdf',
+      },
+    );
+    const archived = loaded.ontology.entityTypes.find((entity) =>
+      entity.name === 'Archived');
+    expect(archived).toBeDefined();
+    const edited = applyLiteralEdit(
+      loaded.document,
+      loaded.document.projection.entities[archived!.id],
+      `${RDFS}label`,
+      'Archived',
+      'Renamed',
+      'Rename archived class',
+    );
+    const expectedSubjects = [
+      'https://example.org/archive.../Thing',
+      'https://example.org/C',
+      'https://example.org/a/dir/name:thing',
+    ];
+
+    expect(materializeRdfDocument(edited)).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        subject: {
+          termType: 'NamedNode',
+          value: expectedSubjects[0],
+        },
+        predicate: {
+          termType: 'NamedNode',
+          value: `${RDFS}label`,
+        },
+        object: expect.objectContaining({ value: 'Renamed' }),
+      }),
+      ...expectedSubjects.slice(1).map((value) => expect.objectContaining({
+        subject: { termType: 'NamedNode', value },
+      })),
+    ]));
+
+    const exported = await exportRdfDocument(edited);
+    const exportedXml = new DOMParser().parseFromString(
+      decodeRdfBytes(exported.bytes),
+      'application/xml',
+    );
+    expect(exportedXml.querySelector('parsererror')).toBeNull();
+    const exportedSubjects = Array.from(
+      exportedXml.getElementsByTagName('*'),
+    ).map((element) => element.getAttributeNS(RDF, 'about'))
+      .filter((value): value is string => value !== null);
+    expect(exportedSubjects).toEqual(expect.arrayContaining(expectedSubjects));
+  });
+
+  it('preserves independently expected XML literals after an unrelated label edit', async () => {
+    const source = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}"
+  xmlns:e="urn:outer:"
+  xmlns:ex="urn:test:">
+  <owl:Class rdf:about="urn:editable">
+    <rdfs:label>Editable</rdfs:label>
+  </owl:Class>
+  <rdf:Description rdf:about="urn:subject">
+    <ex:amp rdf:parseType="Literal"><x a="a&amp;b">ok</x></ex:amp>
+    <ex:quote rdf:parseType="Literal"><x a="&quot;">ok</x></ex:quote>
+    <ex:text rdf:parseType="Literal"><x>a &amp; b &lt; c</x></ex:text>
+    <ex:inherited rdf:parseType="Literal"><e:y/></ex:inherited>
+    <ex:shadow rdf:parseType="Literal"><x xmlns:e="urn:inner:"><e:y/></x></ex:shadow>
+    <ex:control rdf:parseType="Literal"><x a="&#x9;&#xA;&#xD;"><!--keep--><?keep data?>ok</x></ex:control>
+  </rdf:Description>
+</rdf:RDF>`;
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      {
+        name: 'xml-literals.rdf',
+        baseIri: 'https://example.org/a/base.rdf',
+      },
+    );
+    const editable = loaded.ontology.entityTypes.find((entity) =>
+      entity.name === 'Editable');
+    expect(editable).toBeDefined();
+    const edited = applyLiteralEdit(
+      loaded.document,
+      loaded.document.projection.entities[editable!.id],
+      `${RDFS}label`,
+      'Editable',
+      'Renamed',
+      'Unrelated label edit',
+    );
+    const expected = new Map([
+      ['urn:test:amp', '<x a="a&amp;b">ok</x>'],
+      ['urn:test:quote', '<x a="&quot;">ok</x>'],
+      ['urn:test:text', '<x>a &amp; b &lt; c</x>'],
+      ['urn:test:inherited', '<e:y xmlns:e="urn:outer:"></e:y>'],
+      [
+        'urn:test:shadow',
+        '<x xmlns:e="urn:inner:"><e:y></e:y></x>',
+      ],
+      [
+        'urn:test:control',
+        '<x a="&#x9;&#xA;&#xD;"><!--keep--><?keep data?>ok</x>',
+      ],
+    ]);
+    const materialized = materializeRdfDocument(edited);
+    const actual = new Map(materialized
+      .filter((quad) =>
+        expected.has(quad.predicate.value)
+        && quad.object.termType === 'Literal')
+      .map((quad) => [
+        quad.predicate.value,
+        quad.object.termType === 'Literal' ? quad.object.value : '',
+      ]));
+
+    expect(actual).toEqual(expected);
+    for (const literal of actual.values()) {
+      const fragment = new DOMParser().parseFromString(
+        `<wrapper>${literal}</wrapper>`,
+        'application/xml',
+      );
+      expect(fragment.querySelector('parsererror')).toBeNull();
+    }
+    const controlFragment = new DOMParser().parseFromString(
+      `<wrapper>${expected.get('urn:test:control')}</wrapper>`,
+      'application/xml',
+    );
+    const controlElement = controlFragment.documentElement.firstElementChild;
+    expect(controlElement?.getAttribute('a')).toBe('\t\n\r');
+    expect(Array.from(controlElement?.childNodes ?? [])
+      .map((node) => node.nodeType)).toEqual([
+      Node.COMMENT_NODE,
+      Node.PROCESSING_INSTRUCTION_NODE,
+      Node.TEXT_NODE,
+    ]);
+
+    const exported = await exportRdfDocument(edited);
+    const exportedXml = new DOMParser().parseFromString(
+      decodeRdfBytes(exported.bytes),
+      'application/xml',
+    );
+    expect(exportedXml.querySelector('parsererror')).toBeNull();
+    for (const [predicate, literal] of expected) {
+      const localName = predicate.slice('urn:test:'.length);
+      expect(
+        exportedXml.getElementsByTagNameNS('urn:test:', localName)[0]
+          ?.textContent,
+      ).toBe(literal);
+    }
+  });
+
+  it('preserves split ordinary literals through untouched and unrelated edited exports', async () => {
+    const xsd = 'http://www.w3.org/2001/XMLSchema#';
+    const source = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}"
+  xmlns:ex="urn:test:"
+  xmlns:xsd="${xsd}">
+  <owl:Class rdf:about="urn:editable">
+    <rdfs:label>C</rdfs:label>
+  </owl:Class>
+  <rdf:Description rdf:about="urn:subject">
+    <ex:comment>Before<!--keep-->After</ex:comment>
+    <ex:cdata>Before<![CDATA[ & middle ]]>After</ex:cdata>
+    <ex:alternating>A<![CDATA[B]]>C<![CDATA[D]]>E</ex:alternating>
+    <ex:pi>Before<?keep data?>After</ex:pi>
+    <ex:lang xml:lang="fr">Avant<!--keep-->Après</ex:lang>
+    <ex:typed rdf:datatype="${xsd}string">Before<![CDATA[mid]]>After</ex:typed>
+    <ex:first>one<!--split-->two</ex:first>
+    <ex:empty/>
+    <ex:last>three<?split data?>four</ex:last>
+  </rdf:Description>
+</rdf:RDF>`;
+    const bytes = new TextEncoder().encode(source);
+    const loaded = await createImportedRdfDocument(bytes, {
+      name: 'ordinary-literals.rdf',
+      baseIri: 'https://example.org/source.rdf',
+    });
+    const untouched = await exportRdfDocument(loaded.document);
+
+    expect(untouched.kind).toBe('original');
+    expect(Array.from(untouched.bytes)).toEqual(Array.from(bytes));
+
+    const editable = loaded.ontology.entityTypes.find((entity) =>
+      entity.name === 'C');
+    expect(editable).toBeDefined();
+    const edited = applyLiteralEdit(
+      loaded.document,
+      loaded.document.projection.entities[editable!.id],
+      `${RDFS}label`,
+      'C',
+      'Renamed',
+      'Unrelated label edit',
+    );
+    const expected = new Map([
+      ['comment', 'BeforeAfter'],
+      ['cdata', 'Before & middle After'],
+      ['alternating', 'ABCDE'],
+      ['pi', 'BeforeAfter'],
+      ['lang', 'AvantAprès'],
+      ['typed', 'BeforemidAfter'],
+      ['first', 'onetwo'],
+      ['empty', ''],
+      ['last', 'threefour'],
+    ]);
+    const editedQuads = materializeRdfDocument(edited);
+    const materialized = new Map(editedQuads
+      .filter((quad) =>
+        quad.predicate.value.startsWith('urn:test:')
+        && quad.object.termType === 'Literal')
+      .map((quad) => [
+        quad.predicate.value.slice('urn:test:'.length),
+        quad.object.termType === 'Literal' ? quad.object.value : '',
+      ]));
+
+    expect(materialized).toEqual(expected);
+    expect(editedQuads.find((quad) =>
+      quad.predicate.value === 'urn:test:typed')?.object).toEqual({
+      termType: 'Literal',
+      value: 'BeforemidAfter',
+      language: '',
+      datatype: {
+        termType: 'NamedNode',
+        value: `${xsd}string`,
+      },
+    });
+
+    const exported = await exportRdfDocument(edited);
+    const exportedXml = new DOMParser().parseFromString(
+      decodeRdfBytes(exported.bytes),
+      'application/xml',
+    );
+    expect(exportedXml.querySelector('parsererror')).toBeNull();
+    for (const [localName, value] of expected) {
+      const element = exportedXml
+        .getElementsByTagNameNS('urn:test:', localName)[0];
+      expect(element?.textContent).toBe(value);
+    }
+    const languageElement = exportedXml
+      .getElementsByTagNameNS('urn:test:', 'lang')[0];
+    const typedElement = exportedXml
+      .getElementsByTagNameNS('urn:test:', 'typed')[0];
+    expect(languageElement?.getAttributeNS(
+      'http://www.w3.org/XML/1998/namespace',
+      'lang',
+    )).toBe('fr');
+    expect(
+      typedElement?.getAttributeNS(RDF, 'datatype') ?? `${xsd}string`,
+    )
+      .toBe(`${xsd}string`);
   });
 
   it('rejects an ambiguous visual label instead of guessing', async () => {

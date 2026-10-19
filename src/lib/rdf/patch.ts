@@ -6,6 +6,7 @@ import type {
   ReadyRdfDocument,
 } from '../../types/rdfDocument';
 import {
+  assertXml10Compatible,
   cloneRdfQuad,
   materializeRdfPatches,
   rdfQuadKey,
@@ -38,6 +39,7 @@ export function applyLiteralEdit(
   description: string,
 ): ReadyRdfDocument {
   if (oldValue === newValue) return document;
+  assertXml10Compatible(newValue, 'Edited RDF literal');
   const current = materializeRdfPatches(
     document.originalQuads,
     document.patches,
