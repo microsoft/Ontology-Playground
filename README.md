@@ -83,7 +83,10 @@ download eligibility.
 
 The complete parser retains named and blank nodes, arbitrary predicates,
 literal lexical forms, language tags, datatypes, OWL restrictions, RDF lists,
-and SHACL statements. Standalone RDF/XML node roots retain their subject,
+SHACL statements, and distinct RDF 1.2 directional language literals.
+Directional language and text direction survive complete-graph edits and
+serialization without collapsing `ltr` and `rtl` values. Standalone RDF/XML
+node roots retain their subject,
 unknown `rdf:parseType` values follow XML-literal fallback semantics, and
 valid XML 1.0 Unicode predicate names remain serializable. Property reification
 is independent of XML attribute order, including resource and empty/non-empty
@@ -101,7 +104,8 @@ characters per expanded RDF IRI-like term, 67,108,864 processed term
 characters before deduplication, and 33,554,432 retained term/key characters
 per dataset. XML-literal reconstruction applies the same 16,384-character term
 limit plus bounded total output and event counts before allocating reconstructed
-fragments. Input may use UTF-8 or UTF-16; byte signatures, BOMs, and XML
+fragments. Namespace depth tracking avoids copying every inherited declaration
+for every element. Input may use UTF-8 or UTF-16; byte signatures, BOMs, and XML
 declarations must agree, and unsupported encodings fail explicitly. File
 imports reject the declared file size before allocating contents and abort
 obsolete reads. The bounded dataset parse must succeed before the main-thread
@@ -115,6 +119,10 @@ plain text node instead of constructing an unbounded syntax-token tree; copy
 and download still use the complete source.
 RDF/XML loaded by URL embeds uses the same preflight and complete-graph parser;
 oversized response streams are cancelled before projection.
+Catalogue embeds pin a lazy complete-source request to the exact index entry
+whose verified payload rendered the graph. If that immutable source artifact
+is unavailable, the tab reports the error and keeps generated RDF as the
+explicit fallback instead of switching to a newer catalogue version.
 
 For ontologies created in the Playground, exports can use either the
 Playground round-trip profile or a standards-oriented OWL + SHACL profile. The

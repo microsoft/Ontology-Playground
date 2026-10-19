@@ -24,6 +24,8 @@ tasks:
       - "Bounded individual expanded RDF terms and cumulative retained term/key characters."
       - "Bounded emitted-statement and expanded-term work before deduplication, and required dataset acceptance before visual DOM projection."
       - "Bounded XML-literal reconstruction before fragment allocation and enforced UTF-8/UTF-16 byte/declaration agreement."
+      - "Preserved RDF 1.2 literal text direction in term identity, resource budgets, patches, and RDF/XML serialization."
+      - "Removed redundant full inherited-namespace map copies from both SAX integration passes."
       - "Indexed authoritative quads and exact literals once instead of rescanning the dataset for each projection mapping."
       - "Implemented complete XML 1.0 NCName ranges with linear QName splitting."
     verification: "Dataset and edited-export regressions pass with independent expected terms and canonical graphs."
@@ -61,6 +63,7 @@ tasks:
       - "Allowed self and Blob workers in the deployed application Content Security Policy."
       - "Rendered multi-megabyte complete sources as one bounded plain-text node."
       - "Rendered verified catalogue payloads before lazily loading optional complete RDF sources, with explicit generated-RDF fallback on source failure."
+      - "Pinned each lazy source request to the exact catalogue entry whose verified payload rendered the graph."
     verification: "Unit and native Chromium checks cover same/cross-origin worker execution, the pinned 5.18 MB source view, limits, and pre-worker DOCTYPE rejection."
 
   - task_id: "T008"
@@ -76,7 +79,7 @@ tasks:
     description: "Run complete preservation release gates on the rebased worktree."
     status: "completed"
     requirements: ["REQ-001", "REQ-002", "REQ-003", "REQ-004", "REQ-005", "REQ-006", "REQ-007", "REQ-008"]
-    verification: "931 unit/integration tests, type-check, lint, builds, RDF/deployment validation, and 10 Chromium checks pass."
+    verification: "936 unit/integration tests, type-check, lint, builds, RDF validation, 8 deployment workflows, and 10 Chromium checks pass."
 
   - task_id: "T014"
     description: "Document the final preservation behavior, constraints, and measurements."

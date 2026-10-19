@@ -183,9 +183,25 @@ finding_disposition:
     root_cause: "The catalogue load path awaited the complete RDF artifact before publishing the already verified visual payload."
     resolution: "The graph renders after index/payload verification; opening the RDF tab starts one guarded source request, and source errors remain in that tab with explicit generated RDF fallback."
     evidence: "The initial catalogue graph performs only index and payload requests; a failed source request leaves the graph interactive and reports the failure above generated RDF."
+  - finding: "RDF 1.2 directional literals collapsed and were downgraded"
+    status: "confirmed_fixed"
+    root_cause: "The adapter omitted RDF/JS literal direction from its internal type, quad identity, budgets, and writer."
+    resolution: "Direction is retained as exact literal identity, counted in budgets, carried through patches, and serialized with RDF 1.2 plus ITS direction syntax."
+    evidence: "Independently expected ltr/rtl statements remain distinct after parsing and after an unrelated mapped edit/export."
+  - finding: "Inherited namespace copying amplified memory quadratically"
+    status: "confirmed_fixed"
+    root_cause: "Both SAX integration passes cloned a complete namespace map on every element even though resolved SAX tags already carried the required namespace data."
+    resolution: "The unused maps were replaced with constant-space depth counters while XMLLiteral output-scope tracking remains intact."
+    evidence: "The 45,956-character fixture improved from 195 ms / 313 MB maximum RSS to 31.8 ms / 99 MB, and a scaling regression passes."
+  - finding: "Lazy embeds could pair payload and source from different catalogue versions"
+    status: "confirmed_fixed"
+    root_cause: "The embed discarded the loaded entry and later resolved source metadata again by catalogue ID, including stale-index refresh."
+    resolution: "The embed retains the exact loaded entry and requests only its content-addressed source artifact; unavailability surfaces locally with generated RDF fallback."
+    evidence: "A two-version catalogue regression proves the old source 404 does not refresh the index or display the newer source."
 
 files_changed:
   T004:
+    - "src/types/rdfDocument.ts"
     - "src/lib/rdf/dataset.ts"
     - "src/lib/rdf/dataset.test.ts"
     - "src/lib/rdf/parser.ts"
@@ -208,6 +224,8 @@ files_changed:
   T006:
     - "src/components/EmbedWidget.tsx"
     - "src/components/EmbedWidget.test.tsx"
+    - "src/lib/catalogue.ts"
+    - "src/lib/catalogue.test.ts"
     - "src/lib/rdf/highlighter.ts"
     - "src/lib/rdf/highlighter.test.ts"
     - "src/lib/rdf/workerClient.ts"
@@ -252,14 +270,14 @@ traceability:
 
 test_results:
   affected:
-    command: "npm test -- --run <6 final exact-head regression files>"
-    passed: 155
+    command: "npm test -- --run src/lib/rdf/dataset.test.ts src/lib/rdf/document.test.ts src/lib/catalogue.test.ts src/components/EmbedWidget.test.tsx"
+    passed: 108
     failed: 0
     skipped: 0
   full:
     command: "npm test"
     files_passed: 60
-    passed: 931
+    passed: 936
     failed: 0
     skipped: 0
   browser:
@@ -274,7 +292,7 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 494.38 kB / 137.38 kB gzip; self-contained embed 1,259.62 kB / 378.29 kB gzip"
+    result: "passed; RDF-bearing app chunk 495.83 kB / 137.79 kB gzip; self-contained embed 1,260.32 kB / 378.57 kB gzip"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
@@ -285,7 +303,7 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 22
+  ahead_origin_main: 24
   staged_files: 0
   committed_by_batch: true
   publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
@@ -293,7 +311,7 @@ branch_state:
 independent_review:
   scope: "origin/main...HEAD including the two final follow-up remediations"
   initial_findings: 5
-  follow_up_findings: 24
+  follow_up_findings: 27
   final_disposition: "pending exact-head review"
   reviewer_reused: true
 
