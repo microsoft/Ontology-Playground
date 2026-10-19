@@ -702,6 +702,13 @@ export function loadCatalogueSource(
   return loadCatalogueSourceUncached(id, baseUrl, indexUrl);
 }
 
+export function loadCatalogueSourceForEntry(
+  entry: CatalogueEntry,
+  baseUrl: string = import.meta.env.BASE_URL,
+): Promise<LoadedCatalogueSource> {
+  return requestCatalogueSource(entry, getCatalogueIndexUrl(baseUrl));
+}
+
 export function clearCatalogueCache(): void {
   indexRequests.clear();
   indexRefreshRequests.clear();

@@ -18,8 +18,10 @@ import type {
 import { resolveRdfIri } from './iri';
 
 const RDF_NS = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+const ITS_NS = 'http://www.w3.org/2005/11/its';
 const XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string';
 const RDF_LANG_STRING = `${RDF_NS}langString`;
+const RDF_DIR_LANG_STRING = `${RDF_NS}dirLangString`;
 const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
 const MAX_RDF_QUADS = 250_000;
 const MAX_EXPANDED_RDF_TERM_CHARACTERS = 16_384;
@@ -31,6 +33,7 @@ interface RdfJsTerm {
   termType: string;
   value: string;
   language?: string;
+  direction?: '' | 'ltr' | 'rtl';
   datatype?: RdfJsTerm;
 }
 
@@ -59,18 +62,6 @@ function namespaceDeclarationPrefix(
 ): string | null {
   if (attribute.name === 'xmlns') return '';
   return attribute.prefix === 'xmlns' ? attribute.local : null;
-}
-
-function namespaceScope(
-  parentScope: ReadonlyMap<string, string> | undefined,
-  tag: SaxesTagNS,
-): Map<string, string> {
-  const scope = new Map(parentScope);
-  for (const attribute of Object.values(tag.attributes)) {
-    const prefix = namespaceDeclarationPrefix(attribute);
-    if (prefix !== null) scope.set(prefix, attribute.value);
-  }
-  return scope;
 }
 
 function startsXmlLiteral(tag: SaxesTagNS): boolean {
@@ -187,9 +178,9 @@ function xmlLiteralOpenTag(tag: SaxesTagNS): string {
 function extractXmlLiteralLexicalForms(rdfXml: string): string[] {
   if (!rdfXml.includes('parseType')) return [];
 
-  const namespaceScopes: Map<string, string>[] = [];
   const outputScopes: Map<string, string>[] = [];
   const literals: string[] = [];
+  let elementDepth = 0;
   let literalPropertyDepth: number | null = null;
   let parts: string[] | null = null;
   let literalCharacters = 0;
@@ -231,9 +222,8 @@ function extractXmlLiteralLexicalForms(rdfXml: string): string[] {
   };
 
   parser.on('opentag', (tag) => {
-    const sourceScope = namespaceScope(namespaceScopes.at(-1), tag);
     const insideLiteral = literalPropertyDepth !== null;
-    namespaceScopes.push(sourceScope);
+    elementDepth += 1;
 
     if (insideLiteral) {
       const normalized = normalizedXmlLiteralTag(
@@ -248,7 +238,7 @@ function extractXmlLiteralLexicalForms(rdfXml: string): string[] {
       parts!.push(xmlLiteralOpenTag(normalized.tag));
       outputScopes.push(normalized.outputScope);
     } else if (startsXmlLiteral(tag)) {
-      literalPropertyDepth = namespaceScopes.length;
+      literalPropertyDepth = elementDepth;
       parts = [];
       literalCharacters = 0;
     }
@@ -274,7 +264,7 @@ function extractXmlLiteralLexicalForms(rdfXml: string): string[] {
     }
   });
   parser.on('closetag', (tag) => {
-    const depth = namespaceScopes.length;
+    const depth = elementDepth;
     if (literalPropertyDepth !== null && depth > literalPropertyDepth) {
       appendPart(`</${tag.name}>`);
       outputScopes.pop();
@@ -284,7 +274,7 @@ function extractXmlLiteralLexicalForms(rdfXml: string): string[] {
       parts = null;
       outputScopes.length = 0;
     }
-    namespaceScopes.pop();
+    elementDepth -= 1;
   });
   parser.on('error', (error) => {
     throw error;
@@ -301,9 +291,9 @@ function extractXmlLiteralLexicalForms(rdfXml: string): string[] {
 }
 
 class PreservationRdfXmlParser extends RdfXmlParser {
-  private readonly namespaceScopes: Map<string, string>[] = [];
   private readonly xmlLiteralOutputScopes: Map<string, string>[] = [];
   private readonly activePropertyTags = new Map<number, IActiveTag>();
+  private elementDepth = 0;
   private xmlLiteralPropertyDepth: number | null = null;
   private xmlLiteralValues: readonly string[] = [];
   private xmlLiteralIndex = 0;
@@ -322,8 +312,6 @@ class PreservationRdfXmlParser extends RdfXmlParser {
   }
 
   protected override onTag(tag: SaxesTagNS): void {
-    const sourceScope = namespaceScope(this.namespaceScopes.at(-1), tag);
-
     const insideXmlLiteral = this.xmlLiteralPropertyDepth !== null;
     const normalized = insideXmlLiteral
       ? normalizedXmlLiteralTag(
@@ -333,13 +321,13 @@ class PreservationRdfXmlParser extends RdfXmlParser {
         )
       : null;
     const normalizedTag = normalized?.tag ?? tag;
-    this.namespaceScopes.push(sourceScope);
+    this.elementDepth += 1;
     super.onTag(normalizedTag);
 
     if (normalized) {
       this.xmlLiteralOutputScopes.push(normalized.outputScope);
     } else if (startsXmlLiteral(tag)) {
-      this.xmlLiteralPropertyDepth = this.namespaceScopes.length;
+      this.xmlLiteralPropertyDepth = this.elementDepth;
     }
   }
 
@@ -350,7 +338,7 @@ class PreservationRdfXmlParser extends RdfXmlParser {
     }
 
     const activeTag = this.activePropertyTags.get(
-      this.namespaceScopes.length,
+      this.elementDepth,
     );
     if (activeTag?.predicate) {
       activeTag.text = `${activeTag.text ?? ''}${text}`;
@@ -358,7 +346,7 @@ class PreservationRdfXmlParser extends RdfXmlParser {
   }
 
   protected override onCloseTag(): void {
-    const depth = this.namespaceScopes.length;
+    const depth = this.elementDepth;
     const literalDepth = this.xmlLiteralPropertyDepth;
     const closesLiteralChild =
       literalDepth !== null && depth > literalDepth;
@@ -411,7 +399,7 @@ class PreservationRdfXmlParser extends RdfXmlParser {
     super.onCloseTag();
     this.activePropertyTags.delete(depth);
     if (closesLiteralChild) this.xmlLiteralOutputScopes.pop();
-    this.namespaceScopes.pop();
+    this.elementDepth -= 1;
     if (closesLiteralProperty) {
       this.xmlLiteralPropertyDepth = null;
       this.xmlLiteralOutputScopes.length = 0;
@@ -510,7 +498,7 @@ class PreservationRdfXmlParser extends RdfXmlParser {
       ),
     };
     super.onTagProperty(normalizedTag, activeTag, parentTag);
-    this.activePropertyTags.set(this.namespaceScopes.length, activeTag);
+    this.activePropertyTags.set(this.elementDepth, activeTag);
   }
 }
 
@@ -550,11 +538,42 @@ function objectTerm(term: RdfJsTerm): RdfObject {
     return { termType: 'BlankNode', value: term.value };
   }
   if (term.termType === 'Literal' && term.datatype) {
+    const datatype = namedNode(term.datatype, 'literal datatype');
+    const direction = term.direction ?? '';
+    if (
+      direction !== ''
+      && direction !== 'ltr'
+      && direction !== 'rtl'
+    ) {
+      throw new RdfDatasetError(
+        `Unsupported RDF literal direction "${direction}"`,
+      );
+    }
+    if (
+      direction
+      && (
+        !term.language
+        || datatype.value !== RDF_DIR_LANG_STRING
+      )
+    ) {
+      throw new RdfDatasetError(
+        'Directional RDF literals require a language and rdf:dirLangString datatype.',
+      );
+    }
+    if (
+      datatype.value === RDF_DIR_LANG_STRING
+      && !direction
+    ) {
+      throw new RdfDatasetError(
+        'rdf:dirLangString literals require an explicit text direction.',
+      );
+    }
     return {
       termType: 'Literal',
       value: term.value,
       language: term.language ?? '',
-      datatype: namedNode(term.datatype, 'literal datatype'),
+      ...(direction ? { direction } : {}),
+      datatype,
     };
   }
   throw new RdfDatasetError(
@@ -591,6 +610,7 @@ export function rdfTermKey(
       term.termType,
       term.value,
       term.language,
+      term.direction ?? '',
       term.datatype.value,
     ]);
   }
@@ -646,7 +666,11 @@ export function assertSupportedRdfXmlSource(rdfXml: string): void {
 
 function assertExpandedTermLength(term: RdfJsTerm): void {
   const values = term.termType === 'Literal'
-    ? [term.datatype?.value ?? '', term.language ?? '']
+    ? [
+        term.datatype?.value ?? '',
+        term.language ?? '',
+        term.direction ?? '',
+      ]
     : [term.value];
   for (const value of values) {
     if (value.length > MAX_EXPANDED_RDF_TERM_CHARACTERS) {
@@ -669,6 +693,7 @@ function expandedQuadCharacterCount(source: RdfJsQuad): number {
     characters += term.value.length;
     if (term.termType === 'Literal') {
       characters += (term.language?.length ?? 0)
+        + (term.direction?.length ?? 0)
         + (term.datatype?.value.length ?? 0);
     }
   }
@@ -686,7 +711,9 @@ function retainedQuadCharacterCount(
     + quad.graph.value.length
     + (
       quad.object.termType === 'Literal'
-        ? quad.object.language.length + quad.object.datatype.value.length
+        ? quad.object.language.length
+          + (quad.object.direction?.length ?? 0)
+          + quad.object.datatype.value.length
         : 0
     );
 }
@@ -946,7 +973,11 @@ function serializeObject(
   }
 
   let attributes = '';
-  if (object.language) {
+  if (object.direction) {
+    attributes = ` xml:lang="${escapeXmlAttribute(
+      object.language,
+    )}" its:dir="${object.direction}"`;
+  } else if (object.language) {
     attributes = ` xml:lang="${escapeXmlAttribute(object.language)}"`;
   } else if (
     object.datatype.value !== XSD_STRING
@@ -960,6 +991,9 @@ function serializeObject(
 }
 
 export function serializeRdfXmlDataset(quads: readonly RdfQuad[]): string {
+  const hasDirectionalLiterals = quads.some((quad) =>
+    quad.object.termType === 'Literal'
+    && quad.object.direction !== undefined);
   for (const quad of quads) {
     if (quad.graph.termType !== 'DefaultGraph') {
       throw new RdfDatasetError(
@@ -978,6 +1012,22 @@ export function serializeRdfXmlDataset(quads: readonly RdfQuad[]): string {
         quad.object.datatype.value,
         'RDF literal datatype',
       );
+      if (quad.object.direction) {
+        if (
+          !quad.object.language
+          || quad.object.datatype.value !== RDF_DIR_LANG_STRING
+        ) {
+          throw new RdfDatasetError(
+            'Directional RDF literals require a language and rdf:dirLangString datatype.',
+          );
+        }
+      } else if (
+        quad.object.datatype.value === RDF_DIR_LANG_STRING
+      ) {
+        throw new RdfDatasetError(
+          'rdf:dirLangString literals require an explicit text direction.',
+        );
+      }
     }
   }
 
@@ -996,7 +1046,12 @@ export function serializeRdfXmlDataset(quads: readonly RdfQuad[]): string {
   }
 
   const predicateNames = new Map<string, string>();
-  const namespaces = new Map<string, string>([[RDF_NS, 'rdf']]);
+  const namespaces = new Map<string, string>([
+    [RDF_NS, 'rdf'],
+    ...(hasDirectionalLiterals
+      ? [[ITS_NS, 'its'] as const]
+      : []),
+  ]);
   for (const quad of quads) {
     if (predicateNames.has(quad.predicate.value)) continue;
     const { namespace, localName } = predicateParts(quad.predicate.value);
@@ -1026,6 +1081,9 @@ export function serializeRdfXmlDataset(quads: readonly RdfQuad[]): string {
   output += '<rdf:RDF\n';
   for (const [namespace, prefix] of namespaces) {
     output += `  xmlns:${prefix}="${escapeXmlAttribute(namespace)}"\n`;
+  }
+  if (hasDirectionalLiterals) {
+    output += '  rdf:version="1.2"\n';
   }
   output += '>\n';
   for (const { subject, quads: subjectQuads } of bySubject.values()) {

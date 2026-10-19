@@ -14,6 +14,7 @@ export interface RdfLiteral {
   termType: 'Literal';
   value: string;
   language: string;
+  direction?: 'ltr' | 'rtl';
   datatype: RdfNamedNode;
 }
 

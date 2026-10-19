@@ -245,6 +245,67 @@ describe('RDF document preservation', () => {
     }));
   });
 
+  it('preserves directional literals through an unrelated mapped edit', async () => {
+    const source = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}"
+  xmlns:ex="urn:test:"
+  xmlns:its="http://www.w3.org/2005/11/its"
+  rdf:version="1.2">
+  <owl:Ontology rdf:about="urn:ontology">
+    <rdfs:label>Original name</rdfs:label>
+    <ex:value xml:lang="ar" its:dir="ltr">same</ex:value>
+    <ex:value xml:lang="ar" its:dir="rtl">same</ex:value>
+  </owl:Ontology>
+</rdf:RDF>`;
+    const bytes = new TextEncoder().encode(source);
+    const loaded = await createImportedRdfDocument(bytes, {
+      name: 'directional.rdf',
+      baseIri: 'urn:base:',
+    });
+
+    expect(Array.from((await exportRdfDocument(loaded.document)).bytes))
+      .toEqual(Array.from(bytes));
+    const edited = applyLiteralEdit(
+      loaded.document,
+      loaded.document.projection.ontology,
+      `${RDFS}label`,
+      'Original name',
+      'Edited name',
+      'Rename ontology',
+    );
+    const reparsed = await parseRdfXmlDataset(
+      decodeRdfBytes((await exportRdfDocument(edited)).bytes),
+      'urn:export:',
+    );
+    const directional = reparsed
+      .filter((quad) => quad.predicate.value === 'urn:test:value')
+      .map((quad) => quad.object);
+
+    expect(directional).toEqual([
+      expect.objectContaining({
+        termType: 'Literal',
+        value: 'same',
+        language: 'ar',
+        direction: 'ltr',
+        datatype: expect.objectContaining({
+          value: `${RDF}dirLangString`,
+        }),
+      }),
+      expect.objectContaining({
+        termType: 'Literal',
+        value: 'same',
+        language: 'ar',
+        direction: 'rtl',
+        datatype: expect.objectContaining({
+          value: `${RDF}dirLangString`,
+        }),
+      }),
+    ]);
+  });
+
   it('retains a standalone node-root subject through a mapped edit', async () => {
     const source = `<owl:Class
   xmlns:rdf="${RDF}"

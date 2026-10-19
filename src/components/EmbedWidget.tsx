@@ -33,8 +33,9 @@ import { createImportedRdfDocument } from '../lib/rdf/document';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rdf/highlighter';
 import {
   loadCatalogueEntry,
-  loadCatalogueSource,
+  loadCatalogueSourceForEntry,
 } from '../lib/catalogue';
+import type { LoadedCatalogueEntry } from '../types/catalogue';
 import {
   BOUNDED_LABEL_ZOOM_THRESHOLD,
   createGraphView,
@@ -131,8 +132,15 @@ interface SelectedItem {
   relationship?: Relationship;
 }
 
+interface CatalogueSourceContext {
+  baseUrl: string;
+  entry: LoadedCatalogueEntry;
+}
+
 export function EmbedWidget({ config }: { config: EmbedConfig }) {
   const [ontology, setOntology] = useState<Ontology | null>(null);
+  const [catalogueSourceContext, setCatalogueSourceContext] =
+    useState<CatalogueSourceContext | null>(null);
   const [rdfSource, setRdfSource] = useState<string | null>(null);
   const [rdfSourceStatus, setRdfSourceStatus] =
     useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
@@ -156,6 +164,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
       setLoading(true);
       setError(null);
       setRdfSource(null);
+      setCatalogueSourceContext(null);
       setRdfSourceStatus('idle');
       setRdfSourceError(null);
       setTab('graph');
@@ -163,6 +172,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
       rdfSourceRequestActive.current = false;
       try {
         let ont: Ontology | null = null;
+        let sourceContext: CatalogueSourceContext | null = null;
 
         if (config.ontologyInline) {
           // Base64-encoded JSON
@@ -175,6 +185,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
             || window.location.origin + '/';
           const entry = await loadCatalogueEntry(config.catalogueId, base);
           ont = entry.ontology;
+          sourceContext = { baseUrl: base, entry };
         } else if (config.ontologyUrl) {
           // Fetch from URL
           const res = await fetch(config.ontologyUrl, {
@@ -210,6 +221,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
 
         if (!cancelled) {
           if (config.ontologyInline) setRdfSource(null);
+          setCatalogueSourceContext(sourceContext);
           setOntology(ont);
           setLoading(false);
         }
@@ -234,21 +246,20 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
     setTab(nextTab);
     if (
       nextTab !== 'rdf'
-      || !config.catalogueId
+      || !catalogueSourceContext
       || rdfSourceStatus !== 'idle'
       || rdfSourceRequestActive.current
     ) {
       return;
     }
-    const base = config.catalogueBaseUrl
-      || (document.currentScript as HTMLScriptElement | null)
-        ?.src.replace(/\/[^/]+$/, '/')
-      || window.location.origin + '/';
     const requestId = ++rdfSourceRequestId.current;
     rdfSourceRequestActive.current = true;
     setRdfSourceStatus('loading');
     setRdfSourceError(null);
-    void loadCatalogueSource(config.catalogueId, base)
+    void loadCatalogueSourceForEntry(
+      catalogueSourceContext.entry,
+      catalogueSourceContext.baseUrl,
+    )
       .then((source) => {
         if (requestId !== rdfSourceRequestId.current) return;
         setRdfSource(source.text);

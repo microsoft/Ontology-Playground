@@ -7,6 +7,7 @@ import {
   loadCatalogueEntry,
   loadCatalogueIndex,
   loadCatalogueSource,
+  loadCatalogueSourceForEntry,
 } from './catalogue';
 
 const payload: CatalogueEntryPayload = {
@@ -258,6 +259,27 @@ describe('catalogue loader', () => {
       refreshedCatalogue.entries[0].sourceArtifactUrl,
     );
     expect(indexRequests).toBe(2);
+  });
+
+  it('does not replace an exact entry source with a newer catalogue version', async () => {
+    const originalCatalogue = createCatalogue();
+    let indexRequests = 0;
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = input.toString();
+      if (url.endsWith('/catalogue.json')) {
+        indexRequests++;
+        return response(JSON.stringify(originalCatalogue));
+      }
+      return new Response('not found', { status: 404 });
+    });
+
+    await expect(loadCatalogueSourceForEntry(
+      originalCatalogue.entries[0],
+      '/playground/',
+    )).rejects.toThrow(
+      'Failed to load original source for "official/test" (404)',
+    );
+    expect(indexRequests).toBe(0);
   });
 
   it('rejects source integrity failures and allows a later retry', async () => {

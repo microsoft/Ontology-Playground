@@ -534,6 +534,63 @@ describe('EmbedWidget', () => {
     expect(screen.getByText('Test Ontology')).toBeTruthy();
   });
 
+  it('does not pair a rendered payload with a newer catalogue source', async () => {
+    const refreshedSource =
+      '<?xml version="1.0"?><rdf:RDF data-version="new"/>\n';
+    const refreshedSourceHash = createHash('sha256')
+      .update(refreshedSource)
+      .digest('hex');
+    const refreshedCatalogue: Catalogue = {
+      ...fakeCatalogue,
+      entries: [{
+        ...fakeCatalogue.entries[0],
+        sourceArtifactUrl:
+          `catalogue-sources/official/test/${refreshedSourceHash}.rdf`,
+        sourceArtifactHash: `sha256:${refreshedSourceHash}`,
+        sourceArtifactByteLength: new TextEncoder()
+          .encode(refreshedSource).byteLength,
+      }],
+    };
+    let indexRequests = 0;
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = input.toString();
+      if (url.endsWith('/catalogue.json')) {
+        indexRequests++;
+        return new Response(JSON.stringify(
+          indexRequests === 1
+            ? fakeCatalogue
+            : refreshedCatalogue,
+        ), { status: 200 });
+      }
+      if (url.endsWith(fakeCatalogue.entries[0].payloadUrl)) {
+        return new Response(fakePayloadContent, { status: 200 });
+      }
+      if (url.endsWith(fakeCatalogue.entries[0].sourceArtifactUrl!)) {
+        return new Response('old source unavailable', { status: 404 });
+      }
+      if (url.endsWith(refreshedCatalogue.entries[0].sourceArtifactUrl!)) {
+        return new Response(refreshedSource, { status: 200 });
+      }
+      return new Response('not found', { status: 404 });
+    });
+    const user = userEvent.setup();
+    render(<EmbedWidget config={{
+      catalogueId: 'official/test',
+      theme: 'dark',
+      height: '400px',
+    }} />);
+
+    await screen.findByText('Test Ontology');
+    await user.click(screen.getByText('Generated RDF'));
+
+    await screen.findByText(/Complete RDF source is unavailable/);
+    expect(document.querySelector('pre')?.textContent)
+      .toMatch(/owl:Ontology/);
+    expect(document.querySelector('pre')?.textContent)
+      .not.toBe(refreshedSource);
+    expect(indexRequests).toBe(1);
+  });
+
   it('renders with light theme', async () => {
     const inline = btoa(JSON.stringify(testOntology));
     const config: EmbedConfig = { ontologyInline: inline, theme: 'light', height: '300px' };

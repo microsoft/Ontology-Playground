@@ -134,6 +134,54 @@ describe('complete RDF/XML dataset adapter', () => {
       || quad.object.termType === 'BlankNode')).toBe(true);
   });
 
+  it('preserves distinct RDF 1.2 directional literals through serialization', async () => {
+    const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:ex="urn:test:"
+  xmlns:its="http://www.w3.org/2005/11/its"
+  rdf:version="1.2">
+  <rdf:Description rdf:about="urn:subject">
+    <ex:value xml:lang="ar" its:dir="ltr">same</ex:value>
+    <ex:value xml:lang="ar" its:dir="rtl">same</ex:value>
+  </rdf:Description>
+</rdf:RDF>`;
+    const expectedObjects = [
+      {
+        termType: 'Literal',
+        value: 'same',
+        language: 'ar',
+        direction: 'ltr',
+        datatype: {
+          termType: 'NamedNode',
+          value: `${RDF}dirLangString`,
+        },
+      },
+      {
+        termType: 'Literal',
+        value: 'same',
+        language: 'ar',
+        direction: 'rtl',
+        datatype: {
+          termType: 'NamedNode',
+          value: `${RDF}dirLangString`,
+        },
+      },
+    ];
+
+    const original = await parseRdfXmlDataset(source, 'urn:base:');
+    const serialized = serializeRdfXmlDataset(original);
+    const reparsed = await parseRdfXmlDataset(serialized, 'urn:export:');
+
+    expect(original.map((quad) => quad.object)).toEqual(expectedObjects);
+    expect(serialized).toContain('rdf:version="1.2"');
+    expect(serialized).toContain(
+      'xmlns:its="http://www.w3.org/2005/11/its"',
+    );
+    expect(serialized).toContain('its:dir="ltr"');
+    expect(serialized).toContain('its:dir="rtl"');
+    expect(reparsed.map((quad) => quad.object)).toEqual(expectedObjects);
+  });
+
   it('round-trips an RDF graph isomorphically without network access', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
     const source = COMPLEX_RDF.replace(
@@ -269,6 +317,36 @@ describe('complete RDF/XML dataset adapter', () => {
       source,
       'https://example.com/source.rdf',
     )).rejects.toThrow(/XML literal.*character limit/i);
+  });
+
+  it('avoids quadratic inherited namespace work in deep XML literals', async () => {
+    const measure = async (count: number) => {
+      const namespaces = Array.from(
+        { length: count },
+        (_, index) => `xmlns:p${index}="urn:p${index}:"`,
+      ).join(' ');
+      const source = `<rdf:RDF xmlns:rdf="${RDF}" ${namespaces}>
+  <rdf:Description rdf:about="urn:subject">
+    <rdf:value rdf:parseType="Literal">${
+      '<x>'.repeat(count)
+    }value${'</x>'.repeat(count)}</rdf:value>
+  </rdf:Description>
+</rdf:RDF>`;
+      const startedAt = performance.now();
+      const quads = await parseRdfXmlDataset(source, 'urn:base:');
+      return {
+        duration: performance.now() - startedAt,
+        quads,
+      };
+    };
+
+    await measure(100);
+    const short = await measure(750);
+    const long = await measure(1_500);
+
+    expect(long.quads).toHaveLength(1);
+    expect(long.duration).toBeLessThan(250);
+    expect(long.duration).toBeLessThan(short.duration * 3 + 10);
   });
 
   it('preserves carriage returns in literal lexical values', async () => {
