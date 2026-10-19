@@ -206,8 +206,8 @@ All release checks below passed on 2026-10-19.
 | Inert imports/rules | Passed | Tests verify no import/external-resource requests and no SHACL execution. |
 | Real artifact | Passed | Brick: 5,179,865 bytes, SHA-256 `655939e9b655b7bb890e47c2015d046f41cb2dc6f314895490ebe6c14c5fc423`, 53,957 unique RDF 1.1 quads. |
 | Performance | Passed | Final rebased Brick probe: parse 255.3 ms, serialize 72.6 ms, retained heap baseline 54.9 MiB. An XML-literal namespace-amplification fixture rejects in 8.9 ms with about 1.14 MiB heap growth. A separate 45,956-character inherited-namespace/deep-literal fixture dropped from 195 ms / 313 MB maximum RSS to 31.8 ms / 99 MB after redundant namespace-map copies were removed. An indexed 3,000-mapping / 36,000-quad authority check took 24.7 ms instead of repeated full-dataset scans; Designer editability, dirty-state checks, and statement counts reuse one immutable-document cache. A 10,000-emission long-IRI duplicate fixture was rejected in 199.5 ms before projection. Catalogue embeds render their verified payload before optional source retrieval. The 5.18 MB source view uses one plain text node; all ten Chromium checks passed. |
-| Regression/build | Passed | 60 files / 936 tests, TypeScript, ESLint, production/inline-worker embed build, RDF validation, 8 deployment workflows, and 10 Chromium checks pass. |
-| Independent review | Pending | Twenty-five exact-head follow-up findings across six review passes were reproduced and fixed; another independent check of the new committed head is required before publication. |
+| Regression/build | Passed | 60 files / 937 tests pass under the development runtime, the full suite and 103 focused CI regressions pass under Node 20, and TypeScript, ESLint, production/inline-worker embed build, RDF validation, 8 deployment workflows, and 10 Chromium checks pass. |
+| Independent review | Pending | The RDF remediation head passed its sixth review cleanly; the subsequent Node 20 CI portability fix requires one final exact-head check before merge. |
 
 ## Implemented file additions
 

@@ -198,6 +198,16 @@ finding_disposition:
     root_cause: "The embed discarded the loaded entry and later resolved source metadata again by catalogue ID, including stale-index refresh."
     resolution: "The embed retains the exact loaded entry and requests only its content-addressed source artifact; unavailability surfaces locally with generated RDF fallback."
     evidence: "A two-version catalogue regression proves the old source 404 does not refresh the index or display the newer source."
+  - finding: "Node 20 Web Crypto rejected VM-realm RDF byte buffers"
+    status: "confirmed_fixed"
+    root_cause: "Node 20's Web Crypto BufferSource conversion rejects ArrayBuffers constructed inside Vitest's isolated VM realm."
+    resolution: "Source bytes are copied into an ArrayBuffer created by the same-realm TextEncoder implementation before hashing."
+    evidence: "An explicit cross-realm regression, 35 focused UTF-16/preview tests, and the full 937-test suite pass under Node 20."
+  - finding: "Concurrent catalogue compilation exceeded the CI-only test timeout"
+    status: "confirmed_fixed"
+    root_cause: "The end-to-end test's 60-second subprocess cap was too close to the real compiler's runtime on a contended two-core CI runner."
+    resolution: "The redundant end-to-end test allows 120 seconds; the dedicated CI compile step remains independently blocking and unchanged."
+    evidence: "The catalogue test passes both alone and alongside 102 source/preview tests under Node 20."
 
 files_changed:
   T004:
@@ -238,6 +248,7 @@ files_changed:
     - "src/components/FabricExportModal.tsx"
     - "src/components/FabricExportModal.test.tsx"
   T013:
+    - "scripts/compile-catalogue.test.ts"
     - "docs/plans/full-rdf-preservation/plan.md"
   T014:
     - "README.md"
@@ -277,7 +288,7 @@ test_results:
   full:
     command: "npm test"
     files_passed: 60
-    passed: 936
+    passed: 937
     failed: 0
     skipped: 0
   browser:
@@ -292,7 +303,9 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 495.83 kB / 137.79 kB gzip; self-contained embed 1,260.32 kB / 378.57 kB gzip"
+    result: "passed; RDF-bearing app chunk 495.92 kB / 137.81 kB gzip; self-contained embed 1,260.41 kB / 378.60 kB gzip"
+  - command: "CI=true npx -y node@20 ./node_modules/vitest/vitest.mjs run"
+    result: "60 files / 937 tests passed, including the explicit cross-realm regression and catalogue compilation"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
@@ -303,16 +316,16 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 24
+  ahead_origin_main: 26
   staged_files: 0
   committed_by_batch: true
   publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
 
 independent_review:
-  scope: "origin/main...HEAD including the two final follow-up remediations"
+  scope: "origin/main...ce2d1f0, before the Node 20 CI portability correction"
   initial_findings: 5
-  follow_up_findings: 27
-  final_disposition: "pending exact-head review"
+  follow_up_findings: 29
+  final_disposition: "clean at ce2d1f0; pending exact-head review after CI correction"
   reviewer_reused: true
 
 remaining_risks:
