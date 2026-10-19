@@ -208,6 +208,11 @@ finding_disposition:
     root_cause: "The end-to-end test's 60-second subprocess cap was too close to the real compiler's runtime on a contended two-core CI runner."
     resolution: "The redundant end-to-end test allows 120 seconds; the dedicated CI compile step remains independently blocking and unchanged."
     evidence: "The catalogue test passes both alone and alongside 102 source/preview tests under Node 20."
+  - finding: "Concurrent real-Brick validation exceeded the CI-only test timeout"
+    status: "confirmed_fixed"
+    root_cause: "The real-artifact validation shared a 60-second cap with CPU- and memory-heavy catalogue tests running in parallel on the CI runner."
+    resolution: "The real-artifact regression allows 120 seconds; the earlier dedicated RDF validation step remains independently blocking and unchanged."
+    evidence: "All 13 validation-profile tests pass under Node 20 in 14.29 seconds when isolated; the prior CI run completed every other test and reached only this old cap."
 
 files_changed:
   T004:
@@ -249,6 +254,7 @@ files_changed:
     - "src/components/FabricExportModal.test.tsx"
   T013:
     - "scripts/compile-catalogue.test.ts"
+    - "scripts/validate-rdf.test.ts"
     - "docs/plans/full-rdf-preservation/plan.md"
   T014:
     - "README.md"
@@ -324,7 +330,7 @@ branch_state:
 independent_review:
   scope: "origin/main...ce2d1f0, before the Node 20 CI portability correction"
   initial_findings: 5
-  follow_up_findings: 29
+  follow_up_findings: 30
   final_disposition: "clean at ce2d1f0; pending exact-head review after CI correction"
   reviewer_reused: true
 
