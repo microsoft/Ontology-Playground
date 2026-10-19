@@ -204,4 +204,39 @@ describe('catalogue deep links', () => {
     expect(loadDraft).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalledWith({ page: 'designer' });
   });
+
+  it('does not open an ontology above the safe Designer graph limit', async () => {
+    appMocks.route = { page: 'home' };
+    useAppStore.getState().loadOntology({
+      name: 'Large Ontology',
+      description: '',
+      entityTypes: Array.from({ length: 1_000 }, (_, index) => ({
+        id: `entity-${index}`,
+        name: `Entity ${index}`,
+        description: '',
+        properties: [],
+      })),
+      relationships: [],
+    });
+    const ensureCurrentRdfDocument = vi.spyOn(
+      useAppStore.getState(),
+      'ensureCurrentRdfDocument',
+    );
+    const loadDraft = vi.spyOn(
+      useDesignerStore.getState(),
+      'loadDraft',
+    );
+    const user = userEvent.setup();
+    render(<App />);
+    const callsBeforeClick =
+      ensureCurrentRdfDocument.mock.calls.length;
+
+    await user.click(screen.getByText('Open Designer'));
+
+    expect(ensureCurrentRdfDocument).toHaveBeenCalledTimes(
+      callsBeforeClick,
+    );
+    expect(loadDraft).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalledWith({ page: 'designer' });
+  });
 });

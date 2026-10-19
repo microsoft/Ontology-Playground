@@ -656,4 +656,34 @@ describe('GalleryModal', () => {
     // onClose should NOT be called (navigation handles unmounting)
     expect(onClose).not.toHaveBeenCalled();
   });
+
+  it('disables Designer entry for catalogue ontologies above the safe graph limit', async () => {
+    const largeEntry: CatalogueEntry = {
+      ...fakeCatalogue.entries[0],
+      id: 'official/large-ontology',
+      name: 'Large Ontology',
+      entityCount: 1_000,
+      relationshipCount: 0,
+      payloadUrl:
+        `catalogue-payloads/official/large-ontology/${'c'.repeat(64)}.json`,
+      payloadHash: `sha256:${'c'.repeat(64)}`,
+      sourceArtifactUrl:
+        `catalogue-sources/official/large-ontology/${'d'.repeat(64)}.rdf`,
+      sourceArtifactHash: `sha256:${'d'.repeat(64)}`,
+    };
+    mockFetchSuccess({
+      ...fakeCatalogue,
+      count: fakeCatalogue.count + 1,
+      entries: [largeEntry, ...fakeCatalogue.entries],
+    });
+    render(<GalleryModal onClose={onClose} />);
+
+    await screen.findByText('Large Ontology');
+
+    const editButton = screen.getByTitle(
+      'Large Ontology contains 1,000 graph elements, which is too large for safe all-at-once editing. Open it in the catalogue viewer instead.',
+    );
+    expect(editButton).toBeDisabled();
+    expect(window.location.hash).toBe('#/catalogue');
+  });
 });

@@ -43,14 +43,21 @@ function getChildText(
   // Try namespace-aware lookup first
   if (namespace) {
     const els = parent.getElementsByTagNameNS(namespace, localName);
-    if (els.length > 0) return els[0].textContent;
+    for (let index = 0; index < els.length; index += 1) {
+      if (!isInsideXmlLiteralProperty(els[index], parent)) {
+        return els[index].textContent;
+      }
+    }
   }
 
   // Fallback: try all children by local name match
   for (let i = 0; i < parent.children.length; i++) {
     const child = parent.children[i];
     const childLocal = child.localName || child.tagName.split(':').pop();
-    if (childLocal === localName) {
+    if (
+      childLocal === localName
+      && !isInsideXmlLiteralProperty(child, parent)
+    ) {
       return child.textContent;
     }
   }
@@ -71,6 +78,7 @@ function getChildResource(
     if (
       childLocal === localName
       && (namespace === undefined || child.namespaceURI === namespace)
+      && !isInsideXmlLiteralProperty(child, parent)
     ) {
       return child.getAttributeNS(
         'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
@@ -91,6 +99,7 @@ function getDirectChildText(
     if (
       child.localName === localName
       && child.namespaceURI === namespace
+      && !isInsideXmlLiteralProperty(child, parent)
     ) {
       return child.textContent;
     }
@@ -112,7 +121,11 @@ function getChildResources(
   for (let i = 0; i < parent.children.length; i++) {
     const child = parent.children[i];
     const childLocal = child.localName || child.tagName.split(':').pop();
-    if (childLocal !== localName || (namespace && child.namespaceURI !== namespace)) continue;
+    if (
+      childLocal !== localName
+      || (namespace && child.namespaceURI !== namespace)
+      || isInsideXmlLiteralProperty(child, parent)
+    ) continue;
     const resource = child.getAttributeNS(RDF_NS, 'resource');
     if (resource) results.push(resource);
   }
@@ -127,7 +140,11 @@ function getChildTexts(parent: Element, localName: string): string[] {
   for (let i = 0; i < parent.children.length; i++) {
     const child = parent.children[i];
     const childLocal = child.localName || child.tagName.split(':').pop();
-    if (childLocal === localName && child.textContent) {
+    if (
+      childLocal === localName
+      && child.textContent
+      && !isInsideXmlLiteralProperty(child, parent)
+    ) {
       results.push(child.textContent);
     }
   }
@@ -201,6 +218,26 @@ const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 const PLAYGROUND_METADATA_NS =
   'https://microsoft.github.io/Ontology-Playground/ns/metadata#';
 
+function isXmlLiteralProperty(element: Element): boolean {
+  const parseType = element.getAttributeNS(RDF_NS, 'parseType');
+  return parseType !== null
+    && parseType !== 'Resource'
+    && parseType !== 'Collection'
+    && parseType !== 'Triple';
+}
+
+function isInsideXmlLiteralProperty(
+  element: Element,
+  boundary: Element,
+): boolean {
+  let current: Element | null = element;
+  while (current && current !== boundary) {
+    if (isXmlLiteralProperty(current)) return true;
+    current = current.parentElement;
+  }
+  return false;
+}
+
 function resolveProjectionIri(
   value: string,
   baseIri: string | undefined,
@@ -270,7 +307,7 @@ function getElementsIncludingRoot(
   return [
     ...(rootMatches ? [root] : []),
     ...Array.from(root.getElementsByTagNameNS(namespace, localName)),
-  ];
+  ].filter((element) => !isInsideXmlLiteralProperty(element, root));
 }
 
 function indexRdfNodes(root: Element): RdfNodeIndex {
@@ -290,7 +327,11 @@ function indexRdfNodes(root: Element): RdfNodeIndex {
     const indexedTypes = new Set<string>();
     for (let j = 0; j < element.children.length; j++) {
       const child = element.children[j];
-      if (child.namespaceURI !== RDF_NS || child.localName !== 'type') continue;
+      if (
+        child.namespaceURI !== RDF_NS
+        || child.localName !== 'type'
+        || isInsideXmlLiteralProperty(child, element)
+      ) continue;
       const resource = child.getAttributeNS(RDF_NS, 'resource');
       if (!resource || indexedTypes.has(resource)) continue;
       indexedTypes.add(resource);
@@ -369,7 +410,10 @@ function getDirectChild(parent: Element, localName: string): Element | null {
   for (let i = 0; i < parent.children.length; i++) {
     const child = parent.children[i];
     const childLocal = child.localName || child.tagName.split(':').pop();
-    if (childLocal === localName) return child;
+    if (
+      childLocal === localName
+      && !isInsideXmlLiteralProperty(child, parent)
+    ) return child;
   }
   return null;
 }

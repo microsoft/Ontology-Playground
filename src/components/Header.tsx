@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppStore, THEME_OPTIONS } from '../store/appStore';
 import { useRoute } from '../hooks/useRoute';
-import { routeToHash } from '../lib/router';
+import { currentRoute, routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
 import {
@@ -33,6 +33,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
     rdfDocument,
   } = useAppStore();
   const route = useRoute();
+  const routeIdentity = routeToHash(route);
   const [shareStatus, setShareStatus] = useState<'idle' | 'copying' | 'copied' | 'downloaded'>('idle');
   const [shareError, setShareError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -51,10 +52,12 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
     const requestId = ++shareRequestId.current;
     const ontologyAtStart = currentOntology;
     const documentAtStart = rdfDocument;
+    const routeAtStart = routeIdentity;
     const isCurrentRequest = () => {
       const activeState = useAppStore.getState();
       return mounted.current
         && requestId === shareRequestId.current
+        && routeToHash(currentRoute()) === routeAtStart
         && activeState.currentOntology === ontologyAtStart
         && isSameRdfDocumentRevision(
           activeState.rdfDocument,
@@ -67,6 +70,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
       if (shareableId) {
         // Catalogue ontology — use the short deep link
         const url = `${window.location.origin}${window.location.pathname}#/catalogue/${shareableId}`;
+        if (!isCurrentRequest()) return;
         await navigator.clipboard.writeText(url);
         if (!isCurrentRequest()) return;
         setShareStatus('copied');
@@ -89,6 +93,11 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         link.href = url;
         link.download = `${currentOntology.name.toLowerCase().replace(/\s+/g, '-')}-${result.kind === 'original' ? 'original' : 'derived'}.rdf`;
         document.body.appendChild(link);
+        if (!isCurrentRequest()) {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          return;
+        }
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
@@ -105,6 +114,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
       if (!isCurrentRequest()) return;
       if (encoded) {
         const url = `${window.location.origin}${window.location.pathname}#/share/${encoded}`;
+        if (!isCurrentRequest()) return;
         await navigator.clipboard.writeText(url);
         if (!isCurrentRequest()) return;
         history.replaceState(null, '', routeToHash({ page: 'share', data: encoded }));
@@ -121,6 +131,11 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         link.href = url;
         link.download = `${currentOntology.name.toLowerCase().replace(/\s+/g, '-')}-ontology.rdf`;
         document.body.appendChild(link);
+        if (!isCurrentRequest()) {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          return;
+        }
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
@@ -147,7 +162,12 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
     shareRequestId.current += 1;
     setShareStatus('idle');
     setShareError(null);
-  }, [currentOntology, rdfDocument?.id, rdfDocument?.revision]);
+  }, [
+    currentOntology,
+    rdfDocument?.id,
+    rdfDocument?.revision,
+    routeIdentity,
+  ]);
 
   const shareLabel = shareStatus === 'copied' ? 'Copied!' : shareStatus === 'downloaded' ? 'Downloaded RDF' : shareStatus === 'copying' ? 'Encoding…' : 'Share';
 

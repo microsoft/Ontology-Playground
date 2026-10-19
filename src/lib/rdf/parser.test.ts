@@ -43,6 +43,43 @@ describe('parseRDF', () => {
 
 </rdf:RDF>`;
 
+  it.each(['Literal', 'Unsupported'])(
+    'does not project RDF-looking markup inside rdf:parseType="%s"',
+    (parseType) => {
+      const rdf = `<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="${RDF_NS}"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sh="http://www.w3.org/ns/shacl#"
+    xmlns:ex="https://example.org/ns#">
+  <rdf:Description rdf:about="https://example.org/source">
+    <ex:markup rdf:parseType="${parseType}">
+      <owl:Ontology rdf:about="https://example.org/fabricated">
+        <rdfs:label>Fabricated ontology</rdfs:label>
+      </owl:Ontology>
+      <rdf:Description rdf:about="https://example.org/fabricated-class">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+        <rdfs:label>Fabricated class</rdfs:label>
+      </rdf:Description>
+      <sh:NodeShape rdf:about="https://example.org/fabricated-shape"/>
+    </ex:markup>
+  </rdf:Description>
+</rdf:RDF>`;
+
+      const parsed = parseRDF(rdf, { allowEmptyProjection: true });
+
+      expect(parsed.ontology.name).toBe('Imported Ontology');
+      expect(parsed.ontology.entityTypes).toEqual([]);
+      expect(parsed.ontology.relationships).toEqual([]);
+      expect(parsed.ontology.rdfMetadata).toBeUndefined();
+      expect(parsed.projection).toEqual({
+        entities: {},
+        relationships: {},
+      });
+    },
+  );
+
   it('extracts ontology provenance without dereferencing imports or executing SHACL', () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
     const rdf = `<?xml version="1.0"?>

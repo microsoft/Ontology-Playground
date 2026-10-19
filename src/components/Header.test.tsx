@@ -88,6 +88,52 @@ describe('Header RDF sharing', () => {
     expect(click).not.toHaveBeenCalled();
   });
 
+  it('does not download a source export after route-only navigation', async () => {
+    const parsed = await createImportedRdfDocument(
+      new TextEncoder().encode(`<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="https://example.com/Equipment"/>
+</rdf:RDF>`),
+      { name: 'route-stale-share.rdf' },
+    );
+    useAppStore.getState().loadOntology(
+      parsed.ontology,
+      parsed.bindings,
+      null,
+      parsed.document,
+    );
+    const pending = deferred<RdfExportResult>();
+    vi.spyOn(rdfDocumentModule, 'exportRdfDocument')
+      .mockReturnValueOnce(pending.promise);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    render(<Header {...callbacks} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Share' }));
+    act(() => {
+      window.history.pushState(null, '', '#/learn');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    pending.resolve({
+      kind: 'original',
+      bytes: new TextEncoder().encode('<rdf:RDF/>'),
+      mediaType: 'application/rdf+xml',
+      sourceHash: parsed.document.source.hash,
+      sourceTripleCount: parsed.document.originalQuads.length,
+      exportedTripleCount: parsed.document.originalQuads.length,
+      patchCount: 0,
+      derivationMetadataIncluded: false,
+    });
+
+    await act(async () => {
+      await pending.promise;
+      await Promise.resolve();
+    });
+    expect(click).not.toHaveBeenCalled();
+  });
+
   it('does not navigate to an authored share after the ontology changes during clipboard write', async () => {
     const clipboard = deferred<void>();
     const writeText = vi.fn(() => clipboard.promise);
@@ -106,6 +152,33 @@ describe('Header RDF sharing', () => {
       ...cosmicCoffeeOntology,
       name: 'Replacement Ontology',
     }));
+    clipboard.resolve();
+
+    await act(async () => {
+      await clipboard.promise;
+      await Promise.resolve();
+    });
+    expect(replaceState).not.toHaveBeenCalled();
+  });
+
+  it('does not navigate to an authored share after route-only navigation', async () => {
+    const clipboard = deferred<void>();
+    const writeText = vi.fn(() => clipboard.promise);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    vi.spyOn(shareCodecModule, 'encodeSharePayload')
+      .mockResolvedValueOnce('encoded-route-stale-ontology');
+    const replaceState = vi.spyOn(history, 'replaceState');
+    render(<Header {...callbacks} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Share' }));
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    act(() => {
+      window.history.pushState(null, '', '#/learn');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
     clipboard.resolve();
 
     await act(async () => {

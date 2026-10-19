@@ -14,8 +14,7 @@ import { EntityForm, RelationshipForm, DesignerPreview, DesignerToolbar, Designe
 import type { Route } from '../lib/router';
 import type { CatalogueEntry } from '../types/catalogue';
 import {
-  isLargeOntologyGraph,
-  ontologyGraphElementCount,
+  getOntologyDesignerScaleError,
 } from '../lib/ontologyScale';
 import { SourceFidelityNote } from './SourceFidelityNote';
 
@@ -108,11 +107,12 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
       try {
         const entry = await loadCatalogueEntry(id);
         if (!isCurrentLoad()) return;
-        if (isLargeOntologyGraph(entry.ontology)) {
-          setLoadError(
-            `${entry.name} contains ${ontologyGraphElementCount(entry.ontology).toLocaleString()} graph elements, ` +
-            'which is too large for safe all-at-once editing. Open it in the catalogue viewer instead.'
-          );
+        const scaleError = getOntologyDesignerScaleError(
+          entry.ontology,
+          entry.name,
+        );
+        if (scaleError) {
+          setLoadError(scaleError);
           return;
         }
         const reference = createCatalogueRdfDocumentReference(entry);
@@ -199,7 +199,7 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
       <div className="designer-split">
         {/* Left: editor forms */}
         <div className="designer-sidebar">
-          {isEmpty && (
+          {isEmpty && !rdfDocument && (
             <TemplatePicker
               onTemplateSelected={clearDesignerCatalogueContext}
             />

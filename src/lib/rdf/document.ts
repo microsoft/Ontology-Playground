@@ -5,7 +5,10 @@ import type {
   RdfDocumentReference,
   RdfExportOptions,
   RdfExportResult,
+  RdfNamedNode,
   RdfProjectionResource,
+  RdfProjectionMap,
+  RdfQuad,
   ReadyRdfDocument,
 } from '../../types/rdfDocument';
 import { loadCatalogueSource } from '../catalogue';
@@ -25,6 +28,13 @@ import {
 export { applyLiteralEdit } from './patch';
 
 export const MAX_RDF_SOURCE_BYTES = 8 * 1024 * 1024;
+const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+const RDFS_SUBCLASS_OF =
+  'http://www.w3.org/2000/01/rdf-schema#subClassOf';
+const OWL_CLASS = 'http://www.w3.org/2002/07/owl#Class';
+const OWL_OBJECT_PROPERTY =
+  'http://www.w3.org/2002/07/owl#ObjectProperty';
+const OWL_ONTOLOGY = 'http://www.w3.org/2002/07/owl#Ontology';
 
 export function isSameRdfDocumentRevision(
   left: RdfDocument | null | undefined,
@@ -61,6 +71,77 @@ function fallbackOntologyName(name: string): string {
   return name
     .replace(/\.(rdf|owl|xml|iq)$/i, '')
     .trim() || 'Imported Ontology';
+}
+
+function hasAuthoritativeQuad(
+  quads: readonly RdfQuad[],
+  subject: RdfNamedNode,
+  predicate: string,
+  object: RdfNamedNode,
+): boolean {
+  return quads.some((quad) =>
+    quad.graph.termType === 'DefaultGraph'
+    && quad.subject.termType === 'NamedNode'
+    && quad.subject.value === subject.value
+    && quad.predicate.value === predicate
+    && quad.object.termType === 'NamedNode'
+    && quad.object.value === object.value
+  );
+}
+
+function retainAuthoritativeProjectionMappings(
+  projection: RdfProjectionMap,
+  quads: readonly RdfQuad[],
+): RdfProjectionMap {
+  const ontology = projection.ontology
+    && hasAuthoritativeQuad(
+      quads,
+      projection.ontology.term,
+      RDF_TYPE,
+      { termType: 'NamedNode', value: OWL_ONTOLOGY },
+    )
+    ? projection.ontology
+    : undefined;
+  const entities = Object.fromEntries(
+    Object.entries(projection.entities).filter(([, resource]) =>
+      hasAuthoritativeQuad(
+        quads,
+        resource.term,
+        RDF_TYPE,
+        { termType: 'NamedNode', value: OWL_CLASS },
+      )
+    ),
+  );
+  const relationships = Object.fromEntries(
+    Object.entries(projection.relationships).filter(([, relationship]) => {
+      if (relationship.kind === 'association') {
+        return Boolean(
+          relationship.term
+          && hasAuthoritativeQuad(
+            quads,
+            relationship.term,
+            RDF_TYPE,
+            { termType: 'NamedNode', value: OWL_OBJECT_PROPERTY },
+          ),
+        );
+      }
+      return Boolean(
+        relationship.subject
+        && relationship.object
+        && hasAuthoritativeQuad(
+          quads,
+          relationship.subject,
+          RDFS_SUBCLASS_OF,
+          relationship.object,
+        ),
+      );
+    }),
+  );
+  return {
+    ...(ontology ? { ontology } : {}),
+    entities,
+    relationships,
+  };
 }
 
 async function createReadyRdfDocument(
@@ -109,6 +190,10 @@ async function createReadyRdfDocument(
       baseIri: source.baseIri,
     })),
   ]);
+  projectionResult.projection = retainAuthoritativeProjectionMappings(
+    projectionResult.projection,
+    originalQuads,
+  );
   if (
     projectionResult.ontology.name === 'Imported Ontology'
     && projectionResult.ontology.entityTypes.length === 0
@@ -267,7 +352,15 @@ export async function exportRdfDocument(
   const quads = materializeRdfDocument(document);
   if (includeDerivationMetadata) {
     const ontology = document.projection.ontology?.term;
-    if (!ontology) {
+    if (
+      !ontology
+      || !hasAuthoritativeQuad(
+        quads,
+        ontology,
+        RDF_TYPE,
+        { termType: 'NamedNode', value: OWL_ONTOLOGY },
+      )
+    ) {
       throw new RdfDocumentError(
         'Derivation metadata requires an exactly mapped ontology resource.',
       );

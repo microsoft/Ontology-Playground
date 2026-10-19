@@ -11,6 +11,10 @@ import {
   ensureRdfDocumentReady,
 } from '../lib/rdf/document';
 import {
+  getDesignerScaleError,
+  getOntologyDesignerScaleError,
+} from '../lib/ontologyScale';
+import {
   loadCatalogueEntry,
   loadCatalogueIndex,
   loadCatalogueSource,
@@ -295,6 +299,18 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
       return;
     }
 
+    const scaleError = getOntologyDesignerScaleError(
+      loaded.ontology,
+      loaded.name,
+    );
+    if (scaleError) {
+      setPayloadErrors((current) => ({
+        ...current,
+        [entry.id]: scaleError,
+      }));
+      return;
+    }
+
     const reference = createCatalogueRdfDocumentReference(loaded);
     if (!reference) {
       loadOntology(loaded.ontology, loaded.bindings, loaded);
@@ -503,6 +519,10 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
               const isLoadingSource = loadingSourceIds.has(entry.id);
               const isActive = currentOntology.name === entry.name;
               const categoryColor = CATEGORY_COLORS[entry.category] ?? '#6B7280';
+              const designerScaleError = getDesignerScaleError(
+                entry.entityCount + entry.relationshipCount,
+                entry.name,
+              );
               const showGeneratedRdf =
                 rdfView?.id === entry.id
                 && rdfView.kind === 'generated'
@@ -764,8 +784,8 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
-                        title="Edit in Designer"
-                        disabled={isLoadingEntry}
+                        title={designerScaleError ?? 'Edit in Designer'}
+                        disabled={isLoadingEntry || Boolean(designerScaleError)}
                         onClick={(e) => {
                           e.stopPropagation();
                           void handleEditOntology(entry);

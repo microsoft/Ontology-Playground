@@ -398,6 +398,67 @@ describe('RDF document preservation', () => {
     }));
   });
 
+  it.each(['Literal', 'Unsupported'])(
+    'does not treat rdf:parseType="%s" markup as an ontology provenance target',
+    async (parseType) => {
+      const source = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:rdfs="${RDFS}"
+  xmlns:owl="${OWL}"
+  xmlns:ex="https://example.org/ns#">
+  <rdf:Description rdf:about="https://example.org/source">
+    <ex:markup rdf:parseType="${parseType}">
+      <owl:Ontology rdf:about="https://example.org/fabricated">
+        <rdfs:label>Fabricated ontology</rdfs:label>
+      </owl:Ontology>
+    </ex:markup>
+  </rdf:Description>
+</rdf:RDF>`;
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(source),
+        { name: 'literal-markup.rdf' },
+      );
+
+      expect(loaded.document.originalQuads).toHaveLength(1);
+      expect(loaded.document.originalQuads[0]).toEqual(expect.objectContaining({
+        subject: {
+          termType: 'NamedNode',
+          value: 'https://example.org/source',
+        },
+        predicate: {
+          termType: 'NamedNode',
+          value: 'https://example.org/ns#markup',
+        },
+        object: expect.objectContaining({
+          termType: 'Literal',
+          datatype: {
+            termType: 'NamedNode',
+            value: `${RDF}XMLLiteral`,
+          },
+        }),
+      }));
+      expect(loaded.document.originalQuads).not.toContainEqual(
+        expect.objectContaining({
+          predicate: {
+            termType: 'NamedNode',
+            value: `${RDF}type`,
+          },
+          object: {
+            termType: 'NamedNode',
+            value: `${OWL}Ontology`,
+          },
+        }),
+      );
+      expect(loaded.document.projection.ontology).toBeUndefined();
+      await expect(exportRdfDocument(loaded.document, {
+        includeDerivationMetadata: true,
+      })).rejects.toThrow(
+        'Derivation metadata requires an exactly mapped ontology resource.',
+      );
+    },
+  );
+
   it('adds derivation metadata for an empty ontology rdf:about resolved against the base', async () => {
     const source = `<?xml version="1.0"?>
 <rdf:RDF

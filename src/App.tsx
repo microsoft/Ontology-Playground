@@ -35,6 +35,7 @@ import { loadCatalogueEntry } from './lib/catalogue';
 import {
   createCatalogueRdfDocumentReference,
 } from './lib/rdf/document';
+import { getOntologyDesignerScaleError } from './lib/ontologyScale';
 import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Database, Palette, FileText } from 'lucide-react';
 import './styles/app.css';
 
@@ -160,6 +161,14 @@ function App() {
     openDesignerGeneration.current = generation;
     const state = useAppStore.getState();
     const ontologyAtStart = state.currentOntology;
+    const scaleError = getOntologyDesignerScaleError(
+      ontologyAtStart,
+      ontologyAtStart.name,
+    );
+    if (scaleError) {
+      setToast({ message: scaleError, icon: '!' });
+      return;
+    }
     const documentAtStart = state.rdfDocument
       ? {
           id: state.rdfDocument.id,

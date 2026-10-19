@@ -50,7 +50,7 @@ vi.mock('./designer', () => ({
   DesignerValidation: () => null,
   EntityForm: () => null,
   RelationshipForm: () => null,
-  TemplatePicker: () => null,
+  TemplatePicker: () => <div>Start from a template</div>,
 }));
 
 const ontology: Ontology = {
@@ -132,6 +132,34 @@ describe('OntologyDesigner catalogue provenance', () => {
     expect(screen.getByText('No catalogue context')).toBeTruthy();
     expect(useAppStore.getState().currentCatalogueEntry).toBe(
       externalEntry,
+    );
+  });
+
+  it('does not offer templates over an empty source-backed RDF document', async () => {
+    const parsed = await createImportedRdfDocument(
+      new TextEncoder().encode(`<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:ex="https://example.com/ns#">
+  <rdf:Description rdf:about="https://example.com/resource">
+    <ex:value>Preserve this statement</ex:value>
+  </rdf:Description>
+</rdf:RDF>`),
+      { name: 'source-only.rdf' },
+    );
+    useDesignerStore.getState().loadDraft(
+      parsed.ontology,
+      parsed.document,
+    );
+
+    render(<OntologyDesigner route={{ page: 'designer' }} />);
+
+    expect(screen.queryByText('Start from a template')).toBeNull();
+    expect(screen.getByRole('note')).toHaveTextContent(
+      'Complete RDF mode',
+    );
+    expect(useDesignerStore.getState().rdfDocument).toBe(
+      parsed.document,
     );
   });
 
