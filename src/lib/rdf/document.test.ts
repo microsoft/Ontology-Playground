@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { runInNewContext } from 'node:vm';
 import {
   applyLiteralEdit,
   canEditLiteral,
@@ -73,6 +74,26 @@ describe('RDF document preservation', () => {
 
     expect(exported.kind).toBe('original');
     expect(Array.from(exported.bytes)).toEqual(Array.from(bytes));
+  });
+
+  it('normalizes cross-realm bytes before Web Crypto hashing', async () => {
+    const sourceBytes = Array.from(new TextEncoder().encode(SOURCE));
+    const crossRealmBytes = runInNewContext(
+      `new Uint8Array(${JSON.stringify(sourceBytes)})`,
+    ) as Uint8Array;
+    const digest = vi.spyOn(globalThis.crypto.subtle, 'digest');
+    try {
+      await createImportedRdfDocument(crossRealmBytes, {
+        name: 'cross-realm.rdf',
+      });
+
+      const digestInput = digest.mock.calls[0][1];
+      expect(digestInput.constructor).toBe(
+        new TextEncoder().encode('').buffer.constructor,
+      );
+    } finally {
+      digest.mockRestore();
+    }
   });
 
   it('preserves valid RDF with no visual classes', async () => {

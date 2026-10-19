@@ -59,9 +59,17 @@ async function hashBytes(bytes: Uint8Array): Promise<string> {
       'This environment cannot verify RDF source integrity.',
     );
   }
+  // TextEncoder supplies a buffer from the same realm as Web Crypto. Node 20
+  // rejects ArrayBuffers created inside Vitest's VM realm.
+  const CompatibleArrayBuffer = new TextEncoder()
+    .encode('')
+    .buffer
+    .constructor as typeof ArrayBuffer;
+  const compatibleBytes = new CompatibleArrayBuffer(bytes.byteLength);
+  new Uint8Array(compatibleBytes).set(bytes);
   const digest = await globalThis.crypto.subtle.digest(
     'SHA-256',
-    bytes.slice().buffer,
+    compatibleBytes,
   );
   const hex = Array.from(new Uint8Array(digest))
     .map((value) => value.toString(16).padStart(2, '0'))

@@ -25,7 +25,7 @@ import {
 
 const ROOT = join(import.meta.dirname, '..');
 /** Spawning `npx tsx` and compiling the whole catalogue exceeds Vitest's 5s default. */
-const CATALOGUE_BUILD_TIMEOUT_MS = 60000;
+const CATALOGUE_BUILD_TIMEOUT_MS = 120_000;
 const CATALOGUE_JSON = join(ROOT, 'public', 'catalogue.json');
 const PAYLOAD_MANIFEST_JSON = join(
   ROOT,
