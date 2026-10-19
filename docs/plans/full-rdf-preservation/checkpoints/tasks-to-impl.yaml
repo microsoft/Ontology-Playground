@@ -19,6 +19,10 @@ tasks:
       - "Preserved standalone rdf:about, empty rdf:about, rdf:ID, and read-only rdf:nodeID root identity in the authoritative graph and visual projection."
       - "Applied unknown rdf:parseType XML-literal fallback without changing Triple semantics."
       - "Excluded Literal and unknown rdf:parseType markup from projection discovery and required authoritative type statements for retained mappings and provenance."
+      - "Made Resource and Collection reification independent of XML attribute order, including empty collections."
+      - "Tokenized actual DOCTYPE declarations without rejecting inert comment or CDATA text."
+      - "Bounded individual expanded RDF terms and cumulative retained term/key characters."
+      - "Indexed authoritative quads and exact literals once instead of rescanning the dataset for each projection mapping."
       - "Implemented complete XML 1.0 NCName ranges with linear QName splitting."
     verification: "Dataset and edited-export regressions pass with independent expected terms and canonical graphs."
 
@@ -34,6 +38,8 @@ tasks:
       - "Repeated the authored-share guard after clipboard completion and before route replacement, including canonical route identity."
       - "Kept empty source-backed projections in complete RDF mode without authored template replacement."
       - "Applied one shared 1,000-element Designer safety policy to deep links, Header entry, and Gallery edit."
+      - "Coalesced equivalent relative resource spellings by resolved RDF identity."
+      - "Retained exact literal language, datatype, and graph identity across successive edits."
       - "Rejected oversized files before buffering and aborted obsolete readers."
     verification: "Deferred navigation, draft replacement, stale download, file preflight/abort, cancellation, text-lock, and reverse-completion tests pass."
 
@@ -62,7 +68,7 @@ tasks:
     description: "Run complete preservation release gates on the rebased worktree."
     status: "completed"
     requirements: ["REQ-001", "REQ-002", "REQ-003", "REQ-004", "REQ-005", "REQ-006", "REQ-007", "REQ-008"]
-    verification: "907 unit/integration tests, type-check, lint, builds, RDF/deployment validation, and 10 Chromium checks pass."
+    verification: "917 unit/integration tests, type-check, lint, builds, RDF/deployment validation, and 10 Chromium checks pass."
 
   - task_id: "T014"
     description: "Document the final preservation behavior, constraints, and measurements."

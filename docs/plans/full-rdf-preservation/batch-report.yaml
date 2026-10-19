@@ -93,6 +93,36 @@ finding_disposition:
     root_cause: "Only Designer deep links applied the 1,000-element all-at-once editing threshold."
     resolution: "A shared scale policy now guards deep links, Header entry, and Gallery edit; oversized catalogue edit controls are disabled while viewing remains available."
     evidence: "Header and Gallery regressions prevent draft loading and Designer navigation at the threshold."
+  - finding: "RDF property reification depended on XML attribute order"
+    status: "confirmed_fixed"
+    root_cause: "The upstream parser emitted Resource and Collection statements before a later rdf:ID attribute had initialized the reification target."
+    resolution: "Property attributes are normalized into semantic processing order, with statement identity before parseType; empty collections emit their reified nil statement explicitly."
+    evidence: "Independent expected reification quads cover Resource, non-empty Collection, and empty Collection in both attribute orders plus unrelated-label edited export."
+  - finding: "Expanded IRIs could amplify a small source into excessive retained memory"
+    status: "confirmed_fixed"
+    root_cause: "Only source bytes and statement count were bounded; namespace expansion and deduplication keys had no term-memory budget."
+    resolution: "Parsing now enforces a 16,384-character expanded IRI-like term limit and a 33,554,432-character cumulative retained term/key budget before insertion."
+    evidence: "Focused regressions reject both one overlong term and a 2,500-statement namespace-amplification input while the 53,957-quad Brick artifact remains accepted."
+  - finding: "Equivalent relative IRIs produced duplicate projected entities"
+    status: "confirmed_fixed"
+    root_cause: "Semantic projection indexes used raw rdf:about/resource spellings instead of resolved RDF term identity."
+    resolution: "Class, property, domain/range, SHACL path, hasKey, and subclass indexes use RDF-resolved identity while preserving source spelling only for presentation IDs."
+    evidence: "Thing and ./Thing under one base coalesce into one mapped entity without URL canonicalization."
+  - finding: "A valid literal edit could make its next edit ambiguous"
+    status: "confirmed_fixed"
+    root_cause: "Each edit rediscovered a target from subject, predicate, and current lexical text alone."
+    resolution: "Projection mappings retain the exact literal object and graph, including language and datatype, and advance that identity atomically with each patch."
+    evidence: "An English label edited to collide with a French label remains editable and a second edit changes only the English statement."
+  - finding: "Raw DOCTYPE scanning rejected inert character content"
+    status: "confirmed_fixed"
+    root_cause: "A case-insensitive substring search could not distinguish a declaration from text in comments or CDATA."
+    resolution: "A bounded SAX prolog pass rejects the actual doctype token before root parsing while leaving inert text untouched."
+    evidence: "Declaration preflight still precedes DOM/worker work; comment and CDATA literals containing the same text parse normally."
+  - finding: "Projection authority validation scanned every quad for every mapping"
+    status: "confirmed_fixed"
+    root_cause: "Mapping validation used Array.some over the complete dataset per projected resource."
+    resolution: "One quad-key set and one literal index serve constant-time authority and exact-literal lookups; visual entities and relationships are also indexed by ID."
+    evidence: "A measured 3,000-mapping / 36,000-quad authority index-and-filter pass completed in 24.7 ms."
 
 files_changed:
   T004:
@@ -160,14 +190,14 @@ traceability:
 
 test_results:
   affected:
-    command: "npx vitest run <6 final-review regression files>"
-    passed: 101
+    command: "npx vitest run <7 final-review regression files>"
+    passed: 136
     failed: 0
     skipped: 0
   full:
     command: "npm test"
     files_passed: 60
-    passed: 907
+    passed: 917
     failed: 0
     skipped: 0
   browser:
@@ -182,7 +212,7 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 483.57 kB / 134.13 kB gzip; self-contained embed 1,249.30 kB / 375.36 kB gzip"
+    result: "passed; RDF-bearing app chunk 489.07 kB / 135.65 kB gzip; self-contained embed 1,254.11 kB / 376.75 kB gzip"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
@@ -193,7 +223,7 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 13
+  ahead_origin_main: 16
   staged_files: 0
   committed_by_batch: true
   publication_state_at_report: "not pushed; publication follows exact-head validation and independent review"
@@ -201,7 +231,7 @@ branch_state:
 independent_review:
   scope: "origin/main...HEAD including the four final follow-up remediations"
   initial_findings: 5
-  follow_up_findings: 6
+  follow_up_findings: 12
   final_disposition: "pending exact-head review"
   reviewer_reused: true
 
