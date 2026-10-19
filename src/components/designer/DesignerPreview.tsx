@@ -24,6 +24,20 @@ interface DesignerPreviewProps {
   onOntologyReplaced?: () => void;
 }
 
+function normalizeLeadingXmlDeclarationEncoding(value: string): string {
+  const start = value.startsWith('\uFEFF') ? 1 : 0;
+  const content = value.slice(start);
+  const declaration = /^<\?xml(?=\s)[\s\S]*?\?>/i.exec(content)?.[0];
+  if (!declaration) return value;
+  const normalized = declaration.replace(
+    /(\bencoding\s*=\s*["'])[^"']+(["'])/i,
+    '$1UTF-8$2',
+  );
+  return value.slice(0, start)
+    + normalized
+    + content.slice(declaration.length);
+}
+
 export function DesignerPreview({
   onOntologyReplaced,
 }: DesignerPreviewProps = {}) {
@@ -375,10 +389,8 @@ export function RdfPreview({
         onImported(false);
         return;
       }
-      const normalizedText = submittedText.replace(
-        /(<\?xml\b[^>]*\bencoding\s*=\s*["'])[^"']+(["'][^>]*\?>)/i,
-        '$1UTF-8$2',
-      );
+      const normalizedText =
+        normalizeLeadingXmlDeclarationEncoding(submittedText);
       const parsed = await createImportedRdfDocument(
         new TextEncoder().encode(normalizedText),
         {

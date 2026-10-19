@@ -8,7 +8,7 @@ import {
   canEditLiteral,
   createCatalogueRdfDocumentReference,
   ensureRdfDocumentReady,
-  materializeRdfDocument,
+  rdfDocumentStatementCount,
 } from '../lib/rdf/document';
 import { EntityForm, RelationshipForm, DesignerPreview, DesignerToolbar, DesignerValidation, TemplatePicker } from './designer';
 import type { Route } from '../lib/router';
@@ -190,7 +190,7 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
           {' '}Source SHA-256: <code>{rdfDocument.source.hash}</code>;
           source statements: {rdfDocument.originalQuads.length.toLocaleString()};
           current statements:{' '}
-          {materializeRdfDocument(rdfDocument).length.toLocaleString()};
+          {rdfDocumentStatementCount(rdfDocument).toLocaleString()};
           patches: {rdfDocument.patches.length.toLocaleString()}.
         </SourceFidelityNote>
       )}

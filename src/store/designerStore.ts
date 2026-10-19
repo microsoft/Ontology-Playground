@@ -136,6 +136,77 @@ function requireProjectionResource(
   return resource;
 }
 
+function mappedLiteralChanged(
+  before: RdfProjectionResource | undefined,
+  after: RdfProjectionResource | undefined,
+  predicate: string,
+): boolean {
+  const previous = before?.literals?.[predicate];
+  const next = after?.literals?.[predicate];
+  return Boolean(
+    previous
+    && next
+    && previous.object.value !== next.object.value,
+  );
+}
+
+function synchronizeMappedLiteral(
+  ontology: Ontology,
+  before: ReadyRdfDocument,
+  after: ReadyRdfDocument,
+  predicate: typeof RDFS_LABEL | typeof RDFS_COMMENT,
+): Ontology {
+  const field = predicate === RDFS_LABEL ? 'name' : 'description';
+  const ontologyMapping = after.projection.ontology?.literals?.[predicate];
+  const synchronizedOntology = mappedLiteralChanged(
+    before.projection.ontology,
+    after.projection.ontology,
+    predicate,
+  ) && ontologyMapping
+    ? { ...ontology, [field]: ontologyMapping.object.value }
+    : ontology;
+  return {
+    ...synchronizedOntology,
+    entityTypes: synchronizedOntology.entityTypes.map((entity) => {
+      const mapping = after.projection.entities[entity.id]
+        ?.literals?.[predicate];
+      return mappedLiteralChanged(
+        before.projection.entities[entity.id],
+        after.projection.entities[entity.id],
+        predicate,
+      ) && mapping
+        ? { ...entity, [field]: mapping.object.value }
+        : entity;
+    }),
+    relationships: synchronizedOntology.relationships.map((relationship) => {
+      const beforeMapping = before.projection.relationships[relationship.id];
+      const afterMapping = after.projection.relationships[relationship.id];
+      if (
+        beforeMapping?.kind !== 'association'
+        || afterMapping?.kind !== 'association'
+        || !beforeMapping.term
+        || !afterMapping.term
+      ) {
+        return relationship;
+      }
+      const mapping = afterMapping.literals?.[predicate];
+      return mappedLiteralChanged(
+        {
+          term: beforeMapping.term,
+          literals: beforeMapping.literals,
+        },
+        {
+          term: afterMapping.term,
+          literals: afterMapping.literals,
+        },
+        predicate,
+      ) && mapping
+        ? { ...relationship, [field]: mapping.object.value }
+        : relationship;
+    }),
+  };
+}
+
 // ─── Store ───────────────────────────────────────────────────────────────────
 
 interface DesignerState {
@@ -225,17 +296,23 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
           s.rdfDocument.projection.ontology,
           'Ontology',
         );
+        const rdfDocument = applyLiteralEdit(
+          s.rdfDocument,
+          target,
+          RDFS_LABEL,
+          s.ontology.name,
+          name,
+          'Edit ontology label',
+        );
         return {
           ...historyPush(s),
-          ontology: { ...s.ontology, name },
-          rdfDocument: applyLiteralEdit(
+          ontology: synchronizeMappedLiteral(
+            s.ontology,
             s.rdfDocument,
-            target,
+            rdfDocument,
             RDFS_LABEL,
-            s.ontology.name,
-            name,
-            'Edit ontology label',
           ),
+          rdfDocument,
           mutationError: null,
         };
       } catch (error) {
@@ -258,17 +335,23 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
           s.rdfDocument.projection.ontology,
           'Ontology',
         );
+        const rdfDocument = applyLiteralEdit(
+          s.rdfDocument,
+          target,
+          RDFS_COMMENT,
+          s.ontology.description,
+          description,
+          'Edit ontology comment',
+        );
         return {
           ...historyPush(s),
-          ontology: { ...s.ontology, description },
-          rdfDocument: applyLiteralEdit(
+          ontology: synchronizeMappedLiteral(
+            s.ontology,
             s.rdfDocument,
-            target,
+            rdfDocument,
             RDFS_COMMENT,
-            s.ontology.description,
-            description,
-            'Edit ontology comment',
           ),
+          rdfDocument,
           mutationError: null,
         };
       } catch (error) {
@@ -338,22 +421,24 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
           s.rdfDocument.projection.entities[id],
           `Entity "${entity.name}"`,
         );
+        const predicate = field === 'name' ? RDFS_LABEL : RDFS_COMMENT;
+        const rdfDocument = applyLiteralEdit(
+          s.rdfDocument,
+          target,
+          predicate,
+          entity[field],
+          nextValue,
+          `Edit ${entity.name} ${field}`,
+        );
         return {
           ...historyPush(s),
-          ontology: {
-            ...s.ontology,
-            entityTypes: s.ontology.entityTypes.map((item) =>
-              item.id === id ? { ...item, [field]: nextValue } : item,
-            ),
-          },
-          rdfDocument: applyLiteralEdit(
+          ontology: synchronizeMappedLiteral(
+            s.ontology,
             s.rdfDocument,
-            target,
-            field === 'name' ? RDFS_LABEL : RDFS_COMMENT,
-            entity[field],
-            nextValue,
-            `Edit ${entity.name} ${field}`,
+            rdfDocument,
+            predicate,
           ),
+          rdfDocument,
           mutationError: null,
         };
       } catch (error) {
@@ -572,14 +657,22 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
             `Edit ${relationship.name} ${field}`,
           );
         }
+        const ontology = mapping.kind === 'association'
+          ? synchronizeMappedLiteral(
+              s.ontology,
+              s.rdfDocument,
+              rdfDocument,
+              keys[0] === 'name' ? RDFS_LABEL : RDFS_COMMENT,
+            )
+          : {
+              ...s.ontology,
+              relationships: s.ontology.relationships.map((item) =>
+                item.id === id ? { ...item, ...updates } : item,
+              ),
+            };
         return {
           ...historyPush(s),
-          ontology: {
-            ...s.ontology,
-            relationships: s.ontology.relationships.map((item) =>
-              item.id === id ? { ...item, ...updates } : item,
-            ),
-          },
+          ontology,
           rdfDocument,
           mutationError: null,
         };

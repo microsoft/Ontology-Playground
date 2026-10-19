@@ -134,6 +134,43 @@ describe('Header RDF sharing', () => {
     expect(click).not.toHaveBeenCalled();
   });
 
+  it('does not share a stale catalogue link after importing another source', async () => {
+    const parsed = await createImportedRdfDocument(
+      new TextEncoder().encode(`<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="https://example.com/Imported"/>
+</rdf:RDF>`),
+      { name: 'imported.rdf' },
+    );
+    useAppStore.getState().loadOntology(
+      parsed.ontology,
+      parsed.bindings,
+      null,
+      parsed.document,
+    );
+    window.history.replaceState(
+      null,
+      '',
+      '#/catalogue/previous-ontology',
+    );
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    render(<Header {...callbacks} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Share' }));
+
+    await waitFor(() => expect(click).toHaveBeenCalledTimes(1));
+    expect(writeText).not.toHaveBeenCalled();
+  });
+
   it('does not navigate to an authored share after the ontology changes during clipboard write', async () => {
     const clipboard = deferred<void>();
     const writeText = vi.fn(() => clipboard.promise);

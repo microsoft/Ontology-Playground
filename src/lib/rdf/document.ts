@@ -20,7 +20,6 @@ import {
   rdfQuadKey,
 } from './dataset';
 import { parseRDF } from './parser';
-import { applyLiteralEdit } from './patch';
 import {
   parseRdfDatasetOffMainThread,
   serializeRdfDatasetOffMainThread,
@@ -457,13 +456,41 @@ export async function ensureRdfDocumentReady(
   return loaded.document;
 }
 
-export function materializeRdfDocument(
+interface MaterializedRdfState {
+  quads: RdfQuad[];
+  quadKeys: Set<string>;
+}
+
+const materializedRdfCache =
+  new WeakMap<ReadyRdfDocument, MaterializedRdfState>();
+
+function materializedRdfState(
   document: ReadyRdfDocument,
-) {
-  return materializeRdfPatches(
+): MaterializedRdfState {
+  const cached = materializedRdfCache.get(document);
+  if (cached) return cached;
+  const quads = materializeRdfPatches(
     document.originalQuads,
     document.patches,
   );
+  const state = {
+    quads,
+    quadKeys: new Set(quads.map(rdfQuadKey)),
+  };
+  materializedRdfCache.set(document, state);
+  return state;
+}
+
+export function materializeRdfDocument(
+  document: ReadyRdfDocument,
+) {
+  return [...materializedRdfState(document).quads];
+}
+
+export function rdfDocumentStatementCount(
+  document: ReadyRdfDocument,
+): number {
+  return materializedRdfState(document).quads.length;
 }
 
 export function isRdfDocumentDirty(
@@ -552,17 +579,15 @@ export function canEditLiteral(
   value: string,
 ): boolean {
   if (!target) return false;
-  try {
-    applyLiteralEdit(
-      document,
-      target,
-      predicateIri,
-      value,
-      `${value}\u{1F9EA}`,
-      'Probe RDF mapping',
-    );
-    return true;
-  } catch {
-    return false;
-  }
+  const mapping = target.literals?.[predicateIri];
+  if (!mapping || mapping.object.value !== value) return false;
+  return materializedRdfState(document).quadKeys.has(rdfQuadKey({
+    subject: { ...target.term },
+    predicate: { termType: 'NamedNode', value: predicateIri },
+    object: {
+      ...mapping.object,
+      datatype: { ...mapping.object.datatype },
+    },
+    graph: { ...mapping.graph },
+  }));
 }

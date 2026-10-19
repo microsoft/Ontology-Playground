@@ -131,6 +131,52 @@ describe('Designer complete RDF preview', () => {
     expect(onImported).toHaveBeenCalledWith(true);
   });
 
+  it('does not rewrite encoding attributes in XML literal processing instructions', async () => {
+    const source = `<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Class rdf:about="https://example.com/Room">
+    <rdfs:label>Room</rdfs:label>
+    <rdf:value rdf:parseType="Literal"><?xml-model href="schema.rng" encoding="ISO-8859-1"?></rdf:value>
+  </owl:Class>
+</rdf:RDF>`;
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(source),
+      { name: 'processing-instruction.rdf' },
+    );
+    useDesignerStore.getState().loadDraft(
+      loaded.ontology,
+      loaded.document,
+    );
+    const user = userEvent.setup();
+    render(<StoreRdfPreview />);
+
+    await waitFor(() => {
+      expect(document.querySelector('pre')?.textContent).toBe(source);
+    });
+    await user.click(screen.getByText('Edit RDF'));
+    const textarea = screen.getByPlaceholderText(
+      'Paste or edit RDF/XML content here…',
+    );
+    const replacement = source.replace(
+      'Room</rdfs:label>',
+      'Space</rdfs:label>',
+    );
+    fireEvent.change(textarea, { target: { value: replacement } });
+    await user.click(screen.getByText('Load into Designer'));
+
+    await waitFor(() => {
+      expect(useDesignerStore.getState().ontology.entityTypes[0].name)
+        .toBe('Space');
+    });
+    expect(new TextDecoder().decode(
+      useDesignerStore.getState().rdfDocument!.originalBytes,
+    )).toContain(
+      '<?xml-model href="schema.rng" encoding="ISO-8859-1"?>',
+    );
+  });
+
   it('keeps the existing document and exact UTF-16 bytes when reloading unchanged text', async () => {
     const utf16Source = SOURCE.replace(
       'version="1.0"',

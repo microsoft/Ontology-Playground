@@ -83,6 +83,41 @@ describe('source-backed RDF editing', () => {
         .toBe('Space');
     });
 
+    it('updates every visual field backed by one shared RDF literal', async () => {
+      const sharedSource = `<?xml version="1.0"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Ontology rdf:about="https://example.com/Shared">
+    <rdfs:label>Shared</rdfs:label>
+  </owl:Ontology>
+  <owl:Class rdf:about="https://example.com/Shared"/>
+</rdf:RDF>`;
+      const loaded = await createImportedRdfDocument(
+        new TextEncoder().encode(sharedSource),
+        { name: 'shared-literal.rdf' },
+      );
+      useDesignerStore.getState().loadDraft(
+        loaded.ontology,
+        loaded.document,
+      );
+
+      useDesignerStore.getState().updateEntity(
+        'shared',
+        { name: 'Renamed everywhere' },
+      );
+
+      const edited = useDesignerStore.getState();
+      expect(edited.ontology.name).toBe('Renamed everywhere');
+      expect(edited.ontology.entityTypes[0].name)
+        .toBe('Renamed everywhere');
+      edited.setOntologyName('Renamed again');
+      expect(useDesignerStore.getState().ontology.entityTypes[0].name)
+        .toBe('Renamed again');
+      expect(useDesignerStore.getState().mutationError).toBeNull();
+    });
+
     it('rejects XML-forbidden literal edits atomically and accepts supplementary characters', async () => {
       for (const invalidName of ['Bad\u0001Value', 'Bad\uD800Value']) {
         const loaded = await createImportedRdfDocument(

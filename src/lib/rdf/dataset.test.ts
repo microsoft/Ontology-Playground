@@ -253,6 +253,24 @@ describe('complete RDF/XML dataset adapter', () => {
     )).rejects.toThrow(/processed RDF term budget/);
   });
 
+  it('bounds XML literal reconstruction before namespace amplification', async () => {
+    const namespace = `https://example.com/${'n'.repeat(8_000)}/`;
+    const source = `<rdf:RDF
+  xmlns:rdf="${RDF}"
+  xmlns:long="${namespace}">
+  <rdf:Description rdf:about="https://example.com/subject">
+    <rdf:value rdf:parseType="Literal">
+      <long:item/><long:item/><long:item/>
+    </rdf:value>
+  </rdf:Description>
+</rdf:RDF>`;
+
+    await expect(parseRdfXmlDataset(
+      source,
+      'https://example.com/source.rdf',
+    )).rejects.toThrow(/XML literal.*character limit/i);
+  });
+
   it('preserves carriage returns in literal lexical values', async () => {
     const source = `<rdf:RDF
   xmlns:rdf="${RDF}"
@@ -1021,6 +1039,37 @@ describe('complete RDF/XML dataset adapter', () => {
     expect(decodeRdfBytes(utf16)).toBe('<rdf:RDF/>');
     expect(utf8[0]).toBe(0xef);
     expect(utf16[0]).toBe(0xff);
+  });
+
+  it('decodes BOM-less UTF-16 from its XML byte signature', () => {
+    const source = '<?xml version="1.0" encoding="UTF-16"?><rdf:RDF/>';
+    const bytes = new Uint8Array(source.length * 2);
+    for (let index = 0; index < source.length; index += 1) {
+      const codeUnit = source.charCodeAt(index);
+      bytes[index * 2] = codeUnit & 0xff;
+      bytes[index * 2 + 1] = codeUnit >> 8;
+    }
+
+    expect(decodeRdfBytes(bytes)).toBe(source);
+  });
+
+  it('rejects unsupported or byte-conflicting XML encodings', () => {
+    const unsupported = new TextEncoder().encode(
+      '<?xml version="1.0" encoding="ISO-8859-1"?><rdf:RDF/>',
+    );
+    const conflicting = new Uint8Array([
+      0xef,
+      0xbb,
+      0xbf,
+      ...new TextEncoder().encode(
+        '<?xml version="1.0" encoding="UTF-16"?><rdf:RDF/>',
+      ),
+    ]);
+
+    expect(() => decodeRdfBytes(unsupported))
+      .toThrow(/Unsupported XML encoding "ISO-8859-1"/);
+    expect(() => decodeRdfBytes(conflicting))
+      .toThrow(/conflicts with the XML byte encoding/);
   });
 
   it('parses and reserializes the pinned Brick artifact isomorphically', async () => {

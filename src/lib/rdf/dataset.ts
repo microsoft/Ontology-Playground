@@ -25,6 +25,7 @@ const MAX_RDF_QUADS = 250_000;
 const MAX_EXPANDED_RDF_TERM_CHARACTERS = 16_384;
 const MAX_PROCESSED_RDF_TERM_CHARACTERS = 64 * 1024 * 1024;
 const MAX_RETAINED_RDF_CHARACTERS = 32 * 1024 * 1024;
+const MAX_XML_LITERAL_EVENTS = MAX_RDF_QUADS;
 
 interface RdfJsTerm {
   termType: string;
@@ -84,9 +85,11 @@ function startsXmlLiteral(tag: SaxesTagNS): boolean {
 function normalizedXmlLiteralTag(
   tag: SaxesTagNS,
   outputParentScope: ReadonlyMap<string, string>,
+  maxSerializedCharacters = Number.POSITIVE_INFINITY,
 ): {
   tag: SaxesTagNS;
   outputScope: Map<string, string>;
+  serializedLength: number;
 } {
   const explicitNamespaces = new Map<string, string>();
   for (const attribute of Object.values(tag.attributes)) {
@@ -128,10 +131,25 @@ function normalizedXmlLiteralTag(
       prefix: prefix ? 'xmlns' : '',
       local: prefix || 'xmlns',
       uri: XMLNS_NS,
-      value: escapeXmlAttribute(value),
+      value,
     }]);
   }
-  const escapedAttributes = Object.entries(tag.attributes)
+  const rawAttributes = [
+    ...injectedNamespaces,
+    ...Object.entries(tag.attributes),
+  ];
+  let serializedLength = tag.name.length + 2;
+  for (const [name, attribute] of rawAttributes) {
+    serializedLength += name.length
+      + escapedXmlLength(attribute.value, true)
+      + 4;
+    if (serializedLength > maxSerializedCharacters) {
+      throw new RdfDatasetError(
+        'XML literal reconstruction exceeds a character limit before allocation.',
+      );
+    }
+  }
+  const escapedAttributes = rawAttributes
     .map(([name, attribute]): [string, SaxesAttributeNS] => [
       name,
       {
@@ -153,11 +171,9 @@ function normalizedXmlLiteralTag(
     outputScope,
     tag: {
       ...tag,
-      attributes: Object.fromEntries([
-        ...injectedNamespaces,
-        ...escapedAttributes,
-      ]),
+      attributes: Object.fromEntries(escapedAttributes),
     },
+    serializedLength,
   };
 }
 
@@ -176,10 +192,43 @@ function extractXmlLiteralLexicalForms(rdfXml: string): string[] {
   const literals: string[] = [];
   let literalPropertyDepth: number | null = null;
   let parts: string[] | null = null;
+  let literalCharacters = 0;
+  let totalCharacters = 0;
+  let outputEvents = 0;
   const parser = new SaxesParser({
     xmlns: true,
     position: true,
   });
+  const assertAppend = (characters: number) => {
+    outputEvents += 1;
+    if (outputEvents > MAX_XML_LITERAL_EVENTS) {
+      throw new RdfDatasetError(
+        `XML literal reconstruction exceeds the ${MAX_XML_LITERAL_EVENTS.toLocaleString()} event limit`,
+      );
+    }
+    if (
+      literalCharacters + characters
+      > MAX_EXPANDED_RDF_TERM_CHARACTERS
+    ) {
+      throw new RdfDatasetError(
+        `XML literal exceeds the ${MAX_EXPANDED_RDF_TERM_CHARACTERS.toLocaleString()} character limit during reconstruction`,
+      );
+    }
+    if (
+      totalCharacters + characters
+      > MAX_RETAINED_RDF_CHARACTERS
+    ) {
+      throw new RdfDatasetError(
+        `XML literal reconstruction exceeds the ${MAX_RETAINED_RDF_CHARACTERS.toLocaleString()} total character limit`,
+      );
+    }
+    literalCharacters += characters;
+    totalCharacters += characters;
+  };
+  const appendPart = (part: string) => {
+    assertAppend(part.length);
+    parts!.push(part);
+  };
 
   parser.on('opentag', (tag) => {
     const sourceScope = namespaceScope(namespaceScopes.at(-1), tag);
@@ -190,31 +239,44 @@ function extractXmlLiteralLexicalForms(rdfXml: string): string[] {
       const normalized = normalizedXmlLiteralTag(
         tag,
         outputScopes.at(-1) ?? new Map<string, string>(),
+        Math.min(
+          MAX_EXPANDED_RDF_TERM_CHARACTERS - literalCharacters,
+          MAX_RETAINED_RDF_CHARACTERS - totalCharacters,
+        ),
       );
+      assertAppend(normalized.serializedLength);
       parts!.push(xmlLiteralOpenTag(normalized.tag));
       outputScopes.push(normalized.outputScope);
     } else if (startsXmlLiteral(tag)) {
       literalPropertyDepth = namespaceScopes.length;
       parts = [];
+      literalCharacters = 0;
     }
   });
   const appendText = (text: string) => {
-    if (parts) parts.push(escapeXmlText(text));
+    if (!parts) return;
+    const escapedLength = escapedXmlLength(text, false);
+    assertAppend(escapedLength);
+    parts.push(escapeXmlText(text));
   };
   parser.on('text', appendText);
   parser.on('cdata', appendText);
   parser.on('comment', (comment) => {
-    if (parts) parts.push(`<!--${comment}-->`);
+    if (parts) {
+      assertAppend(comment.length + 7);
+      parts.push(`<!--${comment}-->`);
+    }
   });
   parser.on('processinginstruction', ({ target, body }) => {
     if (parts) {
+      assertAppend(target.length + (body ? body.length + 1 : 0) + 4);
       parts.push(`<?${target}${body ? ` ${body}` : ''}?>`);
     }
   });
   parser.on('closetag', (tag) => {
     const depth = namespaceScopes.length;
     if (literalPropertyDepth !== null && depth > literalPropertyDepth) {
-      parts!.push(`</${tag.name}>`);
+      appendPart(`</${tag.name}>`);
       outputScopes.pop();
     } else if (literalPropertyDepth === depth) {
       literals.push(parts!.join(''));
@@ -758,6 +820,36 @@ function escapeXmlAttribute(value: string): string {
     .replace(/'/g, '&apos;');
 }
 
+function escapedXmlLength(
+  value: string,
+  attribute: boolean,
+): number {
+  let length = 0;
+  for (const character of value) {
+    switch (character) {
+      case '&':
+        length += 5;
+        break;
+      case '<':
+      case '>':
+        length += 4;
+        break;
+      case '\r':
+      case '\t':
+      case '\n':
+        length += attribute || character === '\r' ? 5 : 1;
+        break;
+      case '"':
+      case "'":
+        length += attribute ? 6 : 1;
+        break;
+      default:
+        length += character.length;
+    }
+  }
+  return length;
+}
+
 function isNcNameStart(character: string): boolean {
   const codePoint = character.codePointAt(0);
   if (codePoint === undefined) return false;
@@ -953,32 +1045,141 @@ export function serializeRdfXmlDataset(quads: readonly RdfQuad[]): string {
   return output;
 }
 
+type SupportedXmlEncoding = 'utf-8' | 'utf-16le' | 'utf-16be';
+
+function declaredXmlEncoding(value: string): string | null {
+  const declaration = /^<\?xml(?=\s)[\s\S]*?\?>/i.exec(value)?.[0];
+  if (!declaration) return null;
+  return /\bencoding\s*=\s*(["'])([^"']+)\1/i
+    .exec(declaration)?.[2] ?? null;
+}
+
+function canonicalXmlEncoding(value: string): SupportedXmlEncoding | 'utf-16' {
+  switch (value.trim().toLowerCase().replace(/_/g, '-')) {
+    case 'utf-8':
+    case 'utf8':
+      return 'utf-8';
+    case 'utf-16':
+    case 'utf16':
+      return 'utf-16';
+    case 'utf-16le':
+    case 'utf16le':
+      return 'utf-16le';
+    case 'utf-16be':
+    case 'utf16be':
+      return 'utf-16be';
+    default:
+      throw new RdfDatasetError(
+        `Unsupported XML encoding "${value}". RDF/XML input must use UTF-8 or UTF-16.`,
+      );
+  }
+}
+
+function assertDeclaredEncodingMatches(
+  value: string,
+  byteEncoding: SupportedXmlEncoding,
+): void {
+  const declared = declaredXmlEncoding(value);
+  if (declared === null) return;
+  const canonical = canonicalXmlEncoding(declared);
+  const compatible = canonical === byteEncoding
+    || (
+      canonical === 'utf-16'
+      && (byteEncoding === 'utf-16le' || byteEncoding === 'utf-16be')
+    );
+  if (!compatible) {
+    throw new RdfDatasetError(
+      `XML encoding "${declared}" conflicts with the XML byte encoding "${byteEncoding}".`,
+    );
+  }
+}
+
+function decodeXmlBytes(
+  bytes: Uint8Array,
+  encoding: SupportedXmlEncoding,
+  offset: number,
+): string {
+  const value = new TextDecoder(encoding, { fatal: true })
+    .decode(bytes.subarray(offset));
+  assertDeclaredEncodingMatches(value, encoding);
+  return value;
+}
+
 export function decodeRdfBytes(bytes: Uint8Array): string {
+  if (
+    bytes.byteLength >= 4
+    && (
+      (
+        bytes[0] === 0x00
+        && bytes[1] === 0x00
+        && bytes[2] === 0xfe
+        && bytes[3] === 0xff
+      )
+      || (
+        bytes[0] === 0xff
+        && bytes[1] === 0xfe
+        && bytes[2] === 0x00
+        && bytes[3] === 0x00
+      )
+      || (
+        bytes[0] === 0x00
+        && bytes[1] === 0x00
+        && bytes[2] === 0x00
+        && bytes[3] === 0x3c
+      )
+      || (
+        bytes[0] === 0x3c
+        && bytes[1] === 0x00
+        && bytes[2] === 0x00
+        && bytes[3] === 0x00
+      )
+    )
+  ) {
+    throw new RdfDatasetError(
+      'Unsupported XML encoding. RDF/XML input must use UTF-8 or UTF-16.',
+    );
+  }
   if (
     bytes.byteLength >= 2
     && bytes[0] === 0xff
     && bytes[1] === 0xfe
   ) {
-    return new TextDecoder('utf-16le', { fatal: true })
-      .decode(bytes.subarray(2));
+    return decodeXmlBytes(bytes, 'utf-16le', 2);
   }
   if (
     bytes.byteLength >= 2
     && bytes[0] === 0xfe
     && bytes[1] === 0xff
   ) {
-    return new TextDecoder('utf-16be', { fatal: true })
-      .decode(bytes.subarray(2));
+    return decodeXmlBytes(bytes, 'utf-16be', 2);
   }
-  const content = (
+  if (
+    bytes.byteLength >= 4
+    && bytes[0] === 0x3c
+    && bytes[1] === 0x00
+    && bytes[2] === 0x3f
+    && bytes[3] === 0x00
+  ) {
+    return decodeXmlBytes(bytes, 'utf-16le', 0);
+  }
+  if (
+    bytes.byteLength >= 4
+    && bytes[0] === 0x00
+    && bytes[1] === 0x3c
+    && bytes[2] === 0x00
+    && bytes[3] === 0x3f
+  ) {
+    return decodeXmlBytes(bytes, 'utf-16be', 0);
+  }
+  const offset = (
     bytes.byteLength >= 3
     && bytes[0] === 0xef
     && bytes[1] === 0xbb
     && bytes[2] === 0xbf
   )
-    ? bytes.subarray(3)
-    : bytes;
-  return new TextDecoder('utf-8', { fatal: true }).decode(content);
+    ? 3
+    : 0;
+  return decodeXmlBytes(bytes, 'utf-8', offset);
 }
 
 export function materializeRdfPatches(

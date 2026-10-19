@@ -29,6 +29,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
     totalPoints,
     earnedBadges,
     currentOntology,
+    currentCatalogueEntry,
     dataBindings,
     rdfDocument,
   } = useAppStore();
@@ -45,7 +46,20 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
 
   const ontologyDisplayName = currentOntology.name || 'Untitled Ontology';
 
-  const shareableId = route.page === 'catalogue' && route.ontologyId ? route.ontologyId : null;
+  const shareableId = (
+    route.page === 'catalogue'
+    && route.ontologyId
+    && currentCatalogueEntry?.id === route.ontologyId
+    && (
+      !rdfDocument
+      || (
+        rdfDocument.source.origin === 'catalogue'
+        && rdfDocument.source.catalogueId === route.ontologyId
+      )
+    )
+  )
+    ? route.ontologyId
+    : null;
 
   const handleShare = async () => {
     if (shareStatus === 'copying') return;

@@ -6,8 +6,10 @@ import {
   exportRdfDocument,
   isRdfDocumentDirty,
   materializeRdfDocument,
+  rdfDocumentStatementCount,
 } from './document';
 import { decodeRdfBytes, parseRdfXmlDataset } from './dataset';
+import * as datasetModule from './dataset';
 
 const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 const RDFS = 'http://www.w3.org/2000/01/rdf-schema#';
@@ -50,11 +52,15 @@ describe('RDF document preservation', () => {
   });
 
   it('returns exact original UTF-16 bytes when untouched', async () => {
-    const bytes = new Uint8Array(2 + SOURCE.length * 2);
+    const utf16Source = SOURCE.replace(
+      'encoding="UTF-8"',
+      'encoding="UTF-16"',
+    );
+    const bytes = new Uint8Array(2 + utf16Source.length * 2);
     bytes[0] = 0xff;
     bytes[1] = 0xfe;
-    for (let index = 0; index < SOURCE.length; index += 1) {
-      const codeUnit = SOURCE.charCodeAt(index);
+    for (let index = 0; index < utf16Source.length; index += 1) {
+      const codeUnit = utf16Source.charCodeAt(index);
       bytes[2 + index * 2] = codeUnit & 0xff;
       bytes[3 + index * 2] = codeUnit >> 8;
     }
@@ -127,6 +133,7 @@ describe('RDF document preservation', () => {
       configurable: true,
       value: domParserSpy,
     });
+
     try {
       await expect(createImportedRdfDocument(
         new TextEncoder().encode(source),
@@ -138,6 +145,35 @@ describe('RDF document preservation', () => {
         configurable: true,
         value: originalDomParser,
       });
+    }
+  });
+
+  it('reuses one materialized index for editability and statement counts', async () => {
+    const loaded = await createImportedRdfDocument(
+      new TextEncoder().encode(SOURCE),
+      { name: 'cached-index.rdf' },
+    );
+    const materialize = vi.spyOn(datasetModule, 'materializeRdfPatches');
+    const target = loaded.document.projection.entities.room;
+
+    try {
+      expect(canEditLiteral(
+        loaded.document,
+        target,
+        `${RDFS}label`,
+        'Room',
+      )).toBe(true);
+      expect(canEditLiteral(
+        loaded.document,
+        target,
+        `${RDFS}comment`,
+        'An enclosed space',
+      )).toBe(true);
+      expect(rdfDocumentStatementCount(loaded.document))
+        .toBe(loaded.document.originalQuads.length);
+      expect(materialize).toHaveBeenCalledTimes(1);
+    } finally {
+      materialize.mockRestore();
     }
   });
 
