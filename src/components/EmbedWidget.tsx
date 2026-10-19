@@ -28,8 +28,8 @@ import type {
 } from 'cytoscape';
 import type { Ontology, EntityType, Relationship } from '../data/ontology';
 import { serializeToRDF } from '../lib/rdf/serializer';
-import { parseRDF } from '../lib/rdf/parser';
 import { decodeRdfBytes } from '../lib/rdf/dataset';
+import { createImportedRdfDocument } from '../lib/rdf/document';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rdf/highlighter';
 import {
   loadCatalogueEntry,
@@ -67,6 +67,60 @@ export interface EmbedConfig {
   catalogueBaseUrl?: string;
 }
 
+const MAX_EMBED_SOURCE_BYTES = 8 * 1024 * 1024;
+
+async function readBoundedResponseBytes(
+  response: Response,
+): Promise<Uint8Array> {
+  const declaredLength = Number(response.headers.get('content-length'));
+  if (
+    Number.isFinite(declaredLength)
+    && declaredLength > MAX_EMBED_SOURCE_BYTES
+  ) {
+    throw new Error(
+      `Ontology source exceeds the ${MAX_EMBED_SOURCE_BYTES.toLocaleString()} byte limit.`,
+    );
+  }
+
+  if (!response.body) {
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (bytes.byteLength > MAX_EMBED_SOURCE_BYTES) {
+      throw new Error(
+        `Ontology source exceeds the ${MAX_EMBED_SOURCE_BYTES.toLocaleString()} byte limit.`,
+      );
+    }
+    return bytes;
+  }
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let byteLength = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      byteLength += value.byteLength;
+      if (byteLength > MAX_EMBED_SOURCE_BYTES) {
+        await reader.cancel();
+        throw new Error(
+          `Ontology source exceeds the ${MAX_EMBED_SOURCE_BYTES.toLocaleString()} byte limit.`,
+        );
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const bytes = new Uint8Array(byteLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 type Tab = 'graph' | 'rdf';
@@ -91,6 +145,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
   // ─ Load ontology ────────────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
+    const abortController = new AbortController();
 
     async function load() {
       setLoading(true);
@@ -116,16 +171,23 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
           }
         } else if (config.ontologyUrl) {
           // Fetch from URL
-          const res = await fetch(config.ontologyUrl);
+          const res = await fetch(config.ontologyUrl, {
+            signal: abortController.signal,
+          });
           if (!res.ok) throw new Error(`Failed to fetch ontology (${res.status})`);
-          const text = decodeRdfBytes(
-            new Uint8Array(await res.arrayBuffer()),
-          );
+          const bytes = await readBoundedResponseBytes(res);
+          const text = decodeRdfBytes(bytes);
           // Detect format: RDF/XML starts with < or has xml prologue
           if (text.trimStart().startsWith('<')) {
-            const result = parseRDF(text, {
-              baseIri: config.ontologyUrl,
-              allowEmptyProjection: true,
+            const sourceUrl = new URL(
+              res.url || config.ontologyUrl,
+              window.location.href,
+            );
+            const sourceName = sourceUrl.pathname.split('/').pop()
+              || 'embedded.rdf';
+            const result = await createImportedRdfDocument(bytes, {
+              name: sourceName,
+              baseIri: sourceUrl.href,
             });
             ont = result.ontology;
             if (!cancelled) setRdfSource(text);
@@ -151,7 +213,10 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
     }
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      abortController.abort();
+    };
   }, [config.catalogueId, config.ontologyUrl, config.ontologyInline, config.catalogueBaseUrl]);
 
   // ─ Render ───────────────────────────────────────────────────────────────

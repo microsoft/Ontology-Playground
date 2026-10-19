@@ -1,4 +1,5 @@
 import type { RdfQuad } from '../../types/rdfDocument';
+import RdfWorker from './rdf.worker.ts?worker&inline';
 import {
   parseRdfXmlDataset,
   serializeRdfXmlDataset,
@@ -29,10 +30,7 @@ function runWorker<T>(
 ): Promise<T> {
   const id = ++requestId;
   return new Promise((resolve, reject) => {
-    const worker = new Worker(
-      new URL('./rdf.worker.ts', import.meta.url),
-      { type: 'module' },
-    );
+    const worker = new RdfWorker();
     const cleanup = () => worker.terminate();
     worker.addEventListener(
       'message',

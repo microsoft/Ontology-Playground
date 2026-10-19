@@ -34,6 +34,8 @@ export const RDF_HIGHLIGHT_LIGHT: HighlightTheme = {
   text: '#333333',      // dark gray
 };
 
+export const MAX_HIGHLIGHTED_RDF_CHARACTERS = 256_000;
+
 /**
  * Tokenize an RDF/XML string into highlighted React nodes.
  *
@@ -43,6 +45,10 @@ export const RDF_HIGHLIGHT_LIGHT: HighlightTheme = {
  *  3. Plain text between tags
  */
 export function highlightRdf(rdf: string, theme: HighlightTheme): ReactNode {
+  if (rdf.length > MAX_HIGHLIGHTED_RDF_CHARACTERS) {
+    return rdf;
+  }
+
   const tokens: ReactNode[] = [];
   let key = 0;
 
@@ -65,7 +71,7 @@ export function highlightRdf(rdf: string, theme: HighlightTheme): ReactNode {
     }
   }
 
-  return createElement(Fragment, null, ...tokens);
+  return createElement(Fragment, null, tokens);
 }
 
 /**
@@ -117,7 +123,7 @@ function highlightTag(tag: string, theme: HighlightTheme, baseKey: number): Reac
     parts.push(span(k++, theme.text, tag.slice(lastIndex)));
   }
 
-  return createElement(Fragment, { key: baseKey }, ...parts);
+  return createElement(Fragment, { key: baseKey }, parts);
 }
 
 function span(key: number, color: string, text: string): ReactNode {

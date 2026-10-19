@@ -311,6 +311,108 @@ describe('EmbedWidget', () => {
     expect(document.querySelector('pre')?.textContent).toBe(rdf);
   });
 
+  it('rejects a URL RDF DOCTYPE before visual projection', async () => {
+    const rdf = `<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+  <!ENTITY external SYSTEM "https://attacker.invalid/value">
+]>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <owl:Ontology rdf:about="https://example.com/url">
+    <rdfs:label>&external;</rdfs:label>
+  </owl:Ontology>
+</rdf:RDF>`;
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(rdf, {
+        status: 200,
+        headers: { 'Content-Type': 'application/rdf+xml' },
+      }),
+    );
+
+    render(<EmbedWidget config={{
+      ontologyUrl: 'https://example.com/url.rdf',
+      theme: 'dark',
+      height: '400px',
+    }} />);
+
+    await screen.findByText(/DOCTYPE declarations are not accepted/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects oversized URL sources from their declared length before reading', async () => {
+    const arrayBuffer = vi.fn().mockResolvedValue(new ArrayBuffer(0));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({
+        'Content-Length': String(8 * 1024 * 1024 + 1),
+      }),
+      body: null,
+      arrayBuffer,
+    } as unknown as Response);
+
+    render(<EmbedWidget config={{
+      ontologyUrl: 'https://example.com/oversized.rdf',
+      theme: 'dark',
+      height: '400px',
+    }} />);
+
+    await screen.findByText(/exceeds the 8,388,608 byte limit/);
+    expect(arrayBuffer).not.toHaveBeenCalled();
+  });
+
+  it('cancels a URL response stream when its actual bytes exceed the limit', async () => {
+    const chunks = [
+      new Uint8Array(8 * 1024 * 1024),
+      new Uint8Array([1]),
+    ];
+    const cancel = vi.fn().mockResolvedValue(undefined);
+    const releaseLock = vi.fn();
+    const reader = {
+      read: vi.fn(async () => {
+        const value = chunks.shift();
+        return value
+          ? { done: false as const, value }
+          : { done: true as const, value: undefined };
+      }),
+      cancel,
+      releaseLock,
+    };
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers(),
+      body: { getReader: () => reader },
+    } as unknown as Response);
+
+    render(<EmbedWidget config={{
+      ontologyUrl: 'https://example.com/streamed.rdf',
+      theme: 'dark',
+      height: '400px',
+    }} />);
+
+    await screen.findByText(/exceeds the 8,388,608 byte limit/);
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(releaseLock).toHaveBeenCalledTimes(1);
+  });
+
+  it('retains URL JSON ontology compatibility with bounded loading', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify(testOntology), { status: 200 }),
+    );
+
+    render(<EmbedWidget config={{
+      ontologyUrl: 'https://example.com/ontology.json',
+      theme: 'dark',
+      height: '400px',
+    }} />);
+
+    await screen.findByText('Test Ontology');
+    expect(screen.getByText(/2 entities/)).toBeTruthy();
+  });
+
   it('shows error when no source specified', async () => {
     const config: EmbedConfig = { theme: 'dark', height: '400px' };
     render(<EmbedWidget config={config} />);
