@@ -186,21 +186,21 @@ Measurements were taken in this worktree on 2026-10-19.
 | XMLLiteral extraction, 1,000 / 500,000 text characters | linear scaling | 0.294 / 20.985 ms |
 | Inline RDF worker payload, gzip before inlining | under 75 KiB | 50,071 bytes |
 | Main application JS chunks | build must succeed without polyfill warnings | passed |
-| RDF-bearing main application chunk | build must succeed | 481.80 kB / 133.60 kB gzip |
+| RDF-bearing main application chunk | build must succeed | 481.78 kB / 133.60 kB gzip |
 | Self-contained embed bundle | build must succeed | 1,248.00 kB / 375.01 kB gzip |
 
 The worker payload is now inlined rather than emitted as a separately fetched
 asset. The main application chunks were 0.82 kB, 163.52 kB, 325.03 kB,
-481.80 kB, and 556.79 kB before gzip, with no RDF worker, `import.meta`, or
+481.78 kB, and 556.79 kB before gzip, with no RDF worker, `import.meta`, or
 Node-polyfill build errors. A native HTTPS cross-origin fixture loaded the
 embed script from a second origin and completed worker parsing without a
 worker-script request.
 
 All ten Chromium checks passed:
 
-- direct Brick route: 60 nodes, one layout, 37.3 ms layout, 69.3 ms
+- direct Brick route: 60 nodes, one layout, 30.0 ms layout, 59.9 ms
   interaction, 12.0 MiB retained page heap;
-- Gallery load: 60 nodes, one layout, 31.5 ms layout, 13.3 MiB retained page
+- Gallery load: 60 nodes, one layout, 48.2 ms layout, 13.3 MiB retained page
   heap; and
 - active-render cancel/resume behavior: passed its cancellation gate;
 - native UTF-16 source import, Unicode/astral clipboard text, CRLF-tolerant

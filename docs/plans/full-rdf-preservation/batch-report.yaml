@@ -146,8 +146,8 @@ test_results:
     skipped: 0
   full:
     command: "npm test"
-    files_passed: 58
-    passed: 830
+    files_passed: 60
+    passed: 898
     failed: 0
     skipped: 0
   browser:
@@ -162,7 +162,7 @@ additional_validation:
   - command: "npm run lint"
     result: "passed"
   - command: "npm run build"
-    result: "passed; RDF-bearing app chunk 481.80 kB / 133.60 kB gzip; self-contained embed 1,248.00 kB / 375.01 kB gzip"
+    result: "passed; RDF-bearing app chunk 481.78 kB / 133.60 kB gzip; self-contained embed 1,248.00 kB / 375.01 kB gzip"
   - command: "npm run validate"
     result: "passed with established source-only and Designer compatibility warnings"
   - command: "npm run deployment:validate"
@@ -173,10 +173,10 @@ additional_validation:
 branch_state:
   branch: "fix/rdf-preservation-red-team"
   behind_origin_main: 0
-  ahead_origin_main: 6
+  ahead_origin_main: 12
   staged_files: 0
-  committed_by_batch: false
-  pushed_by_batch: false
+  committed_by_batch: true
+  pushed_by_batch: true
 
 independent_review:
   scope: "origin/main...HEAD plus all unstaged and relevant untracked remediation"

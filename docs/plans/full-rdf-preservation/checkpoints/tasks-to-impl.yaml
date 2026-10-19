@@ -59,7 +59,7 @@ tasks:
     description: "Run complete preservation release gates on the rebased worktree."
     status: "completed"
     requirements: ["REQ-001", "REQ-002", "REQ-003", "REQ-004", "REQ-005", "REQ-006", "REQ-007", "REQ-008"]
-    verification: "830 unit/integration tests, type-check, lint, builds, RDF/deployment validation, and 10 Chromium checks pass."
+    verification: "898 unit/integration tests, type-check, lint, builds, RDF/deployment validation, and 10 Chromium checks pass."
 
   - task_id: "T014"
     description: "Document the final preservation behavior, constraints, and measurements."
@@ -68,14 +68,7 @@ tasks:
     verification: "English, Japanese, Chinese, embed, export-profile, plan, research, roadmap, and batch artifacts are updated."
 
 pending_tasks: []
-untracked_changes:
-  - "src/components/FabricExportModal.test.tsx"
-  - "src/components/Header.test.tsx"
-  - "src/lib/rdf/iri.ts"
-  - "src/lib/rdf/highlighter.test.ts"
-  - "tests/performance/rdf-preservation.spec.ts"
-  - "docs/plans/full-rdf-preservation/batch-report.yaml"
-  - "docs/plans/full-rdf-preservation/checkpoints/tasks-to-impl.yaml"
+untracked_changes: []
 
 validation:
   passed: true

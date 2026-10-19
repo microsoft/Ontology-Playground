@@ -206,7 +206,7 @@ All release checks below passed on 2026-10-19.
 | Inert imports/rules | Passed | Tests verify no import/external-resource requests and no SHACL execution. |
 | Real artifact | Passed | Brick: 5,179,865 bytes, SHA-256 `655939e9b655b7bb890e47c2015d046f41cb2dc6f314895490ebe6c14c5fc423`, 53,957 unique RDF 1.1 quads. |
 | Performance | Passed | Final rebased Brick probe: parse 255.3 ms, serialize 72.6 ms, retained heap baseline 54.9 MiB. XMLLiteral extraction scaled from 0.294 ms at 1,000 text characters to 20.985 ms at 500,000. The 5.18 MB source view uses one plain text node; all ten Chromium checks passed. |
-| Regression/build | Passed | 58 files / 830 tests, TypeScript, ESLint, production/inline-worker embed build, deployed CSP, native UTF-16/Unicode app, same-origin and cross-origin URL-embed workers, large-source rendering, textarea and clipboard checks, RDF validation, deployment validation, and 10 Chromium checks passed. |
+| Regression/build | Passed | 60 files / 898 tests, TypeScript, ESLint, production/inline-worker embed build, deployed CSP, native UTF-16/Unicode app, same-origin and cross-origin URL-embed workers, large-source rendering, textarea and clipboard checks, RDF validation, deployment validation, and 10 Chromium checks passed. |
 | Independent review | Passed | The same read-only reviewer reproduced five final risks, verified both follow-up fixes, and returned `No high-confidence findings` on the exact final worktree. |
 
 ## Implemented file additions
