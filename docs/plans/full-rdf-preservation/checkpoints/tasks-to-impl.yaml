@@ -1,0 +1,84 @@
+metadata:
+  generated: "2026-10-19"
+  source_tasks: "../plan.md#implementation-steps-and-task-breakdown"
+  last_updated: "2026-10-19"
+
+summary:
+  total_tasks: 6
+  completed_tasks: 6
+  in_progress_tasks: 0
+  pending_tasks: 0
+  completion_percentage: 100.0
+
+tasks:
+  - task_id: "T004"
+    description: "Close remaining complete RDF/XML parser and writer fidelity gaps."
+    status: "completed"
+    requirements: ["REQ-001", "REQ-002", "REQ-004"]
+    implementation:
+      - "Preserved standalone rdf:about, empty rdf:about, rdf:ID, and read-only rdf:nodeID root identity in the authoritative graph and visual projection."
+      - "Applied unknown rdf:parseType XML-literal fallback without changing Triple semantics."
+      - "Implemented complete XML 1.0 NCName ranges with linear QName splitting."
+    verification: "Dataset and edited-export regressions pass with independent expected terms and canonical graphs."
+
+  - task_id: "T005"
+    description: "Prevent late Designer navigation, draft, and RDF-editor overwrites."
+    status: "completed"
+    requirements: ["REQ-003", "REQ-004"]
+    implementation:
+      - "Guarded Designer entry by route generation and initiating app identity."
+      - "Guarded deep-link loads by request generation and initiating draft identity."
+      - "Locked submitted RDF text and verified its revision before applying parsed output."
+      - "Guarded Header, import/export, and Designer downloads by generation, mount state, ontology identity, and document revision."
+      - "Repeated the authored-share guard after clipboard completion and before route replacement."
+      - "Rejected oversized files before buffering and aborted obsolete readers."
+    verification: "Deferred navigation, draft replacement, stale download, file preflight/abort, cancellation, text-lock, and reverse-completion tests pass."
+
+  - task_id: "T006"
+    description: "Apply complete bounded ingestion to arbitrary URL embeds."
+    status: "completed"
+    requirements: ["REQ-001", "REQ-003", "REQ-004", "REQ-005"]
+    implementation:
+      - "Bounded declared and streamed response bytes and cancelled overflow."
+      - "Routed RDF/XML through complete worker ingestion while preserving bounded JSON compatibility."
+      - "Inlined the RDF worker so HTTPS pages can consume a cross-origin embed bundle."
+      - "Allowed self and Blob workers in the deployed application Content Security Policy."
+      - "Rendered multi-megabyte complete sources as one bounded plain-text node."
+    verification: "Unit and native Chromium checks cover same/cross-origin worker execution, the pinned 5.18 MB source view, limits, and pre-worker DOCTYPE rejection."
+
+  - task_id: "T008"
+    description: "Block projection-only Fabric loss for source-backed RDF."
+    status: "completed"
+    requirements: ["REQ-003", "REQ-005"]
+    implementation:
+      - "Disabled the normal Fabric entry point with an explicit fidelity explanation."
+      - "Added defensive modal checks that prevent workspace or push API calls."
+    verification: "Import/export and Fabric modal regressions pass."
+
+  - task_id: "T013"
+    description: "Run complete preservation release gates on the rebased worktree."
+    status: "completed"
+    requirements: ["REQ-001", "REQ-002", "REQ-003", "REQ-004", "REQ-005", "REQ-006", "REQ-007", "REQ-008"]
+    verification: "830 unit/integration tests, type-check, lint, builds, RDF/deployment validation, and 10 Chromium checks pass."
+
+  - task_id: "T014"
+    description: "Document the final preservation behavior, constraints, and measurements."
+    status: "completed"
+    requirements: ["REQ-008"]
+    verification: "English, Japanese, Chinese, embed, export-profile, plan, research, roadmap, and batch artifacts are updated."
+
+pending_tasks: []
+untracked_changes:
+  - "src/components/FabricExportModal.test.tsx"
+  - "src/components/Header.test.tsx"
+  - "src/lib/rdf/iri.ts"
+  - "src/lib/rdf/highlighter.test.ts"
+  - "tests/performance/rdf-preservation.spec.ts"
+  - "docs/plans/full-rdf-preservation/batch-report.yaml"
+  - "docs/plans/full-rdf-preservation/checkpoints/tasks-to-impl.yaml"
+
+validation:
+  passed: true
+  errors: []
+  warnings: []
+  blocking_issues: []

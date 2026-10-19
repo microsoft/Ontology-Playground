@@ -48,16 +48,72 @@ never injects this statement automatically.
 ### Source safety and limits
 
 - RDF/XML is the supported source syntax; Turtle is reported as unsupported.
-- Sources are limited to 8 MiB and 250,000 unique RDF statements.
+- Sources are limited to 8 MiB and 250,000 unique RDF statements. File
+  selection checks the declared size before buffering and aborts a superseded
+  reader.
 - Named nodes, blank nodes, arbitrary predicates, literal lexical forms,
   languages, datatypes, restrictions, lists, and SHACL statements are retained.
+- Explicit source blank-node identifiers remain disjoint from parser-generated
+  blank nodes, including anonymous restrictions, collections, and
+  `rdf:parseType="Resource"` structures.
+- Relative IRIs use RDF IRI resolution without browser URL canonicalization;
+  dot segments, colon-containing path segments, hostname case, explicit
+  default ports, and Unicode remain RDF-term-correct. Property-level
+  `xml:base` and `xml:lang` scopes apply regardless of XML attribute order.
+- `rdf:parseType="Literal"` values escape decoded XML text and attributes and
+  carry only inherited namespace bindings required by visibly used element or
+  attribute prefixes. Explicit declarations, default-namespace resets, and
+  nested or sibling prefix shadowing remain correct without copying unrelated
+  ancestor declarations. Comments, processing instructions, CDATA text, and
+  attribute tab, line-feed, and carriage-return values remain in order.
+- Ordinary literal properties accumulate every text and CDATA chunk within
+  their own element. XML comments and processing instructions do not become
+  RDF literal text, but neither can they truncate the surrounding value.
+- A standalone RDF/XML node element retains its `rdf:about`, `rdf:ID`, or
+  `rdf:nodeID` identity in both the complete graph and visual projection.
+  Blank-node projections remain read-only because bounded edit targets require
+  a named RDF term.
+  Unrecognized `rdf:parseType` values use the RDF/XML XML-literal fallback;
+  the RDF 1.2 `Triple` value remains distinct.
+- Modified exports support the complete XML 1.0 NCName start range, including
+  U+200C/U+200D and allowed non-letter supplementary code points, with a
+  linear QName-suffix scan.
 - `owl:imports`, SHACL, and referenced IRIs are inert. They are not fetched or
   executed.
-- `DOCTYPE` declarations are rejected.
+- `DOCTYPE` declarations are rejected before either complete-graph or visual
+  parsing begins.
+- Bounded literal edits containing XML-forbidden code points are rejected
+  atomically. The complete writer performs the same validation defensively.
 - RDF/XML cannot represent named graphs, so the writer rejects them rather than
   flattening them.
 - A valid document with no visually projectable classes remains available for
   complete export.
+- Pending imports are generation-guarded. Dismissal, reset, unmount, and older
+  delayed-close callbacks cannot cancel or overwrite a newer file selection.
+- Designer entry, deep-link catalogue loads, complete-RDF preview generation,
+  and RDF editor parsing are generation- and identity-guarded. Submitted RDF
+  text is locked while parsing, while cancellation remains available.
+- Header, import/export, and Designer downloads recheck their initiating
+  document revision and component lifetime after async source loading or
+  serialization. Authored URL sharing repeats the check after clipboard
+  completion and before route replacement. Stale output is never clicked or
+  exposed as current.
+- Complete sources above the syntax-highlighting budget render as one plain
+  text node, avoiding argument-limit failures and enormous React token trees
+  while preserving complete copy and download data.
+- Clipboard and RDF editor surfaces expose decoded Unicode text, not original
+  source bytes. Exact bytes remain the download contract; live Chromium checks
+  cover UTF-16 declarations, CRLF normalization, astral characters, edited
+  worker output, and clipboard retry behavior.
+- RDF/XML URL embeds use bounded response streaming and the same complete
+  ingestion, `DOCTYPE`, source-size, and statement-count checks as file
+  imports. JSON URL embeds remain supported within the same byte limit. The
+  embed worker is inlined so third-party HTTPS pages do not launch a
+  cross-origin worker script. The Playground deployment CSP permits its inline
+  Blob worker; third-party CSP must do the same.
+- Fabric's current API accepts only the visual projection. Fabric push is
+  disabled defensively for source-backed documents so preserved statements
+  cannot be dropped silently; complete RDF download remains available.
 
 ## Generated profiles for authored documents
 

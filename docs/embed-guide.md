@@ -113,6 +113,19 @@ RDF tab and uses the URL as the document base when resolving relative IRIs.
 JSON URLs and inline JSON have no source graph, so their RDF tab uses the
 Playground-generated visual-model profile.
 
+URL responses are limited to 8 MiB. The widget checks a declared content length,
+reads streaming responses with the same bound, and cancels a stream as soon as
+it exceeds the limit. RDF/XML URLs then use the complete import pipeline:
+`DOCTYPE` is rejected before visual parsing, unique statements are limited to
+250,000, and imports, external entities, XInclude, SHACL, and referenced IRIs
+remain inert.
+
+The complete RDF parser runs in a worker packaged inside
+`ontology-embed.js`. No separately emitted worker script is required, so the
+embed bundle can be hosted on a different HTTPS origin from the consuming page.
+If the page uses Content Security Policy, its `worker-src` policy must include
+`blob:` for the worker created by the self-contained bundle.
+
 ### Inline (base64-encoded JSON)
 
 Encode your ontology JSON as base64 and pass it directly:
@@ -165,7 +178,9 @@ This scans the DOM for new `.ontology-embed` elements and mounts widgets on any 
   supported
 - **Inspector overlay** — click any entity or relationship to see its properties
 - **Complete/source-aware RDF tab** — catalogue and RDF/XML URL embeds view and
-  copy complete source RDF; JSON and inline authored embeds show generated RDF
+  copy complete source RDF; JSON and inline authored embeds show generated RDF.
+  Multi-megabyte sources render as bounded plain text rather than an
+  unbounded syntax-highlight token tree
 - **Dark & light themes** — match your site's design
 - **Self-contained** — single JS file, no external CSS needed
 

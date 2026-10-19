@@ -1,0 +1,196 @@
+batch_id: "RDF-RISK-REBASE-02"
+completed_tasks: ["T004", "T005", "T006", "T008", "T013", "T014"]
+blocked_tasks: []
+
+finding_disposition:
+  - finding: "Standalone RDF/XML node roots lost rdf:about identity"
+    status: "confirmed_fixed"
+    root_cause: "The upstream parser processed RDF node attributes only when a parent tag existed."
+    resolution: "The adapter supplies root node-element context, and the visual index includes the document element."
+    evidence: "Independent dataset and mapped-edit export tests preserve the named subject and unrelated statements."
+  - finding: "Unknown rdf:parseType values were parsed as resources"
+    status: "confirmed_fixed"
+    root_cause: "The dependency did not apply RDF/XML's unknown-value Literal fallback."
+    resolution: "Unknown values are normalized internally to Literal while Resource, Collection, Literal, and RDF 1.2 Triple remain distinct."
+    evidence: "Independent lexical-value and unrelated-edit export assertions pass."
+  - finding: "Valid Unicode XML predicate starts could not be serialized"
+    status: "confirmed_fixed"
+    root_cause: "The writer used Unicode letter categories instead of XML 1.0 NCName ranges."
+    resolution: "The linear reverse scan now uses complete numeric XML 1.0 NCName start and character ranges."
+    evidence: "U+200C and U+E0001 predicate regressions parse, serialize, and canonicalize."
+  - finding: "Arbitrary URL embeds bypassed RDF preflight and resource limits"
+    status: "confirmed_fixed"
+    root_cause: "The URL path buffered the response and called the visual parser directly."
+    resolution: "Declared and streamed bytes are bounded to 8 MiB; oversized streams are cancelled; RDF/XML uses complete worker ingestion."
+    evidence: "Unit tests cover declared/actual overflow, JSON compatibility, and DOCTYPE; native Chromium covers the emitted worker and pre-worker DOCTYPE rejection."
+  - finding: "Late Designer entry and deep-link loads overwrote newer state"
+    status: "confirmed_fixed"
+    root_cause: "Async completions had only route-effect cleanup, not request generation or initiating-state identity."
+    resolution: "Route/request generations plus app ontology, RDF identity, and Designer draft identity guard every completion."
+    evidence: "Deferred navigation, active-ontology replacement, and deep-link draft replacement regressions pass."
+  - finding: "RDF textarea edits during parsing were silently discarded"
+    status: "confirmed_fixed"
+    root_cause: "The submit button was disabled during parsing but the controlled textarea remained editable."
+    resolution: "Submitted text is locked while parsing and its revision is verified before applying; cancellation remains enabled."
+    evidence: "A deferred parser regression proves later typing cannot alter the submitted text."
+  - finding: "Fabric submission silently projected away source-only RDF"
+    status: "confirmed_fixed"
+    root_cause: "Fabric APIs accept only the visual Ontology projection."
+    resolution: "Source-backed Fabric entry points are disabled with a fidelity notice and the modal independently blocks API calls."
+    evidence: "Import/export and Fabric modal regressions prove callbacks and APIs are not invoked."
+  - finding: "Cross-origin embeds could not start the emitted RDF worker"
+    status: "confirmed_fixed"
+    root_cause: "The worker URL remained cross-origin relative to a page consuming the otherwise self-contained embed script."
+    resolution: "The worker payload is inlined and launched from a consumer-origin Blob URL."
+    evidence: "A native HTTPS fixture loads ontology-embed.js from a second origin and completes RDF worker parsing without requesting a worker script."
+  - finding: "Large accepted sources crashed complete-source views"
+    status: "confirmed_fixed"
+    root_cause: "The highlighter spread more than 160,000 React token children and built an unbounded span tree."
+    resolution: "Sources above 256,000 characters render as one complete plain-text node; smaller sources retain syntax highlighting."
+    evidence: "Unit coverage proves bounded fallback and Chromium opens the complete 5.18 MB Brick source without a page error."
+  - finding: "Standalone rdf:ID and empty rdf:about roots were absent from the visual projection"
+    status: "confirmed_fixed"
+    root_cause: "Projection extraction read only truthy rdf:about values."
+    resolution: "A central identity resolver distinguishes absent and empty rdf:about, resolves rdf:ID, and exposes standalone rdf:nodeID roots read-only."
+    evidence: "Independent projection and edited-export graph assertions cover rdf:ID, empty rdf:about, and blank-node roots."
+  - finding: "File imports allocated oversized files and left obsolete readers active"
+    status: "confirmed_fixed"
+    root_cause: "The 8 MiB check ran only after FileReader produced the complete ArrayBuffer."
+    resolution: "Declared file size is checked before reading and active readers are aborted on replacement, close, or unmount."
+    evidence: "Regression tests prove no read begins for an oversized file and obsolete readers are aborted."
+  - finding: "Async exports could download stale documents"
+    status: "confirmed_fixed"
+    root_cause: "Header, modal, and Designer download paths clicked links unconditionally after awaited loading or serialization."
+    resolution: "Each path rechecks request generation, mount state, initiating ontology, and RDF document ID/revision before exposing output."
+    evidence: "Deferred export tests replace each initiating document or draft and observe no anchor click."
+  - finding: "Deployed CSP blocked the inline RDF worker"
+    status: "confirmed_fixed"
+    root_cause: "Blob workers fell back to script-src, which allowed only self."
+    resolution: "The deployed policy now declares worker-src 'self' blob:."
+    evidence: "Native Chromium imports RDF under the exact staticwebapp.config.json policy without a CSP or worker error."
+  - finding: "Authored sharing could navigate after a stale clipboard write"
+    status: "confirmed_fixed"
+    root_cause: "The authored branch checked identity after encoding but not after awaiting clipboard completion."
+    resolution: "Identity and mount state are rechecked immediately after clipboard completion and before history replacement."
+    evidence: "Deferred clipboard tests cover both active-ontology replacement and Header unmount."
+
+files_changed:
+  T004:
+    - "src/lib/rdf/dataset.ts"
+    - "src/lib/rdf/dataset.test.ts"
+    - "src/lib/rdf/parser.ts"
+    - "src/lib/rdf/document.test.ts"
+  T005:
+    - "src/App.tsx"
+    - "src/App.test.tsx"
+    - "src/components/Header.tsx"
+    - "src/components/Header.test.tsx"
+    - "src/components/ImportExportModal.tsx"
+    - "src/components/ImportExportModal.test.tsx"
+    - "src/components/OntologyDesigner.tsx"
+    - "src/components/OntologyDesigner.test.tsx"
+    - "src/components/designer/DesignerActions.tsx"
+    - "src/components/designer/DesignerActions.test.tsx"
+    - "src/components/designer/DesignerPreview.tsx"
+    - "src/components/designer/DesignerPreview.test.tsx"
+  T006:
+    - "src/components/EmbedWidget.tsx"
+    - "src/components/EmbedWidget.test.tsx"
+    - "src/lib/rdf/highlighter.ts"
+    - "src/lib/rdf/highlighter.test.ts"
+    - "src/lib/rdf/workerClient.ts"
+    - "public/staticwebapp.config.json"
+    - "vite.config.embed.ts"
+    - "tests/performance/rdf-preservation.spec.ts"
+  T008:
+    - "src/components/ImportExportModal.tsx"
+    - "src/components/ImportExportModal.test.tsx"
+    - "src/components/FabricExportModal.tsx"
+    - "src/components/FabricExportModal.test.tsx"
+  T013:
+    - "docs/plans/full-rdf-preservation/plan.md"
+  T014:
+    - "README.md"
+    - "README.ja.md"
+    - "README.zh-CN.md"
+    - "TODO.md"
+    - "docs/embed-guide.md"
+    - "docs/rdf-export-profiles.md"
+    - "docs/plans/full-rdf-preservation/research.md"
+
+traceability:
+  - requirement: "REQ-001"
+    tasks: ["T004", "T006"]
+    status: "completed"
+  - requirement: "REQ-002"
+    tasks: ["T004"]
+    status: "completed"
+  - requirement: "REQ-003"
+    tasks: ["T005", "T006", "T008"]
+    status: "completed"
+  - requirement: "REQ-004"
+    tasks: ["T004", "T005", "T006"]
+    status: "completed"
+  - requirement: "REQ-005"
+    tasks: ["T006", "T008"]
+    status: "completed"
+  - requirement: "REQ-008"
+    tasks: ["T013", "T014"]
+    status: "completed"
+
+test_results:
+  affected:
+    command: "npx vitest run <6 final-review regression files>"
+    passed: 90
+    failed: 0
+    skipped: 0
+  full:
+    command: "npm test"
+    files_passed: 58
+    passed: 830
+    failed: 0
+    skipped: 0
+  browser:
+    command: "npm run test:performance"
+    passed: 10
+    failed: 0
+    skipped: 0
+
+additional_validation:
+  - command: "npx tsc -b"
+    result: "passed"
+  - command: "npm run lint"
+    result: "passed"
+  - command: "npm run build"
+    result: "passed; RDF-bearing app chunk 481.80 kB / 133.60 kB gzip; self-contained embed 1,248.00 kB / 375.01 kB gzip"
+  - command: "npm run validate"
+    result: "passed with established source-only and Designer compatibility warnings"
+  - command: "npm run deployment:validate"
+    result: "8 workflows passed"
+  - command: "git diff --check"
+    result: "passed"
+
+branch_state:
+  branch: "fix/rdf-preservation-red-team"
+  behind_origin_main: 0
+  ahead_origin_main: 6
+  staged_files: 0
+  committed_by_batch: false
+  pushed_by_batch: false
+
+independent_review:
+  scope: "origin/main...HEAD plus all unstaged and relevant untracked remediation"
+  initial_findings: 5
+  follow_up_findings: 2
+  final_disposition: "No high-confidence findings"
+  reviewer_reused: true
+
+remaining_risks:
+  - "Arbitrary RDF graph editing remains intentionally out of scope; unsupported semantics stay preserved and read-only."
+  - "Fabric push remains unavailable for source-backed RDF until Fabric exposes a complete-graph contract."
+  - "Third-party embed sites with Content Security Policy must include blob: in worker-src; the Playground deployment already does."
+  - "Complete sources above 256,000 characters intentionally use plain text instead of syntax highlighting."
+
+protocol_violation: false
+errors: []
+warnings: []

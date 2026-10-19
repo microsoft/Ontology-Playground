@@ -78,10 +78,19 @@ download eligibility.
 
 The complete parser retains named and blank nodes, arbitrary predicates,
 literal lexical forms, language tags, datatypes, OWL restrictions, RDF lists,
-and SHACL statements. Imports and SHACL remain inert: external resources are
-never fetched and rules are never executed. RDF/XML `DOCTYPE` input and named
-graph output are rejected explicitly. Current resource limits are 8 MiB and
-250,000 unique statements.
+and SHACL statements. Standalone RDF/XML node roots retain their subject,
+unknown `rdf:parseType` values follow XML-literal fallback semantics, and
+valid XML 1.0 Unicode predicate names remain serializable. Imports and SHACL
+remain inert: external resources are never fetched and rules are never
+executed. RDF/XML `DOCTYPE` input and named graph output are rejected
+explicitly. Current resource limits are 8 MiB and 250,000 unique statements.
+File imports reject the declared file size before allocating its contents and
+abort obsolete reads. Async download paths verify the initiating document and
+component lifetime before exposing output. Large complete-source views fall
+back to one plain text node instead of constructing an unbounded syntax-token
+tree; copy and download still use the complete source.
+RDF/XML loaded by URL embeds uses the same preflight and complete-graph parser;
+oversized response streams are cancelled before projection.
 
 For ontologies created in the Playground, exports can use either the
 Playground round-trip profile or a standards-oriented OWL + SHACL profile. The
@@ -91,6 +100,9 @@ of treating Playground metadata as Fabric vocabulary. These generated profiles
 are not offered for source-backed documents. Modified source exports are
 labelled as derived, report source/export statement counts and patch counts,
 and can optionally add an explicit `prov:wasDerivedFrom` source-hash statement.
+The current Fabric API accepts only the visual projection, so direct Fabric
+push is disabled for source-backed documents rather than silently omitting
+preserved statements. Download the complete RDF for those documents instead.
 
 Graph rendering graduates automatically with ontology size: small ontologies
 remain complete, dense ontologies retain all data with reduced label noise, and
@@ -144,7 +156,11 @@ A self-contained JavaScript file (`ontology-embed.js`) that renders an
 interactive ontology viewer on any web page with a single `<script>` tag.
 Supports dark/light themes, multiple loading methods (catalogue ID, URL,
 inline base64), click-to-inspect, and complete source RDF display/copy for
-catalogue and RDF/XML URL sources. See the
+catalogue and RDF/XML URL sources. URL sources are read with an 8 MiB bound;
+RDF/XML URLs also receive the same `DOCTYPE`, statement-count, and inert
+resource protections as file imports. The RDF worker is packaged inside the
+self-contained embed bundle, so a widget hosted on another HTTPS origin does
+not attempt to launch a cross-origin worker script. See the
 [Embedding Guide](docs/embed-guide.md) for details.
 
 ### Ontology School

@@ -4,7 +4,8 @@
 
 **Priority:** P0 preservation first; P1 bounded editing second
 
-**Status:** Implemented and validated on `feature/full-rdf-preservation`.
+**Status:** Implemented and validated after rebasing the remediation branch
+onto `origin/main` at `d78965d`.
 
 ## Summary and scope
 
@@ -189,23 +190,24 @@ before release; repeat them for Milestone B.
 
 ## Acceptance and validation matrix
 
-All release checks below passed on 2026-10-16.
+All release checks below passed on 2026-10-19.
 
 | Check | Result | Evidence |
 |-------|--------|----------|
 | Untouched import/export | Passed | Exact byte tests cover UTF-8, UTF-16, BOM, and unchanged Designer reloads; relative IRIs retain their recorded base. |
-| Complete graph retention | Passed | RDF canonicalization tests compare the full parsed and reserialized graphs. |
-| Complex RDF | Passed | Restrictions, lists, blank nodes, SHACL, arbitrary predicates, language tags, datatypes, lexical forms, and literal carriage returns are covered. |
+| Complete graph retention | Passed | RDF canonicalization tests compare the full parsed and reserialized graphs; independent expectations cover standalone node roots using `rdf:about`, empty `rdf:about`, `rdf:ID`, or `rdf:nodeID`, unknown `rdf:parseType` XML-literal fallback, XMLLiteral infosets, approved RDF/XML canonical namespace/reification shapes, and ordinary literals split by comments, CDATA, or processing instructions. |
+| Complex RDF | Passed | Restrictions, lists, blank nodes, SHACL, arbitrary predicates, the complete XML 1.0 Unicode NCName range, language tags, datatypes, lexical forms, split and empty literals, literal carriage returns, and RDF-correct relative IRI edge cases are covered. |
 | Empty projection | Passed | Valid non-projectable RDF retains its complete document and exact export. |
-| Lifecycle/surfaces | Passed | File import, catalogue, application store, Designer, gallery, preview, sharing, embed, and stale/cancelled replacement paths have regression coverage. |
-| Preservation guards | Passed | Unsupported source-backed mutations and catalogue submission are blocked while mapped labels/comments and direct subclass edits remain available. |
+| Lifecycle/surfaces | Passed | File import, catalogue, application store, Designer, gallery, preview, sharing, and embed paths have regression coverage. File readers are size-preflighted and aborted when obsolete. Reset timers, Designer entry/deep-link loads, RDF editor text, clipboard sharing, async downloads, cancellation, unmount, and reverse completion are generation- and identity-guarded. |
+| Preservation guards | Passed | Unsupported source-backed mutations, catalogue submission, and projection-only Fabric push are blocked while mapped labels/comments and direct subclass edits remain available. |
 | Exact edits | Passed | Literal and hierarchy tests assert exact statement deltas, ambiguity rejection, duplicate-edge rejection, and unrelated-statement retention. |
 | Undo/redo | Passed | Atomic projection/document history and undo-to-original-byte eligibility are covered. |
-| Failure behavior | Passed | Malformed input, DOCTYPE, missing/hash-mismatched sources, named graphs, oversized input, and unsafe mappings fail explicitly. |
+| Failure behavior | Passed | Malformed input, DOCTYPE, missing/hash-mismatched sources, named graphs, oversized file or streamed URL input, stale downloads, and unsafe mappings fail explicitly; live Chromium verifies file and URL-embed DOCTYPE rejection before projection, worker parsing, or network access. |
 | Inert imports/rules | Passed | Tests verify no import/external-resource requests and no SHACL execution. |
 | Real artifact | Passed | Brick: 5,179,865 bytes, SHA-256 `655939e9b655b7bb890e47c2015d046f41cb2dc6f314895490ebe6c14c5fc423`, 53,957 unique RDF 1.1 quads. |
-| Performance | Passed | Brick parse 175.2 ms, serialize 43.4 ms, retained heap 54.9 MiB; Chromium performance suite 3/3 passed. |
-| Regression/build | Passed | 51 files / 726 tests, TypeScript, ESLint, production/worker/embed build, RDF validation, deployment validation, and 3 Chromium checks passed. |
+| Performance | Passed | Final rebased Brick probe: parse 255.3 ms, serialize 72.6 ms, retained heap baseline 54.9 MiB. XMLLiteral extraction scaled from 0.294 ms at 1,000 text characters to 20.985 ms at 500,000. The 5.18 MB source view uses one plain text node; all ten Chromium checks passed. |
+| Regression/build | Passed | 58 files / 830 tests, TypeScript, ESLint, production/inline-worker embed build, deployed CSP, native UTF-16/Unicode app, same-origin and cross-origin URL-embed workers, large-source rendering, textarea and clipboard checks, RDF validation, deployment validation, and 10 Chromium checks passed. |
+| Independent review | Passed | The same read-only reviewer reproduced five final risks, verified both follow-up fixes, and returned `No high-confidence findings` on the exact final worktree. |
 
 ## Implemented file additions
 
