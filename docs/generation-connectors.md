@@ -1,9 +1,9 @@
 # Generation connectors
 
 The optional AI builder generates **ontology definitions**, not instance data.
-Azure OpenAI is the reference server-side adapter. Other providers can be
-integrated by operators as reviewed deployment code, not uploaded or discovered
-at runtime. No other provider is bundled or endorsed by this extension point.
+Azure OpenAI is the default reference server-side adapter; MiniMax is an
+opt-in adapter. Additional providers can be integrated by operators as reviewed
+deployment code, not uploaded or discovered at runtime.
 The official static deployment remains independent of this API.
 
 ## Security boundary and public-launch prerequisites
@@ -50,6 +50,28 @@ are not evidence of deployed authentication. Use HTTPS in production.
 | `AZURE_OPENAI_ENDPOINT` | required for Azure | HTTPS root resource URL, e.g. `https://RESOURCE.openai.azure.com/` |
 | `AZURE_OPENAI_API_KEY` | required for Azure | Server-only provider credential |
 | `AZURE_OPENAI_DEPLOYMENT` | `gpt-4o-mini` | Server-selected deployment |
+| `MINIMAX_API_KEY` | required for MiniMax | Server-only provider credential when `AI_CONNECTOR=minimax` |
+| `MINIMAX_BASE_URL` | `https://api.minimax.io/v1` | Direct API base; China: `https://api.minimax.cn/v1`; existing `https://api.minimaxi.com/v1` settings also accepted |
+| `MINIMAX_MODEL` | `MiniMax-M3.1-Flash` | Current models: Flash first, then `MiniMax-M3`; explicit server model overrides are passed through |
+
+The MiniMax adapter sends the business description to the selected direct API
+using Chat Completions. It accepts only the listed HTTPS hosts with `/v1`
+(optional trailing slashes), no credentials in the URL, nondefault port, query,
+or fragment. Custom proxy destinations require a separately reviewed adapter.
+Its consent revision includes the normalized request URL, configured model, and
+adapter version, so destination/model changes require renewed consent while key
+rotation does not.
+
+MiniMax generation uses a 16,384 completion-token budget, including reasoning,
+and keeps reasoning separate from JSON content. Thinking and effort use the
+API defaults (adaptive thinking; Flash effort `max`); it never sends disabled
+thinking, `none` effort, or `service_tier`. Truncated output and invalid JSON fail
+without retry. This is a single-turn text adapter with no conversation history
+or tools. It uses the same response-size bound and deadline as the reference
+adapter; complex descriptions can exceed these bounds and fail safely.
+See the official [global API](https://platform.minimax.io/docs/api-reference/text-openai-api.md)
+and [China API](https://platform.minimaxi.com/docs/api-reference/text-openai-api.md)
+contracts. No browser credential, model, or destination override is accepted.
 
 HTTP origins are allowed only for explicitly configured loopback development
 hosts (`localhost`, `127.0.0.1`, `[::1]`). The Azure reference adapter accepts a
@@ -94,7 +116,7 @@ prompts, and generated text are not logged by these handlers.
 ### Bounds and failure behavior
 
 - Description: 1-8000 characters, nonblank; actual request body: 32,768 UTF-8 bytes.
-- Actual Azure response body: 262,144 bytes, including its transport envelope.
+- Actual provider response body: 262,144 bytes, including its transport envelope.
 - Generated ontology: at most 100 entities, 50 properties per entity and
   500 relationships; at most 500 entries per nested collection, depth 12,
   strings up to 8000 characters, ontology name up to 120, icons up to 32,
