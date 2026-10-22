@@ -1,4 +1,5 @@
 import { createAzureOpenAIConnector } from './azureOpenAI';
+import { createMiniMaxConnector } from './minimax';
 import {
   ConnectorError,
   MAX_DESCRIPTION_LENGTH,
@@ -10,6 +11,7 @@ import {
 // Only trusted, reviewed deployment code can register adapters.
 export const connectorFactories: ReadonlyMap<string, ConnectorFactory> = new Map([
   ['azure-openai', createAzureOpenAIConnector],
+  ['minimax', createMiniMaxConnector],
 ]);
 
 export function resolveConnector(
