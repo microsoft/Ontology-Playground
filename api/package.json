@@ -15,7 +15,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "main": "dist/api/src/functions/*.js",
   "engines": {
