@@ -1,0 +1,1093 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xml:base="http://example.org/ontology/unnamed/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ont="http://example.org/ontology/unnamed/"
+    xmlns:opl-meta="http://ontologyplayground.dev/meta#"
+    xmlns:opl-metric="http://ontologyplayground.dev/metric#"
+    xmlns:opl-dyn="http://ontologyplayground.dev/dyn#"
+>
+
+    <owl:Ontology rdf:about="http://example.org/ontology/unnamed/">
+        <rdfs:label>客服上门服务管理</rdfs:label>
+        <rdfs:comment>面向客服部的上门服务闭环：用户报修或求助、客服受理建单、预约上门、跨部门转派、现场处理、结果反馈、用户验收与回访评价；转派后保留原工单并由客服持续跟踪。</rdfs:comment>
+        <opl-meta:modelVersion>3</opl-meta:modelVersion>
+    </owl:Ontology>
+
+    <!-- ===================== -->
+    <!-- Entity Types (Classes) -->
+    <!-- ===================== -->
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-11">
+        <rdfs:label>Feedback</rdfs:label>
+        <ont:icon>🎯</ont:icon>
+        <ont:color>#D83B01</ont:color>
+        <opl-meta:displayName>回访评价</opl-meta:displayName>
+        <opl-meta:objectType>fact</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-10">
+        <rdfs:label>ServiceVisit</rdfs:label>
+        <ont:icon>📁</ont:icon>
+        <ont:color>#107C10</ont:color>
+        <opl-meta:displayName>现场处理记录</opl-meta:displayName>
+        <opl-meta:objectType>fact</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-9">
+        <rdfs:label>TransferRecord</rdfs:label>
+        <ont:icon>🌐</ont:icon>
+        <ont:color>#0078D4</ont:color>
+        <opl-meta:displayName>转派记录</opl-meta:displayName>
+        <opl-meta:objectType>fact</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-8">
+        <rdfs:label>Appointment</rdfs:label>
+        <ont:icon>🔧</ont:icon>
+        <ont:color>#008272</ont:color>
+        <opl-meta:displayName>上门预约</opl-meta:displayName>
+        <opl-meta:objectType>fact</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-7">
+        <rdfs:label>Technician</rdfs:label>
+        <ont:icon>📊</ont:icon>
+        <ont:color>#E81123</ont:color>
+        <opl-meta:displayName>服务人员</opl-meta:displayName>
+        <opl-meta:objectType>dim</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-6">
+        <rdfs:label>ServiceDepartment</rdfs:label>
+        <ont:icon>💳</ont:icon>
+        <ont:color>#FFB900</ont:color>
+        <opl-meta:displayName>服务部门</opl-meta:displayName>
+        <opl-meta:objectType>dim</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-5">
+        <rdfs:label>CustomerServiceDepartment</rdfs:label>
+        <ont:icon>🛒</ont:icon>
+        <ont:color>#00A9E0</ont:color>
+        <opl-meta:displayName>客服部门</opl-meta:displayName>
+        <opl-meta:objectType>dim</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-4">
+        <rdfs:label>WorkOrder</rdfs:label>
+        <ont:icon>📋</ont:icon>
+        <ont:color>#5C2D91</ont:color>
+        <opl-meta:displayName>工单</opl-meta:displayName>
+        <opl-meta:objectType>fact</opl-meta:objectType>
+        <opl-dyn:stateMachine>{&quot;property&quot;:&quot;status&quot;,&quot;initial&quot;:&quot;待受理&quot;,&quot;finals&quot;:[&quot;已关闭&quot;],&quot;transitions&quot;:[{&quot;id&quot;:&quot;t1&quot;,&quot;from&quot;:&quot;待受理&quot;,&quot;to&quot;:&quot;已受理&quot;,&quot;eventType&quot;:&quot;ev_work_order_accepted&quot;},{&quot;id&quot;:&quot;t2&quot;,&quot;from&quot;:&quot;已受理&quot;,&quot;to&quot;:&quot;待接收&quot;,&quot;eventType&quot;:&quot;ev_transfer_created&quot;},{&quot;id&quot;:&quot;t3&quot;,&quot;from&quot;:&quot;待接收&quot;,&quot;to&quot;:&quot;已转派&quot;,&quot;eventType&quot;:&quot;ev_transfer_accepted&quot;},{&quot;id&quot;:&quot;t4&quot;,&quot;from&quot;:&quot;待接收&quot;,&quot;to&quot;:&quot;处理中&quot;,&quot;eventType&quot;:&quot;ev_transfer_rejected&quot;},{&quot;id&quot;:&quot;t5&quot;,&quot;from&quot;:&quot;已转派&quot;,&quot;to&quot;:&quot;待接收&quot;,&quot;eventType&quot;:&quot;ev_transfer_rejected&quot;},{&quot;id&quot;:&quot;t6&quot;,&quot;from&quot;:&quot;已受理&quot;,&quot;to&quot;:&quot;待预约&quot;,&quot;eventType&quot;:&quot;ev_appointment_created&quot;},{&quot;id&quot;:&quot;t7&quot;,&quot;from&quot;:&quot;已转派&quot;,&quot;to&quot;:&quot;待预约&quot;,&quot;eventType&quot;:&quot;ev_appointment_created&quot;},{&quot;id&quot;:&quot;t8&quot;,&quot;from&quot;:&quot;待预约&quot;,&quot;to&quot;:&quot;待上门&quot;,&quot;eventType&quot;:&quot;ev_appointment_confirmed&quot;},{&quot;id&quot;:&quot;t9&quot;,&quot;from&quot;:&quot;待上门&quot;,&quot;to&quot;:&quot;待预约&quot;,&quot;eventType&quot;:&quot;ev_appointment_rescheduled&quot;},{&quot;id&quot;:&quot;t10&quot;,&quot;from&quot;:&quot;待上门&quot;,&quot;to&quot;:&quot;处理中&quot;,&quot;eventType&quot;:&quot;ev_visit_started&quot;},{&quot;id&quot;:&quot;t11&quot;,&quot;from&quot;:&quot;处理中&quot;,&quot;to&quot;:&quot;待验收&quot;,&quot;eventType&quot;:&quot;ev_result_reported&quot;},{&quot;id&quot;:&quot;t12&quot;,&quot;from&quot;:&quot;处理中&quot;,&quot;to&quot;:&quot;待预约&quot;,&quot;eventType&quot;:&quot;ev_visit_unresolved&quot;},{&quot;id&quot;:&quot;t13&quot;,&quot;from&quot;:&quot;待验收&quot;,&quot;to&quot;:&quot;已完成&quot;,&quot;eventType&quot;:&quot;ev_customer_accepted&quot;},{&quot;id&quot;:&quot;t14&quot;,&quot;from&quot;:&quot;待验收&quot;,&quot;to&quot;:&quot;待预约&quot;,&quot;eventType&quot;:&quot;ev_customer_rejected&quot;},{&quot;id&quot;:&quot;t15&quot;,&quot;from&quot;:&quot;已完成&quot;,&quot;to&quot;:&quot;已关闭&quot;,&quot;eventType&quot;:&quot;ev_feedback_received&quot;}]}</opl-dyn:stateMachine>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-3">
+        <rdfs:label>ServiceRequest</rdfs:label>
+        <ont:icon>🏢</ont:icon>
+        <ont:color>#D83B01</ont:color>
+        <opl-meta:displayName>服务请求</opl-meta:displayName>
+        <opl-meta:objectType>fact</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-2">
+        <rdfs:label>ServiceAddress</rdfs:label>
+        <ont:icon>👤</ont:icon>
+        <ont:color>#107C10</ont:color>
+        <opl-meta:displayName>服务地址</opl-meta:displayName>
+        <opl-meta:objectType>dim</opl-meta:objectType>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://example.org/ontology/unnamed/New-entity-1">
+        <rdfs:label>Customer</rdfs:label>
+        <ont:icon>📦</ont:icon>
+        <ont:color>#0078D4</ont:color>
+        <opl-meta:displayName>用户</opl-meta:displayName>
+        <opl-meta:objectType>dim</opl-meta:objectType>
+    </owl:Class>
+
+    <!-- ================ -->
+    <!-- Data Properties -->
+    <!-- ================ -->
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-11_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-11_work_order_id">
+        <rdfs:label>work_order_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-11_customer_id">
+        <rdfs:label>customer_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-11_score">
+        <rdfs:label>score</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-11_comment">
+        <rdfs:label>comment</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-11_submitted_at">
+        <rdfs:label>submitted_at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-10_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-10_work_order_id">
+        <rdfs:label>work_order_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-10_technician_id">
+        <rdfs:label>technician_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-10_visit_sequence">
+        <rdfs:label>visit_sequence</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-10_result">
+        <rdfs:label>result</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>已解决,未解决</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-10_resolved">
+        <rdfs:label>resolved</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <ont:propertyType>boolean</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-10_duration_minutes">
+        <rdfs:label>duration_minutes</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <ont:propertyType>integer</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-10_visited_at">
+        <rdfs:label>visited_at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-9_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-9_work_order_id">
+        <rdfs:label>work_order_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-9_service_department_id">
+        <rdfs:label>service_department_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-9_reason">
+        <rdfs:label>reason</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-9_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>待接收,已接收,已退回</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-9_transferred_at">
+        <rdfs:label>transferred_at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-8_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-8_work_order_id">
+        <rdfs:label>work_order_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-8_technician_id">
+        <rdfs:label>technician_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-8_scheduled_at">
+        <rdfs:label>scheduled_at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-8_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-8"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>待确认,已预约,已改约,已取消</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-7_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-7_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-7_department_id">
+        <rdfs:label>department_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-7"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-6_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-6"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-6_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-6"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-5_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-5_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-5"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-4_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-4_request_id">
+        <rdfs:label>request_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-4_cs_department_id">
+        <rdfs:label>cs_department_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-4_address_id">
+        <rdfs:label>address_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-4_status">
+        <rdfs:label>status</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>待受理,已受理,待预约,待上门,处理中,待接收,已转派,待验收,已完成,已关闭</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-4_priority">
+        <rdfs:label>priority</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>低,中,高,紧急</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-4_due_at">
+        <rdfs:label>due_at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-4_created_at">
+        <rdfs:label>created_at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <ont:propertyType>datetime</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-3_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-3_customer_id">
+        <rdfs:label>customer_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-3_address_id">
+        <rdfs:label>address_id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-3_category">
+        <rdfs:label>category</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-3_description">
+        <rdfs:label>description</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-3_urgency">
+        <rdfs:label>urgency</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:enumValues>低,中,高,紧急</ont:enumValues>
+        <ont:propertyType>enum</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-2_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-2_address">
+        <rdfs:label>address</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-2"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-1_id">
+        <rdfs:label>id</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:isIdentifier rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</ont:isIdentifier>
+        <ont:propertyType>string</ont:propertyType>
+        <opl-meta:isPrimaryKey rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</opl-meta:isPrimaryKey>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-1_name">
+        <rdfs:label>name</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://example.org/ontology/unnamed/new-entity-1_phone">
+        <rdfs:label>phone</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-1"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <ont:propertyType>string</ont:propertyType>
+    </owl:DatatypeProperty>
+
+    <!-- ================== -->
+    <!-- Object Properties -->
+    <!-- ================== -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-relates-to-1">
+        <rdfs:label>submits</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <rdfs:comment>用户提交报修或求助请求</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>new-entity-3</ont:toEntityId>
+        <opl-meta:joinKey>id=customer_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-relates-to-2">
+        <rdfs:label>generates</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:comment>客服受理服务请求并生成原工单</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-3</ont:fromEntityId>
+        <ont:toEntityId>new-entity-4</ont:toEntityId>
+        <opl-meta:joinKey>id=request_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-accepts">
+        <rdfs:label>accepts</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-5"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:comment>客服部门受理并持续跟踪工单</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-5</ont:fromEntityId>
+        <ont:toEntityId>new-entity-4</ont:toEntityId>
+        <opl-meta:joinKey>id=cs_department_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-located-at">
+        <rdfs:label>located_at</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-2"/>
+        <rdfs:comment>工单关联上门服务地址</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-4</ont:fromEntityId>
+        <ont:toEntityId>new-entity-2</ont:toEntityId>
+        <opl-meta:joinKey>address_id=id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-schedules">
+        <rdfs:label>schedules</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-8"/>
+        <rdfs:comment>工单可包含多次上门预约</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-4</ont:fromEntityId>
+        <ont:toEntityId>new-entity-8</ont:toEntityId>
+        <opl-meta:joinKey>id=work_order_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-has-transfer">
+        <rdfs:label>has_transfer</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <rdfs:comment>原工单保留全部转派记录</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-4</ont:fromEntityId>
+        <ont:toEntityId>new-entity-9</ont:toEntityId>
+        <opl-meta:joinKey>id=work_order_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-receives-transfer">
+        <rdfs:label>receives_transfer</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-6"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <rdfs:comment>对应服务部门接收转派</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-6</ont:fromEntityId>
+        <ont:toEntityId>new-entity-9</ont:toEntityId>
+        <opl-meta:joinKey>id=service_department_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-performs">
+        <rdfs:label>performs</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-7"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:comment>服务人员执行现场处理</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-7</ont:fromEntityId>
+        <ont:toEntityId>new-entity-10</ont:toEntityId>
+        <opl-meta:joinKey>id=technician_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-reports-to">
+        <rdfs:label>reports_to</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:comment>现场处理结果反馈到原工单</rdfs:comment>
+        <ont:cardinality>many-to-one</ont:cardinality>
+        <ont:fromEntityId>new-entity-10</ont:fromEntityId>
+        <ont:toEntityId>new-entity-4</ont:toEntityId>
+        <opl-meta:joinKey>work_order_id=id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-gives-feedback">
+        <rdfs:label>gives_feedback</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-1"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <rdfs:comment>用户提交回访评价</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-1</ont:fromEntityId>
+        <ont:toEntityId>new-entity-11</ont:toEntityId>
+        <opl-meta:joinKey>id=customer_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://example.org/ontology/unnamed/rel-receives-feedback">
+        <rdfs:label>receives_feedback</rdfs:label>
+        <rdfs:domain rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <rdfs:range rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <rdfs:comment>工单关联用户验收与回访评价</rdfs:comment>
+        <ont:cardinality>one-to-many</ont:cardinality>
+        <ont:fromEntityId>new-entity-4</ont:fromEntityId>
+        <ont:toEntityId>new-entity-11</ont:toEntityId>
+        <opl-meta:joinKey>id=work_order_id</opl-meta:joinKey>
+    </owl:ObjectProperty>
+
+    <!-- ============ -->
+    <!-- Metrics (指标层) -->
+    <!-- ============ -->
+
+    <opl-metric:Metric rdf:about="http://example.org/ontology/unnamed/metric_pending_order_count">
+        <opl-metric:name>pending_work_order_count</opl-metric:name>
+        <opl-metric:displayName>待处理工单数</opl-metric:displayName>
+        <opl-metric:kind>atomic</opl-metric:kind>
+        <opl-metric:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-metric:formula>COUNT(id)</opl-metric:formula>
+        <opl-metric:requiredProperty>id</opl-metric:requiredProperty>
+        <opl-metric:requiredProperty>status</opl-metric:requiredProperty>
+        <opl-metric:requiredFilter>status NOT IN (&apos;已完成&apos;, &apos;已关闭&apos;)</opl-metric:requiredFilter>
+        <opl-metric:supportedGranularity>day</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>week</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>month</opl-metric:supportedGranularity>
+        <opl-metric:doNot>不含已完成和已关闭工单</opl-metric:doNot>
+        <opl-metric:unit>单</opl-metric:unit>
+    </opl-metric:Metric>
+
+    <opl-metric:Metric rdf:about="http://example.org/ontology/unnamed/metric_transferred_order_count">
+        <opl-metric:name>transferred_order_count</opl-metric:name>
+        <opl-metric:displayName>转派工单数</opl-metric:displayName>
+        <opl-metric:kind>atomic</opl-metric:kind>
+        <opl-metric:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-9"/>
+        <opl-metric:formula>COUNT(DISTINCT work_order_id)</opl-metric:formula>
+        <opl-metric:requiredProperty>work_order_id</opl-metric:requiredProperty>
+        <opl-metric:requiredProperty>status</opl-metric:requiredProperty>
+        <opl-metric:requiredFilter>status != &apos;已退回&apos;</opl-metric:requiredFilter>
+        <opl-metric:supportedGranularity>day</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>week</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>month</opl-metric:supportedGranularity>
+        <opl-metric:doNot>按原工单去重；不含已退回的转派记录</opl-metric:doNot>
+        <opl-metric:unit>单</opl-metric:unit>
+    </opl-metric:Metric>
+
+    <opl-metric:Metric rdf:about="http://example.org/ontology/unnamed/metric_overdue_order_count">
+        <opl-metric:name>overdue_work_order_count</opl-metric:name>
+        <opl-metric:displayName>超时工单数</opl-metric:displayName>
+        <opl-metric:kind>atomic</opl-metric:kind>
+        <opl-metric:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-metric:formula>COUNT(id)</opl-metric:formula>
+        <opl-metric:requiredProperty>id</opl-metric:requiredProperty>
+        <opl-metric:requiredProperty>due_at</opl-metric:requiredProperty>
+        <opl-metric:requiredProperty>status</opl-metric:requiredProperty>
+        <opl-metric:requiredFilter>due_at &lt; NOW()</opl-metric:requiredFilter>
+        <opl-metric:requiredFilter>status NOT IN (&apos;已完成&apos;, &apos;已关闭&apos;)</opl-metric:requiredFilter>
+        <opl-metric:supportedGranularity>day</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>week</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>month</opl-metric:supportedGranularity>
+        <opl-metric:doNot>不含已完成和已关闭工单</opl-metric:doNot>
+        <opl-metric:unit>单</opl-metric:unit>
+    </opl-metric:Metric>
+
+    <opl-metric:Metric rdf:about="http://example.org/ontology/unnamed/metric_first_time_resolution">
+        <opl-metric:name>first_time_resolution_rate</opl-metric:name>
+        <opl-metric:displayName>一次解决率</opl-metric:displayName>
+        <opl-metric:kind>atomic</opl-metric:kind>
+        <opl-metric:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <opl-metric:formula>SUM(resolved) / COUNT(id)</opl-metric:formula>
+        <opl-metric:requiredProperty>id</opl-metric:requiredProperty>
+        <opl-metric:requiredProperty>visit_sequence</opl-metric:requiredProperty>
+        <opl-metric:requiredProperty>resolved</opl-metric:requiredProperty>
+        <opl-metric:requiredFilter>visit_sequence = 1</opl-metric:requiredFilter>
+        <opl-metric:supportedGranularity>day</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>week</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>month</opl-metric:supportedGranularity>
+        <opl-metric:doNot>只统计首次上门；再次上门不进入分母</opl-metric:doNot>
+        <opl-metric:unit>%</opl-metric:unit>
+    </opl-metric:Metric>
+
+    <opl-metric:Metric rdf:about="http://example.org/ontology/unnamed/metric_avg_visit_duration">
+        <opl-metric:name>avg_visit_duration_minutes</opl-metric:name>
+        <opl-metric:displayName>平均上门时长</opl-metric:displayName>
+        <opl-metric:kind>atomic</opl-metric:kind>
+        <opl-metric:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-10"/>
+        <opl-metric:formula>AVG(duration_minutes)</opl-metric:formula>
+        <opl-metric:requiredProperty>duration_minutes</opl-metric:requiredProperty>
+        <opl-metric:requiredFilter>duration_minutes &gt;= 0</opl-metric:requiredFilter>
+        <opl-metric:supportedGranularity>day</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>week</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>month</opl-metric:supportedGranularity>
+        <opl-metric:doNot>不含预约等待和路途时长</opl-metric:doNot>
+        <opl-metric:unit>分钟</opl-metric:unit>
+    </opl-metric:Metric>
+
+    <opl-metric:Metric rdf:about="http://example.org/ontology/unnamed/metric_customer_satisfaction">
+        <opl-metric:name>customer_satisfaction</opl-metric:name>
+        <opl-metric:displayName>用户满意度</opl-metric:displayName>
+        <opl-metric:kind>atomic</opl-metric:kind>
+        <opl-metric:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-11"/>
+        <opl-metric:formula>AVG(score)</opl-metric:formula>
+        <opl-metric:requiredProperty>score</opl-metric:requiredProperty>
+        <opl-metric:requiredFilter>score BETWEEN 1 AND 5</opl-metric:requiredFilter>
+        <opl-metric:supportedGranularity>day</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>week</opl-metric:supportedGranularity>
+        <opl-metric:supportedGranularity>month</opl-metric:supportedGranularity>
+        <opl-metric:doNot>只统计有效回访评分，不代表未回访用户</opl-metric:doNot>
+        <opl-metric:unit>分</opl-metric:unit>
+    </opl-metric:Metric>
+
+    <!-- =============== -->
+    <!-- Event Types (事件层) -->
+    <!-- =============== -->
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_service_request_created">
+        <opl-dyn:name>service_request_created</opl-dyn:name>
+        <opl-dyn:displayName>服务请求已创建</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <opl-dyn:category>creation</opl-dyn:category>
+        <opl-dyn:source>external</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_work_order_created">
+        <opl-dyn:name>work_order_created</opl-dyn:name>
+        <opl-dyn:displayName>工单已创建</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>creation</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_work_order_accepted">
+        <opl-dyn:name>work_order_accepted</opl-dyn:name>
+        <opl-dyn:displayName>工单已受理</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_transfer_created">
+        <opl-dyn:name>transfer_created</opl-dyn:name>
+        <opl-dyn:displayName>转派已发起</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_transfer_accepted">
+        <opl-dyn:name>transfer_accepted</opl-dyn:name>
+        <opl-dyn:displayName>转派已接收</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_transfer_rejected">
+        <opl-dyn:name>transfer_rejected</opl-dyn:name>
+        <opl-dyn:displayName>转派已退回</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_appointment_created">
+        <opl-dyn:name>appointment_created</opl-dyn:name>
+        <opl-dyn:displayName>上门预约已创建</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_appointment_confirmed">
+        <opl-dyn:name>appointment_confirmed</opl-dyn:name>
+        <opl-dyn:displayName>上门预约已确认</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_appointment_rescheduled">
+        <opl-dyn:name>appointment_rescheduled</opl-dyn:name>
+        <opl-dyn:displayName>用户已改约</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_visit_started">
+        <opl-dyn:name>visit_started</opl-dyn:name>
+        <opl-dyn:displayName>现场处理已开始</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_result_reported">
+        <opl-dyn:name>result_reported</opl-dyn:name>
+        <opl-dyn:displayName>处理结果已反馈</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_visit_unresolved">
+        <opl-dyn:name>visit_unresolved</opl-dyn:name>
+        <opl-dyn:displayName>一次上门未解决</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_customer_accepted">
+        <opl-dyn:name>customer_accepted</opl-dyn:name>
+        <opl-dyn:displayName>用户验收已通过</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_customer_rejected">
+        <opl-dyn:name>customer_rejected</opl-dyn:name>
+        <opl-dyn:displayName>用户验收未通过</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_feedback_received">
+        <opl-dyn:name>feedback_received</opl-dyn:name>
+        <opl-dyn:displayName>回访评价已提交</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>action</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_follow_up_requested">
+        <opl-dyn:name>follow_up_requested</opl-dyn:name>
+        <opl-dyn:displayName>结果催办已发起</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>rule</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <opl-dyn:EventType rdf:about="http://example.org/ontology/unnamed/event_ev_transfer_escalated">
+        <opl-dyn:name>transfer_escalated</opl-dyn:name>
+        <opl-dyn:displayName>无人接收已升级</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:category>lifecycle</opl-dyn:category>
+        <opl-dyn:source>rule</opl-dyn:source>
+    </opl-dyn:EventType>
+
+    <!-- =============== -->
+    <!-- Action Types (动作层) -->
+    <!-- =============== -->
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_create_work_order">
+        <opl-dyn:name>create_work_order</opl-dyn:name>
+        <opl-dyn:displayName>受理建单</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-3"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;priority&quot;,&quot;type&quot;:&quot;enum&quot;,&quot;required&quot;:true},{&quot;name&quot;:&quot;due_at&quot;,&quot;type&quot;:&quot;datetime&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:emits>[&quot;ev_work_order_created&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>客服专员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_accept_work_order">
+        <opl-dyn:name>accept_work_order</opl-dyn:name>
+        <opl-dyn:displayName>受理工单</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:preconditions>[&quot;status == &apos;待受理&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_work_order_accepted&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>客服专员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_transfer_work_order">
+        <opl-dyn:name>transfer_work_order</opl-dyn:name>
+        <opl-dyn:displayName>转派服务部门</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;service_department_id&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true},{&quot;name&quot;:&quot;reason&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:preconditions>[&quot;status == &apos;已受理&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_transfer_created&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>客服专员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_accept_transfer">
+        <opl-dyn:name>accept_transfer</opl-dyn:name>
+        <opl-dyn:displayName>接收转派</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:preconditions>[&quot;status == &apos;待接收&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_transfer_accepted&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>服务部门受理人</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_reject_transfer">
+        <opl-dyn:name>reject_transfer</opl-dyn:name>
+        <opl-dyn:displayName>退回转派</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;reason&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:preconditions>[&quot;status == &apos;待接收&apos; || status == &apos;已转派&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_transfer_rejected&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>服务部门受理人</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_schedule_appointment">
+        <opl-dyn:name>schedule_appointment</opl-dyn:name>
+        <opl-dyn:displayName>预约上门</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;scheduled_at&quot;,&quot;type&quot;:&quot;datetime&quot;,&quot;required&quot;:true},{&quot;name&quot;:&quot;technician_id&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:preconditions>[&quot;status IN (&apos;已受理&apos;, &apos;已转派&apos;, &apos;待预约&apos;)&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_appointment_created&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>客服专员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_confirm_appointment">
+        <opl-dyn:name>confirm_appointment</opl-dyn:name>
+        <opl-dyn:displayName>确认预约</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:preconditions>[&quot;status == &apos;待预约&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_appointment_confirmed&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>客服专员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_reschedule_appointment">
+        <opl-dyn:name>reschedule_appointment</opl-dyn:name>
+        <opl-dyn:displayName>用户改约</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;scheduled_at&quot;,&quot;type&quot;:&quot;datetime&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:preconditions>[&quot;status == &apos;待上门&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_appointment_rescheduled&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>客服专员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_start_visit">
+        <opl-dyn:name>start_visit</opl-dyn:name>
+        <opl-dyn:displayName>开始现场处理</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:preconditions>[&quot;status == &apos;待上门&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_visit_started&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>服务人员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_report_result">
+        <opl-dyn:name>report_result</opl-dyn:name>
+        <opl-dyn:displayName>反馈处理结果</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;result&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true},{&quot;name&quot;:&quot;duration_minutes&quot;,&quot;type&quot;:&quot;integer&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:preconditions>[&quot;status == &apos;处理中&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_result_reported&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>服务人员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_report_unresolved">
+        <opl-dyn:name>report_unresolved</opl-dyn:name>
+        <opl-dyn:displayName>登记一次未解决</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;result&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:preconditions>[&quot;status == &apos;处理中&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_visit_unresolved&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>服务人员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_customer_accept">
+        <opl-dyn:name>customer_accept</opl-dyn:name>
+        <opl-dyn:displayName>用户验收通过</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:preconditions>[&quot;status == &apos;待验收&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_customer_accepted&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>用户</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_customer_reject">
+        <opl-dyn:name>customer_reject</opl-dyn:name>
+        <opl-dyn:displayName>用户验收退回</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;reason&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:preconditions>[&quot;status == &apos;待验收&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_customer_rejected&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>用户</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_submit_feedback">
+        <opl-dyn:name>submit_feedback</opl-dyn:name>
+        <opl-dyn:displayName>提交回访评价</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;score&quot;,&quot;type&quot;:&quot;integer&quot;,&quot;required&quot;:true},{&quot;name&quot;:&quot;comment&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:false}]</opl-dyn:parameters>
+        <opl-dyn:preconditions>[&quot;status == &apos;已完成&apos;&quot;]</opl-dyn:preconditions>
+        <opl-dyn:emits>[&quot;ev_feedback_received&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>用户</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_follow_up_result">
+        <opl-dyn:name>follow_up_result</opl-dyn:name>
+        <opl-dyn:displayName>催办结果反馈</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;message&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:emits>[&quot;ev_follow_up_requested&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>客服专员</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <opl-dyn:ActionType rdf:about="http://example.org/ontology/unnamed/action_act_escalate_transfer">
+        <opl-dyn:name>escalate_transfer</opl-dyn:name>
+        <opl-dyn:displayName>升级无人接收</opl-dyn:displayName>
+        <opl-dyn:owner rdf:resource="http://example.org/ontology/unnamed/New-entity-4"/>
+        <opl-dyn:parameters>[{&quot;name&quot;:&quot;reason&quot;,&quot;type&quot;:&quot;string&quot;,&quot;required&quot;:true}]</opl-dyn:parameters>
+        <opl-dyn:emits>[&quot;ev_transfer_escalated&quot;]</opl-dyn:emits>
+        <opl-dyn:executor>{&quot;kind&quot;:&quot;manual&quot;}</opl-dyn:executor>
+        <opl-dyn:requiredRole>客服主管</opl-dyn:requiredRole>
+    </opl-dyn:ActionType>
+
+    <!-- ====== -->
+    <!-- Rules (规则层) -->
+    <!-- ====== -->
+
+    <opl-dyn:Rule rdf:about="http://example.org/ontology/unnamed/rule_rule_transfer_timeout">
+        <opl-dyn:name>transfer_response_timeout</opl-dyn:name>
+        <opl-dyn:displayName>转派30分钟无人接收升级</opl-dyn:displayName>
+        <opl-dyn:triggerOn>ev_transfer_created</opl-dyn:triggerOn>
+        <opl-dyn:absent>{&quot;event&quot;:&quot;ev_transfer_accepted&quot;,&quot;within&quot;:&quot;30m&quot;,&quot;escalate&quot;:&quot;act_escalate_transfer&quot;}</opl-dyn:absent>
+        <opl-dyn:propose>[{&quot;action&quot;:&quot;act_accept_transfer&quot;}]</opl-dyn:propose>
+        <opl-dyn:severity>warning</opl-dyn:severity>
+        <opl-dyn:status>active</opl-dyn:status>
+    </opl-dyn:Rule>
+
+    <opl-dyn:Rule rdf:about="http://example.org/ontology/unnamed/rule_rule_result_timeout">
+        <opl-dyn:name>result_feedback_timeout</opl-dyn:name>
+        <opl-dyn:displayName>接收后24小时未反馈催办</opl-dyn:displayName>
+        <opl-dyn:triggerOn>ev_transfer_accepted</opl-dyn:triggerOn>
+        <opl-dyn:absent>{&quot;event&quot;:&quot;ev_result_reported&quot;,&quot;within&quot;:&quot;24h&quot;,&quot;escalate&quot;:&quot;act_follow_up_result&quot;}</opl-dyn:absent>
+        <opl-dyn:propose>[{&quot;action&quot;:&quot;act_schedule_appointment&quot;,&quot;argumentMapping&quot;:{&quot;scheduled_at&quot;:&quot;$event.payload.scheduled_at&quot;,&quot;technician_id&quot;:&quot;$event.payload.technician_id&quot;}}]</opl-dyn:propose>
+        <opl-dyn:severity>critical</opl-dyn:severity>
+        <opl-dyn:status>active</opl-dyn:status>
+    </opl-dyn:Rule>
+
+    <opl-dyn:Rule rdf:about="http://example.org/ontology/unnamed/rule_rule_revisit">
+        <opl-dyn:name>revisit_after_unresolved</opl-dyn:name>
+        <opl-dyn:displayName>一次未解决则再次预约</opl-dyn:displayName>
+        <opl-dyn:triggerOn>ev_visit_unresolved</opl-dyn:triggerOn>
+        <opl-dyn:propose>[{&quot;action&quot;:&quot;act_schedule_appointment&quot;}]</opl-dyn:propose>
+        <opl-dyn:severity>info</opl-dyn:severity>
+        <opl-dyn:status>active</opl-dyn:status>
+    </opl-dyn:Rule>
+
+    <!-- ================== -->
+    <!-- Scenario Scripts (剧本层) -->
+    <!-- ================== -->
+
+    <opl-dyn:ScenarioScript rdf:about="http://example.org/ontology/unnamed/scenario_sc_full_service_flow">
+        <opl-dyn:name>上门转派服务闭环</opl-dyn:name>
+        <rdfs:comment>建单、转派、预约、现场处理、验收和回访评价完整闭环</rdfs:comment>
+        <opl-dyn:given>[{&quot;seed&quot;:&quot;new-entity-3&quot;,&quot;object&quot;:&quot;R1&quot;,&quot;values&quot;:{&quot;id&quot;:&quot;R1&quot;,&quot;customer_id&quot;:&quot;C1&quot;,&quot;address_id&quot;:&quot;A1&quot;,&quot;category&quot;:&quot;设备故障&quot;,&quot;description&quot;:&quot;需要上门检查&quot;,&quot;urgency&quot;:&quot;高&quot;}}]</opl-dyn:given>
+        <opl-dyn:when>[{&quot;action&quot;:&quot;act_create_work_order&quot;,&quot;object&quot;:&quot;R1&quot;,&quot;at&quot;:&quot;2026-10-26T09:00:00Z&quot;,&quot;args&quot;:{&quot;priority&quot;:&quot;高&quot;,&quot;due_at&quot;:&quot;2026-10-27T09:00:00Z&quot;},&quot;as&quot;:&quot;WO1&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_accept_work_order&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T09:05:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_transfer_work_order&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T09:10:00Z&quot;,&quot;args&quot;:{&quot;service_department_id&quot;:&quot;D1&quot;,&quot;reason&quot;:&quot;需专业部门上门&quot;},&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_accept_transfer&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T09:20:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_schedule_appointment&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T09:25:00Z&quot;,&quot;args&quot;:{&quot;scheduled_at&quot;:&quot;2026-10-26T13:00:00Z&quot;,&quot;technician_id&quot;:&quot;T1&quot;},&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_confirm_appointment&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T09:30:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_start_visit&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T13:00:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_report_result&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T14:00:00Z&quot;,&quot;args&quot;:{&quot;result&quot;:&quot;现场处理完成&quot;,&quot;duration_minutes&quot;:60},&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_customer_accept&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T14:30:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_submit_feedback&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;at&quot;:&quot;2026-10-26T15:00:00Z&quot;,&quot;args&quot;:{&quot;score&quot;:5,&quot;comment&quot;:&quot;处理及时&quot;},&quot;confirm&quot;:true}]</opl-dyn:when>
+        <opl-dyn:then>[{&quot;kind&quot;:&quot;state&quot;,&quot;object&quot;:&quot;WO1&quot;,&quot;property&quot;:&quot;status&quot;,&quot;expect&quot;:&quot;已关闭&quot;},{&quot;kind&quot;:&quot;event-count&quot;,&quot;event&quot;:&quot;ev_result_reported&quot;,&quot;expect&quot;:1},{&quot;kind&quot;:&quot;event-count&quot;,&quot;event&quot;:&quot;ev_feedback_received&quot;,&quot;expect&quot;:1}]</opl-dyn:then>
+    </opl-dyn:ScenarioScript>
+
+    <opl-dyn:ScenarioScript rdf:about="http://example.org/ontology/unnamed/scenario_sc_service_exceptions">
+        <opl-dyn:name>无人接收改约与再次上门</opl-dyn:name>
+        <rdfs:comment>覆盖无人接收、用户改约和一次未解决后的再次预约</rdfs:comment>
+        <opl-dyn:given>[{&quot;seed&quot;:&quot;new-entity-3&quot;,&quot;object&quot;:&quot;R2&quot;,&quot;values&quot;:{&quot;id&quot;:&quot;R2&quot;,&quot;customer_id&quot;:&quot;C2&quot;,&quot;address_id&quot;:&quot;A2&quot;,&quot;category&quot;:&quot;设备故障&quot;,&quot;description&quot;:&quot;需要专业部门处理&quot;,&quot;urgency&quot;:&quot;紧急&quot;}}]</opl-dyn:given>
+        <opl-dyn:when>[{&quot;action&quot;:&quot;act_create_work_order&quot;,&quot;object&quot;:&quot;R2&quot;,&quot;at&quot;:&quot;2026-10-26T09:00:00Z&quot;,&quot;args&quot;:{&quot;priority&quot;:&quot;紧急&quot;,&quot;due_at&quot;:&quot;2026-10-26T18:00:00Z&quot;},&quot;as&quot;:&quot;WO2&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_accept_work_order&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T09:05:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_transfer_work_order&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T09:10:00Z&quot;,&quot;args&quot;:{&quot;service_department_id&quot;:&quot;D2&quot;,&quot;reason&quot;:&quot;客服无法处理&quot;},&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_escalate_transfer&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T09:41:00Z&quot;,&quot;args&quot;:{&quot;reason&quot;:&quot;30分钟无人接收&quot;},&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_accept_transfer&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T09:45:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_schedule_appointment&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T09:50:00Z&quot;,&quot;args&quot;:{&quot;scheduled_at&quot;:&quot;2026-10-26T13:00:00Z&quot;,&quot;technician_id&quot;:&quot;T2&quot;},&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_confirm_appointment&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T09:55:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_reschedule_appointment&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T10:00:00Z&quot;,&quot;args&quot;:{&quot;scheduled_at&quot;:&quot;2026-10-26T15:00:00Z&quot;},&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_confirm_appointment&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T10:05:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_start_visit&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T15:00:00Z&quot;,&quot;confirm&quot;:true},{&quot;action&quot;:&quot;act_report_unresolved&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;at&quot;:&quot;2026-10-26T16:00:00Z&quot;,&quot;args&quot;:{&quot;result&quot;:&quot;需补充配件后再次上门&quot;},&quot;confirm&quot;:true}]</opl-dyn:when>
+        <opl-dyn:then>[{&quot;kind&quot;:&quot;state&quot;,&quot;object&quot;:&quot;WO2&quot;,&quot;property&quot;:&quot;status&quot;,&quot;expect&quot;:&quot;待预约&quot;},{&quot;kind&quot;:&quot;event-count&quot;,&quot;event&quot;:&quot;ev_transfer_escalated&quot;,&quot;expect&quot;:1},{&quot;kind&quot;:&quot;event-count&quot;,&quot;event&quot;:&quot;ev_visit_unresolved&quot;,&quot;expect&quot;:1}]</opl-dyn:then>
+    </opl-dyn:ScenarioScript>
+
+</rdf:RDF>

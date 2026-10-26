@@ -1,0 +1,14 @@
+{
+  "name": "客服上门服务管理",
+  "description": "面向客服部的上门服务闭环：用户报修或求助、客服受理建单、预约上门、跨部门转派、现场处理、结果反馈、用户验收与回访评价；转派后保留原工单并由客服持续跟踪。",
+  "icon": "📦",
+  "category": "general",
+  "tags": [
+    "customer-service",
+    "work-order",
+    "onsite-service",
+    "transfer",
+    "feedback"
+  ],
+  "author": "Donald147852"
+}
