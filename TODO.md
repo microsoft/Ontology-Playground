@@ -204,6 +204,11 @@ into a static JSON file.
 - [x] Add an npm script: `"catalogue:build": "tsx scripts/compile-catalogue.ts"`
 - [x] Integrate into `npm run build`:
   `"build": "npm run catalogue:build && tsc -b && vite build"`
+- [x] Support ignored, machine-local RDF links that synchronize before
+  catalogue builds and live-reload during development without weakening
+  catalogue symlink protections.
+- [x] Keep linked-local RDF file watchers active for the full Vite dev-server
+  lifecycle so source edits rebuild and reload the catalogue.
 - [x] On build failure (invalid RDF, missing metadata), fail loudly with a
   helpful error message
 - [x] Publish every reviewed RDF file as a SHA-256-addressed, byte-preserving

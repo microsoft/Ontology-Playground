@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "catalogue:build": "tsx scripts/compile-catalogue.ts",
+    "dev": "npm run catalogue:build && vite",
+    "catalogue:sync": "tsx scripts/sync-linked-ontologies.ts",
+    "catalogue:build": "npm run catalogue:sync && tsx scripts/compile-catalogue.ts",
     "catalogue:restore": "tsx scripts/restore-catalogue-payloads.ts",
     "learn:build": "tsx scripts/compile-learn.ts",
     "build": "npm run catalogue:build && npm run learn:build && tsc -b && vite build && npm run build:embed",

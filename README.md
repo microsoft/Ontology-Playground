@@ -292,13 +292,34 @@ npm run dev
 
 Visit http://localhost:5173
 
+#### Linked local ontologies
+
+Development can materialise RDF/XML files outside this repository as local,
+ignored official catalogue entries. Copy `.ontology-links.example.json` to
+`.ontology-links.local.json`, then set each entry's absolute or config-relative
+`source`, catalogue `id`, and metadata. `npm run dev`, `npm run build`, and
+`npm run catalogue:build` synchronize configured files before compiling the
+catalogue. While the dev server is running, source or config changes trigger an
+atomic update of each generated file, catalogue rebuild, and browser reload.
+Removing a link or the local config removes only marker-owned generated entries.
+If a configured source is temporarily missing or invalid, synchronization fails
+closed and keeps the last valid generated entry; restoring the source triggers a
+new rebuild and reload.
+
+Generated entries are written under `catalogue/official/local-<id>/` and are
+ignored by Git. The compiler continues to reject symlinks. Optional exact-text
+`replacements` are applied only to the generated copy; each replacement has an
+expected match count and fails closed if the source changes unexpectedly. Keep
+the local config uncommitted because it may contain machine-specific paths.
+
 ### Production Build
 
 ```bash
 npm run build
 ```
 
-The build pipeline compiles the catalogue, compiles learning content markdown,
+The build pipeline first synchronizes configured local ontology links, then
+compiles the catalogue and learning content markdown,
 type-checks, bundles the app, and builds the embed widget. Output is in
 `build/`. The static catalogue output includes `catalogue.json`, lazy graph
 payloads under `catalogue-payloads/`, and byte-preserving originals under

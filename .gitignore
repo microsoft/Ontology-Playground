@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.ontology-links.local.json
+/.ontology-links-tmp/
 
 # Editor directories and files
 .vscode/*
@@ -28,6 +30,7 @@ public/catalogue.json
 public/catalogue-payloads-manifest.json
 public/catalogue-payloads/
 public/catalogue-sources/
+/catalogue/official/local-*/
 ontology-preview/
 ontology-preview-artifact/
 ontology-preview-assets/
