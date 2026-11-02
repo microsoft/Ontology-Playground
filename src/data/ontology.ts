@@ -7,6 +7,8 @@ export interface Property {
   unit?: string;
   values?: string[];
   description?: string;
+  sourceRefs?: string[];
+  appliesTo?: string[];
 }
 
 export interface RelationshipAttribute {

@@ -118,6 +118,30 @@ function readStringArray(
   });
 }
 
+function readOptionalStringArray(
+  record: Record<string, unknown>,
+  key: string,
+  path: string,
+  issues: OntologySchemaIssue[],
+): string[] | undefined {
+  const value = record[key];
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) {
+    addIssue(issues, path, 'an array of strings when provided');
+    return undefined;
+  }
+
+  const result: string[] = [];
+  value.forEach((item, index) => {
+    if (typeof item === 'string') {
+      result.push(item);
+    } else {
+      addIssue(issues, `${path}[${index}]`, 'a string');
+    }
+  });
+  return result;
+}
+
 function isAllowedValue<T extends string>(
   value: unknown,
   allowedValues: readonly T[],
@@ -198,6 +222,24 @@ function parseProperty(
     issues,
   );
   if (description !== undefined) property.description = description;
+
+  const sourceRefs = readOptionalStringArray(
+    value,
+    'sourceRefs',
+    `${path}.sourceRefs`,
+    issues,
+  );
+  if (sourceRefs !== undefined) property.sourceRefs = sourceRefs;
+
+  const appliesTo = readOptionalStringArray(
+    value,
+    'appliesTo',
+    `${path}.appliesTo`,
+    issues,
+  );
+  if (appliesTo !== undefined) {
+    property.appliesTo = appliesTo;
+  }
 
   if (value.values !== undefined) {
     if (!Array.isArray(value.values)) {

@@ -34,6 +34,8 @@ const PLAYGROUND_ANNOTATIONS = {
   unit: 'Display unit associated with a numeric property.',
   enumValues: 'Comma-delimited enum values used only by Playground round trips.',
   propertyType: 'Playground property type: string, integer, decimal, double, date, datetime, boolean, or enum.',
+  sourceRef: 'Machine-readable source reference associated with an entity property.',
+  appliesTo: 'Machine-readable scope to which an entity property applies.',
   cardinality: 'Playground relationship multiplicity: one-to-one, one-to-many, many-to-one, or many-to-many.',
   fromEntityId: 'Playground ID of a relationship source entity.',
   toEntityId: 'Playground ID of a relationship target entity.',
@@ -210,6 +212,12 @@ export function serializePlaygroundRDF(
       }
       if (property.values && property.values.length > 0) {
         rdf += `        <opmeta:enumValues>${escapeXml(property.values.join(','))}</opmeta:enumValues>\n`;
+      }
+      for (const sourceRef of property.sourceRefs ?? []) {
+        rdf += `        <opmeta:sourceRef>${escapeXml(sourceRef)}</opmeta:sourceRef>\n`;
+      }
+      for (const scope of property.appliesTo ?? []) {
+        rdf += `        <opmeta:appliesTo>${escapeXml(scope)}</opmeta:appliesTo>\n`;
       }
       rdf += `        <opmeta:propertyType>${escapeXml(property.type)}</opmeta:propertyType>\n`;
       rdf += '    </owl:DatatypeProperty>\n\n';

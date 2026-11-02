@@ -383,6 +383,35 @@ describe('parseRDF', () => {
       expect(prop.unit).toBe('USD');
       expect(prop.description).toBe('The price of the item');
     });
+
+    it('parses repeated Playground source and applicability annotations', () => {
+      const rdf = `<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="${RDF_NS}"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:opmeta="https://microsoft.github.io/Ontology-Playground/ns/metadata#"
+         xmlns:other="http://example.org/other#">
+  <owl:Class rdf:about="http://example.org/PoolResource">
+    <rdfs:label>PoolResource</rdfs:label>
+  </owl:Class>
+  <owl:DatatypeProperty rdf:about="http://example.org/pool-resource_academic-organization-staff">
+    <rdfs:label>academicOrganizationStaff</rdfs:label>
+    <rdfs:domain rdf:resource="http://example.org/PoolResource"/>
+    <opmeta:sourceRef> database:t_resource_uni_ext.expert_title </opmeta:sourceRef>
+    <opmeta:sourceRef>database:t_resource_uni_ext.expert_title</opmeta:sourceRef>
+    <opmeta:appliesTo>resourceType:uni</opmeta:appliesTo>
+    <opmeta:appliesTo>resourceType:inst</opmeta:appliesTo>
+    <other:sourceRef>database:ignored_table.column</other:sourceRef>
+  </owl:DatatypeProperty>
+</rdf:RDF>`;
+
+      const { ontology } = parseRDF(rdf);
+
+      expect(ontology.entityTypes[0].properties[0]).toMatchObject({
+        sourceRefs: ['database:t_resource_uni_ext.expert_title'],
+        appliesTo: ['resourceType:uni', 'resourceType:inst'],
+      });
+    });
   });
 
   describe('relationships', () => {

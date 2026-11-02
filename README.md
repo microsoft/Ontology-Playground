@@ -28,7 +28,10 @@ cover the supported theme palettes.
 
 Cytoscape.js-powered graph that renders any ontology as an interactive
 node-and-edge diagram. Pan, zoom, click nodes to inspect properties, and use
-the live search bar to filter entities and relationships.
+the live search bar to filter entities and relationships. Property descriptions,
+including RDF/XML `rdfs:comment` values, appear directly beneath each property
+in the Inspector. Playground `sourceRef` and repeated `appliesTo` annotations
+are also shown there when present.
 The graph has an accessible text summary naming the ontology and its entity
 and relationship totals; semantic overviews also identify the visible counts.
 Zoom, fit, reset, and PNG download controls have explicit accessible names,
