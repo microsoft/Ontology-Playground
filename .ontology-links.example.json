@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "links": [
+    {
+      "id": "example-domain",
+      "source": "/absolute/path/to/example-domain.rdf",
+      "metadata": {
+        "name": "Example Domain Ontology",
+        "description": "A local ontology materialised into the development catalogue.",
+        "icon": "🔗",
+        "category": "technology",
+        "tags": ["local", "linked"],
+        "author": "Local development"
+      },
+      "replacements": [
+        {
+          "description": "Example explicit compatibility adjustment",
+          "from": "<opmeta:propertyType>enum</opmeta:propertyType>",
+          "to": "<opmeta:propertyType>string</opmeta:propertyType>",
+          "expectedMatches": 1
+        }
+      ]
+    }
+  ]
+}

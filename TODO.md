@@ -562,6 +562,12 @@ social media) often land on mobile — if users can't interact, adoption stalls.
 
 ## Low-priority / deferred
 
+- [x] Support ignored, machine-local RDF links that synchronize before
+  catalogue builds and live-reload during development without weakening
+  catalogue symlink protections.
+- [x] Keep linked-local RDF file watchers active for the full Vite dev-server
+  lifecycle so source edits rebuild and reload the catalogue.
+
 - [ ] **"Use in Fabric IQ" export wizard** — A guided flow (validate →
   download RDF → show Fabric IQ upload instructions). Deferred until the
   Fabric IQ integration story is clearer and a native link/API may be
