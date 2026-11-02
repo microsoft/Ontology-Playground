@@ -51,3 +51,45 @@ describe('InspectorPanel quest progression', () => {
     expect(useAppStore.getState().currentStepIndex).toBe(2);
   });
 });
+
+describe('InspectorPanel property descriptions', () => {
+  beforeEach(() => {
+    useAppStore.getState().resetToDefault();
+    vi.restoreAllMocks();
+    HTMLElement.prototype.scrollIntoView = vi.fn();
+  });
+
+  it('shows RDF property comments and omits empty description elements', () => {
+    useAppStore.getState().loadOntology({
+      name: 'Project Sync',
+      description: 'A local ontology.',
+      entityTypes: [{
+        id: 'requirement',
+        name: 'Requirement',
+        description: 'A requirement to synchronize.',
+        icon: '📋',
+        color: '#0078D4',
+        properties: [
+          {
+            name: 'businessType',
+            type: 'string',
+            description: '业务类型编码。',
+          },
+          {
+            name: 'domainCode',
+            type: 'string',
+            description: '   ',
+          },
+        ],
+      }],
+      relationships: [],
+    });
+    useAppStore.getState().selectEntity('requirement');
+
+    const { container } = render(<InspectorPanel />);
+
+    expect(screen.getByText('业务类型编码。')).toBeVisible();
+    expect(screen.getByText('业务类型编码。')).toHaveClass('property-description');
+    expect(container.querySelectorAll('.property-description')).toHaveLength(1);
+  });
+});

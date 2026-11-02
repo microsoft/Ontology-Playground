@@ -1278,11 +1278,38 @@ body {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
   padding: 12px;
   background: var(--bg-elevated);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
+}
+
+.property-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.property-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.property-description {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.property-unit {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
 
 /* Two-line relationship layout */
@@ -1325,6 +1352,7 @@ body {
 }
 
 .property-type {
+  flex-shrink: 0;
   font-size: 12px;
   color: var(--ms-blue);
   font-family: var(--font-mono);
@@ -1337,7 +1365,6 @@ body {
   color: black;
   border-radius: var(--radius-sm);
   font-weight: 600;
-  margin-left: 8px;
 }
 
 /* Query Playground */

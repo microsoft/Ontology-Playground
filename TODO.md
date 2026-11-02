@@ -562,6 +562,8 @@ social media) often land on mobile — if users can't interact, adoption stalls.
 
 ## Low-priority / deferred
 
+- [x] Display parsed RDF property comments in the Inspector property list.
+
 - [ ] **"Use in Fabric IQ" export wizard** — A guided flow (validate →
   download RDF → show Fabric IQ upload instructions). Deferred until the
   Fabric IQ integration story is clearer and a native link/API may be

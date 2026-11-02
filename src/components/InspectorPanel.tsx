@@ -144,10 +144,15 @@ export function InspectorPanel() {
           <div className="property-list">
             {entity.properties.map(prop => (
               <div key={prop.name} className="property-item" style={{ cursor: 'pointer' }} onClick={() => tryAdvancePropertyQuestStep(prop.name)}>
-                <div>
-                  <span className="property-name">{prop.name}</span>
-                  {prop.isIdentifier && <span className="property-identifier">ID</span>}
-                  {prop.unit && <span className="property-type" style={{ marginLeft: 8 }}>({prop.unit})</span>}
+                <div className="property-details">
+                  <div className="property-heading">
+                    <span className="property-name">{prop.name}</span>
+                    {prop.isIdentifier && <span className="property-identifier">ID</span>}
+                    {prop.unit && <span className="property-unit">({prop.unit})</span>}
+                  </div>
+                  {prop.description?.trim() && (
+                    <p className="property-description">{prop.description}</p>
+                  )}
                 </div>
                 <span className="property-type">{prop.type}</span>
               </div>
