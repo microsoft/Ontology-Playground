@@ -9,6 +9,7 @@ import {
   MAX_RENDERED_EDGES,
   MAX_RENDERED_NODES,
 } from '../lib/graphView';
+import { VISUAL_GROUP_NODE_TYPE } from '../lib/visualGroups';
 import { useAppStore } from '../store/appStore';
 import { describeOntologyGraph } from '../lib/graphA11y';
 import { OntologyGraph } from './OntologyGraph';
@@ -16,6 +17,7 @@ import { OntologyGraph } from './OntologyGraph';
 const graphMocks = vi.hoisted(() => {
   const collection: Record<string, unknown> & { length: number } = { length: 1 };
   const chain = vi.fn(() => collection);
+  const style = vi.fn(() => collection);
   const addClass = vi.fn(() => collection);
   const removeClass = vi.fn(() => collection);
   const connectedEdges = vi.fn(() => collection);
@@ -24,7 +26,7 @@ const graphMocks = vi.hoisted(() => {
     removeClass,
     unselect: chain,
     select: chain,
-    style: chain,
+    style,
     not: chain,
     connectedEdges,
     connectedNodes: chain,
@@ -113,6 +115,7 @@ const graphMocks = vi.hoisted(() => {
     cy,
     cytoscape,
     layout,
+    style,
     setAutoCompleteLayout(value: boolean) {
       autoCompleteLayout = value;
     },
@@ -231,7 +234,14 @@ function createWideInheritanceFixture(): Ontology {
 }
 
 interface CapturedConfig {
-  elements: Array<{ data: { id: string } }>;
+  elements: Array<{
+    data: {
+      id: string;
+      type?: string;
+      label?: string;
+      parent?: string;
+    };
+  }>;
   layout: { name: string; quality?: string };
   style: Array<{
     selector: string;
@@ -244,6 +254,7 @@ describe('OntologyGraph adaptive rendering', () => {
     vi.clearAllMocks();
     graphMocks.resetLayout();
     useAppStore.getState().resetToDefault();
+    useAppStore.setState({ theme: 'dark', darkMode: true });
     localStorage.removeItem('ontology-legend-collapsed');
     delete window.__ONTOLOGY_PREVIEW_CY__;
     delete window.__ONTOLOGY_GRAPH_METRICS__;
@@ -377,6 +388,62 @@ describe('OntologyGraph adaptive rendering', () => {
     expect(
       screen.queryByRole('region', { name: 'Large ontology controls' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('renders related entities inside a visual-only compound group', async () => {
+    const ontology = createDenseFixture();
+    ontology.entityTypes = ontology.entityTypes.slice(0, 2).map((entity) => ({
+      ...entity,
+      visualGroup: 'Resource Planning',
+    }));
+    ontology.relationships = [{
+      id: '__visual_group__:Resource%20Planning',
+      name: 'plansWith',
+      from: ontology.entityTypes[0].id,
+      to: ontology.entityTypes[1].id,
+      cardinality: 'many-to-many',
+    }];
+    useAppStore.getState().loadOntology(ontology);
+
+    render(<OntologyGraph />);
+
+    await waitFor(() => expect(graphMocks.cytoscape).toHaveBeenCalledTimes(1));
+    const config = graphMocks.cytoscape.mock.calls[0][0] as CapturedConfig;
+    const group = config.elements.find(
+      (element) => element.data.type === VISUAL_GROUP_NODE_TYPE,
+    );
+    expect(group?.data.label).toBe('Resource Planning');
+    expect(config.elements.filter(
+      (element) => element.data.parent === group?.data.id,
+    )).toHaveLength(2);
+    expect(group?.data.id).toBe('__visual_group__:Resource%20Planning:2');
+    expect(config.elements).toContainEqual(expect.objectContaining({
+      data: expect.objectContaining({
+        id: '__visual_group__:Resource%20Planning',
+        type: 'relationship',
+      }),
+    }));
+    expect(config.style).toContainEqual(expect.objectContaining({
+      selector: `node[type = "${VISUAL_GROUP_NODE_TYPE}"]`,
+    }));
+  });
+
+  it('refreshes visual group colors when the theme changes', async () => {
+    render(<OntologyGraph />);
+    await waitFor(() => expect(graphMocks.cytoscape).toHaveBeenCalledTimes(1));
+    graphMocks.cy.$.mockClear();
+    graphMocks.style.mockClear();
+
+    act(() => useAppStore.getState().setTheme('light'));
+
+    await waitFor(() => expect(graphMocks.cy.$).toHaveBeenCalledWith(
+      `node[type = "${VISUAL_GROUP_NODE_TYPE}"]`,
+    ));
+    expect(graphMocks.style).toHaveBeenCalledWith(expect.objectContaining({
+      'color': expect.any(String),
+      'background-color': expect.any(String),
+      'border-color': expect.any(String),
+    }));
   });
 
   it('renders a bounded semantic overview for a massive ontology', async () => {

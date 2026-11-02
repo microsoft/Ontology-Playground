@@ -17,6 +17,10 @@ import {
   isLargeOntologyGraph,
   ontologyGraphElementCount,
 } from '../../lib/ontologyScale';
+import {
+  buildVisualGroupProjection,
+  VISUAL_GROUP_NODE_TYPE,
+} from '../../lib/visualGroups';
 
 cytoscape.use(fcose);
 
@@ -103,9 +107,22 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
   const largeGraph = isLargeOntologyGraph(ontology);
 
   const buildElements = useCallback(() => {
-    const nodes = ontology.entityTypes.map((e) => ({
-      data: { id: e.id, label: `${e.icon} ${e.name}`, color: e.color },
-    }));
+    const visualGroups = buildVisualGroupProjection(
+      ontology.entityTypes,
+      ontology.relationships.map((relationship) => relationship.id),
+    );
+    const nodes = ontology.entityTypes.map((e) => {
+      const parent = visualGroups.parentByEntityId.get(e.id);
+      return {
+        data: {
+          id: e.id,
+          label: `${e.icon} ${e.name}`,
+          color: e.color,
+          type: 'entity',
+          ...(parent ? { parent } : {}),
+        },
+      };
+    });
     const edges = ontology.relationships.map((r) => ({
       data: {
         id: r.id,
@@ -115,7 +132,7 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
         kind: r.kind ?? 'association',
       },
     }));
-    return [...nodes, ...edges];
+    return [...visualGroups.nodes, ...nodes, ...edges];
   }, [ontology]);
 
   // Create graph; recreate on theme change. Graph colors are read from the
@@ -150,6 +167,28 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
             'border-width': 2,
             'border-color': 'data(color)',
             'border-opacity': 0.5,
+          },
+        },
+        {
+          selector: `node[type = "${VISUAL_GROUP_NODE_TYPE}"]`,
+          style: {
+            shape: 'roundrectangle',
+            label: 'data(label)',
+            'text-valign': 'top',
+            'text-halign': 'center',
+            'text-margin-y': -8,
+            'font-size': '12px',
+            'font-weight': 700,
+            color: themeColors.nodeText,
+            'background-color': themeColors.edgeLabelBg,
+            'background-opacity': 0.16,
+            'border-color': themeColors.edgeColor,
+            'border-opacity': 0.7,
+            'border-style': 'dashed',
+            'border-width': 2,
+            padding: '28px',
+            'compound-sizing-wrt-labels': 'include',
+            events: 'no',
           },
         },
         {
@@ -198,7 +237,13 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
       maxZoom: 3,
     });
 
-    cy.on('tap', 'node', (evt) => onSelectEntity(evt.target.id()));
+    cy.on('tap', 'node', (evt) => {
+      if (
+        typeof evt.target.data === 'function'
+        && evt.target.data('type') === VISUAL_GROUP_NODE_TYPE
+      ) return;
+      onSelectEntity(evt.target.id());
+    });
     cy.on('tap', 'edge', (evt) => onSelectRelationship(evt.target.id()));
     cy.on('tap', (evt) => {
       if (evt.target === cy) {

@@ -34,6 +34,7 @@ export interface EntityType {
   properties: Property[];
   icon: string;
   color: string;
+  visualGroup?: string;
 }
 
 export interface EntityInstance {

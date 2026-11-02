@@ -24,6 +24,7 @@ describe('parseRDF', () => {
         <rdfs:comment>A customer</rdfs:comment>
         <ont:icon>👤</ont:icon>
         <ont:color>#0078D4</ont:color>
+        <ont:visualGroup> Customer Operations </ont:visualGroup>
     </owl:Class>
 
     <owl:DatatypeProperty rdf:about="http://example.org/ontology/test/customer_name">
@@ -176,6 +177,7 @@ describe('parseRDF', () => {
       expect(entity.description).toBe('A customer');
       expect(entity.icon).toBe('👤');
       expect(entity.color).toBe('#0078D4');
+      expect(entity.visualGroup).toBe('Customer Operations');
     });
 
     it('defaults icon and color when not provided', () => {

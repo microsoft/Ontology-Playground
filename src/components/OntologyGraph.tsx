@@ -45,6 +45,10 @@ import {
   restoreGraphViewport,
   type GraphPositionSnapshot,
 } from '../lib/graphPositionPersistence';
+import {
+  buildVisualGroupProjection,
+  VISUAL_GROUP_NODE_TYPE,
+} from '../lib/visualGroups';
 import { GraphLegend } from './GraphLegend';
 import { LargeGraphControls } from './LargeGraphControls';
 import { useGraphNodeActionPosition } from './useGraphNodeActionPosition';
@@ -485,8 +489,13 @@ export function OntologyGraph() {
 
   const buildElements = useCallback((): ElementDefinition[] => {
     const rootIds = new Set(graphView.rootIds);
+    const visualGroups = buildVisualGroupProjection(
+      graphView.entities,
+      graphView.relationships.map((relationship) => relationship.id),
+    );
     const nodes = graphView.entities.map((entity) => {
       const hiddenNeighborCount = graphView.hiddenNeighborCounts.get(entity.id) ?? 0;
+      const parent = visualGroups.parentByEntityId.get(entity.id);
       return {
         data: {
           id: entity.id,
@@ -497,7 +506,8 @@ export function OntologyGraph() {
           description: entity.description,
           hiddenNeighborCount,
           isRoot: rootIds.has(entity.id) ? 1 : 0,
-          type: 'entity'
+          type: 'entity',
+          ...(parent ? { parent } : {}),
         }
       };
     });
@@ -519,7 +529,7 @@ export function OntologyGraph() {
         }
       }));
 
-    return [...nodes, ...edges];
+    return [...visualGroups.nodes, ...nodes, ...edges];
   }, [graphView]);
 
   const updateLayoutStatus = useCallback((status: LayoutStatus) => {
@@ -672,6 +682,29 @@ export function OntologyGraph() {
             'transition-property': 'border-width, border-color, width, height',
             'transition-duration': 200
           }
+        },
+        {
+          selector: `node[type = "${VISUAL_GROUP_NODE_TYPE}"]`,
+          style: {
+            'shape': 'roundrectangle',
+            'label': 'data(label)',
+            'text-valign': 'top',
+            'text-halign': 'center',
+            'text-margin-y': -10,
+            'font-size': '13px',
+            'font-weight': 700,
+            'min-zoomed-font-size': 8,
+            'color': graphThemeColors.current.nodeText,
+            'background-color': graphThemeColors.current.edgeLabelBg,
+            'background-opacity': 0.16,
+            'border-color': graphThemeColors.current.edgeColor,
+            'border-opacity': 0.7,
+            'border-style': 'dashed',
+            'border-width': 2,
+            'padding': '32px',
+            'compound-sizing-wrt-labels': 'include',
+            'events': 'no',
+          },
         },
         {
           selector: 'node.overview-label-hidden',
@@ -844,6 +877,10 @@ export function OntologyGraph() {
 
     // Event handlers
     cy.on('tap', 'node', (evt: EventObject) => {
+      if (
+        typeof evt.target.data === 'function'
+        && evt.target.data('type') === VISUAL_GROUP_NODE_TYPE
+      ) return;
       const nodeId = evt.target.id();
       selectEntity(nodeId);
       
@@ -896,6 +933,10 @@ export function OntologyGraph() {
     });
 
     cy.on('dbltap', 'node', (evt: EventObject) => {
+      if (
+        typeof evt.target.data === 'function'
+        && evt.target.data('type') === VISUAL_GROUP_NODE_TYPE
+      ) return;
       const nodeId = evt.target.id();
       if (isBoundedView) return;
 
@@ -1074,6 +1115,11 @@ export function OntologyGraph() {
     try {
       // Apply text-color update to ALL edges/nodes (text colors don't affect highlight line-color)
       cy.$('node').style({ 'color': themeColors.nodeText });
+      cy.$(`node[type = "${VISUAL_GROUP_NODE_TYPE}"]`).style({
+        'color': themeColors.nodeText,
+        'background-color': themeColors.edgeLabelBg,
+        'border-color': themeColors.edgeColor,
+      });
       cy.$('edge').style({ 'color': themeColors.edgeText, 'text-background-color': themeColors.edgeLabelBg, 'text-background-opacity': 1 });
       // Line/arrow colors: only update non-highlighted edges so path-finder highlights survive
       cy.edges().not('.highlighted').style({

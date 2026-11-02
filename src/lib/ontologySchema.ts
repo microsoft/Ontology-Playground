@@ -259,7 +259,7 @@ function parseEntity(
     color = defaultColors[index % defaultColors.length] ?? '';
   }
 
-  return {
+  const entity: EntityType = {
     id: readString(value, 'id', `${path}.id`, issues),
     name: readString(value, 'name', `${path}.name`, issues),
     description: readString(
@@ -273,6 +273,14 @@ function parseEntity(
     icon: readString(value, 'icon', `${path}.icon`, issues, '📦'),
     color,
   };
+  const visualGroup = readOptionalString(
+    value,
+    'visualGroup',
+    `${path}.visualGroup`,
+    issues,
+  )?.trim();
+  if (visualGroup) entity.visualGroup = visualGroup;
+  return entity;
 }
 
 function parseRelationshipAttribute(

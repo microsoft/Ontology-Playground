@@ -169,6 +169,26 @@ export function EntityForm() {
                   />
                 </label>
 
+                {/* Visual group */}
+                <label className="designer-field">
+                  <span>Visual group</span>
+                  <input
+                    type="text"
+                    value={entity.visualGroup ?? ''}
+                    onChange={(e) => updateEntity(entity.id, {
+                      visualGroup: e.target.value || undefined,
+                    })}
+                    placeholder="e.g. Quote & Approval"
+                    disabled={sourceBacked}
+                    title={sourceBacked
+                      ? 'Visual groups are read-only for source-backed RDF'
+                      : 'Entities sharing a group are wrapped by a visual-only boundary'}
+                  />
+                  <span className="designer-field-hint">
+                    Presentation only; it does not create an RDF entity or relationship.
+                  </span>
+                </label>
+
                 {/* Icon picker */}
                 <div className="designer-field">
                   <span>Icon</span>

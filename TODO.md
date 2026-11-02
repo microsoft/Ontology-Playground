@@ -62,6 +62,10 @@ edges; unsupported semantics remain preserved and read-only.
 - [x] Keep graph overlays and exports usable: collapse or auto-collapse the
   entity legend, export only the visible graph within safe canvas limits, and
   report PNG generation failures instead of downloading empty files
+- [x] Render optional `opmeta:visualGroup` annotations as non-semantic
+  Cytoscape compound boundaries across the main graph, embeds, and Designer;
+  omit singleton containers in bounded projections and exclude containers from
+  ontology counts, selection, position snapshots, queries, and RDF semantics
 - [x] Render catalogue PR previews from completed graph layouts rather than
   legend visibility, validating PNG dimensions and honoring safe export limits
 - [x] Round-trip fidelity: `parse(serialize(ontology))` must produce an
@@ -398,6 +402,7 @@ one-click PR flow.
 ### 6.1 Visual entity designer
 - [x] Create `OntologyDesigner` component — a full-screen editor panel
 - [x] Entity creation: name, icon picker, color picker, description
+- [x] Optional visual group editor for presentation-only compound boundaries
 - [x] Property builder: add/remove/reorder properties with type selectors
   (string, integer, decimal, date, datetime, boolean, enum)
 - [x] Mark identifier properties

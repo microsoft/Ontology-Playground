@@ -3,6 +3,7 @@ import type {
   ElementDefinition,
   Position,
 } from 'cytoscape';
+import { isVisualGroupElement, VISUAL_GROUP_NODE_TYPE } from './visualGroups';
 
 export interface GraphPositionSnapshot {
   positions: ReadonlyMap<string, Position>;
@@ -106,6 +107,10 @@ export function captureGraphPositionSnapshot(
 ): GraphPositionSnapshot | null {
   const positions = new Map<string, Position>();
   cy.nodes().forEach((node) => {
+    if (
+      typeof node.data === 'function'
+      && node.data('type') === VISUAL_GROUP_NODE_TYPE
+    ) return;
     const position = node.position();
     positions.set(node.id(), { x: position.x, y: position.y });
   });
@@ -127,7 +132,9 @@ export function preserveGraphElementPositions(
 ): ElementDefinition[] | null {
   const visibleNodeIds = new Set(
     elements
-      .filter((element) => edgeEndpoints(element) === null)
+      .filter((element) => (
+        edgeEndpoints(element) === null && !isVisualGroupElement(element)
+      ))
       .map(elementId)
       .filter((id): id is string => id !== null),
   );

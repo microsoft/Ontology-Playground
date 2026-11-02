@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { ElementDefinition } from 'cytoscape';
+import type { Core, ElementDefinition } from 'cytoscape';
 import {
+  captureGraphPositionSnapshot,
   preserveGraphElementPositions,
   type GraphPositionSnapshot,
 } from './graphPositionPersistence';
+import { VISUAL_GROUP_NODE_TYPE } from './visualGroups';
 
 const elements: ElementDefinition[] = [
   { data: { id: 'root' } },
@@ -26,6 +28,36 @@ const elements: ElementDefinition[] = [
 ];
 
 describe('graph position persistence', () => {
+  it('excludes visual-only compound parents from captured positions', () => {
+    const nodes = [
+      {
+        id: () => '__visual_group__:Commerce',
+        data: (name: string) => name === 'type' ? VISUAL_GROUP_NODE_TYPE : undefined,
+        position: () => ({ x: 50, y: 50 }),
+      },
+      {
+        id: () => 'customer',
+        data: (name: string) => name === 'type' ? 'entity' : undefined,
+        position: () => ({ x: 100, y: 120 }),
+      },
+    ];
+    const cy = {
+      nodes: () => ({
+        forEach: (callback: (node: typeof nodes[number]) => void) => {
+          nodes.forEach(callback);
+        },
+      }),
+      zoom: () => 0.8,
+      pan: () => ({ x: 20, y: 30 }),
+    } as unknown as Core;
+
+    const snapshot = captureGraphPositionSnapshot(cy);
+
+    expect(snapshot?.positions).toEqual(new Map([
+      ['customer', { x: 100, y: 120 }],
+    ]));
+  });
+
   it('keeps existing nodes fixed and places added neighbors around them', () => {
     const snapshot: GraphPositionSnapshot = {
       positions: new Map([
