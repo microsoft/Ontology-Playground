@@ -51,6 +51,10 @@ import {
   type GraphPositionSnapshot,
 } from '../lib/graphPositionPersistence';
 import {
+  buildVisualGroupProjection,
+  VISUAL_GROUP_NODE_TYPE,
+} from '../lib/visualGroups';
+import {
   EMBED_THEMES,
   type EmbedThemeTokens,
 } from './embedTheme';
@@ -525,8 +529,13 @@ function EmbedGraph({ ontology, theme, selected, setSelected }: EmbedGraphProps)
 
   const elements = useMemo<ElementDefinition[]>(() => {
     const rootIds = new Set(graphView.rootIds);
+    const visualGroups = buildVisualGroupProjection(
+      graphView.entities,
+      graphView.relationships.map((relationship) => relationship.id),
+    );
     const nodes = graphView.entities.map((entity) => {
       const hiddenNeighborCount = graphView.hiddenNeighborCounts.get(entity.id) ?? 0;
+      const parent = visualGroups.parentByEntityId.get(entity.id);
       return {
         data: {
           id: entity.id,
@@ -534,6 +543,8 @@ function EmbedGraph({ ontology, theme, selected, setSelected }: EmbedGraphProps)
           color: entity.color,
           hiddenNeighborCount,
           isRoot: rootIds.has(entity.id) ? 1 : 0,
+          type: 'entity',
+          ...(parent ? { parent } : {}),
         },
       };
     });
@@ -551,7 +562,7 @@ function EmbedGraph({ ontology, theme, selected, setSelected }: EmbedGraphProps)
           kind: relationship.kind ?? 'association',
         },
       }));
-    return [...nodes, ...edges];
+    return [...visualGroups.nodes, ...nodes, ...edges];
   }, [graphView]);
 
   const layout = useMemo<LayoutOptions>(() => {
@@ -616,6 +627,29 @@ function EmbedGraph({ ontology, theme, selected, setSelected }: EmbedGraphProps)
             height: graphView.mode === 'bounded' ? 30 : 60,
             'background-color': 'data(color)',
             'border-width': 2, 'border-color': 'data(color)', 'border-opacity': 0.5,
+          },
+        },
+        {
+          selector: `node[type = "${VISUAL_GROUP_NODE_TYPE}"]`,
+          style: {
+            shape: 'roundrectangle',
+            label: 'data(label)',
+            'text-valign': 'top',
+            'text-halign': 'center',
+            'text-margin-y': -8,
+            'font-size': '12px',
+            'font-weight': 700,
+            'min-zoomed-font-size': 8,
+            color: theme.nodeText,
+            'background-color': theme.edgeLabelBg,
+            'background-opacity': 0.16,
+            'border-color': theme.edgeColor,
+            'border-opacity': 0.7,
+            'border-style': 'dashed',
+            'border-width': 2,
+            padding: '28px',
+            'compound-sizing-wrt-labels': 'include',
+            events: 'no',
           },
         },
         {
@@ -730,6 +764,10 @@ function EmbedGraph({ ontology, theme, selected, setSelected }: EmbedGraphProps)
     syncBoundedLabels();
 
     cy.on('tap', 'node', (evt: EventObject) => {
+      if (
+        typeof evt.target.data === 'function'
+        && evt.target.data('type') === VISUAL_GROUP_NODE_TYPE
+      ) return;
       const id = evt.target.id();
       const entity = ontology.entityTypes.find((candidate) => candidate.id === id);
       if (entity) setSelected({ type: 'entity', entity });

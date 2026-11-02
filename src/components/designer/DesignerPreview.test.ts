@@ -14,8 +14,8 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function entity(id: string) {
-  return { id, name: id, icon: '📦', color: '#0078D4' };
+function entity(id: string, visualGroup?: string) {
+  return { id, name: id, icon: '📦', color: '#0078D4', visualGroup };
 }
 
 function relationship(id: string, from: string, to: string, name = 'relatesTo') {
@@ -30,6 +30,27 @@ function graphOf(ontology: GraphOntology): Core {
 }
 
 describe('syncGraphElements', () => {
+  it('creates visual-only compound parents and safely removes them', () => {
+    const grouped = [entity('book', 'Library'), entity('author', 'Library')];
+    const cy = graphOf({ entityTypes: grouped, relationships: [] });
+
+    const parent = cy.getElementById('book').parent();
+    expect(parent).toHaveLength(1);
+    expect(parent.data('type')).toBe('visual-group');
+    expect(parent.data('label')).toBe('Library');
+    expect(cy.getElementById('author').parent().id()).toBe(parent.id());
+
+    syncGraphElements(cy, {
+      entityTypes: [entity('book'), entity('author')],
+      relationships: [],
+    });
+
+    expect(cy.getElementById('book')).toHaveLength(1);
+    expect(cy.getElementById('author')).toHaveLength(1);
+    expect(cy.getElementById('book').parent()).toHaveLength(0);
+    expect(cy.nodes('[type = "visual-group"]')).toHaveLength(0);
+  });
+
   it('draws an edge between the entities its relationship points at', () => {
     const cy = graphOf({
       entityTypes: [entity('book'), entity('author')],

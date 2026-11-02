@@ -13,6 +13,7 @@ function validOntology(): unknown {
       description: 'An item',
       icon: '📦',
       color: '',
+      visualGroup: ' Inventory ',
       properties: [{
         name: 'productId',
         type: 'string',
@@ -51,6 +52,7 @@ describe('parseOntologyValue', () => {
       entityTypes: [{
         icon: '📦',
         color: '#0078D4',
+        visualGroup: 'Inventory',
       }],
     });
   });
@@ -60,6 +62,7 @@ describe('parseOntologyValue', () => {
       entityTypes: Array<Record<string, unknown>>;
     };
     candidate.entityTypes[0].id = 1;
+    candidate.entityTypes[0].visualGroup = 7;
     candidate.entityTypes[0].properties = [{
       name: 'productId',
       type: 'string',
@@ -74,6 +77,7 @@ describe('parseOntologyValue', () => {
     expect(result.issues.map((issue) => issue.path)).toEqual([
       'entityTypes[0].properties[0].isIdentifier',
       'entityTypes[0].id',
+      'entityTypes[0].visualGroup',
     ]);
   });
 

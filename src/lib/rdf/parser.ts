@@ -835,6 +835,12 @@ export function parseRDF(
     const color = getChildText(el, 'color')
       || existingEntity?.color
       || '#0078D4';
+    const visualGroup = getDirectChildText(
+      el,
+      'visualGroup',
+      PLAYGROUND_METADATA_NS,
+    )?.trim()
+      || existingEntity?.visualGroup;
 
     entityMap.set(about, {
       id: entityId,
@@ -843,6 +849,7 @@ export function parseRDF(
       icon,
       color,
       properties: [],
+      ...(visualGroup ? { visualGroup } : {}),
     });
     if (identity.term) {
       projection.entities[entityId] = {

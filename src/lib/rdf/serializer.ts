@@ -30,6 +30,7 @@ const XSD_TYPE_MAP: Record<string, string> = {
 const PLAYGROUND_ANNOTATIONS = {
   icon: 'Presentation icon for an entity type.',
   color: 'Presentation color for an entity type.',
+  visualGroup: 'Visual-only group label used to cluster related entity types.',
   isIdentifier: 'Whether an entity property is used as its Playground identifier.',
   unit: 'Display unit associated with a numeric property.',
   enumValues: 'Comma-delimited enum values used only by Playground round trips.',
@@ -186,6 +187,9 @@ export function serializePlaygroundRDF(
     }
     rdf += `        <opmeta:icon>${escapeXml(entity.icon)}</opmeta:icon>\n`;
     rdf += `        <opmeta:color>${escapeXml(entity.color)}</opmeta:color>\n`;
+    if (entity.visualGroup) {
+      rdf += `        <opmeta:visualGroup>${escapeXml(entity.visualGroup)}</opmeta:visualGroup>\n`;
+    }
     rdf += '    </owl:Class>\n\n';
   }
 

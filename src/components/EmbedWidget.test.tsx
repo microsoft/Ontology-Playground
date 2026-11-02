@@ -14,6 +14,7 @@ import type { Ontology } from '../data/ontology';
 import { clearCatalogueCache } from '../lib/catalogue';
 import type { Catalogue, CatalogueEntryPayload } from '../types/catalogue';
 import { createGraphView } from '../lib/graphView';
+import { VISUAL_GROUP_NODE_TYPE } from '../lib/visualGroups';
 
 // Minimal ontology for testing (ASCII-only icons to avoid btoa encoding issues in jsdom)
 const testOntology: Ontology = {
@@ -280,6 +281,33 @@ describe('EmbedWidget', () => {
     });
     expect(screen.getByText(/2 entities/)).toBeTruthy();
     expect(screen.getByText(/1 relationship/)).toBeTruthy();
+  });
+
+  it('renders inline visual groups as compound parents', async () => {
+    const ontology: Ontology = {
+      ...testOntology,
+      entityTypes: testOntology.entityTypes.map((entity) => ({
+        ...entity,
+        visualGroup: 'Commerce',
+      })),
+    };
+    render(<EmbedWidget config={{
+      ontologyInline: btoa(JSON.stringify(ontology)),
+      theme: 'dark',
+      height: '400px',
+    }} />);
+
+    await screen.findByText('Test Ontology');
+    const graphConfig = embedGraphMocks.cytoscape.mock.calls[0][0] as {
+      elements: Array<{ data: Record<string, unknown> }>;
+    };
+    const group = graphConfig.elements.find(
+      (element) => element.data.type === VISUAL_GROUP_NODE_TYPE,
+    );
+    expect(group?.data.label).toBe('Commerce');
+    expect(graphConfig.elements.filter(
+      (element) => element.data.parent === group?.data.id,
+    )).toHaveLength(2);
   });
 
   it('retains complete RDF text loaded from a URL', async () => {

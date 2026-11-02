@@ -29,6 +29,11 @@ cover the supported theme palettes.
 Cytoscape.js-powered graph that renders any ontology as an interactive
 node-and-edge diagram. Pan, zoom, click nodes to inspect properties, and use
 the live search bar to filter entities and relationships.
+Entities with the same optional `opmeta:visualGroup` annotation are enclosed
+in a labelled, visual-only compound boundary. These groups improve domain
+readability without changing entity or relationship semantics, counts, queries,
+or standards-oriented RDF exports; singleton groups are omitted from bounded
+projections.
 The graph has an accessible text summary naming the ontology and its entity
 and relationship totals; semantic overviews also identify the visible counts.
 Zoom, fit, reset, and PNG download controls have explicit accessible names,
@@ -55,7 +60,8 @@ shareable deep link
 ### Visual Ontology Designer
 
 A full-screen, split-pane editor for creating ontologies from scratch or
-editing existing ones. Add entity types with icons, colors, and typed
+editing existing ones. Add entity types with icons, colors, optional visual
+groups, and typed
 properties; define relationships with cardinalities; see a live graph preview
 that updates as you work, including reconnecting edges when a relationship's
 From or To entity changes without repositioning existing nodes.

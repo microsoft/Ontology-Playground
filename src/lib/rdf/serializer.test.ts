@@ -6,6 +6,7 @@ import {
   serializeToRDF,
 } from './serializer';
 import type { Ontology, DataBinding } from '../../data/ontology';
+import { parseRDF } from './parser';
 
 describe('escapeXml', () => {
   it('escapes ampersands', () => {
@@ -116,6 +117,7 @@ describe('serializeToRDF', () => {
           description: 'A customer entity',
           icon: '👤',
           color: '#0078D4',
+          visualGroup: 'Customer Operations',
           properties: [],
         },
       ],
@@ -127,6 +129,32 @@ describe('serializeToRDF', () => {
     expect(rdf).toContain('<rdfs:comment>A customer entity</rdfs:comment>');
     expect(rdf).toContain('<opmeta:icon>👤</opmeta:icon>');
     expect(rdf).toContain('<opmeta:color>#0078D4</opmeta:color>');
+    expect(rdf).toContain('<opmeta:visualGroup>Customer Operations</opmeta:visualGroup>');
+  });
+
+  it('preserves visual groups across parse-serialize-parse', () => {
+    const ontology: Ontology = {
+      name: 'Round Trip',
+      description: '',
+      entityTypes: [{
+        id: 'customer',
+        name: 'Customer',
+        description: '',
+        icon: '👤',
+        color: '#0078D4',
+        visualGroup: 'Customer Operations',
+        properties: [],
+      }],
+      relationships: [],
+    };
+
+    const firstProjection = parseRDF(serializeToRDF(ontology)).ontology;
+    const secondProjection = parseRDF(serializeToRDF(firstProjection)).ontology;
+
+    expect(firstProjection.entityTypes[0].visualGroup)
+      .toBe('Customer Operations');
+    expect(secondProjection.entityTypes[0].visualGroup)
+      .toBe('Customer Operations');
   });
 
   it('serializes properties as DatatypeProperties with correct XSD types', () => {
@@ -292,6 +320,9 @@ describe('serializeToRDF', () => {
     expect(rdf).toContain(
       `<owl:AnnotationProperty rdf:about="${PLAYGROUND_METADATA_NS}icon">`,
     );
+    expect(rdf).toContain(
+      `<owl:AnnotationProperty rdf:about="${PLAYGROUND_METADATA_NS}visualGroup">`,
+    );
     expect(rdf).not.toContain(
       'owl:AnnotationProperty rdf:about="http://example.org/ontology/empty/',
     );
@@ -308,6 +339,7 @@ describe('serializeToRDF', () => {
           description: '',
           icon: 'A',
           color: '#111',
+          visualGroup: 'Accounts',
           properties: [
             { name: 'accountId', type: 'string', isIdentifier: true },
             { name: 'tier', type: 'enum', values: ['Basic', 'Plus'] },
@@ -345,6 +377,7 @@ describe('serializeToRDF', () => {
     expect(rdf).toContain('owned_by_attribute_since');
     expect(rdf).not.toContain('xmlns:opmeta=');
     expect(rdf).not.toContain('<opmeta:');
+    expect(rdf).not.toContain('Accounts');
   });
 
   it('records source identity as provenance for standards subsets', () => {
