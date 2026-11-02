@@ -135,13 +135,18 @@ function getChildResources(
 /**
  * Get all text values from children with a given local name.
  */
-function getChildTexts(parent: Element, localName: string): string[] {
+function getChildTexts(
+  parent: Element,
+  localName: string,
+  namespace?: string,
+): string[] {
   const results: string[] = [];
   for (let i = 0; i < parent.children.length; i++) {
     const child = parent.children[i];
     const childLocal = child.localName || child.tagName.split(':').pop();
     if (
       childLocal === localName
+      && (namespace === undefined || child.namespaceURI === namespace)
       && child.textContent
       && !isInsideXmlLiteralProperty(child, parent)
     ) {
@@ -604,7 +609,20 @@ interface ParsedDatatypeProperty {
   propertyType: string | null;
   relationshipAttributeOf: string | null;
   attributeType: string | null;
+  sourceRefs: string[];
+  appliesTo: string[];
   order: number | null;
+}
+
+function getPlaygroundMetadataValues(
+  element: Element,
+  localName: string,
+): string[] {
+  return Array.from(new Set(
+    getChildTexts(element, localName, PLAYGROUND_METADATA_NS)
+      .map((value) => value.trim())
+      .filter(Boolean),
+  ));
 }
 
 function inferPropertyType(property: ParsedDatatypeProperty): PropertyType {
@@ -912,6 +930,8 @@ export function parseRDF(
       propertyType: getChildText(el, 'propertyType'),
       relationshipAttributeOf: getChildText(el, 'relationshipAttributeOf'),
       attributeType: getChildText(el, 'attributeType'),
+      sourceRefs: getPlaygroundMetadataValues(el, 'sourceRef'),
+      appliesTo: getPlaygroundMetadataValues(el, 'appliesTo'),
       order: shapeMetadata?.order ?? null,
     });
   }
@@ -962,6 +982,12 @@ export function parseRDF(
       prop.values = dtProp.enumValues;
     }
     if (dtProp.comment) prop.description = dtProp.comment;
+    if (dtProp.sourceRefs.length > 0) {
+      prop.sourceRefs = dtProp.sourceRefs;
+    }
+    if (dtProp.appliesTo.length > 0) {
+      prop.appliesTo = dtProp.appliesTo;
+    }
     if (dtProp.order !== null) {
       orderByEntityProperty.set(prop, dtProp.order);
     }

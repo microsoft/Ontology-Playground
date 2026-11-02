@@ -52,7 +52,7 @@ describe('InspectorPanel quest progression', () => {
   });
 });
 
-describe('InspectorPanel property descriptions', () => {
+describe('InspectorPanel property details', () => {
   beforeEach(() => {
     useAppStore.getState().resetToDefault();
     vi.restoreAllMocks();
@@ -91,5 +91,42 @@ describe('InspectorPanel property descriptions', () => {
     expect(screen.getByText('业务类型编码。')).toBeVisible();
     expect(screen.getByText('业务类型编码。')).toHaveClass('property-description');
     expect(container.querySelectorAll('.property-description')).toHaveLength(1);
+  });
+
+  it('shows source references and every applicability scope', () => {
+    useAppStore.getState().loadOntology({
+      name: 'Project Sync',
+      description: 'A local ontology.',
+      entityTypes: [{
+        id: 'pool-resource',
+        name: 'PoolResource',
+        description: 'A shared resource.',
+        icon: '📦',
+        color: '#0078D4',
+        properties: [
+          {
+            name: 'academicOrganizationStaff',
+            type: 'string',
+            sourceRefs: ['database:t_resource_uni_ext.expert_title'],
+            appliesTo: ['resourceType:uni', 'resourceType:inst'],
+          },
+          {
+            name: 'cooperationStatus',
+            type: 'string',
+          },
+        ],
+      }],
+      relationships: [],
+    });
+    useAppStore.getState().selectEntity('pool-resource');
+
+    const { container } = render(<InspectorPanel />);
+
+    expect(screen.getByText('Source reference')).toBeVisible();
+    expect(screen.getByText('database:t_resource_uni_ext.expert_title')).toBeVisible();
+    expect(screen.getByText('Applies to')).toBeVisible();
+    expect(screen.getByText('resourceType:uni')).toBeVisible();
+    expect(screen.getByText('resourceType:inst')).toBeVisible();
+    expect(container.querySelectorAll('.property-metadata')).toHaveLength(1);
   });
 });

@@ -18,6 +18,8 @@ function validOntology(): unknown {
         type: 'string',
         isIdentifier: true,
         values: ['A', 'B'],
+        sourceRefs: ['database:inventory.product_id'],
+        appliesTo: ['channel:retail', 'channel:wholesale'],
       }],
     }],
     relationships: [{
@@ -51,8 +53,34 @@ describe('parseOntologyValue', () => {
       entityTypes: [{
         icon: '📦',
         color: '#0078D4',
+        properties: [{
+          sourceRefs: ['database:inventory.product_id'],
+          appliesTo: ['channel:retail', 'channel:wholesale'],
+        }],
       }],
     });
+  });
+
+  it('rejects invalid property metadata arrays and members', () => {
+    const candidate = validOntology() as {
+      entityTypes: Array<Record<string, unknown>>;
+    };
+    candidate.entityTypes[0].properties = [{
+      name: 'productId',
+      type: 'string',
+      sourceRefs: 'database:inventory.product_id',
+      appliesTo: ['channel:retail', 7],
+    }];
+
+    const result = parseOntologyValue(candidate, {
+      defaultEntityColors: colors,
+    });
+
+    expect(result.ontology).toBeNull();
+    expect(result.issues.map((issue) => issue.path)).toEqual([
+      'entityTypes[0].properties[0].sourceRefs',
+      'entityTypes[0].properties[0].appliesTo[1]',
+    ]);
   });
 
   it('rejects invalid nested primitive types', () => {

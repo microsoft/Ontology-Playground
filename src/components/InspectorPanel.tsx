@@ -2,6 +2,45 @@ import { useRef, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { Database, ArrowRight, Key, Link2, Layers, Box, GitBranch } from 'lucide-react';
 import { limitOntologyList } from '../lib/ontologyScale';
+import type { Property } from '../data/ontology';
+
+function PropertyMetadata({ property }: { property: Property }) {
+  const sourceRefs = property.sourceRefs
+    ?.map((value) => value.trim())
+    .filter(Boolean) ?? [];
+  const appliesTo = property.appliesTo
+    ?.map((value) => value.trim())
+    .filter(Boolean) ?? [];
+
+  if (sourceRefs.length === 0 && appliesTo.length === 0) {
+    return null;
+  }
+
+  return (
+    <dl className="property-metadata">
+      {sourceRefs.length > 0 && (
+        <div className="property-metadata-row">
+          <dt>Source reference</dt>
+          <dd>
+            {sourceRefs.map((sourceRef, index) => (
+              <code key={`${sourceRef}-${index}`}>{sourceRef}</code>
+            ))}
+          </dd>
+        </div>
+      )}
+      {appliesTo.length > 0 && (
+        <div className="property-metadata-row">
+          <dt>Applies to</dt>
+          <dd>
+            {appliesTo.map((scope, index) => (
+              <code key={`${scope}-${index}`}>{scope}</code>
+            ))}
+          </dd>
+        </div>
+      )}
+    </dl>
+  );
+}
 
 export function InspectorPanel() {
   const { currentOntology, dataBindings, selectedEntityId, selectedRelationshipId, showDataBindings, activeQuest, currentStepIndex, advanceQuestStep } = useAppStore();
@@ -153,6 +192,7 @@ export function InspectorPanel() {
                   {prop.description?.trim() && (
                     <p className="property-description">{prop.description}</p>
                   )}
+                  <PropertyMetadata property={prop} />
                 </div>
                 <span className="property-type">{prop.type}</span>
               </div>

@@ -1306,6 +1306,44 @@ body {
   overflow-wrap: anywhere;
 }
 
+.property-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 8px 0 0;
+  font-size: 11px;
+}
+
+.property-metadata-row {
+  display: grid;
+  grid-template-columns: minmax(88px, auto) minmax(0, 1fr);
+  align-items: start;
+  gap: 6px;
+}
+
+.property-metadata-row dt {
+  color: var(--text-secondary);
+}
+
+.property-metadata-row dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+}
+
+.property-metadata-row code {
+  max-width: 100%;
+  padding: 1px 5px;
+  overflow-wrap: anywhere;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
 .property-unit {
   color: var(--text-secondary);
   font-family: var(--font-mono);

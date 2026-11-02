@@ -143,7 +143,16 @@ describe('serializeToRDF', () => {
           properties: [
             { name: 'id', type: 'string', isIdentifier: true },
             { name: 'count', type: 'integer' },
-            { name: 'price', type: 'decimal', unit: 'USD' },
+            {
+              name: 'price',
+              type: 'decimal',
+              unit: 'USD',
+              sourceRefs: [
+                'database:item.price',
+                'database:item_price_archive.price',
+              ],
+              appliesTo: ['channel:retail', 'channel:wholesale'],
+            },
             { name: 'created', type: 'date' },
             { name: 'updated', type: 'datetime' },
             { name: 'active', type: 'boolean' },
@@ -168,6 +177,10 @@ describe('serializeToRDF', () => {
     expect(rdf).toContain('item_price');
     expect(rdf).toContain('XMLSchema#decimal"/>');
     expect(rdf).toContain('<opmeta:unit>USD</opmeta:unit>');
+    expect(rdf).toContain('<opmeta:sourceRef>database:item.price</opmeta:sourceRef>');
+    expect(rdf).toContain('<opmeta:sourceRef>database:item_price_archive.price</opmeta:sourceRef>');
+    expect(rdf).toContain('<opmeta:appliesTo>channel:retail</opmeta:appliesTo>');
+    expect(rdf).toContain('<opmeta:appliesTo>channel:wholesale</opmeta:appliesTo>');
 
     // Date → xsd:date
     expect(rdf).toContain('item_created');
