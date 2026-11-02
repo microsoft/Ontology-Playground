@@ -835,7 +835,11 @@ export function parseRDF(
     const color = getChildText(el, 'color')
       || existingEntity?.color
       || '#0078D4';
-    const visualGroup = getChildText(el, 'visualGroup')?.trim()
+    const visualGroup = getDirectChildText(
+      el,
+      'visualGroup',
+      PLAYGROUND_METADATA_NS,
+    )?.trim()
       || existingEntity?.visualGroup;
 
     entityMap.set(about, {

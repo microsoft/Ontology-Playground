@@ -12,6 +12,7 @@ describe('parseRDF', () => {
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:opmeta="https://microsoft.github.io/Ontology-Playground/ns/metadata#"
     xmlns:ont="http://example.org/ontology/test/">
 
     <owl:Ontology rdf:about="http://example.org/ontology/test/">
@@ -24,7 +25,7 @@ describe('parseRDF', () => {
         <rdfs:comment>A customer</rdfs:comment>
         <ont:icon>👤</ont:icon>
         <ont:color>#0078D4</ont:color>
-        <ont:visualGroup> Customer Operations </ont:visualGroup>
+        <opmeta:visualGroup> Customer Operations </opmeta:visualGroup>
     </owl:Class>
 
     <owl:DatatypeProperty rdf:about="http://example.org/ontology/test/customer_name">
@@ -43,6 +44,24 @@ describe('parseRDF', () => {
     </owl:DatatypeProperty>
 
 </rdf:RDF>`;
+
+  it('ignores visualGroup metadata from foreign namespaces', () => {
+    const rdf = `<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="${RDF_NS}"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xmlns:vendor="https://example.org/vendor#">
+  <owl:Ontology rdf:about="https://example.org/ontology"/>
+  <owl:Class rdf:about="https://example.org/ontology/Customer">
+    <rdfs:label>Customer</rdfs:label>
+    <vendor:visualGroup>Customer Operations</vendor:visualGroup>
+  </owl:Class>
+</rdf:RDF>`;
+
+    const { ontology } = parseRDF(rdf);
+
+    expect(ontology.entityTypes[0].visualGroup).toBeUndefined();
+  });
 
   it.each(['Literal', 'Unsupported'])(
     'does not project RDF-looking markup inside rdf:parseType="%s"',
