@@ -49,7 +49,7 @@ export function SubmitCatalogueModal({ onClose }: SubmitCatalogueModalProps) {
       name: ontology.name,
       description: ontology.description,
       icon: '📦',
-      category: 'other',
+      category: 'general',
       tags: [],
       author: '',
     };
@@ -90,7 +90,7 @@ export function SubmitCatalogueModal({ onClose }: SubmitCatalogueModalProps) {
               </li>
               <li>
                 Add the files under{' '}
-                <code>catalogue/community/your-username/</code>
+                <code>catalogue/community/your-username/your-ontology-slug/</code>
               </li>
               <li>Edit <code>metadata.json</code> — fill in your name, category, and tags.</li>
               <li>Open a pull request against <code>main</code>.</li>
