@@ -329,7 +329,7 @@ export async function submitToCatalogue(
   await createBranch(token, fork.owner, fork.repo, branch, baseSha);
 
   // 4. Commit RDF file
-  const rdfPath = `catalogue/community/${username}/${slug}.rdf`;
+  const rdfPath = `catalogue/community/${username}/${slug}/ontology.rdf`;
   await createOrUpdateFile(
     token, fork.owner, fork.repo, branch, rdfPath,
     rdfContent,
@@ -337,7 +337,7 @@ export async function submitToCatalogue(
   );
 
   // 5. Commit metadata.json
-  const metadataPath = `catalogue/community/${username}/metadata.json`;
+  const metadataPath = `catalogue/community/${username}/${slug}/metadata.json`;
   await createOrUpdateFile(
     token, fork.owner, fork.repo, branch, metadataPath,
     JSON.stringify(metadata, null, 2) + '\n',

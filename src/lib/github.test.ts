@@ -207,5 +207,17 @@ describe('submitToCatalogue', () => {
     expect(result.prUrl).toBe('https://github.com/test/pr/1');
     expect(result.prNumber).toBe(1);
     expect(mockFetch).toHaveBeenCalledTimes(10);
+
+    // The files must land in the catalogue layout the compiler discovers:
+    // one directory per ontology slug, holding the RDF and its metadata.
+    const putUrls = mockFetch.mock.calls
+      .filter(([, init]) => init?.method === 'PUT')
+      .map(([url]) => url as string);
+    expect(putUrls).toContain(
+      'https://api.github.com/repos/alice/Ontology-Playground/contents/catalogue/community/alice/test-ontology/ontology.rdf',
+    );
+    expect(putUrls).toContain(
+      'https://api.github.com/repos/alice/Ontology-Playground/contents/catalogue/community/alice/test-ontology/metadata.json',
+    );
   });
 });
