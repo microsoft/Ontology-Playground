@@ -22,10 +22,33 @@ This document contains guidelines for AI coding assistants working on this proje
 - **Write descriptive commit messages** with a summary line and bullet points for details
 - **Verify build passes** before committing (`npm run build`)
 
+### Pull Request History
+- **Keep PR branches focused and linear.** Rebase the actual contribution onto
+  current `main`; do not merge `main` into a contributor branch or push an
+  integration branch containing inherited `main` history back to the PR.
+- Do not combine cherry-picked copies with ancestry-preserving merges of the
+  same contribution. An isolated worktree does not guarantee clean history.
+- Before publishing, inspect `git log --oneline origin/main..HEAD` and
+  `git diff --stat origin/main...HEAD`; include only intended commits and changes.
+- **Obtain explicit authorization before rewriting a published contributor
+  branch.** When authorized, use `--force-with-lease`, never blind force. Without
+  authorization, leave the rewrite pending rather than adding integration merges.
+- Rerun required validation and obtain independent review and GitHub checks on
+  the exact final rebased head before merging.
+- Prefer squash-merging focused fixes while preserving contributor credit;
+  follow any explicitly requested merge strategy.
+- Never rewrite published `main` or already-merged history for cosmetic cleanup.
+
 ### Before Merging
 - Test changes locally (`npm run dev`)
 - Ensure no TypeScript errors
 - Review the diff for unintended changes
+- After implementing and locally validating an issue fix, launch a separate
+  read-only `code-review` agent to red-team the complete branch diff against the
+  issue's acceptance criteria. Use a reviewer model different from the
+  implementation model when the runtime supports model selection. Fix all
+  high-confidence findings, rerun affected checks, and request a follow-up from
+  the same reviewer before considering the issue complete.
 - **Update documentation** — if the change adds, removes, or modifies user-visible
   features, update `README.md` (feature descriptions, route table, env vars) and
   any relevant guides in `docs/` before merging. Also update `TODO.md` to mark

@@ -42,11 +42,23 @@ export interface EntityInstance {
   values: Record<string, unknown>;
 }
 
+export type PreservedSourceFeature = 'owlImports' | 'shacl';
+
+export interface OntologyRdfMetadata {
+  ontologyIri?: string;
+  versionIri?: string;
+  versionInfo?: string;
+  license?: string;
+  imports: string[];
+  preservedSourceFeatures: PreservedSourceFeature[];
+}
+
 export interface Ontology {
   name: string;
   description: string;
   entityTypes: EntityType[];
   relationships: Relationship[];
+  rdfMetadata?: OntologyRdfMetadata;
 }
 
 export interface DataBinding {

@@ -1,19 +1,55 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Download, AlertTriangle, CheckCircle, Upload, Github, FilePlus, Undo2, Redo2 } from 'lucide-react';
 import { useDesignerStore } from '../../store/designerStore';
 import type { ValidationError } from '../../store/designerStore';
 import { useAppStore } from '../../store/appStore';
-import { serializeToRDF } from '../../lib/rdf/serializer';
+import {
+  serializeToRDF,
+  type RdfExportProfile,
+} from '../../lib/rdf/serializer';
 import { navigate } from '../../lib/router';
 import { SubmitCatalogueModal } from './SubmitCatalogueModal';
+import type { CatalogueEntry } from '../../types/catalogue';
+import type { RdfExportResult } from '../../types/rdfDocument';
+import {
+  exportRdfDocument,
+  isRdfDocumentDirty,
+  isSameRdfDocumentRevision,
+} from '../../lib/rdf/document';
+
+interface DesignerToolbarProps {
+  catalogueEntry?: CatalogueEntry | null;
+  onNewOntology?: () => void;
+}
 
 /**
  * Toolbar buttons — rendered in the designer topbar.
  */
-export function DesignerToolbar() {
-  const { ontology, validate, resetDraft, undo, redo, _past, _future } = useDesignerStore();
+export function DesignerToolbar({
+  catalogueEntry,
+  onNewOntology,
+}: DesignerToolbarProps = {}) {
+  const {
+    ontology,
+    rdfDocument,
+    validate,
+    resetDraft,
+    undo,
+    redo,
+    _past,
+    _future,
+  } = useDesignerStore();
   const loadOntology = useAppStore((s) => s.loadOntology);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [rdfExportProfile, setRdfExportProfile] = useState<RdfExportProfile>('playground');
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [includeDerivationMetadata, setIncludeDerivationMetadata] =
+    useState(false);
+  const [lastRdfExport, setLastRdfExport] =
+    useState<RdfExportResult | null>(null);
+  const exportRequestId = useRef(0);
+  const mounted = useRef(true);
   const canUndo = _past.length > 0;
   const canRedo = _future.length > 0;
 
@@ -21,36 +57,92 @@ export function DesignerToolbar() {
     validate();
   };
 
-  const handleExportRDF = () => {
+  const handleExportRDF = async () => {
     const errors = validate();
-    // Allow download even with validation errors (user sees warnings in sidebar)
+    const requestId = ++exportRequestId.current;
+    const ontologyAtStart = ontology;
+    const documentAtStart = rdfDocument;
+    const isCurrentRequest = () => {
+      const activeState = useDesignerStore.getState();
+      return mounted.current
+        && requestId === exportRequestId.current
+        && activeState.ontology === ontologyAtStart
+        && isSameRdfDocumentRevision(
+          activeState.rdfDocument,
+          documentAtStart,
+        );
+    };
+    setExportError(null);
+    setIsExporting(true);
     try {
-      const rdf = serializeToRDF(ontology, []);
-      const blob = new Blob([rdf], { type: 'application/rdf+xml' });
+      const sourceExport = rdfDocument
+        ? await exportRdfDocument(rdfDocument, {
+            includeDerivationMetadata,
+          })
+        : null;
+      if (!isCurrentRequest()) return;
+      const content = sourceExport
+        ? sourceExport.bytes
+        : serializeToRDF(ontology, [], { profile: rdfExportProfile });
+      setLastRdfExport(sourceExport);
+      const blobPart = typeof content === 'string'
+        ? content
+        : content.slice().buffer;
+      const blob = new Blob([blobPart], { type: 'application/rdf+xml' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const suffix = errors.length > 0 ? '-draft' : '';
-      a.download = `${ontology.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'ontology'}${suffix}.rdf`;
+      const draftSuffix = errors.length > 0 ? '-draft' : '';
+      const profileSuffix = rdfExportProfile === 'standards' ? '-owl-shacl' : '';
+      const sourceSuffix =
+        sourceExport?.kind === 'modified' ? '-derived' : '';
+      a.download = `${ontology.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'ontology'}${draftSuffix}${profileSuffix}${sourceSuffix}.rdf`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
-      // serialization failed — validation errors are shown in sidebar
+    } catch (error) {
+      if (!isCurrentRequest()) return;
+      setExportError(
+        error instanceof Error ? error.message : 'RDF export failed',
+      );
+    } finally {
+      if (isCurrentRequest()) setIsExporting(false);
     }
   };
+
+  useEffect(() => () => {
+    mounted.current = false;
+    exportRequestId.current += 1;
+  }, []);
+
+  useEffect(() => {
+    exportRequestId.current += 1;
+    setIsExporting(false);
+  }, [ontology, rdfDocument?.id, rdfDocument?.revision]);
 
   const handleLoadInPlayground = () => {
     const errors = validate();
     if (errors.length > 0) return;
-    loadOntology(ontology, []);
+    loadOntology(
+      ontology,
+      [],
+      catalogueEntry ?? null,
+      rdfDocument,
+    );
     navigate({ page: 'home' });
   };
 
   const handleNewOntology = () => {
     resetDraft();
+    onNewOntology?.();
   };
 
   const handleSubmitToCatalogue = () => {
+    if (rdfDocument) {
+      setExportError(
+        'Source-backed RDF cannot be submitted as a projection-only catalogue entry.',
+      );
+      return;
+    }
     const errors = validate();
     if (errors.length > 0) return;
     setShowSubmitModal(true);
@@ -73,16 +165,87 @@ export function DesignerToolbar() {
           <CheckCircle size={14} /> Validate
         </button>
         <div className="designer-toolbar-sep" />
-        <button className="designer-toolbar-btn" onClick={handleExportRDF} title="Export RDF">
-          <Download size={14} /> Export RDF
+        {!rdfDocument && (
+          <select
+            aria-label="RDF export profile"
+            className="designer-toolbar-select"
+            title="RDF export profile"
+            value={rdfExportProfile}
+            onChange={(event) => {
+              const profile = event.target.value;
+              if (profile === 'playground' || profile === 'standards') {
+                setRdfExportProfile(profile);
+              }
+            }}
+          >
+            <option value="playground">Playground round-trip</option>
+            <option value="standards">Standards-oriented OWL + SHACL</option>
+          </select>
+        )}
+        {rdfDocument && (
+          <label
+            title="Add explicit PROV derivation metadata to this export"
+            style={{ alignItems: 'center', display: 'flex', fontSize: 11, gap: 4 }}
+          >
+            <input
+              type="checkbox"
+              checked={includeDerivationMetadata}
+              onChange={(event) =>
+                setIncludeDerivationMetadata(event.target.checked)}
+            />
+            Add provenance
+          </label>
+        )}
+        <button
+          className="designer-toolbar-btn"
+          onClick={() => void handleExportRDF()}
+          disabled={isExporting}
+          title={rdfDocument
+            ? 'Export the complete RDF document'
+            : 'Export RDF'}
+        >
+          <Download size={14} />
+          {isExporting
+            ? 'Preparing…'
+            : rdfDocument
+              ? includeDerivationMetadata
+                ? 'Export derived RDF'
+                : isRdfDocumentDirty(rdfDocument)
+                ? 'Export complete modified RDF'
+                : 'Export original RDF'
+              : 'Export RDF'}
         </button>
         <button className="designer-toolbar-btn" onClick={handleLoadInPlayground} title="Load in Playground">
           <Upload size={14} /> Load in Playground
         </button>
-        <button className="designer-toolbar-btn submit" onClick={handleSubmitToCatalogue} title="Submit to community catalogue">
+        <button
+          className="designer-toolbar-btn submit"
+          onClick={handleSubmitToCatalogue}
+          disabled={Boolean(rdfDocument)}
+          title={rdfDocument
+            ? 'Source-backed RDF submission is not supported'
+            : 'Submit to community catalogue'}
+        >
           <Github size={14} /> Submit to Catalogue
         </button>
       </div>
+
+      {exportError && (
+        <div role="alert" className="designer-import-error">
+          {exportError}
+        </div>
+      )}
+      {lastRdfExport && (
+        <div className="designer-import-error" role="status">
+          {lastRdfExport.kind} export: source{' '}
+          {lastRdfExport.sourceTripleCount.toLocaleString()} statements;
+          exported {lastRdfExport.exportedTripleCount.toLocaleString()};
+          patches {lastRdfExport.patchCount.toLocaleString()};
+          provenance {lastRdfExport.derivationMetadataIncluded
+            ? 'included'
+            : 'not included'}.
+        </div>
+      )}
 
       {showSubmitModal && (
         <SubmitCatalogueModal onClose={() => setShowSubmitModal(false)} />

@@ -48,8 +48,10 @@ Tip for demos: Start from an existing ontology in Catalogue and click Edit in De
 ## Step 2: Export RDF
 
 1. In the app, open Import / Export.
-2. Export as RDF/XML.
-3. Save the file as:
+2. Select **Playground round-trip** so catalogue submissions retain icons,
+   colors, relationship metadata, and other editable Playground fields.
+3. Export as RDF/XML.
+4. Save the file as:
 
 ```text
 ontology.rdf
@@ -119,6 +121,22 @@ Run:
 npm run catalogue:build
 npm run validate
 ```
+
+Both commands discover all three catalogue tiers and apply the same validation
+profile. Official and community entries remain subject to strict Designer
+requirements. External entries are checked for safe RDF/XML, provenance,
+resource limits, stable graph structure, and valid relationship endpoints;
+Designer-only identifier and display-name differences are emitted as concise
+warnings. Validation does not fetch upstream URLs or expand `owl:imports`.
+
+To validate one catalogue file, its path selects the profile automatically:
+
+```bash
+npm run validate -- catalogue/external/<source-name>/<ontology-slug>/ontology.rdf
+```
+
+For RDF outside `catalogue/`, use `--profile external` and provide a companion
+`metadata.json` with `license` and an HTTPS `sourceUrl`.
 
 Optional full checks:
 
@@ -200,5 +218,8 @@ Include in PR description:
 - Missing PR preview image:
   - Confirm the PR changes a catalogue RDF, OWL, or metadata file.
   - Check the preview workflow logs for catalogue compile or render failures.
+  - The renderer waits for the requested catalogue graph's completed layout,
+    not an expanded legend. Large legends remain collapsed, and massive
+    ontologies export their visible semantic overview within safe PNG limits.
 - PR checks failing:
   - Re-run local build and tests before pushing again.

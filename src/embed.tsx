@@ -3,12 +3,12 @@
  * and mounts an interactive ontology viewer inside each one.
  *
  * Supported data attributes on each container:
- *   data-catalogue-id="official/cosmic-coffee"  — load from catalogue.json
+ *   data-catalogue-id="official/cosmic-coffee"  — load from the catalogue
  *   data-ontology-url="https://…/my.rdf"        — fetch an RDF or JSON file
  *   data-ontology-inline="<base64-encoded JSON>" — inline ontology JSON
  *   data-theme="dark" | "light"                  — color theme (default: dark)
  *   data-height="500px"                          — container height
- *   data-catalogue-base-url="https://…/"         — base URL for catalogue.json
+ *   data-catalogue-base-url="https://…/"         — base URL for catalogue assets
  */
 import { createRoot } from 'react-dom/client';
 import { EmbedWidget } from './components/EmbedWidget';

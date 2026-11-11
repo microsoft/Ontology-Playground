@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { 
   Header, 
@@ -31,7 +31,11 @@ import { useDesignerStore } from './store/designerStore';
 import { useRoute } from './hooks/useRoute';
 import { navigate } from './lib/router';
 import { decodeSharePayload } from './lib/shareCodec';
-import type { Catalogue } from './types/catalogue';
+import { loadCatalogueEntry } from './lib/catalogue';
+import {
+  createCatalogueRdfDocumentReference,
+} from './lib/rdf/document';
+import { getOntologyDesignerScaleError } from './lib/ontologyScale';
 import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Database, Palette, FileText } from 'lucide-react';
 import './styles/app.css';
 
@@ -43,6 +47,8 @@ const NLBuilderModal = AI_BUILDER_ENABLED
 
 function App() {
   const route = useRoute();
+  const openDesignerGeneration = useRef(0);
+  const routeIdentity = JSON.stringify(route);
 
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTour, setShowTour] = useState(() => !isTourDismissed());
@@ -57,6 +63,13 @@ function App() {
   const [mobilePanel, setMobilePanel] = useState<'graph' | 'quests' | 'inspector' | 'query'>('graph');
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const { theme, setTheme, earnedBadges, loadOntology } = useAppStore();
+
+  useEffect(() => {
+    openDesignerGeneration.current += 1;
+    return () => {
+      openDesignerGeneration.current += 1;
+    };
+  }, [routeIdentity]);
 
   // Show toast when a new badge is earned
   useEffect(() => {
@@ -76,39 +89,59 @@ function App() {
   useEffect(() => {
     if (route.page === 'catalogue' && route.ontologyId) {
       const id = route.ontologyId;
-      fetch(`${import.meta.env.BASE_URL}catalogue.json`)
-        .then((res) => {
-          if (!res.ok) throw new Error(`Failed to load catalogue (${res.status})`);
-          return res.json() as Promise<Catalogue>;
-        })
-        .then((data) => {
-          const entry = data.entries.find((e) => e.id === id);
-          if (entry) {
-            loadOntology(entry.ontology, entry.bindings);
-            // URL stays at /#/catalogue/<id> so it's shareable
-          } else {
-            // Unknown ontology id — open gallery so the user can pick
-            navigate({ page: 'catalogue' });
+      let cancelled = false;
+
+      loadCatalogueEntry(id)
+        .then((entry) => {
+          if (!cancelled) {
+            loadOntology(
+              entry.ontology,
+              entry.bindings,
+              entry,
+              createCatalogueRdfDocumentReference(entry),
+            );
           }
         })
-        .catch(() => {
-          // On error, open gallery
-          navigate({ page: 'catalogue' });
+        .catch((error) => {
+          if (!cancelled) {
+            setToast({
+              message: error instanceof Error
+                ? error.message
+                : 'Failed to load catalogue ontology',
+              icon: '!',
+            });
+            navigate({ page: 'catalogue' });
+          }
         });
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [route, loadOntology]);
 
   // Deep-link: /#/share/<data> — decode an inline-shared ontology
   useEffect(() => {
     if (route.page === 'share' && route.data) {
+      let cancelled = false;
       decodeSharePayload(route.data)
         .then(({ ontology, bindings }) => {
-          loadOntology(ontology, bindings);
+          if (!cancelled) loadOntology(ontology, bindings);
         })
-        .catch(() => {
-          // Corrupt or invalid share link — go home
-          navigate({ page: 'home' });
+        .catch((error) => {
+          if (!cancelled) {
+            setToast({
+              message: error instanceof Error
+                ? error.message
+                : 'Failed to decode shared ontology',
+              icon: '!',
+            });
+            navigate({ page: 'home' });
+          }
         });
+      return () => {
+        cancelled = true;
+      };
     }
   }, [route, loadOntology]);
 
@@ -123,10 +156,57 @@ function App() {
     navigate({ page: 'catalogue' });
   }, []);
 
-  const openDesigner = useCallback(() => {
-    // Load the current playground ontology into the designer
-    const { currentOntology } = useAppStore.getState();
-    useDesignerStore.getState().loadDraft(currentOntology);
+  const openDesigner = useCallback(async () => {
+    const generation = openDesignerGeneration.current + 1;
+    openDesignerGeneration.current = generation;
+    const state = useAppStore.getState();
+    const ontologyAtStart = state.currentOntology;
+    const scaleError = getOntologyDesignerScaleError(
+      ontologyAtStart,
+      ontologyAtStart.name,
+    );
+    if (scaleError) {
+      setToast({ message: scaleError, icon: '!' });
+      return;
+    }
+    const documentAtStart = state.rdfDocument
+      ? {
+          id: state.rdfDocument.id,
+          revision: state.rdfDocument.revision,
+        }
+      : null;
+    let rdfDocument = null;
+    try {
+      rdfDocument = await state.ensureCurrentRdfDocument();
+    } catch (error) {
+      if (openDesignerGeneration.current !== generation) return;
+      setToast({
+        message: error instanceof Error
+          ? error.message
+          : 'Failed to load complete RDF source',
+        icon: '!',
+      });
+      return;
+    }
+    const current = useAppStore.getState();
+    const currentDocumentIdentity = current.rdfDocument
+      ? {
+          id: current.rdfDocument.id,
+          revision: current.rdfDocument.revision,
+        }
+      : null;
+    if (
+      openDesignerGeneration.current !== generation
+      || current.currentOntology !== ontologyAtStart
+      || currentDocumentIdentity?.id !== documentAtStart?.id
+      || currentDocumentIdentity?.revision !== documentAtStart?.revision
+    ) {
+      return;
+    }
+    useDesignerStore.getState().loadDraft(
+      current.currentOntology,
+      rdfDocument,
+    );
     setShowWelcome(false);
     navigate({ page: 'designer' });
   }, []);

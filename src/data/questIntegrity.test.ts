@@ -9,7 +9,7 @@ import { generateQuestsForOntology } from './questGenerator';
 
 interface CatalogueEntry {
   id: string;
-  ontology?: Ontology;
+  payloadUrl: string;
 }
 
 interface CatalogueFile {
@@ -110,9 +110,16 @@ describe('quest target integrity', () => {
     const catalogue = JSON.parse(rawCatalogue) as CatalogueFile;
 
     const allErrors = catalogue.entries.flatMap((entry) => {
-      if (!entry.ontology) return [];
-      const generatedQuests = generateQuestsForOntology(entry.ontology);
-      return validateQuestTargets(generatedQuests, entry.ontology, `catalogue entry ${entry.id}`);
+      const payloadPath = resolve(
+        cataloguePath,
+        '..',
+        entry.payloadUrl,
+      );
+      const payload = JSON.parse(
+        readFileSync(payloadPath, 'utf8'),
+      ) as { ontology: Ontology };
+      const generatedQuests = generateQuestsForOntology(payload.ontology);
+      return validateQuestTargets(generatedQuests, payload.ontology, `catalogue entry ${entry.id}`);
     });
 
     expect(allErrors).toEqual([]);

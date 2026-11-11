@@ -60,7 +60,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
 
           <div className="feature-card">
             <div className="feature-icon">
-              <MessageSquare size={24} color="#FFB900" />
+              <MessageSquare size={24} color="var(--ms-yellow-fg)" />
             </div>
             <div className="feature-title">NL Queries</div>
             <div className="feature-text">

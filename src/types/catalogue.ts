@@ -9,11 +9,59 @@ export interface CatalogueEntry {
   tags: string[];
   author: string;
   source: 'official' | 'community' | 'external';
+  entityCount: number;
+  relationshipCount: number;
+  payloadUrl: string;
+  payloadHash: string;
+  sourceArtifactUrl?: string;
+  sourceArtifactHash?: string;
+  sourceArtifactByteLength?: number;
+  sourceArtifactMediaType?: 'application/rdf+xml';
+  license?: string;
+  sourceUrl?: string;
+  version?: string;
+}
+
+export interface CatalogueEntryPayload {
+  schemaVersion: 1;
+  id: string;
   ontology: Ontology;
   bindings: DataBinding[];
 }
 
+export interface CataloguePayloadManifestEntry {
+  payloadUrl: string;
+  payloadHash: string;
+}
+
+export interface CatalogueSourceManifestEntry {
+  sourceArtifactUrl: string;
+  sourceArtifactHash: string;
+}
+
+export interface CataloguePayloadManifest {
+  schemaVersion: 1;
+  payloads: CataloguePayloadManifestEntry[];
+  sources: CatalogueSourceManifestEntry[];
+}
+
+export interface LoadedCatalogueEntry extends CatalogueEntry {
+  ontology: Ontology;
+  bindings: DataBinding[];
+}
+
+export interface LoadedCatalogueSource {
+  id: string;
+  bytes: Uint8Array;
+  text: string;
+  mediaType: 'application/rdf+xml';
+  hash: string;
+  sourceArtifactUrl: string;
+  documentUrl: string;
+}
+
 export interface Catalogue {
+  schemaVersion: 2;
   generatedAt: string;
   count: number;
   entries: CatalogueEntry[];

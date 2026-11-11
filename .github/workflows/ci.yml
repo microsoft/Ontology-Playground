@@ -12,12 +12,21 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            api/package-lock.json
 
       - run: npm ci --ignore-scripts
+
+      - name: Verify static-only deployment workflows
+        run: npm run deployment:validate
+
+      - name: Install API dependencies
+        run: npm --prefix api ci --ignore-scripts
 
       - name: Compile catalogue
         run: npm run catalogue:build
@@ -28,6 +37,9 @@ jobs:
       - name: Validate RDF files
         run: npm run validate
 
+      - name: Lint
+        run: npm run lint
+
       - name: Type check
         run: npx tsc -b
 
@@ -37,5 +49,22 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Build and test API
+        run: npm --prefix api run build && npm --prefix api test
+
       - name: Build
-        run: npx vite build
+        run: npx vite build && npm run build:embed
+
+      - name: Install Chromium for performance budgets
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify large-graph performance budgets
+        run: npm run test:performance
+
+      - name: Upload large-graph performance report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: large-graph-performance-${{ github.run_id }}
+          path: test-results/large-graph
+          if-no-files-found: error

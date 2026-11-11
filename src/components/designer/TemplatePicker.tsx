@@ -1,7 +1,13 @@
 import { designerTemplates } from '../../data/designerTemplates';
 import { useDesignerStore } from '../../store/designerStore';
 
-export function TemplatePicker() {
+interface TemplatePickerProps {
+  onTemplateSelected?: () => void;
+}
+
+export function TemplatePicker({
+  onTemplateSelected,
+}: TemplatePickerProps = {}) {
   const loadDraft = useDesignerStore((s) => s.loadDraft);
 
   return (
@@ -15,7 +21,10 @@ export function TemplatePicker() {
           <button
             key={t.id}
             className="template-card"
-            onClick={() => loadDraft(t.ontology)}
+            onClick={() => {
+              loadDraft(t.ontology);
+              onTemplateSelected?.();
+            }}
           >
             <span className="template-card-icon">{t.icon}</span>
             <span className="template-card-label">{t.label}</span>

@@ -17,7 +17,7 @@ jobs:
           submodules: true
           lfs: false
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm
@@ -28,7 +28,10 @@ jobs:
       - name: Build app
         run: npm run build
         env:
+          VITE_ENABLE_AI_BUILDER: ${{ vars.VITE_ENABLE_AI_BUILDER || 'false' }}
           VITE_GITHUB_CLIENT_ID: ${{ secrets.VITE_GITHUB_CLIENT_ID }}
+          VITE_GITHUB_OAUTH_BASE: ${{ secrets.VITE_GITHUB_OAUTH_BASE }}
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
 
       - name: Deploy to Azure Static Web Apps (Preview)
         uses: Azure/static-web-apps-deploy@4d27395796ac319302594769cfe812bd207490b1 # v1
@@ -37,6 +40,11 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: /
-          api_location: api
           output_location: build
           production_branch: main
+          # Static preview only; never publish the optional api/ package.
+        env:
+          VITE_ENABLE_AI_BUILDER: ${{ vars.VITE_ENABLE_AI_BUILDER || 'false' }}
+          VITE_GITHUB_CLIENT_ID: ${{ secrets.VITE_GITHUB_CLIENT_ID }}
+          VITE_GITHUB_OAUTH_BASE: ${{ secrets.VITE_GITHUB_OAUTH_BASE }}
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}

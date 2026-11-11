@@ -1,17 +1,19 @@
-import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { chromium } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import type { Core } from 'cytoscape';
+import { computePngExportBounds } from '../src/lib/graphExport.js';
 import type { OntologyPreviewManifest } from './list-changed-catalogue-entries.js';
 
-interface RenderedPreview {
+export interface RenderedPreview {
   id: string;
   file: string;
   bytes: number;
 }
 
-interface RenderedManifest extends OntologyPreviewManifest {
+export interface RenderedManifest extends OntologyPreviewManifest {
   renderedAt: string;
   previews: RenderedPreview[];
 }
@@ -44,6 +46,59 @@ function readManifest(filePath: string): OntologyPreviewManifest {
   return JSON.parse(readFileSync(filePath, 'utf-8')) as OntologyPreviewManifest;
 }
 
+// This function is serialized into the browser by Playwright; keep it self-contained.
+export function previewGraphReady(catalogueId: string): boolean {
+  const canvas = document.querySelector<HTMLElement>(
+    '[data-testid="ontology-graph-canvas"]',
+  );
+  const cy = (window as Window & { __ONTOLOGY_PREVIEW_CY__?: Core })
+    .__ONTOLOGY_PREVIEW_CY__;
+  return canvas?.dataset.catalogueId === catalogueId
+    && canvas.dataset.layoutStatus === 'idle'
+    && !!cy
+    && !cy.destroyed()
+    && cy.container() === canvas
+    && cy.nodes().length > 0;
+}
+
+export function decodePreviewPng(data: string | null): Buffer {
+  if (!data?.startsWith('data:image/png;base64,')) {
+    throw new Error('Graph export did not return a PNG data URL.');
+  }
+  const png = Buffer.from(data.slice('data:image/png;base64,'.length), 'base64');
+  const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  if (
+    png.length < 1024
+    || !png.subarray(0, 8).equals(signature)
+    || png.toString('ascii', 12, 16) !== 'IHDR'
+    || png.readUInt32BE(16) === 0
+    || png.readUInt32BE(20) === 0
+  ) {
+    throw new Error('Graph export returned an invalid, empty, or unexpectedly small PNG.');
+  }
+  return png;
+}
+
+export async function renderPreviewPng(page: Page, catalogueId: string): Promise<Buffer> {
+  await page.waitForFunction(previewGraphReady, catalogueId, { timeout: 60_000 });
+  await page.getByTestId('ontology-graph-canvas').locator('canvas').first()
+    .waitFor({ state: 'visible', timeout: 60_000 });
+  const bounds = await page.evaluate(() => {
+    const cy = (window as Window & { __ONTOLOGY_PREVIEW_CY__?: Core })
+      .__ONTOLOGY_PREVIEW_CY__;
+    if (!cy || cy.destroyed()) throw new Error('Preview graph is no longer available.');
+    const { w, h } = cy.elements().boundingBox();
+    return { width: w, height: h };
+  });
+  const exportBounds = computePngExportBounds(bounds.width, bounds.height);
+  const pngData = await page.evaluate((limits) => {
+    const cy = (window as Window & { __ONTOLOGY_PREVIEW_CY__?: Core })
+      .__ONTOLOGY_PREVIEW_CY__;
+    return cy?.png({ ...limits, full: true, bg: '#F5F5F5' }) ?? null;
+  }, exportBounds);
+  return decodePreviewPng(pngData);
+}
+
 async function gotoWithRetry(page: Page, url: string): Promise<void> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= 20; attempt += 1) {
@@ -58,14 +113,32 @@ async function gotoWithRetry(page: Page, url: string): Promise<void> {
   throw lastError;
 }
 
+export function writeRenderedManifest(
+  outputDir: string,
+  manifest: OntologyPreviewManifest,
+  previews: RenderedPreview[],
+): RenderedManifest {
+  const renderedManifest: RenderedManifest = {
+    ...manifest,
+    renderedAt: new Date().toISOString(),
+    previews,
+  };
+  mkdirSync(outputDir, { recursive: true });
+  writeFileSync(
+    join(outputDir, 'manifest.json'),
+    `${JSON.stringify(renderedManifest, null, 2)}\n`,
+    'utf-8',
+  );
+  return renderedManifest;
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const manifest = readManifest(options.manifest);
   mkdirSync(options.outputDir, { recursive: true });
 
   if (manifest.entries.length === 0) {
-    const renderedManifest: RenderedManifest = { ...manifest, renderedAt: new Date().toISOString(), previews: [] };
-    writeFileSync(join(options.outputDir, 'manifest.json'), JSON.stringify(renderedManifest, null, 2) + '\n', 'utf-8');
+    writeRenderedManifest(options.outputDir, manifest, []);
     console.log('No changed catalogue entries to render.');
     return;
   }
@@ -84,38 +157,18 @@ async function main() {
       const url = `${baseUrl}/#/catalogue/${entry.id}`;
       console.log(`Rendering ${entry.id} from ${url}`);
       await gotoWithRetry(page, url);
-      await page.getByTestId('ontology-graph-canvas').locator('canvas').first().waitFor({ state: 'visible', timeout: 60_000 });
-      await page.locator('.graph-legend .legend-item').first().waitFor({ state: 'visible', timeout: 60_000 });
-
       const file = `${entry.safeName}.png`;
       const outputPath = join(options.outputDir, file);
-      const pngData = await page.evaluate(() => {
-        const previewWindow = window as Window & {
-          __ONTOLOGY_PREVIEW_CY__?: { png: (options: { scale: number; full: boolean; bg: string }) => string };
-        };
-        const cy = previewWindow.__ONTOLOGY_PREVIEW_CY__;
-        return cy?.png({ scale: 2, full: true, bg: '#F5F5F5' }) ?? null;
-      });
-      if (pngData) {
-        const base64 = pngData.replace(/^data:image\/png;base64,/, '');
-        writeFileSync(outputPath, Buffer.from(base64, 'base64'));
-      } else {
-        await page.getByTestId('ontology-graph-canvas').screenshot({ path: outputPath });
-      }
-
-      const bytes = statSync(outputPath).size;
-      if (bytes < 1024) {
-        throw new Error(`Rendered PNG for ${entry.id} is unexpectedly small (${bytes} bytes)`);
-      }
-      previews.push({ id: entry.id, file, bytes });
+      const png = await renderPreviewPng(page, entry.id);
+      writeFileSync(outputPath, png);
+      previews.push({ id: entry.id, file, bytes: png.length });
     }
   } finally {
     await context.close();
     await browser.close();
   }
 
-  const renderedManifest: RenderedManifest = { ...manifest, renderedAt: new Date().toISOString(), previews };
-  writeFileSync(join(options.outputDir, 'manifest.json'), JSON.stringify(renderedManifest, null, 2) + '\n', 'utf-8');
+  writeRenderedManifest(options.outputDir, manifest, previews);
   console.log(`Rendered ${previews.length} ontology preview${previews.length === 1 ? '' : 's'}.`);
 }
 

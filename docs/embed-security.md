@@ -11,8 +11,10 @@ Community users can submit ontologies to the catalogue via pull requests.
 
 > Scope note: this document covers the **embed widget** threat model. Learn
 > article markdown rendering (`/#/learn`) has a separate sanitization boundary
-> in the compile pipeline (`scripts/compile-learn.ts`) and is not part of the
-> embed runtime attack surface.
+> in the compile pipeline (`scripts/compile-learn.ts`). Learn embed IDs are
+> restricted to path-based catalogue IDs, revalidated at runtime, and rendered
+> with text-only DOM APIs when an error occurs. Article titles are also inserted
+> as text before presentation HTML is serialized.
 
 ## Data Flow
 
@@ -47,6 +49,7 @@ The `serializeToRDF()` function passes all ontology values through `escapeXml()`
 | Layer | Protection |
 |---|---|
 | **Catalogue build** | Directory names validated against `SAFE_SLUG_RE` (alphanumeric + hyphens only), symlinks rejected |
+| **Catalogue payloads** | Versioned payloads are restricted to the index origin and verified against their SHA-256 index hash before parsing |
 | **RDF validation** | `validate-rdf.ts` script validates ontology structure during CI |
 | **PR review** | Community submissions require human review before merge |
 | **No unsafe DOM sinks** | No `dangerouslySetInnerHTML`, `innerHTML`, `document.write`, or `eval` in embed code |
@@ -68,4 +71,5 @@ The `data-ontology-url` attribute allows loading an ontology from an arbitrary U
 | XSS via RDF output | Yes | `escapeXml()` + JSX escaping |
 | CSS injection via colors | Yes | Canvas renderer, not DOM CSS |
 | Path traversal via catalogue IDs | Yes | `SAFE_SLUG_RE` validation |
+| Cross-origin/tampered catalogue payload | Yes | Same-origin URL enforcement + SHA-256 verification |
 | Code injection via `data-ontology-url` | N/A | URL set by page author, data rendered safely |

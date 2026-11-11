@@ -22,12 +22,28 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm
 
       - run: npm ci --ignore-scripts
+
+      - name: Restore published catalogue payloads
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            public/catalogue-payloads
+            public/catalogue-sources
+            public/catalogue-payloads-manifest.json
+          key: catalogue-payloads-${{ github.run_id }}
+          restore-keys: |
+            catalogue-payloads-
+
+      - name: Restore payload history from current deployment
+        run: >-
+          npm run catalogue:restore --
+          "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
 
       - run: npm run catalogue:build
 
@@ -36,11 +52,22 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          VITE_ENABLE_AI_BUILDER: ${{ vars.VITE_ENABLE_AI_BUILDER || 'false' }}
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
           VITE_GITHUB_CLIENT_ID: ${{ secrets.VITE_GITHUB_CLIENT_ID }}
           VITE_GITHUB_OAUTH_BASE: ${{ secrets.VITE_GITHUB_OAUTH_BASE }}
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
           VITE_DEPLOYED_COMMIT_SHA: ${{ github.sha }}
           VITE_REPOSITORY: ${{ github.repository }}
+
+      - name: Preserve published catalogue payloads
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            public/catalogue-payloads
+            public/catalogue-sources
+            public/catalogue-payloads-manifest.json
+          key: catalogue-payloads-${{ github.run_id }}
 
       - name: Copy SPA fallback
         run: cp build/index.html build/404.html

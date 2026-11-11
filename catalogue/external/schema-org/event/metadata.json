@@ -10,5 +10,7 @@
     "ticket",
     "structured-data"
   ],
-  "author": "Schema.org (adapted)"
+  "author": "Schema.org (adapted)",
+  "license": "CC-BY-SA-3.0",
+  "sourceUrl": "https://schema.org/version/latest/schemaorg-current-https.rdf"
 }

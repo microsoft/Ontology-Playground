@@ -6,15 +6,10 @@ on:
   issue_comment:
     types: [created]
 
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+permissions: {}
 
 jobs:
-  remove-under-review-marker:
-    # Trigger on: (1) issue closed with 'ontology-school-approved' label, OR
-    #             (2) comment containing '#approved' on a review issue
+  authorize-trigger:
     if: >-
       (github.event_name == 'issues'
         && github.event.action == 'closed'
@@ -23,12 +18,55 @@ jobs:
         && contains(github.event.comment.body, '#approved')
         && contains(github.event.issue.labels.*.name, 'ontology-school-review'))
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+    outputs:
+      authorized: ${{ steps.authorization.outputs.authorized }}
+
+    steps:
+      - name: Verify trigger authorization
+        id: authorization
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            if (context.eventName !== 'issue_comment') {
+              core.setOutput('authorized', 'true');
+              return;
+            }
+
+            const username = context.payload.comment.user.login;
+            let authorized = false;
+            try {
+              const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username,
+              });
+              authorized = data.user?.permissions?.push === true;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            core.setOutput('authorized', authorized ? 'true' : 'false');
+            if (!authorized) {
+              core.notice(`Ignoring #approved from ${username}: write permission is required.`);
+            }
+
+  remove-under-review-marker:
+    needs: authorize-trigger
+    if: needs.authorize-trigger.outputs.authorized == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm

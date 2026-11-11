@@ -110,7 +110,7 @@ export function parseHash(hash: string): Route {
 /** Convert a Route back to a hash string. */
 export function routeToHash(route: Route): string {
   switch (route.page) {
-    case 'catalogue':
+    case 'catalogue': {
       const hash = route.ontologyId
         ? `#/catalogue/${route.ontologyId}`
         : '#/catalogue';
@@ -119,6 +119,7 @@ export function routeToHash(route: Route): string {
       if (route.source) queryParams.set('source', route.source);
       const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
       return hash + query;
+    }
     case 'embed':
       return `#/embed/${route.ontologyId}`;
     case 'designer':

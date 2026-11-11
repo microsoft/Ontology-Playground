@@ -190,6 +190,19 @@ describe('splitIntoSlides', () => {
     const slides = splitIntoSlides('', 'Empty');
     expect(slides.length).toBe(1);
   });
+
+  it('renders article titles as text instead of executable markup', () => {
+    const maliciousTitle = '<img src=x onerror=alert(document.domain)>Unsafe';
+    const slides = splitIntoSlides('<p>Intro</p>', maliciousTitle);
+    expect(slides[0].type).toBe('content');
+
+    if (slides[0].type === 'content') {
+      const container = document.createElement('div');
+      container.innerHTML = slides[0].html;
+      expect(container.querySelector('img')).toBeNull();
+      expect(container.querySelector('h1')?.textContent).toBe(maliciousTitle);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------

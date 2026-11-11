@@ -9,16 +9,53 @@
  *  - Dark/light theme
  *  - Loads ontology from catalogue, URL, or inline base64 JSON
  */
-import { useEffect, useRef, useState, useMemo } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useMemo,
+  type FormEvent,
+} from 'react';
 import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
-import type { Core, EventObject } from 'cytoscape';
+import type {
+  Core,
+  ElementDefinition,
+  EventObject,
+  LayoutOptions,
+} from 'cytoscape';
 import type { Ontology, EntityType, Relationship } from '../data/ontology';
 import { serializeToRDF } from '../lib/rdf/serializer';
-import { parseRDF } from '../lib/rdf/parser';
+import { decodeRdfBytes } from '../lib/rdf/dataset';
+import { createImportedRdfDocument } from '../lib/rdf/document';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rdf/highlighter';
-import { isLargeOntologyGraph } from '../lib/ontologyScale';
-import type { Catalogue } from '../types/catalogue';
+import {
+  loadCatalogueEntry,
+  loadCatalogueSourceForEntry,
+} from '../lib/catalogue';
+import type { LoadedCatalogueEntry } from '../types/catalogue';
+import {
+  BOUNDED_LABEL_ZOOM_THRESHOLD,
+  createGraphView,
+  DEFAULT_LARGE_GRAPH_DEPTH,
+  graphViewMaxDepth,
+  MAX_RENDERED_NODES,
+  type GraphView,
+} from '../lib/graphView';
+import {
+  captureGraphPositionSnapshot,
+  preserveGraphElementPositions,
+  restoreGraphViewport,
+  type GraphPositionSnapshot,
+} from '../lib/graphPositionPersistence';
+import {
+  EMBED_THEMES,
+  type EmbedThemeTokens,
+} from './embedTheme';
+import { SemanticDepthSlider } from './SemanticDepthSlider';
+import { useGraphNodeActionPosition } from './useGraphNodeActionPosition';
 
 cytoscape.use(fcose);
 
@@ -31,29 +68,59 @@ export interface EmbedConfig {
   catalogueBaseUrl?: string;
 }
 
-// ─── Theme tokens ────────────────────────────────────────────────────────────
+const MAX_EMBED_SOURCE_BYTES = 8 * 1024 * 1024;
 
-interface ThemeTokens {
-  bg: string; bgSecondary: string; bgTertiary: string;
-  text: string; textSecondary: string; textTertiary: string;
-  border: string; accent: string;
-  nodeText: string; edgeColor: string; edgeText: string;
+async function readBoundedResponseBytes(
+  response: Response,
+): Promise<Uint8Array> {
+  const declaredLength = Number(response.headers.get('content-length'));
+  if (
+    Number.isFinite(declaredLength)
+    && declaredLength > MAX_EMBED_SOURCE_BYTES
+  ) {
+    throw new Error(
+      `Ontology source exceeds the ${MAX_EMBED_SOURCE_BYTES.toLocaleString()} byte limit.`,
+    );
+  }
+
+  if (!response.body) {
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (bytes.byteLength > MAX_EMBED_SOURCE_BYTES) {
+      throw new Error(
+        `Ontology source exceeds the ${MAX_EMBED_SOURCE_BYTES.toLocaleString()} byte limit.`,
+      );
+    }
+    return bytes;
+  }
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let byteLength = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      byteLength += value.byteLength;
+      if (byteLength > MAX_EMBED_SOURCE_BYTES) {
+        await reader.cancel();
+        throw new Error(
+          `Ontology source exceeds the ${MAX_EMBED_SOURCE_BYTES.toLocaleString()} byte limit.`,
+        );
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const bytes = new Uint8Array(byteLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
 }
-
-const THEMES: Record<string, ThemeTokens> = {
-  dark: {
-    bg: '#1B1B1B', bgSecondary: '#2D2D2D', bgTertiary: '#3D3D3D',
-    text: '#FFFFFF', textSecondary: '#B3B3B3', textTertiary: '#808080',
-    border: '#404040', accent: '#0078D4',
-    nodeText: '#B3B3B3', edgeColor: '#505050', edgeText: '#808080',
-  },
-  light: {
-    bg: '#FFFFFF', bgSecondary: '#F5F5F5', bgTertiary: '#EEEEEE',
-    text: '#1A1A1A', textSecondary: '#555555', textTertiary: '#888888',
-    border: '#DDDDDD', accent: '#0078D4',
-    nodeText: '#2A2A2A', edgeColor: '#888888', edgeText: '#555555',
-  },
-};
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -65,57 +132,96 @@ interface SelectedItem {
   relationship?: Relationship;
 }
 
+interface CatalogueSourceContext {
+  baseUrl: string;
+  entry: LoadedCatalogueEntry;
+}
+
 export function EmbedWidget({ config }: { config: EmbedConfig }) {
   const [ontology, setOntology] = useState<Ontology | null>(null);
+  const [catalogueSourceContext, setCatalogueSourceContext] =
+    useState<CatalogueSourceContext | null>(null);
+  const [rdfSource, setRdfSource] = useState<string | null>(null);
+  const [rdfSourceStatus, setRdfSourceStatus] =
+    useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [rdfSourceError, setRdfSourceError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>('graph');
   const [selected, setSelected] = useState<SelectedItem | null>(null);
   const [copied, setCopied] = useState(false);
+  const rdfSourceRequestId = useRef(0);
+  const rdfSourceRequestActive = useRef(false);
 
-  const theme = THEMES[config.theme] || THEMES.dark;
+  const theme = EMBED_THEMES[config.theme] || EMBED_THEMES.dark;
 
   // ─ Load ontology ────────────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
+    const abortController = new AbortController();
 
     async function load() {
+      setLoading(true);
+      setError(null);
+      setRdfSource(null);
+      setCatalogueSourceContext(null);
+      setRdfSourceStatus('idle');
+      setRdfSourceError(null);
+      setTab('graph');
+      rdfSourceRequestId.current += 1;
+      rdfSourceRequestActive.current = false;
       try {
         let ont: Ontology | null = null;
+        let sourceContext: CatalogueSourceContext | null = null;
 
         if (config.ontologyInline) {
           // Base64-encoded JSON
           const json = atob(config.ontologyInline);
           ont = JSON.parse(json) as Ontology;
         } else if (config.catalogueId) {
-          // Load from catalogue.json
+          // Load the index and only this entry's versioned payload.
           const base = config.catalogueBaseUrl
             || (document.currentScript as HTMLScriptElement | null)?.src.replace(/\/[^/]+$/, '/')
             || window.location.origin + '/';
-          const catalogueUrl = base.endsWith('/') ? `${base}catalogue.json` : `${base}/catalogue.json`;
-          const res = await fetch(catalogueUrl);
-          if (!res.ok) throw new Error(`Failed to load catalogue (${res.status})`);
-          const cat = (await res.json()) as Catalogue;
-          const entry = cat.entries.find((e) => e.id === config.catalogueId);
-          if (!entry) throw new Error(`Ontology "${config.catalogueId}" not found in catalogue`);
+          const entry = await loadCatalogueEntry(config.catalogueId, base);
           ont = entry.ontology;
+          sourceContext = { baseUrl: base, entry };
         } else if (config.ontologyUrl) {
           // Fetch from URL
-          const res = await fetch(config.ontologyUrl);
+          const res = await fetch(config.ontologyUrl, {
+            signal: abortController.signal,
+          });
           if (!res.ok) throw new Error(`Failed to fetch ontology (${res.status})`);
-          const text = await res.text();
+          const bytes = await readBoundedResponseBytes(res);
+          const text = decodeRdfBytes(bytes);
           // Detect format: RDF/XML starts with < or has xml prologue
           if (text.trimStart().startsWith('<')) {
-            const result = parseRDF(text);
+            const sourceUrl = new URL(
+              res.url || config.ontologyUrl,
+              window.location.href,
+            );
+            const sourceName = sourceUrl.pathname.split('/').pop()
+              || 'embedded.rdf';
+            const result = await createImportedRdfDocument(bytes, {
+              name: sourceName,
+              baseIri: sourceUrl.href,
+            });
             ont = result.ontology;
+            if (!cancelled) {
+              setRdfSource(text);
+              setRdfSourceStatus('ready');
+            }
           } else {
             ont = JSON.parse(text) as Ontology;
+            if (!cancelled) setRdfSource(null);
           }
         } else {
           throw new Error('No ontology source specified. Use data-catalogue-id, data-ontology-url, or data-ontology-inline.');
         }
 
         if (!cancelled) {
+          if (config.ontologyInline) setRdfSource(null);
+          setCatalogueSourceContext(sourceContext);
           setOntology(ont);
           setLoading(false);
         }
@@ -128,8 +234,52 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
     }
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      rdfSourceRequestId.current += 1;
+      rdfSourceRequestActive.current = false;
+      abortController.abort();
+    };
   }, [config.catalogueId, config.ontologyUrl, config.ontologyInline, config.catalogueBaseUrl]);
+
+  const handleTabChange = (nextTab: Tab) => {
+    setTab(nextTab);
+    if (
+      nextTab !== 'rdf'
+      || !catalogueSourceContext
+      || rdfSourceStatus !== 'idle'
+      || rdfSourceRequestActive.current
+    ) {
+      return;
+    }
+    const requestId = ++rdfSourceRequestId.current;
+    rdfSourceRequestActive.current = true;
+    setRdfSourceStatus('loading');
+    setRdfSourceError(null);
+    void loadCatalogueSourceForEntry(
+      catalogueSourceContext.entry,
+      catalogueSourceContext.baseUrl,
+    )
+      .then((source) => {
+        if (requestId !== rdfSourceRequestId.current) return;
+        setRdfSource(source.text);
+        setRdfSourceStatus('ready');
+      })
+      .catch((sourceError: unknown) => {
+        if (requestId !== rdfSourceRequestId.current) return;
+        setRdfSourceError(
+          sourceError instanceof Error
+            ? sourceError.message
+            : String(sourceError),
+        );
+        setRdfSourceStatus('error');
+      })
+      .finally(() => {
+        if (requestId === rdfSourceRequestId.current) {
+          rdfSourceRequestActive.current = false;
+        }
+      });
+  };
 
   // ─ Render ───────────────────────────────────────────────────────────────
   const containerStyle: React.CSSProperties = {
@@ -171,11 +321,15 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
       <EmbedHeader
         ontology={ontology}
         tab={tab}
-        setTab={setTab}
+        setTab={handleTabChange}
         theme={theme}
         copied={copied}
+        hasCompleteSource={rdfSource !== null}
+        sourceLoading={rdfSourceStatus === 'loading'}
         onCopyRdf={() => {
-          navigator.clipboard.writeText(serializeToRDF(ontology, [])).then(() => {
+          navigator.clipboard.writeText(
+            rdfSource ?? serializeToRDF(ontology, []),
+          ).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           });
@@ -187,7 +341,13 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
         {tab === 'graph' ? (
           <EmbedGraph ontology={ontology} theme={theme} selected={selected} setSelected={setSelected} />
         ) : (
-          <EmbedRdfSource ontology={ontology} theme={theme} />
+          <EmbedRdfSource
+            rdf={rdfSource ?? serializeToRDF(ontology, [])}
+            theme={theme}
+            hasCompleteSource={rdfSource !== null}
+            sourceLoading={rdfSourceStatus === 'loading'}
+            sourceError={rdfSourceError}
+          />
         )}
       </div>
 
@@ -205,12 +365,23 @@ interface EmbedHeaderProps {
   ontology: Ontology;
   tab: Tab;
   setTab: (t: Tab) => void;
-  theme: ThemeTokens;
+  theme: EmbedThemeTokens;
   copied: boolean;
+  hasCompleteSource: boolean;
+  sourceLoading: boolean;
   onCopyRdf: () => void;
 }
 
-function EmbedHeader({ ontology, tab, setTab, theme, copied, onCopyRdf }: EmbedHeaderProps) {
+function EmbedHeader({
+  ontology,
+  tab,
+  setTab,
+  theme,
+  copied,
+  hasCompleteSource,
+  sourceLoading,
+  onCopyRdf,
+}: EmbedHeaderProps) {
   const tabStyle = (active: boolean): React.CSSProperties => ({
     padding: '6px 14px',
     fontSize: 12,
@@ -236,7 +407,13 @@ function EmbedHeader({ ontology, tab, setTab, theme, copied, onCopyRdf }: EmbedH
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <button style={tabStyle(tab === 'graph')} onClick={() => setTab('graph')}>Graph</button>
-        <button style={tabStyle(tab === 'rdf')} onClick={() => setTab('rdf')}>RDF Source</button>
+        <button style={tabStyle(tab === 'rdf')} onClick={() => setTab('rdf')}>
+          {hasCompleteSource
+            ? 'Complete RDF source'
+            : sourceLoading
+              ? 'Loading complete RDF…'
+              : 'Generated RDF'}
+        </button>
         {tab === 'rdf' && (
           <button
             onClick={onCopyRdf}
@@ -246,7 +423,11 @@ function EmbedHeader({ ontology, tab, setTab, theme, copied, onCopyRdf }: EmbedH
               border: `1px solid ${theme.border}`, borderRadius: 4, cursor: 'pointer',
             }}
           >
-            {copied ? 'Copied!' : 'Copy RDF'}
+            {copied
+              ? 'Copied!'
+              : hasCompleteSource
+                ? 'Copy complete RDF'
+                : 'Copy generated RDF'}
           </button>
         )}
       </div>
@@ -258,58 +439,232 @@ function EmbedHeader({ ontology, tab, setTab, theme, copied, onCopyRdf }: EmbedH
 
 interface EmbedGraphProps {
   ontology: Ontology;
-  theme: ThemeTokens;
+  theme: EmbedThemeTokens;
   selected: SelectedItem | null;
   setSelected: (s: SelectedItem | null) => void;
 }
 
-function EmbedGraph({ ontology, theme, setSelected }: EmbedGraphProps) {
+function EmbedGraph({ ontology, theme, selected, setSelected }: EmbedGraphProps) {
+  const depthSliderId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
-  const largeGraph = isLargeOntologyGraph(ontology);
+  const [graphInstance, setGraphInstance] = useState<Core | null>(null);
+  const pendingPositionSnapshotRef = useRef<GraphPositionSnapshot | null>(null);
+  const selectedRef = useRef(selected);
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
+  const applySelectionState = useCallback((
+    cy: Core,
+    revealConnectedLabels: boolean,
+  ) => {
+    const selectedItem = selectedRef.current;
+    cy.elements().unselect();
+    cy.edges().removeClass('selected-node-edge');
 
-  const elements = useMemo(() => {
-    const nodes = ontology.entityTypes.map((e) => ({
-      data: { id: e.id, label: `${e.icon} ${e.name}`, color: e.color },
-    }));
-    const edges = ontology.relationships.map((r) => ({
-      data: {
-        id: r.id,
-        source: r.from,
-        target: r.to,
-        label: r.name,
-        kind: r.kind ?? 'association',
-      },
-    }));
-    return [...nodes, ...edges];
+    if (selectedItem?.entity) {
+      const node = cy.getElementById(selectedItem.entity.id);
+      node.select();
+      if (revealConnectedLabels) {
+        node.connectedEdges().addClass('selected-node-edge');
+      }
+    } else if (selectedItem?.relationship) {
+      cy.getElementById(selectedItem.relationship.id).select();
+    }
+  }, []);
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState('');
+  const [depth, setDepth] = useState(DEFAULT_LARGE_GRAPH_DEPTH);
+  const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const graphView = useMemo(
+    () => createGraphView(ontology, { search, depth, expandedNodeIds }),
+    [depth, expandedNodeIds, ontology, search],
+  );
+  const maxDepth = useMemo(() => graphViewMaxDepth(ontology), [ontology]);
+  const selectedOverviewEntity = useMemo(() => {
+    const entity = selected?.type === 'entity' ? selected.entity : undefined;
+    if (!entity || !graphView.entities.some(({ id }) => id === entity.id)) {
+      return null;
+    }
+    return {
+      id: entity.id,
+      name: entity.name,
+      hiddenNeighborCount:
+        graphView.hiddenNeighborCounts.get(entity.id) ?? 0,
+      isExpanded: expandedNodeIds.has(entity.id),
+      canExpand: graphView.visibleNodeCount < MAX_RENDERED_NODES,
+    };
+  }, [
+    expandedNodeIds,
+    graphView.entities,
+    graphView.hiddenNeighborCounts,
+    graphView.visibleNodeCount,
+    selected,
+  ]);
+  const neighborActionPosition = useGraphNodeActionPosition(
+    graphInstance,
+    selectedOverviewEntity?.id ?? null,
+    graphView.mode === 'bounded'
+      && (selectedOverviewEntity?.hiddenNeighborCount ?? 0) > 0
+      && !selectedOverviewEntity?.isExpanded
+      && selectedOverviewEntity?.canExpand === true,
+  );
+  const graphOntologyRef = useRef(ontology);
+
+  useEffect(() => {
+    if (graphOntologyRef.current === ontology) return;
+    graphOntologyRef.current = ontology;
+    setSearchInput('');
+    setSearch('');
+    setDepth(DEFAULT_LARGE_GRAPH_DEPTH);
+    setExpandedNodeIds(new Set());
+    pendingPositionSnapshotRef.current = null;
   }, [ontology]);
+
+  const elements = useMemo<ElementDefinition[]>(() => {
+    const rootIds = new Set(graphView.rootIds);
+    const nodes = graphView.entities.map((entity) => {
+      const hiddenNeighborCount = graphView.hiddenNeighborCounts.get(entity.id) ?? 0;
+      return {
+        data: {
+          id: entity.id,
+          label: `${entity.icon} ${entity.name}${hiddenNeighborCount > 0 ? ` · +${hiddenNeighborCount}` : ''}`,
+          color: entity.color,
+          hiddenNeighborCount,
+          isRoot: rootIds.has(entity.id) ? 1 : 0,
+        },
+      };
+    });
+    const nodeIds = new Set(nodes.map((node) => node.data.id));
+    const edges = graphView.relationships
+      .filter((relationship) => (
+        nodeIds.has(relationship.from) && nodeIds.has(relationship.to)
+      ))
+      .map((relationship) => ({
+        data: {
+          id: relationship.id,
+          source: relationship.from,
+          target: relationship.to,
+          label: relationship.name,
+          kind: relationship.kind ?? 'association',
+        },
+      }));
+    return [...nodes, ...edges];
+  }, [graphView]);
+
+  const layout = useMemo<LayoutOptions>(() => {
+    if (graphView.mode === 'bounded') {
+      const visibleIds = new Set(
+        graphView.entities.map((entity) => entity.id),
+      );
+      const visibleRootIds = graphView.rootIds.filter(
+        (id) => visibleIds.has(id),
+      );
+      const roots = visibleRootIds.length > 0
+        ? visibleRootIds
+        : graphView.entities.slice(0, 1).map((entity) => entity.id);
+      return {
+          name: 'breadthfirst',
+          directed: false,
+          circle: true,
+          roots,
+          animate: false,
+          fit: true,
+          padding: 40,
+          spacingFactor: 1.6,
+        } as LayoutOptions;
+    }
+
+    return {
+      name: 'fcose',
+      quality: graphView.mode === 'dense' ? 'default' : 'proof',
+      randomize: true,
+      animate: false,
+      fit: true,
+      padding: 40,
+      nodeDimensionsIncludeLabels: true,
+      nodeRepulsion: () => graphView.mode === 'dense' ? 9_000 : 12_000,
+      idealEdgeLength: () => graphView.mode === 'dense' ? 140 : 180,
+      edgeElasticity: () => 0.45,
+      nodeSeparation: graphView.mode === 'dense' ? 60 : 80,
+    } as LayoutOptions;
+  }, [graphView.entities, graphView.mode, graphView.rootIds]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const positionSnapshot = graphView.mode === 'bounded'
+      ? pendingPositionSnapshotRef.current
+      : null;
+    const positionedElements = positionSnapshot
+      ? preserveGraphElementPositions(elements, positionSnapshot)
+      : null;
     const cy = cytoscape({
       container: containerRef.current,
-      elements,
+      elements: positionedElements ?? elements,
       style: [
         {
           selector: 'node',
           style: {
             label: 'data(label)', 'text-valign': 'bottom', 'text-halign': 'center',
             'font-size': '13px', 'font-family': 'Segoe UI, sans-serif', 'font-weight': 600,
+            'min-zoomed-font-size': 9,
             color: theme.nodeText, 'text-margin-y': 8,
-            width: 60, height: 60, 'background-color': 'data(color)',
+            width: graphView.mode === 'bounded' ? 30 : 60,
+            height: graphView.mode === 'bounded' ? 30 : 60,
+            'background-color': 'data(color)',
             'border-width': 2, 'border-color': 'data(color)', 'border-opacity': 0.5,
           },
         },
         {
+          selector: 'node[hiddenNeighborCount > 0]',
+          style: {
+            'border-style': 'dashed',
+            'border-width': 4,
+            width: 38,
+            height: 38,
+            'min-zoomed-font-size': 8,
+          },
+        },
+        {
+          selector: 'node[isRoot = 1]',
+          style: {
+            'border-style': 'solid',
+            'border-width': 4,
+            width: 52,
+            height: 52,
+            'font-size': '14px',
+            'min-zoomed-font-size': 8,
+          },
+        },
+        {
+          selector: 'node.overview-label-hidden',
+          style: { label: '' },
+        },
+        {
           selector: 'node:selected',
-          style: { 'border-width': 4, 'border-color': theme.accent, width: 72, height: 72 },
+          style: {
+            'border-width': 4,
+            'border-color': theme.accent,
+            width: graphView.mode === 'bounded' ? 52 : 72,
+            height: graphView.mode === 'bounded' ? 52 : 72,
+            label: 'data(label)',
+            'min-zoomed-font-size': 0,
+          },
         },
         {
           selector: 'edge',
           style: {
-            label: largeGraph ? '' : 'data(label)', 'font-size': '11px', 'font-family': 'Segoe UI, sans-serif',
+            label: graphView.mode === 'full' ? 'data(label)' : '',
+            'font-size': '11px', 'font-family': 'Segoe UI, sans-serif',
+            'min-zoomed-font-size': 9,
             color: theme.edgeText, 'text-rotation': 'autorotate', 'text-margin-y': -8,
+            'text-background-color': theme.edgeLabelBg,
+            'text-background-opacity': 1,
+            'text-background-padding': '2px',
+            'text-background-shape': 'roundrectangle',
             width: 2, 'line-color': theme.edgeColor, 'target-arrow-color': theme.edgeColor,
             'target-arrow-shape': 'triangle', 'curve-style': 'unbundled-bezier',
             'control-point-step-size': 40,
@@ -320,38 +675,82 @@ function EmbedGraph({ ontology, theme, setSelected }: EmbedGraphProps) {
           style: { 'line-style': 'dashed' },
         },
         {
+          selector: 'edge.selected-node-edge',
+          style: {
+            label: 'data(label)',
+            'min-zoomed-font-size': 0,
+          },
+        },
+        {
+          selector: 'edge.hovered',
+          style: {
+            label: 'data(label)',
+            width: 3,
+            color: theme.text,
+            'line-color': theme.accent,
+            'target-arrow-color': theme.accent,
+          },
+        },
+        {
           selector: 'edge:selected',
-          style: { width: 4, 'line-color': theme.accent, 'target-arrow-color': theme.accent, color: theme.accent },
+          style: {
+            width: 4,
+            'line-color': theme.accent,
+            'target-arrow-color': theme.accent,
+            color: theme.text,
+            label: 'data(label)',
+          },
         },
       ],
-      layout: (largeGraph
-        ? {
-            name: 'grid', animate: false, fit: true, padding: 30,
-          }
-        : {
-            name: 'fcose', quality: 'proof', randomize: true, animate: false,
-            fit: true, padding: 40, nodeDimensionsIncludeLabels: true,
-            nodeRepulsion: () => 12000, idealEdgeLength: () => 180,
-            edgeElasticity: () => 0.45, nodeSeparation: 80,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          }) as any,
+      layout: positionedElements
+        ? { name: 'preset', fit: false }
+        : layout,
       minZoom: 0.3, maxZoom: 3,
       userPanningEnabled: true,
       userZoomingEnabled: true,
       boxSelectionEnabled: false,
-      autoungrabify: true,   // read-only: nodes can't be dragged
+      autoungrabify: true,
     });
+
+    if (positionSnapshot && positionedElements) {
+      restoreGraphViewport(cy, positionSnapshot);
+    }
+    pendingPositionSnapshotRef.current = null;
+
+    let boundedLabelsHidden: boolean | null = null;
+    const syncBoundedLabels = () => {
+      if (graphView.mode !== 'bounded') return;
+      const shouldHide = cy.zoom() < BOUNDED_LABEL_ZOOM_THRESHOLD;
+      if (shouldHide === boundedLabelsHidden) return;
+      boundedLabelsHidden = shouldHide;
+      cy.nodes('[isRoot = 0][hiddenNeighborCount = 0]')
+        .toggleClass('overview-label-hidden', shouldHide);
+    };
+    cy.on('zoom', syncBoundedLabels);
+    syncBoundedLabels();
 
     cy.on('tap', 'node', (evt: EventObject) => {
       const id = evt.target.id();
-      const entity = ontology.entityTypes.find((e) => e.id === id);
+      const entity = ontology.entityTypes.find((candidate) => candidate.id === id);
       if (entity) setSelected({ type: 'entity', entity });
     });
 
     cy.on('tap', 'edge', (evt: EventObject) => {
       const id = evt.target.id();
-      const rel = ontology.relationships.find((r) => r.id === id);
-      if (rel) setSelected({ type: 'relationship', relationship: rel });
+      const relationship = ontology.relationships.find(
+        (candidate) => candidate.id === id,
+      );
+      if (relationship) {
+        setSelected({ type: 'relationship', relationship });
+      }
+    });
+
+    cy.on('mouseover', 'edge', (evt: EventObject) => {
+      evt.target.addClass('hovered');
+    });
+
+    cy.on('mouseout', 'edge', (evt: EventObject) => {
+      evt.target.removeClass('hovered');
     });
 
     cy.on('tap', (evt: EventObject) => {
@@ -359,36 +758,548 @@ function EmbedGraph({ ontology, theme, setSelected }: EmbedGraphProps) {
     });
 
     cyRef.current = cy;
+    setGraphInstance(cy);
+    applySelectionState(cy, graphView.mode === 'bounded');
     return () => { cy.destroy(); cyRef.current = null; };
-  }, [elements, largeGraph, theme, ontology, setSelected]);
+  }, [
+    applySelectionState,
+    elements,
+    graphView.mode,
+    layout,
+    ontology,
+    setSelected,
+    theme,
+  ]);
+
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (cy) {
+      applySelectionState(cy, graphView.mode === 'bounded');
+    }
+  }, [applySelectionState, graphView.mode, selected]);
+
+  const handleSearch = () => {
+    pendingPositionSnapshotRef.current = null;
+    setSearch(searchInput.trim());
+    setExpandedNodeIds(new Set());
+    setSelected(null);
+  };
+
+  const handleOverview = () => {
+    pendingPositionSnapshotRef.current = null;
+    setSearchInput('');
+    setSearch('');
+    setDepth(DEFAULT_LARGE_GRAPH_DEPTH);
+    setExpandedNodeIds(new Set());
+    setSelected(null);
+  };
+
+  const clearSelectionOutsideView = (
+    nextView: ReturnType<typeof createGraphView>,
+  ) => {
+    if (
+      (
+        selected?.entity
+        && !nextView.entities.some(({ id }) => id === selected.entity?.id)
+      )
+      || (
+        selected?.relationship
+        && !nextView.relationships.some(
+          ({ id }) => id === selected.relationship?.id,
+        )
+      )
+    ) {
+      setSelected(null);
+    }
+  };
+
+  const handleDepthChange = (nextDepth: number) => {
+    if (nextDepth === depth) return;
+    pendingPositionSnapshotRef.current = cyRef.current
+      ? captureGraphPositionSnapshot(cyRef.current)
+      : null;
+
+    setExpandedNodeIds(new Set());
+    selectedRef.current = null;
+    setSelected(null);
+    setDepth(nextDepth);
+  };
+
+  const handleExpandSelectedEntity = () => {
+    if (
+      !selectedOverviewEntity
+      || selectedOverviewEntity.hiddenNeighborCount === 0
+      || selectedOverviewEntity.isExpanded
+      || !selectedOverviewEntity.canExpand
+    ) {
+      return;
+    }
+
+    pendingPositionSnapshotRef.current = cyRef.current
+      ? captureGraphPositionSnapshot(
+          cyRef.current,
+          selectedOverviewEntity.id,
+        )
+      : null;
+    setExpandedNodeIds((current) => {
+      if (current.has(selectedOverviewEntity.id)) return current;
+      return new Set(current).add(selectedOverviewEntity.id);
+    });
+  };
+
+  const handleCollapseSelectedEntity = () => {
+    if (!selectedOverviewEntity?.isExpanded) return;
+
+    pendingPositionSnapshotRef.current = cyRef.current
+      ? captureGraphPositionSnapshot(
+          cyRef.current,
+          selectedOverviewEntity.id,
+        )
+      : null;
+    const nextExpandedNodeIds = new Set(expandedNodeIds);
+    nextExpandedNodeIds.delete(selectedOverviewEntity.id);
+    const nextView = createGraphView(ontology, {
+      search,
+      depth,
+      expandedNodeIds: nextExpandedNodeIds,
+    });
+
+    setExpandedNodeIds(nextExpandedNodeIds);
+    clearSelectionOutsideView(nextView);
+  };
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-      {largeGraph && (
-        <div className="graph-scale-badge">Large ontology: using the fast grid layout</div>
+      <div
+        ref={containerRef}
+        data-testid="embed-graph-canvas"
+        style={{ width: '100%', height: '100%' }}
+      />
+      {neighborActionPosition && selectedOverviewEntity && (
+        <button
+          type="button"
+          aria-label={`Expand ${selectedOverviewEntity.name} to show ${
+            selectedOverviewEntity.hiddenNeighborCount
+          } hidden ${
+            selectedOverviewEntity.hiddenNeighborCount === 1
+              ? 'neighbor'
+              : 'neighbors'
+          }`}
+          onClick={handleExpandSelectedEntity}
+          style={{
+            position: 'absolute',
+            zIndex: 3,
+            left: neighborActionPosition.left,
+            top: neighborActionPosition.top,
+            transform: neighborActionPosition.placement === 'above'
+              ? 'translate(-50%, -100%)'
+              : 'translate(-50%, 0)',
+            minHeight: 44,
+            maxWidth: 'calc(100% - 24px)',
+            padding: '9px 14px',
+            color: '#fff',
+            background: theme.accent,
+            border: '1px solid #fff',
+            borderRadius: 18,
+            boxShadow: '0 4px 14px rgba(0,0,0,0.35)',
+            cursor: 'pointer',
+            fontSize: 14,
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Show {selectedOverviewEntity.hiddenNeighborCount.toLocaleString()}{' '}
+          {selectedOverviewEntity.hiddenNeighborCount === 1
+            ? 'neighbor'
+            : 'neighbors'}
+        </button>
+      )}
+      {graphView.mode === 'bounded' && (
+        <EmbedLargeGraphControls
+          graphView={graphView}
+          totalNodes={ontology.entityTypes.length}
+          totalEdges={ontology.relationships.length}
+          searchInput={searchInput}
+          appliedSearch={search}
+          depth={depth}
+          maxDepth={maxDepth}
+          canReset={(
+            search !== ''
+            || depth !== DEFAULT_LARGE_GRAPH_DEPTH
+            || expandedNodeIds.size > 0
+            || selected !== null
+          )}
+          selectedEntity={selectedOverviewEntity}
+          depthSliderId={depthSliderId}
+          theme={theme}
+          onSearchInputChange={setSearchInput}
+          onSearch={handleSearch}
+          onDepthChange={handleDepthChange}
+          onExpandSelectedEntity={handleExpandSelectedEntity}
+          onCollapseSelectedEntity={handleCollapseSelectedEntity}
+          onOverview={handleOverview}
+        />
       )}
     </div>
   );
 }
 
+interface EmbedLargeGraphControlsProps {
+  graphView: GraphView;
+  totalNodes: number;
+  totalEdges: number;
+  searchInput: string;
+  appliedSearch: string;
+  depth: number;
+  maxDepth: number;
+  canReset: boolean;
+  selectedEntity: {
+    name: string;
+    hiddenNeighborCount: number;
+    isExpanded: boolean;
+    canExpand: boolean;
+  } | null;
+  depthSliderId: string;
+  theme: EmbedThemeTokens;
+  onSearchInputChange: (value: string) => void;
+  onSearch: () => void;
+  onDepthChange: (depth: number) => void;
+  onExpandSelectedEntity: () => void;
+  onCollapseSelectedEntity: () => void;
+  onOverview: () => void;
+}
+
+function EmbedLargeGraphControls({
+  graphView,
+  totalNodes,
+  totalEdges,
+  searchInput,
+  appliedSearch,
+  depth,
+  maxDepth,
+  canReset,
+  selectedEntity,
+  depthSliderId,
+  theme,
+  onSearchInputChange,
+  onSearch,
+  onDepthChange,
+  onExpandSelectedEntity,
+  onCollapseSelectedEntity,
+  onOverview,
+}: EmbedLargeGraphControlsProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  const buttonStyle: React.CSSProperties = {
+    minWidth: 44,
+    minHeight: 44,
+    padding: '8px 10px',
+    background: theme.bgTertiary,
+    color: theme.text,
+    border: `1px solid ${theme.border}`,
+    borderRadius: 4,
+    cursor: 'pointer',
+    fontSize: 14,
+  };
+  const inputStyle: React.CSSProperties = {
+    minWidth: 0,
+    minHeight: 44,
+    padding: '8px 10px',
+    background: theme.bg,
+    color: theme.text,
+    border: `1px solid ${theme.border}`,
+    borderRadius: 4,
+    fontSize: 16,
+  };
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    onSearch();
+  };
+
+  return (
+    <section
+      aria-label="Large ontology controls"
+      style={{
+        position: 'absolute',
+        zIndex: 2,
+        top: 8,
+        left: 8,
+        width: collapsed ? 'auto' : 'min(330px, calc(100% - 16px))',
+        maxHeight: collapsed ? undefined : 'calc(100% - 16px)',
+        boxSizing: 'border-box',
+        padding: collapsed ? '8px 10px' : 12,
+        overflowY: collapsed ? undefined : 'auto',
+        overscrollBehavior: 'contain',
+        WebkitOverflowScrolling: 'touch',
+        background: theme.bgSecondary,
+        color: theme.text,
+        border: `1px solid ${theme.border}`,
+        borderRadius: 8,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+        fontSize: 12,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <div>
+          <strong style={{ fontSize: 14 }}>Semantic overview</strong>
+          {!collapsed && (
+            <div style={{
+              marginTop: 2,
+              minHeight: 30,
+              color: theme.textTertiary,
+              lineHeight: 1.35,
+            }}>
+              {graphView.visibleNodeCount} of {totalNodes} entities ·{' '}
+              {graphView.visibleEdgeCount} of {totalEdges} relationships
+            </div>
+          )}
+        </div>
+        <button
+          type="button"
+          style={buttonStyle}
+          aria-expanded={!collapsed}
+          onClick={() => setCollapsed((value) => !value)}
+        >
+          {collapsed ? 'Open' : 'Hide'}
+        </button>
+      </div>
+      {!collapsed && (
+        <>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+            <input
+              type="search"
+              aria-label="Jump to an entity"
+              value={searchInput}
+              onChange={(event) => onSearchInputChange(event.target.value)}
+              placeholder="Name, ID, or keyword"
+              style={{ ...inputStyle, flex: 1 }}
+            />
+            <button type="submit" style={buttonStyle}>Find</button>
+          </form>
+          <div style={{ marginTop: 8 }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              minHeight: 44,
+            }}>
+              <label
+                htmlFor={depthSliderId}
+                style={{ color: theme.textSecondary, whiteSpace: 'nowrap' }}
+              >
+                Detail: <strong>{depth} {depth === 1 ? 'hop' : 'hops'}</strong>
+                <span style={{ color: theme.textTertiary }}>
+                  {' '}· max {maxDepth}
+                </span>
+              </label>
+              <button
+                type="button"
+                disabled={!canReset}
+                style={{
+                  ...buttonStyle,
+                  ...(!canReset ? { cursor: 'not-allowed', opacity: 0.5 } : {}),
+                }}
+                onClick={onOverview}
+              >
+                Reset view
+              </button>
+            </div>
+            <SemanticDepthSlider
+              id={depthSliderId}
+              max={maxDepth}
+              value={depth}
+              disabled={maxDepth <= 1}
+              onDepthChange={onDepthChange}
+              aria-label={`Detail: ${depth} ${depth === 1 ? 'hop' : 'hops'}`}
+              aria-valuetext={`${depth} ${depth === 1 ? 'hop' : 'hops'}`}
+              style={{
+                display: 'block',
+                width: '100%',
+                minHeight: 44,
+                margin: '6px 0 0',
+                accentColor: theme.accent,
+                color: theme.accent,
+              }}
+            />
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: 44,
+            marginTop: 8,
+          }}>
+            {selectedEntity?.isExpanded ? (
+              <button
+                type="button"
+                aria-label={`Hide shown neighbors for ${selectedEntity.name}`}
+                style={{ ...buttonStyle, width: '100%' }}
+                onClick={onCollapseSelectedEntity}
+              >
+                Hide shown neighbors
+              </button>
+            ) : selectedEntity
+              && selectedEntity.hiddenNeighborCount > 0
+              ? (
+                <button
+                  type="button"
+                  disabled={!selectedEntity.canExpand}
+                  aria-label={`Show ${selectedEntity.hiddenNeighborCount} hidden ${
+                    selectedEntity.hiddenNeighborCount === 1
+                      ? 'neighbor'
+                      : 'neighbors'
+                  } for ${selectedEntity.name}`}
+                  style={{
+                    ...buttonStyle,
+                    width: '100%',
+                    ...(!selectedEntity.canExpand
+                      ? { cursor: 'not-allowed', opacity: 0.5 }
+                      : {}),
+                  }}
+                  onClick={onExpandSelectedEntity}
+                >
+                  Show {selectedEntity.hiddenNeighborCount.toLocaleString()}{' '}
+                  hidden {selectedEntity.hiddenNeighborCount === 1
+                    ? 'neighbor'
+                    : 'neighbors'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  style={{
+                    ...buttonStyle,
+                    width: '100%',
+                    cursor: 'not-allowed',
+                    opacity: 0.65,
+                  }}
+                >
+                  {!selectedEntity
+                    ? 'Select a +N entity to show neighbors'
+                    : 'No hidden neighbors for this entity'}
+                </button>
+              )}
+          </div>
+          <div
+            role={appliedSearch && graphView.searchMatchCount === 0
+              ? 'alert'
+              : 'status'}
+            style={{
+              height: 52,
+              marginTop: 8,
+              overflowY: 'auto',
+              color: (
+                appliedSearch && graphView.searchMatchCount === 0
+                  ? '#D83B01'
+                  : theme.textSecondary
+              ),
+              lineHeight: 1.35,
+            }}
+          >
+            {selectedEntity
+              && selectedEntity.hiddenNeighborCount > 0
+              && !selectedEntity.canExpand
+              ? `${selectedEntity.hiddenNeighborCount.toLocaleString()} ${
+                selectedEntity.hiddenNeighborCount === 1
+                  ? 'neighbor remains'
+                  : 'neighbors remain'
+              } hidden because the ${
+                graphView.visibleNodeCount.toLocaleString()
+              }-entity view limit is full. Hide a shown neighborhood to make room.`
+              : appliedSearch
+                ? graphView.searchMatchCount === 0
+                  ? 'No match. Showing hierarchy roots.'
+                  : `${graphView.searchMatchCount} matching ${
+                    graphView.searchMatchCount === 1 ? 'entity' : 'entities'
+                  }.`
+                : null}
+          </div>
+          <div style={{ marginTop: 8, color: theme.textTertiary, lineHeight: 1.35 }}>
+            Select a dashed “+N” entity to show its neighbor action beside the
+            {' '}node. Hide a shown neighborhood here, or select another “+N”
+            {' '}entity to continue. Selecting any entity also labels its visible
+            {' '}relationships.
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
 // ─── RDF Source ──────────────────────────────────────────────────────────────
 
-function EmbedRdfSource({ ontology, theme }: { ontology: Ontology; theme: ThemeTokens }) {
-  const rdf = useMemo(() => serializeToRDF(ontology, []), [ontology]);
-  const isDark = theme === THEMES.dark;
+function EmbedRdfSource({
+  rdf,
+  theme,
+  hasCompleteSource,
+  sourceLoading,
+  sourceError,
+}: {
+  rdf: string;
+  theme: EmbedThemeTokens;
+  hasCompleteSource: boolean;
+  sourceLoading: boolean;
+  sourceError: string | null;
+}) {
+  const isDark = theme === EMBED_THEMES.dark;
   const hlTheme = isDark ? RDF_HIGHLIGHT_DARK : RDF_HIGHLIGHT_LIGHT;
   const highlighted = useMemo(() => highlightRdf(rdf, hlTheme), [rdf, hlTheme]);
 
   return (
-    <pre style={{
-      margin: 0, padding: 16, height: '100%', overflow: 'auto',
-      background: theme.bg, color: theme.textSecondary,
-      fontSize: 12, lineHeight: 1.6, fontFamily: "'Cascadia Code', 'Fira Code', monospace",
-      whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-    }}>
-      {highlighted}
-    </pre>
+    <div style={{ height: '100%', overflow: 'auto', background: theme.bg }}>
+      {hasCompleteSource && (
+        <div
+          role="note"
+          style={{
+            background: theme.bgSecondary,
+            borderBottom: `1px solid ${theme.border}`,
+            color: theme.textSecondary,
+            fontSize: 11,
+            lineHeight: 1.4,
+            padding: '8px 16px',
+          }}
+        >
+          This is the complete source RDF. Imports and referenced resources are
+          preserved as statements but are not fetched or executed.
+        </div>
+      )}
+      {sourceLoading && (
+        <div
+          role="status"
+          style={{
+            background: theme.bgSecondary,
+            borderBottom: `1px solid ${theme.border}`,
+            color: theme.textSecondary,
+            fontSize: 11,
+            padding: '8px 16px',
+          }}
+        >
+          Loading the complete source. Generated RDF is available meanwhile.
+        </div>
+      )}
+      {sourceError && (
+        <div
+          role="alert"
+          style={{
+            background: theme.bgSecondary,
+            borderBottom: `1px solid ${theme.border}`,
+            color: '#E81123',
+            fontSize: 11,
+            padding: '8px 16px',
+          }}
+        >
+          Complete RDF source is unavailable: {sourceError} Generated RDF is
+          shown instead.
+        </div>
+      )}
+      <pre style={{
+        margin: 0, padding: 16, overflow: 'visible',
+        background: theme.bg, color: theme.textSecondary,
+        fontSize: 12, lineHeight: 1.6, fontFamily: "'Cascadia Code', 'Fira Code', monospace",
+        whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+      }}>
+        {highlighted}
+      </pre>
+    </div>
   );
 }
 
@@ -396,7 +1307,7 @@ function EmbedRdfSource({ ontology, theme }: { ontology: Ontology; theme: ThemeT
 
 interface InspectorProps {
   selected: SelectedItem;
-  theme: ThemeTokens;
+  theme: EmbedThemeTokens;
   ontology: Ontology;
   onClose: () => void;
 }

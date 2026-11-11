@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isValidCatalogueId } from '../src/lib/catalogueId.js';
 
 export interface OntologyPreviewEntry {
   id: string;
@@ -40,11 +41,13 @@ export function catalogueIdFromPath(filePath: string): string | undefined {
   const rest = match[2].split('/').filter(Boolean);
   if (source === 'official') {
     if (rest.length !== 1) return undefined;
-    return `${source}/${rest[0]}`;
+    const id = `${source}/${rest[0]}`;
+    return isValidCatalogueId(id) ? id : undefined;
   }
 
   if (rest.length !== 2) return undefined;
-  return `${source}/${rest[0]}/${rest[1]}`;
+  const id = `${source}/${rest[0]}/${rest[1]}`;
+  return isValidCatalogueId(id) ? id : undefined;
 }
 
 export function entriesFromNameStatus(diffOutput: string): OntologyPreviewEntry[] {

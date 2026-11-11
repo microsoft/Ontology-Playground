@@ -3,15 +3,22 @@
   "version": "1.0.0",
   "description": "Azure Functions API for Ontology Playground",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run clean && tsc",
     "start": "func start",
-    "prestart": "npm run build"
+    "prestart": "npm run build",
+    "test": "tsc --noEmit -p tsconfig.test.json && vitest run",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\""
   },
   "dependencies": {
     "@azure/functions": "^4.14.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.12"
+  },
+  "main": "dist/api/src/functions/*.js",
+  "engines": {
+    "node": ">=20"
   }
 }

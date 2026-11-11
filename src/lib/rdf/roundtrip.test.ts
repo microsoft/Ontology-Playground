@@ -180,6 +180,73 @@ describe('RDF round-trip tests', () => {
     expectOntologiesEqual(parsed, ontology);
   });
 
+  it('round-trips ontology metadata with mixed subclass and object-property semantics', () => {
+    const ontology: Ontology = {
+      name: 'Semantic Fidelity',
+      description: 'Preserves RDF metadata and relationship kinds',
+      entityTypes: [
+        { id: 'parent', name: 'Parent', description: '', icon: '📦', color: '#111', properties: [] },
+        { id: 'child', name: 'Child', description: '', icon: '📦', color: '#222', properties: [] },
+      ],
+      relationships: [
+        {
+          id: 'child-related-parent',
+          name: 'related',
+          from: 'child',
+          to: 'parent',
+          cardinality: 'many-to-many',
+        },
+        {
+          id: 'child-subClassOf-parent',
+          name: 'subClassOf',
+          from: 'child',
+          to: 'parent',
+          cardinality: 'many-to-one',
+          kind: 'subclass',
+        },
+      ],
+      rdfMetadata: {
+        ontologyIri: 'https://example.org/semantic-fidelity',
+        versionIri: 'https://example.org/semantic-fidelity/1.0',
+        versionInfo: '1.0',
+        license: 'https://example.org/license',
+        imports: ['https://example.org/imported'],
+        preservedSourceFeatures: ['owlImports', 'shacl'],
+      },
+    };
+
+    const rdf = serializeToRDF(ontology);
+    expect(rdf).toContain(
+      '<owl:Ontology rdf:about="http://example.org/ontology/semantic-fidelity/">',
+    );
+    expect(rdf).toContain(
+      '<dcterms:source rdf:resource="https://example.org/semantic-fidelity"/>',
+    );
+    expect(rdf).toContain(
+      '<opmeta:sourceVersionIri rdf:resource="https://example.org/semantic-fidelity/1.0"/>',
+    );
+    expect(rdf).toContain(
+      '<rdfs:subClassOf rdf:resource="http://example.org/ontology/semantic-fidelity/Parent"/>',
+    );
+    expect(rdf).toContain(
+      '<owl:ObjectProperty rdf:about="http://example.org/ontology/semantic-fidelity/child-related-parent">',
+    );
+    expect(rdf).toContain(
+      '<opmeta:sourceImport rdf:resource="https://example.org/imported"/>',
+    );
+    expect(rdf).not.toContain(
+      '<owl:Ontology rdf:about="https://example.org/semantic-fidelity">',
+    );
+    expect(rdf).not.toContain('<owl:imports');
+
+    const { ontology: parsed } = parseRDF(rdf);
+    expectOntologiesEqual(parsed, ontology);
+    expect(parsed.rdfMetadata).toEqual({
+      ...ontology.rdfMetadata,
+      preservedSourceFeatures: ['owlImports'],
+    });
+  });
+
   it('round-trips an empty ontology', () => {
     const ontology: Ontology = {
       name: 'Empty',
@@ -221,5 +288,104 @@ describe('RDF round-trip tests', () => {
     expect(parsed.entityTypes[0].properties[0].description).toBe(
       ontology.entityTypes[0].properties[0].description,
     );
+  });
+
+  it('round-trips standard OWL and SHACL semantics after statement reordering', () => {
+    const ontology: Ontology = {
+      name: 'Interoperability',
+      description: 'Tests the standards-oriented export profile',
+      entityTypes: [
+        {
+          id: 'person',
+          name: 'Person',
+          description: 'A person',
+          icon: '📦',
+          color: '#0078D4',
+          properties: [
+            { name: 'personId', type: 'string', isIdentifier: true },
+            { name: 'status', type: 'enum', values: ['Active', 'Inactive'] },
+            { name: 'displayName', type: 'string' },
+          ],
+        },
+        {
+          id: 'team',
+          name: 'Team',
+          description: 'A team',
+          icon: '📦',
+          color: '#0078D4',
+          properties: [],
+        },
+        {
+          id: 'office',
+          name: 'Office',
+          description: 'An office',
+          icon: '📦',
+          color: '#0078D4',
+          properties: [],
+        },
+      ],
+      relationships: [
+        {
+          id: 'person_member_of_team',
+          name: 'related to',
+          from: 'person',
+          to: 'team',
+          cardinality: 'many-to-one',
+          attributes: [
+            { name: 'role', type: 'string' },
+            { name: 'since', type: 'date' },
+          ],
+        },
+        {
+          id: 'person_assigned_office',
+          name: 'related to',
+          from: 'person',
+          to: 'office',
+          cardinality: 'one-to-one',
+        },
+        {
+          id: 'team_has_person',
+          name: 'contains',
+          from: 'team',
+          to: 'person',
+          cardinality: 'one-to-many',
+        },
+        {
+          id: 'team_collaborates_office',
+          name: 'collaborates with',
+          from: 'team',
+          to: 'office',
+          cardinality: 'many-to-many',
+        },
+      ],
+    };
+
+    const rdf = serializeToRDF(ontology, [], { profile: 'standards' });
+    const document = new DOMParser().parseFromString(rdf, 'application/xml');
+    const elements = Array.from(document.querySelectorAll('*'));
+    for (const element of elements) {
+      const children = Array.from(element.children);
+      children.reverse().forEach((child) => element.appendChild(child));
+    }
+    const reordered = new XMLSerializer().serializeToString(document);
+
+    const { ontology: parsed } = parseRDF(reordered);
+    const normalizeResourceOrder = (value: Ontology): Ontology => ({
+      ...value,
+      entityTypes: [...value.entityTypes].sort((left, right) => (
+        left.id.localeCompare(right.id)
+      )),
+      relationships: [...value.relationships].sort((left, right) => (
+        left.id.localeCompare(right.id)
+      )),
+    });
+
+    expectOntologiesEqual(
+      normalizeResourceOrder(parsed),
+      normalizeResourceOrder(ontology),
+    );
+    expect(parsed.relationships.filter((relationship) => (
+      relationship.name === 'related to'
+    ))).toHaveLength(2);
   });
 });

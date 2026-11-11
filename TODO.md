@@ -8,8 +8,34 @@
 
 ## 1. RDF Import / Export (with full test coverage)
 
-The current RDF export is inline in `ImportExportModal.tsx` and there is no RDF
-**import**. RDF should become a first-class serialization format.
+RDF import and export are implemented in `src/lib/rdf/`. The completed work
+below covers the supported visual model, not arbitrary RDF dataset editing.
+
+### Priority: full RDF preservation
+
+Full-document preservation takes priority over expanding RDF editing features.
+See the [implementation plan](docs/plans/full-rdf-preservation/plan.md) for
+requirements, dependencies, tasks, and release gates.
+
+- [x] Plan complete-document preservation separately from bounded editing.
+- [x] P0: retain original bytes and the complete parsed RDF graph across all
+  source-backed workflows; export untouched files byte-for-byte and keep
+  source-backed semantic editing read-only until the patch path is ready.
+- [x] P1: enable only explicitly mapped edits with atomic undo/redo and
+  complete-graph export; preserve unsupported constructs without editing them.
+- [x] Harden standalone node roots, unknown `rdf:parseType` fallback, and the
+  complete XML 1.0 Unicode QName range in edited exports.
+- [x] Apply bounded complete ingestion to URL embeds, guard delayed Designer
+  loads and RDF editor parses, and block projection-only Fabric submission for
+  source-backed documents.
+- [x] Inline the embed RDF worker for cross-origin hosts, bound large source
+  rendering, preflight and cancel file reads, project all standalone root
+  identities safely, and suppress stale async downloads.
+
+RDF is a first-class source document. Imports retain exact bytes plus a complete
+graph, while Playground-authored documents continue to use generated profiles.
+Source-backed editing is limited to exact labels/comments and direct subclass
+edges; unsupported semantics remain preserved and read-only.
 
 ### 1.1 Extract RDF serialization module
 - [x] Create `src/lib/rdf/serializer.ts` — move the existing `exportAsRDF()`
@@ -24,8 +50,20 @@ The current RDF export is inline in `ImportExportModal.tsx` and there is no RDF
 - [x] Surface internal `rdfs:subClassOf` hierarchies as relationships
 - [x] Preserve `rdfs:subClassOf` semantics through RDF round trips and exclude
   class hierarchy edges from Fabric relationship exports
-- [x] Add a fast-layout and bounded-list guardrail for very large imported
-  ontologies
+- [x] Add graduated graph rendering: complete small views, reduced-noise dense
+  views, and searchable semantic hierarchy overviews with anchored,
+  crossing-aware neighbor expansion, contextual relationship labels, and
+  monotonic, capacity-aware reversible node-specific expansions plus click-,
+  drag-, touch-, and keyboard-friendly detail changes that clear selection
+  focus while preserving independent highlights
+- [x] Enforce the Brick-scale graph budgets in Chromium: one initial layout,
+  no long task or semantic-view interaction over 200 ms, less than 40 MiB
+  retained heap, and cancelable layout scheduling and execution
+- [x] Keep graph overlays and exports usable: collapse or auto-collapse the
+  entity legend, export only the visible graph within safe canvas limits, and
+  report PNG generation failures instead of downloading empty files
+- [x] Render catalogue PR previews from completed graph layouts rather than
+  legend visibility, validating PNG dimensions and honoring safe export limits
 - [x] Round-trip fidelity: `parse(serialize(ontology))` must produce an
   equivalent ontology
 
@@ -55,15 +93,50 @@ The current RDF export is inline in `ImportExportModal.tsx` and there is no RDF
 - [x] Add `"test": "vitest run"` and `"test:watch": "vitest"` to
   `package.json` scripts
 
+### 1.4 Standards-oriented generated exports
+- [x] Keep the lossless Playground round-trip profile as a distinct export
+  contract
+- [x] Declare Playground metadata in a stable project namespace rather than
+  the generated domain namespace
+- [x] Add an OWL + SHACL profile for property order, enums, identifiers, and
+  relationship cardinality
+- [x] Model relationship attributes as RDF 1.1-compatible association classes
+- [x] Parse the generated standard constraints so statement reordering does not
+  break round trips
+- [x] Document what each profile preserves and omits
+- [x] Retain source ontology IRI, version, license, and import metadata, plus
+  supported internal subclass edges and object-property associations, without
+  dereferencing external resources
+- [x] Keep exact external source bytes available separately from generated RDF
+  and disclose visual-model limitations in gallery, Designer, export, and embed
+  surfaces
+- [x] Document the current external-generator import contract, including typed
+  descriptions (#96), native subclass axioms (#102), endpoint validation,
+  and original-source versus generated-subset boundaries (#154/#155); see
+  [Generating RDF from External Tools](docs/external-rdf-generators.md)
+- [ ] Future: implement full editable RDF dataset preservation beyond the
+  supported visual subset. Exact catalogue source artifacts and generated
+  profiles do not provide this capability.
+
 ---
 
 ## 2. Fully static site (Azure Static Web Apps + GitHub Pages)
 
 The app currently proxies `/api` to an Azure Functions backend. The site must
-work as a pure static build with zero server-side dependencies. Azure SWA is
-the **primary** deployment target; GitHub Pages support is for forks.
+work as a pure static build with zero server-side dependencies. GitHub Pages is
+the official public deployment target; Azure SWA remains an optional static
+hosting choice for forks and review previews.
 
 ### 2.1 Remove runtime API dependency
+- [x] Keep optional AI generation disabled by default and expose reviewed
+  deployment-time generation connectors with Azure OpenAI as the reference
+  adapter, explicit destination consent, protected routes, bounded validation,
+  cancellation, and no provider fallback
+- [x] Reject blank or duplicate per-entity property names at shared generation,
+  preview, and edited-JSON apply boundaries without changing Designer drafts
+- [ ] Public AI launch: provision and verify a generation-authorizing gateway,
+  distributed quotas/spending limits, and direct-backend access restrictions;
+  this repository does not deploy or certify that infrastructure
 - [x] The Azure OpenAI feature is already behind `VITE_ENABLE_AI_BUILDER` —
   confirm the build produces zero `/api` calls when the flag is off
 - [x] Audit all `fetch()` calls; ensure none target a dynamic backend when
@@ -71,24 +144,25 @@ the **primary** deployment target; GitHub Pages support is for forks.
 - [x] Guard the Vite dev proxy (`server.proxy`) behind `VITE_ENABLE_AI_BUILDER`
   so it doesn't confuse static deployments
 
-### 2.2 Azure Static Web Apps (primary)
+### 2.2 Azure Static Web Apps (optional)
 The existing workflow
 `.github/workflows/azure-static-web-apps-green-plant-0bb1d2910.yml` handles
 build + deploy. Adapt it for the new build pipeline:
 - [x] Add `npm run catalogue:build` step before the SWA deploy action (once
   §3.2 is done)
-- [x] Verify `staticwebapp.config.json` is correct for the static-only build
-  (remove `api_location` if the API feature flag is off)
+- [x] Keep every supplied SWA upload static-only by omitting `api_location`;
+  users who need the optional Functions API deploy it separately
 - [x] Ensure the `output_location: "build"` matches Vite's `outDir`
 - [x] Keep the existing PR preview environment support (staging URLs on PRs)
 
-### 2.3 GitHub Pages (for forks)
+### 2.3 GitHub Pages (official)
 - [x] Add a **separate** GitHub Actions workflow
   `.github/workflows/deploy-ghpages.yml`:
   - Trigger on push to `main`
   - `npm ci && npm run catalogue:build && npm run build`
   - Deploy `build/` via `actions/deploy-pages`
-  - Disabled by default (forks enable it by setting the Pages source)
+  - Repository-scoped to deploy `microsoft/Ontology-Playground`; forks can
+    adapt the guard and select GitHub Actions as their Pages source
 - [x] Set `base` in `vite.config.ts` dynamically from an env var
   (`VITE_BASE_PATH`) so it works at `/` (Azure SWA) and
   `/<repo-name>/` (GitHub Pages)
@@ -125,13 +199,17 @@ into a static JSON file.
   1. Reads all `catalogue/**/*.rdf` files
   2. Parses each via the RDF parser from §1
   3. Reads associated `metadata.json`
-  4. Emits `public/catalogue.json` — a single JSON file with all ontologies,
-     metadata, and category info
+  4. Emits `public/catalogue.json` as a lightweight metadata index plus
+     content-addressed graphs under `public/catalogue-payloads/`
 - [x] Add an npm script: `"catalogue:build": "tsx scripts/compile-catalogue.ts"`
 - [x] Integrate into `npm run build`:
   `"build": "npm run catalogue:build && tsc -b && vite build"`
 - [x] On build failure (invalid RDF, missing metadata), fail loudly with a
   helpful error message
+- [x] Publish every reviewed RDF file as a SHA-256-addressed, byte-preserving
+  source artifact alongside the lazy graph payload
+- [x] Retain historical graph payloads and source artifacts across static
+  deployments
 
 ### 3.3 Community contribution workflow (Microsoft OSS conventions)
 - [x] Add `LICENSE` file — **MIT License** (standard for Microsoft OSS projects)
@@ -153,11 +231,16 @@ into a static JSON file.
   (`"source": "gist:<gist-id>"`) and fetching them at build time
   (optional, evaluate complexity vs. value)
 - [x] **RDF validation in CI** — use `npm run validate` (backed by
-  `scripts/validate-rdf.ts`) in a GitHub Actions step to gate community
-  PRs. The script already validates all catalogue RDF files and can
-  validate specific files via `npm run validate -- path/to/file.rdf`.
-  Wire it into the PR validation workflow so invalid ontologies are
-  rejected before merge.
+  `scripts/validate-rdf.ts`) in a GitHub Actions step to gate catalogue
+  PRs. The script validates all official, community, and external catalogue
+  entries and can validate specific files via
+  `npm run validate -- path/to/file.rdf`.
+  - [x] Share hardened all-tier discovery and core validation with the
+    catalogue compiler.
+  - [x] Keep official/community validation strict while treating
+    Designer-only external-standard differences as concise warnings.
+  - [x] Enforce external provenance, active-XML rejection, UTF-8 and resource
+    limits without dereferencing external resources.
 - [ ] **Contribution CTA link** — Add a "Want to contribute? See
   CONTRIBUTING.md" button/link in the gallery or footer that points
   directly to the GitHub repo fork/PR flow. Link should be:
@@ -166,12 +249,14 @@ into a static JSON file.
   without manual navigation.
 
 ### 3.4 Catalogue UI (upgrade GalleryModal)
-- [x] Refactor `GalleryModal` to load from `catalogue.json` instead of
-  hardcoded `sampleOntologies.ts`
+- [x] Refactor `GalleryModal` to load the `catalogue.json` index instead of
+  hardcoded `sampleOntologies.ts`, then lazy-load selected graph payloads
 - [x] Add category filters: Official / Community, plus domain tags (retail,
   healthcare, etc.)
 - [x] Add search/filter by name, author, tags
 - [x] Show author + contributor info for community ontologies
+- [x] Preserve and display license, upstream source, and version attribution;
+  require license and source metadata for external catalogue entries
 - [x] Add "View RDF source" button for each ontology (links to the raw file
   in the repo or displays inline)
 - [x] Add pagination or virtual scroll if the catalogue grows large
@@ -192,7 +277,7 @@ tutorials, docs) — similar to how CodePen or GitHub Gist embeds work.
   - Accepts ontology data via:
     - `data-ontology-url` attribute (URL to a `.rdf` or `.json` file)
     - `data-ontology-inline` attribute (inline JSON, base64-encoded)
-    - `data-catalogue-id` attribute (loads from the published `catalogue.json`)
+    - `data-catalogue-id` attribute (loads the published index + selected payload)
 - [x] Build as a single JS + CSS bundle: `ontology-embed.js` + `ontology-embed.css`
 - [x] Add Vite build config for the embed target:
   ```ts
@@ -258,11 +343,14 @@ These enhance the overall experience for a community learning resource.
 - [ ] Useful for reviewing community PRs or comparing versions
 
 ### 5.3 Accessibility & responsive design
+- [x] Use theme-aware yellow foreground tokens in welcome, help, data-source,
+      and quest panels instead of fill colors or hard-coded yellow
 - [x] WCAG 2.1 AA color contrast: audited all four themes, fixed failing text and
       graph tokens, added `--on-accent` / `--graph-edge-label-bg`, and wired an
       automated contrast gate (`npm run test:a11y`) into CI
 - [ ] Audit and fix keyboard navigation across all modals and panels
-- [ ] Add ARIA labels to the graph visualization
+- [x] Add an accessible ontology summary and explicit graph-control names,
+      including visible semantic-overview counts without hiding sibling controls
 - [ ] Ensure the app is usable on tablet-sized screens (responsive breakpoints)
 - [ ] Test with screen readers (VoiceOver, NVDA)
 
@@ -328,6 +416,8 @@ one-click PR flow.
   the right
 - [x] Graph updates in real-time as entities and relationships are
   added/edited/removed
+- [x] Reconnect preview edges when From/To changes, including when the old
+  endpoint is removed, while preserving existing node positions
 - [x] Click a node or edge in the graph to select it in the editor
 
 ### 6.4 RDF output & validation
@@ -335,7 +425,7 @@ one-click PR flow.
 - [x] "Preview RDF" tab shows the live RDF output as you design
 - [x] Validate the ontology before export:
   - All relationships reference existing entity IDs
-  - No duplicate entity/relationship IDs
+  - No duplicate graph element IDs, including across entities and relationships
   - At least one entity type exists
   - Each entity has at least one identifier property
 
@@ -379,6 +469,8 @@ one-click PR flow.
   Prism/highlight.js) to keep bundle size small
 - [x] Apply the same highlighting to the embed widget's RDF Source tab
   and the Gallery's "View RDF source" panel
+- [x] Fall back to a single plain-text node for multi-megabyte complete sources
+  so accepted RDF cannot overflow React's argument or token-tree limits
 
 ### 6.9 Download RDF from designer
 - [x] Add a "Download .rdf" button to the designer toolbar that saves the

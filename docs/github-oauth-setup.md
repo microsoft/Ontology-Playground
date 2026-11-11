@@ -49,6 +49,21 @@ Restart the dev server after changing `.env`:
 npm run dev
 ```
 
+The repository's deployment workflows publish static assets only and never
+deploy `api/` as managed Azure Functions. For local use or a separately managed
+Function App, build and test the v4 backend with:
+
+```bash
+npm --prefix api ci
+npm --prefix api run build
+npm --prefix api test
+```
+
+The browser uses the Vite proxy during local frontend development. Static
+deployments, including the repository's Azure Static Web Apps and GitHub Pages
+workflows, must set `VITE_GITHUB_OAUTH_BASE` to the separately deployed OAuth
+proxy URL.
+
 ## How It Works
 
 1. User clicks **Submit to Catalogue** in the designer.
@@ -81,4 +96,4 @@ Users can revoke the app's access at any time from
 | "Download RDF" shown instead of "Sign in with GitHub" | `VITE_GITHUB_CLIENT_ID` is empty or not set. Check your `.env` file and restart the dev server. |
 | Device flow returns 404 or error | Make sure **Enable Device Flow** is checked in the OAuth App settings. |
 | "Resource not accessible by integration" on PR creation | The user's token may have expired. Sign out and re-authorise. |
-| CORS errors on `github.com/login/device/code` | The device flow endpoint requires `Accept: application/json`. This is handled automatically by the app. |
+| CORS errors on `github.com/login/device/code` | Confirm the separately managed proxy is deployed, then set `VITE_GITHUB_OAUTH_BASE` to its public URL. |

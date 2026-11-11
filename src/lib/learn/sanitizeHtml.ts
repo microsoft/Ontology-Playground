@@ -1,4 +1,5 @@
 import sanitizeHtml from 'sanitize-html';
+import { isValidCatalogueId } from '../catalogueId';
 
 const ALLOWED_TAGS = [
   'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
@@ -32,6 +33,18 @@ export function sanitizeLearnHtml(html: string): string {
     enforceHtmlBoundary: true,
     parser: {
       lowerCaseTags: false,
+    },
+    transformTags: {
+      'ontology-embed': (tagName, attributes) => {
+        const safeAttributes = { ...attributes };
+        if (!isValidCatalogueId(safeAttributes.id)) {
+          delete safeAttributes.id;
+        }
+        if (safeAttributes.diff && !isValidCatalogueId(safeAttributes.diff)) {
+          delete safeAttributes.diff;
+        }
+        return { tagName, attribs: safeAttributes };
+      },
     },
   });
 }

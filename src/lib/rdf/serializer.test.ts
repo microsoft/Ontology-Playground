@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { serializeToRDF, escapeXml, deriveBaseUri } from './serializer';
+import {
+  PLAYGROUND_METADATA_NS,
+  deriveBaseUri,
+  escapeXml,
+  serializeToRDF,
+} from './serializer';
 import type { Ontology, DataBinding } from '../../data/ontology';
 
 describe('escapeXml', () => {
@@ -120,8 +125,8 @@ describe('serializeToRDF', () => {
     expect(rdf).toContain('owl:Class rdf:about="http://example.org/ontology/test/Customer"');
     expect(rdf).toContain('<rdfs:label>Customer</rdfs:label>');
     expect(rdf).toContain('<rdfs:comment>A customer entity</rdfs:comment>');
-    expect(rdf).toContain('<ont:icon>👤</ont:icon>');
-    expect(rdf).toContain('<ont:color>#0078D4</ont:color>');
+    expect(rdf).toContain('<opmeta:icon>👤</opmeta:icon>');
+    expect(rdf).toContain('<opmeta:color>#0078D4</opmeta:color>');
   });
 
   it('serializes properties as DatatypeProperties with correct XSD types', () => {
@@ -153,7 +158,7 @@ describe('serializeToRDF', () => {
     // String → xsd:string
     expect(rdf).toContain('rdf:about="http://example.org/ontology/test/item_id"');
     expect(rdf).toContain('XMLSchema#string"/>');
-    expect(rdf).toContain('<ont:isIdentifier');
+    expect(rdf).toContain('<opmeta:isIdentifier');
 
     // Integer → xsd:integer
     expect(rdf).toContain('item_count');
@@ -162,7 +167,7 @@ describe('serializeToRDF', () => {
     // Decimal → xsd:decimal
     expect(rdf).toContain('item_price');
     expect(rdf).toContain('XMLSchema#decimal"/>');
-    expect(rdf).toContain('<ont:unit>USD</ont:unit>');
+    expect(rdf).toContain('<opmeta:unit>USD</opmeta:unit>');
 
     // Date → xsd:date
     expect(rdf).toContain('item_created');
@@ -178,8 +183,8 @@ describe('serializeToRDF', () => {
 
     // Enum → xsd:string + enumValues
     expect(rdf).toContain('item_status');
-    expect(rdf).toContain('<ont:enumValues>A,B,C</ont:enumValues>');
-    expect(rdf).toContain('<ont:propertyType>enum</ont:propertyType>');
+    expect(rdf).toContain('<opmeta:enumValues>A,B,C</opmeta:enumValues>');
+    expect(rdf).toContain('<opmeta:propertyType>enum</opmeta:propertyType>');
   });
 
   it('serializes relationships as ObjectProperties', () => {
@@ -206,7 +211,7 @@ describe('serializeToRDF', () => {
     expect(rdf).toContain('<rdfs:label>links</rdfs:label>');
     expect(rdf).toContain('rdf:resource="http://example.org/ontology/test/A"/>');
     expect(rdf).toContain('rdf:resource="http://example.org/ontology/test/B"/>');
-    expect(rdf).toContain('<ont:cardinality>one-to-many</ont:cardinality>');
+    expect(rdf).toContain('<opmeta:cardinality>one-to-many</opmeta:cardinality>');
     expect(rdf).toContain('<rdfs:comment>A links to B</rdfs:comment>');
   });
 
@@ -234,8 +239,8 @@ describe('serializeToRDF', () => {
     };
     const rdf = serializeToRDF(ontology);
     expect(rdf).toContain('rdf:about="http://example.org/ontology/test/a_to_b_quantity"');
-    expect(rdf).toContain('<ont:relationshipAttributeOf>a_to_b</ont:relationshipAttributeOf>');
-    expect(rdf).toContain('<ont:attributeType>integer</ont:attributeType>');
+    expect(rdf).toContain('<opmeta:relationshipAttributeOf>a_to_b</opmeta:relationshipAttributeOf>');
+    expect(rdf).toContain('<opmeta:attributeType>integer</opmeta:attributeType>');
     expect(rdf).toContain('a_to_b_note');
   });
 
@@ -257,11 +262,11 @@ describe('serializeToRDF', () => {
       },
     ];
     const rdf = serializeToRDF(ontology, bindings);
-    expect(rdf).toContain('ont:DataBinding');
-    expect(rdf).toContain('<ont:source>Data Lakehouse</ont:source>');
-    expect(rdf).toContain('<ont:table>lakehouse.bronze.customers</ont:table>');
-    expect(rdf).toContain('<ont:columnMapping>name=full_name</ont:columnMapping>');
-    expect(rdf).toContain('<ont:columnMapping>email=email_address</ont:columnMapping>');
+    expect(rdf).toContain('opmeta:DataBinding');
+    expect(rdf).toContain('<opmeta:source>Data Lakehouse</opmeta:source>');
+    expect(rdf).toContain('<opmeta:table>lakehouse.bronze.customers</opmeta:table>');
+    expect(rdf).toContain('<opmeta:columnMapping>name=full_name</opmeta:columnMapping>');
+    expect(rdf).toContain('<opmeta:columnMapping>email=email_address</opmeta:columnMapping>');
   });
 
   it('escapes special XML characters in ontology names and descriptions', () => {
@@ -279,5 +284,138 @@ describe('serializeToRDF', () => {
   it('closes the RDF root element', () => {
     const rdf = serializeToRDF(emptyOntology);
     expect(rdf.trimEnd()).toMatch(/<\/rdf:RDF>$/);
+  });
+
+  it('declares Playground-only terms in a stable project namespace', () => {
+    const rdf = serializeToRDF(emptyOntology);
+    expect(rdf).toContain(`xmlns:opmeta="${PLAYGROUND_METADATA_NS}"`);
+    expect(rdf).toContain(
+      `<owl:AnnotationProperty rdf:about="${PLAYGROUND_METADATA_NS}icon">`,
+    );
+    expect(rdf).not.toContain(
+      'owl:AnnotationProperty rdf:about="http://example.org/ontology/empty/',
+    );
+  });
+
+  it('emits a standards-oriented OWL and SHACL profile without Playground metadata', () => {
+    const ontology: Ontology = {
+      name: 'Standards',
+      description: 'Standards profile',
+      entityTypes: [
+        {
+          id: 'account',
+          name: 'Account',
+          description: '',
+          icon: 'A',
+          color: '#111',
+          properties: [
+            { name: 'accountId', type: 'string', isIdentifier: true },
+            { name: 'tier', type: 'enum', values: ['Basic', 'Plus'] },
+          ],
+        },
+        {
+          id: 'owner',
+          name: 'Owner',
+          description: '',
+          icon: 'O',
+          color: '#222',
+          properties: [],
+        },
+      ],
+      relationships: [
+        {
+          id: 'owned_by',
+          name: 'owned by',
+          from: 'account',
+          to: 'owner',
+          cardinality: 'many-to-one',
+          attributes: [{ name: 'since', type: 'date' }],
+        },
+      ],
+    };
+
+    const rdf = serializeToRDF(ontology, [], { profile: 'standards' });
+
+    expect(rdf).toContain('xmlns:sh="http://www.w3.org/ns/shacl#"');
+    expect(rdf).toContain('<owl:hasKey rdf:parseType="Collection">');
+    expect(rdf).toContain('<sh:order rdf:datatype=');
+    expect(rdf).toContain('<sh:in rdf:nodeID="list-enum-0-1-0"/>');
+    expect(rdf).toContain('<sh:maxCount rdf:datatype=');
+    expect(rdf).toContain('rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"');
+    expect(rdf).toContain('owned_by_attribute_since');
+    expect(rdf).not.toContain('xmlns:opmeta=');
+    expect(rdf).not.toContain('<opmeta:');
+  });
+
+  it('records source identity as provenance for standards subsets', () => {
+    const ontology: Ontology = {
+      name: 'Imported Standard',
+      description: 'Imported external ontology',
+      entityTypes: [],
+      relationships: [],
+      rdfMetadata: {
+        ontologyIri: 'https://example.org/source',
+        versionIri: 'https://example.org/source/1.0',
+        versionInfo: '1.0',
+        license: 'https://example.org/license',
+        imports: ['https://example.org/imported'],
+        preservedSourceFeatures: ['owlImports'],
+      },
+    };
+
+    const rdf = serializeToRDF(ontology, [], { profile: 'standards' });
+
+    expect(rdf).toContain('xmlns:opmeta=');
+    expect(rdf).toContain(
+      '<owl:Ontology rdf:about="http://example.org/ontology/imported-standard/">',
+    );
+    expect(rdf).toContain(
+      '<dcterms:source rdf:resource="https://example.org/source"/>',
+    );
+    expect(rdf).toContain(
+      '<opmeta:sourceVersionIri rdf:resource="https://example.org/source/1.0"/>',
+    );
+    expect(rdf).toContain(
+      '<opmeta:sourceImport rdf:resource="https://example.org/imported"/>',
+    );
+    expect(rdf).not.toContain(
+      '<owl:Ontology rdf:about="https://example.org/source">',
+    );
+    expect(rdf).not.toContain('<owl:imports');
+  });
+
+  it('uses distinct RDF lists when enum property names produce the same slug', () => {
+    const ontology: Ontology = {
+      name: 'Enum Lists',
+      description: '',
+      entityTypes: [
+        {
+          id: 'a-b',
+          name: 'First',
+          description: '',
+          icon: 'A',
+          color: '#111',
+          properties: [{ name: 'c', type: 'enum', values: ['First'] }],
+        },
+        {
+          id: 'a',
+          name: 'Second',
+          description: '',
+          icon: 'B',
+          color: '#222',
+          properties: [{ name: 'b-c', type: 'enum', values: ['Second'] }],
+        },
+      ],
+      relationships: [],
+    };
+
+    const rdf = serializeToRDF(ontology, [], { profile: 'standards' });
+    const listNodeIds = Array.from(
+      rdf.matchAll(/<sh:in rdf:nodeID="([^"]+)"\/>/g),
+      (match) => match[1],
+    );
+
+    expect(listNodeIds).toHaveLength(2);
+    expect(new Set(listNodeIds).size).toBe(2);
   });
 });

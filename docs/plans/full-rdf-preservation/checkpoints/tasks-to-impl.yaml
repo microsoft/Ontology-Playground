@@ -1,0 +1,98 @@
+metadata:
+  generated: "2026-10-19"
+  source_tasks: "../plan.md#implementation-steps-and-task-breakdown"
+  last_updated: "2026-10-19"
+
+summary:
+  total_tasks: 6
+  completed_tasks: 6
+  in_progress_tasks: 0
+  pending_tasks: 0
+  completion_percentage: 100.0
+
+tasks:
+  - task_id: "T004"
+    description: "Close remaining complete RDF/XML parser and writer fidelity gaps."
+    status: "completed"
+    requirements: ["REQ-001", "REQ-002", "REQ-004"]
+    implementation:
+      - "Preserved standalone rdf:about, empty rdf:about, rdf:ID, and read-only rdf:nodeID root identity in the authoritative graph and visual projection."
+      - "Applied unknown rdf:parseType XML-literal fallback without changing Triple semantics."
+      - "Excluded Literal and unknown rdf:parseType markup from projection discovery and required authoritative type statements for retained mappings and provenance."
+      - "Made Resource and Collection reification independent of XML attribute order, including empty collections."
+      - "Tokenized actual DOCTYPE declarations without rejecting inert comment or CDATA text."
+      - "Bounded individual expanded RDF terms and cumulative retained term/key characters."
+      - "Bounded emitted-statement and expanded-term work before deduplication, and required dataset acceptance before visual DOM projection."
+      - "Bounded XML-literal reconstruction before fragment allocation and enforced UTF-8/UTF-16 byte/declaration agreement."
+      - "Preserved RDF 1.2 literal text direction in term identity, resource budgets, patches, and RDF/XML serialization."
+      - "Removed redundant full inherited-namespace map copies from both SAX integration passes."
+      - "Indexed authoritative quads and exact literals once instead of rescanning the dataset for each projection mapping."
+      - "Implemented complete XML 1.0 NCName ranges with linear QName splitting."
+    verification: "Dataset and edited-export regressions pass with independent expected terms and canonical graphs."
+
+  - task_id: "T005"
+    description: "Prevent late Designer navigation, draft, and RDF-editor overwrites."
+    status: "completed"
+    requirements: ["REQ-003", "REQ-004"]
+    implementation:
+      - "Guarded Designer entry by route generation and initiating app identity."
+      - "Guarded deep-link loads by request generation and initiating draft identity."
+      - "Locked submitted RDF text and verified its revision before applying parsed output."
+      - "Guarded Header, import/export, and Designer downloads by generation, mount state, ontology identity, and document revision."
+      - "Repeated the authored-share guard after clipboard completion and before route replacement, including canonical route identity."
+      - "Kept empty source-backed projections in complete RDF mode without authored template replacement."
+      - "Applied one shared 1,000-element Designer safety policy to deep links, Header entry, and Gallery edit."
+      - "Coalesced equivalent relative resource spellings by resolved RDF identity."
+      - "Resolved nested xml:base scopes before semantic projection indexing."
+      - "Retained exact literal language, datatype, and graph identity across successive edits."
+      - "Synchronized every visual field backed by one edited RDF literal."
+      - "Allowed each share request's own route transition without weakening route-stale output guards."
+      - "Required catalogue deep links to match the active catalogue entry and source document."
+      - "Cached materialized graph indexes and dirty state per immutable document revision for Designer render probes and counts."
+      - "Normalized source bytes into Web Crypto's realm before hashing so Node 20 and browser source identity agree."
+      - "Rejected oversized files before buffering and aborted obsolete readers."
+    verification: "Deferred navigation, draft replacement, stale download, file preflight/abort, cancellation, text-lock, and reverse-completion tests pass."
+
+  - task_id: "T006"
+    description: "Apply complete bounded ingestion to arbitrary URL embeds."
+    status: "completed"
+    requirements: ["REQ-001", "REQ-003", "REQ-004", "REQ-005"]
+    implementation:
+      - "Bounded declared and streamed response bytes and cancelled overflow."
+      - "Routed RDF/XML through complete worker ingestion while preserving bounded JSON compatibility."
+      - "Inlined the RDF worker so HTTPS pages can consume a cross-origin embed bundle."
+      - "Allowed self and Blob workers in the deployed application Content Security Policy."
+      - "Rendered multi-megabyte complete sources as one bounded plain-text node."
+      - "Rendered verified catalogue payloads before lazily loading optional complete RDF sources, with explicit generated-RDF fallback on source failure."
+      - "Pinned each lazy source request to the exact catalogue entry whose verified payload rendered the graph."
+    verification: "Unit and native Chromium checks cover same/cross-origin worker execution, the pinned 5.18 MB source view, limits, and pre-worker DOCTYPE rejection."
+
+  - task_id: "T008"
+    description: "Block projection-only Fabric loss for source-backed RDF."
+    status: "completed"
+    requirements: ["REQ-003", "REQ-005"]
+    implementation:
+      - "Disabled the normal Fabric entry point with an explicit fidelity explanation."
+      - "Added defensive modal checks that prevent workspace or push API calls."
+    verification: "Import/export and Fabric modal regressions pass."
+
+  - task_id: "T013"
+    description: "Run complete preservation release gates on the rebased worktree."
+    status: "completed"
+    requirements: ["REQ-001", "REQ-002", "REQ-003", "REQ-004", "REQ-005", "REQ-006", "REQ-007", "REQ-008"]
+    verification: "937 unit/integration tests, the full suite plus 103 focused regressions under Node 20, type-check, lint, builds, RDF validation, 8 deployment workflows, and 10 Chromium checks pass."
+
+  - task_id: "T014"
+    description: "Document the final preservation behavior, constraints, and measurements."
+    status: "completed"
+    requirements: ["REQ-008"]
+    verification: "English, Japanese, Chinese, embed, export-profile, plan, research, roadmap, and batch artifacts are updated."
+
+pending_tasks: []
+untracked_changes: []
+
+validation:
+  passed: true
+  errors: []
+  warnings: []
+  blocking_issues: []

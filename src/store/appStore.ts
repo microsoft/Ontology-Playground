@@ -4,6 +4,15 @@ import { quests as defaultQuests } from '../data/quests';
 import type { Ontology, DataBinding } from '../data/ontology';
 import { cosmicCoffeeOntology, sampleBindings } from '../data/ontology';
 import { generateQuestsForOntology } from '../data/questGenerator';
+import type { CatalogueEntry } from '../types/catalogue';
+import type {
+  RdfDocument,
+  ReadyRdfDocument,
+} from '../types/rdfDocument';
+import {
+  ensureRdfDocumentReady,
+  RdfDocumentError,
+} from '../lib/rdf/document';
 
 export type ThemeId = 'dark' | 'light' | 'aurora' | 'crimson';
 
@@ -60,6 +69,8 @@ interface AppState {
   // Ontology State
   currentOntology: Ontology;
   dataBindings: DataBinding[];
+  currentCatalogueEntry: CatalogueEntry | null;
+  rdfDocument: RdfDocument | null;
   
   // UI State
   selectedEntityId: string | null;
@@ -83,7 +94,14 @@ interface AppState {
   queryResult: string | null;
   
   // Ontology Actions
-  loadOntology: (ontology: Ontology, bindings?: DataBinding[]) => void;
+  loadOntology: (
+    ontology: Ontology,
+    bindings?: DataBinding[],
+    catalogueEntry?: CatalogueEntry | null,
+    rdfDocument?: RdfDocument | null,
+  ) => void;
+  setRdfDocument: (document: RdfDocument | null) => void;
+  ensureCurrentRdfDocument: () => Promise<ReadyRdfDocument | null>;
   resetToDefault: () => void;
   exportOntology: () => string;
   
@@ -113,6 +131,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Initial Ontology State
   currentOntology: cosmicCoffeeOntology,
   dataBindings: sampleBindings,
+  currentCatalogueEntry: null,
+  rdfDocument: null,
   
   // Initial UI State
   selectedEntityId: null,
@@ -136,12 +156,19 @@ export const useAppStore = create<AppState>((set, get) => ({
   queryResult: null,
   
   // Ontology Actions
-  loadOntology: (ontology, bindings = []) => {
+  loadOntology: (
+    ontology,
+    bindings = [],
+    catalogueEntry = null,
+    rdfDocument = null,
+  ) => {
     // Generate new quests based on the loaded ontology
     const newQuests = generateQuestsForOntology(ontology);
     set({
       currentOntology: ontology,
       dataBindings: bindings,
+      currentCatalogueEntry: catalogueEntry,
+      rdfDocument,
       selectedEntityId: null,
       selectedRelationshipId: null,
       highlightedEntities: [],
@@ -153,10 +180,32 @@ export const useAppStore = create<AppState>((set, get) => ({
       completedQuests: []
     });
   },
+
+  setRdfDocument: (rdfDocument) => set({ rdfDocument }),
+
+  ensureCurrentRdfDocument: async () => {
+    const candidate = get().rdfDocument;
+    if (!candidate) return null;
+    const ready = await ensureRdfDocumentReady(candidate);
+    const current = get().rdfDocument;
+    if (
+      !current
+      || current.id !== candidate.id
+      || current.revision !== candidate.revision
+    ) {
+      throw new RdfDocumentError(
+        'The active ontology changed while its RDF source was loading.',
+      );
+    }
+    set({ rdfDocument: ready });
+    return ready;
+  },
   
   resetToDefault: () => set({
     currentOntology: cosmicCoffeeOntology,
     dataBindings: sampleBindings,
+    currentCatalogueEntry: null,
+    rdfDocument: null,
     selectedEntityId: null,
     selectedRelationshipId: null,
     highlightedEntities: [],
@@ -166,7 +215,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     currentStepIndex: 0,
     completedQuests: []
   }),
-  
+
   exportOntology: () => {
     const { currentOntology, dataBindings } = get();
     return JSON.stringify({ ontology: currentOntology, bindings: dataBindings }, null, 2);

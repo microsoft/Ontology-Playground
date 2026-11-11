@@ -38,6 +38,17 @@ export function HelpModal({ onClose }: HelpModalProps) {
             <p className="feature-text">
               Click on any <strong>entity type</strong> (colored node) to see its properties, relationships, and data bindings. 
               Click on <strong>relationship lines</strong> to see how entities connect. Use the controls in the bottom-left to zoom and reset the layout.
+              <br /><br />
+              Very large ontologies open as a bounded <strong>semantic overview</strong> instead of drawing every entity at once.
+              Use its search and detail controls to navigate the hierarchy. A dashed node labeled <strong>+N</strong> has hidden neighbors;
+              select it and choose the <strong>Show neighbors</strong> action beside the node to expand it without moving the entities already on screen.
+              Use <strong>Hide shown neighbors</strong> in the Semantic overview to collapse that node-specific expansion again.
+              If the view limit is full, the overview explains how many neighbors remain hidden and asks you to hide a shown neighborhood before expanding another.
+              Changing the detail level starts an unfocused hierarchy projection, clears the current selection, and collapses node-specific expansions.
+              Click either side of the detail slider thumb to change hops, drag the thumb, or use the arrow keys.
+              Selecting an entity labels every visible relationship connected to it;
+              hovering over or selecting a connection also shows that relationship’s name.
+              Search &amp; Filter can still jump to any entity in the complete ontology.
             </p>
           </div>
 
@@ -54,7 +65,7 @@ export function HelpModal({ onClose }: HelpModalProps) {
 
           <div className="feature-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <MessageSquare size={20} color="var(--ms-yellow)" />
+              <MessageSquare size={20} color="var(--ms-yellow-fg)" />
               <span className="feature-title" style={{ marginBottom: 0 }}>Ask Natural Language Questions</span>
             </div>
             <p className="feature-text">

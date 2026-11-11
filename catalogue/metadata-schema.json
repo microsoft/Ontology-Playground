@@ -33,6 +33,25 @@
     "author": {
       "type": "string",
       "description": "Author name or GitHub username"
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "SPDX license identifier or short license name"
+    },
+    "sourceUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "pattern": "^https://",
+      "description": "Canonical upstream source URL"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Upstream ontology version represented by this entry"
     }
   },
   "additionalProperties": false

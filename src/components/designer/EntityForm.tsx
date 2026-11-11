@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, ChevronDown, ChevronRight, GripVertical, Key } from 'lucide-react';
 import { useDesignerStore, ENTITY_COLORS, ENTITY_ICONS, fabricIQNameError } from '../../store/designerStore';
+import { canEditLiteral } from '../../lib/rdf/document';
 import type { Property } from '../../data/ontology';
 
 const PROPERTY_TYPES: Property['type'][] = [
@@ -10,6 +11,7 @@ const PROPERTY_TYPES: Property['type'][] = [
 export function EntityForm() {
   const {
     ontology,
+    rdfDocument,
     selectedEntityId,
     addEntity,
     updateEntity,
@@ -20,6 +22,7 @@ export function EntityForm() {
     removeProperty,
     moveProperty,
   } = useDesignerStore();
+  const sourceBacked = Boolean(rdfDocument);
 
   const [expandedEntities, setExpandedEntities] = useState<Set<string>>(new Set());
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -60,7 +63,14 @@ export function EntityForm() {
     <div className="designer-entity-list">
       <div className="designer-section-header">
         <h3>Entity Types ({ontology.entityTypes.length})</h3>
-        <button className="designer-add-btn" onClick={handleAddEntity} title="Add entity type">
+        <button
+          className="designer-add-btn"
+          onClick={handleAddEntity}
+          disabled={sourceBacked}
+          title={sourceBacked
+            ? 'Adding classes is not supported for source-backed RDF'
+            : 'Add entity type'}
+        >
           <Plus size={14} /> Add
         </button>
       </div>
@@ -72,6 +82,19 @@ export function EntityForm() {
       {ontology.entityTypes.map((entity) => {
         const isExpanded = expandedEntities.has(entity.id);
         const isSelected = selectedEntityId === entity.id;
+        const mapping = rdfDocument?.projection.entities[entity.id];
+        const canEditName = !rdfDocument || !isExpanded || canEditLiteral(
+          rdfDocument,
+          mapping,
+          'http://www.w3.org/2000/01/rdf-schema#label',
+          entity.name,
+        );
+        const canEditDescription = !rdfDocument || !isExpanded || canEditLiteral(
+          rdfDocument,
+          mapping,
+          'http://www.w3.org/2000/01/rdf-schema#comment',
+          entity.description,
+        );
 
         return (
           <div
@@ -101,7 +124,10 @@ export function EntityForm() {
               <button
                 className="designer-delete-btn"
                 onClick={(e) => { e.stopPropagation(); removeEntity(entity.id); }}
-                title="Delete entity"
+                disabled={sourceBacked}
+                title={sourceBacked
+                  ? 'Deleting classes is not supported for source-backed RDF'
+                  : 'Delete entity'}
               >
                 <Trash2 size={14} />
               </button>
@@ -118,6 +144,10 @@ export function EntityForm() {
                     value={entity.name}
                     onChange={(e) => updateEntity(entity.id, { name: e.target.value })}
                     placeholder="Entity name"
+                    disabled={!canEditName}
+                    title={!canEditName
+                      ? 'This value has no unambiguous RDF label mapping'
+                      : undefined}
                   />
                   {entity.name && fabricIQNameError('Entity type', entity.name) && (
                     <span className="designer-field-hint error">{fabricIQNameError('Entity type', entity.name)}</span>
@@ -132,6 +162,10 @@ export function EntityForm() {
                     value={entity.description}
                     onChange={(e) => updateEntity(entity.id, { description: e.target.value })}
                     placeholder="What does this entity represent?"
+                    disabled={!canEditDescription}
+                    title={!canEditDescription
+                      ? 'This value has no unambiguous RDF comment mapping'
+                      : undefined}
                   />
                 </label>
 
@@ -144,6 +178,7 @@ export function EntityForm() {
                         key={icon}
                         className={`designer-icon-btn ${entity.icon === icon ? 'active' : ''}`}
                         onClick={() => updateEntity(entity.id, { icon })}
+                        disabled={sourceBacked}
                       >
                         {icon}
                       </button>
@@ -161,6 +196,7 @@ export function EntityForm() {
                         className={`designer-color-btn ${entity.color === color ? 'active' : ''}`}
                         style={{ backgroundColor: color }}
                         onClick={() => updateEntity(entity.id, { color })}
+                        disabled={sourceBacked}
                         aria-label={`Color ${color}`}
                       />
                     ))}
@@ -174,6 +210,10 @@ export function EntityForm() {
                     <button
                       className="designer-add-btn small"
                       onClick={() => addProperty(entity.id)}
+                      disabled={sourceBacked}
+                      title={sourceBacked
+                        ? 'Properties are read-only for source-backed RDF'
+                        : undefined}
                     >
                       <Plus size={12} /> Add
                     </button>
@@ -190,8 +230,8 @@ export function EntityForm() {
                       <div className="designer-property-row">
                         <span
                           className="designer-grip"
-                          title="Drag to reorder"
-                          draggable
+                          title={sourceBacked ? 'Properties are read-only' : 'Drag to reorder'}
+                          draggable={!sourceBacked}
                           onDragStart={(e) => {
                             e.dataTransfer.setData('text/plain', String(idx));
                             e.dataTransfer.effectAllowed = 'move';
@@ -213,6 +253,7 @@ export function EntityForm() {
                           value={prop.name}
                           onChange={(e) => updateProperty(entity.id, idx, { name: e.target.value })}
                           placeholder="Property name"
+                          disabled={sourceBacked}
                         />
                         <select
                           className="designer-prop-type"
@@ -220,6 +261,7 @@ export function EntityForm() {
                           onChange={(e) =>
                             updateProperty(entity.id, idx, { type: e.target.value as Property['type'] })
                           }
+                          disabled={sourceBacked}
                         >
                           {PROPERTY_TYPES.map((t) => (
                             <option key={t} value={t}>{t}</option>
@@ -228,6 +270,7 @@ export function EntityForm() {
                         <button
                           className={`designer-id-btn ${prop.isIdentifier ? 'active' : ''} ${idTypeErr ? 'warning' : ''}`}
                           onClick={() => updateProperty(entity.id, idx, { isIdentifier: !prop.isIdentifier })}
+                          disabled={sourceBacked}
                           title={idTypeErr || (prop.isIdentifier ? 'Remove as identifier' : 'Mark as identifier')}
                         >
                           <Key size={12} />
@@ -235,7 +278,8 @@ export function EntityForm() {
                         <button
                           className="designer-delete-btn small"
                           onClick={() => removeProperty(entity.id, idx)}
-                          title="Remove property"
+                          disabled={sourceBacked}
+                          title={sourceBacked ? 'Properties are read-only' : 'Remove property'}
                         >
                           <Trash2 size={12} />
                         </button>

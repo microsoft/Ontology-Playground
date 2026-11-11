@@ -5,32 +5,119 @@ on:
     workflows: ['Ontology Preview Render']
     types: [completed]
 
-permissions:
-  actions: read
-  contents: write
-  issues: write
-  pull-requests: write
+permissions: {}
 
 jobs:
-  comment:
-    if: github.repository == 'microsoft/Ontology-Playground' && github.event.workflow_run.conclusion == 'success'
+  validate-artifact:
+    if: >-
+      github.repository == 'microsoft/Ontology-Playground'
+      && github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    outputs:
+      pr_number: ${{ steps.prepare.outputs.pr_number }}
+
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 20
           cache: npm
 
       - run: npm ci --ignore-scripts
 
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ontology-preview
           path: ontology-preview-artifact
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve trusted pull request
+        id: pull-request
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const expectedRepository = context.payload.repository.full_name;
+            const expectedBase = context.payload.repository.default_branch;
+            const expectedHeadRepository = run.head_repository?.full_name;
+            const expectedHeadOwner = run.head_repository?.owner?.login;
+            if (!expectedHeadRepository || !expectedHeadOwner) {
+              core.setFailed('Workflow run is missing its head repository.');
+              return;
+            }
+
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              head: `${expectedHeadOwner}:${run.head_branch}`,
+              base: expectedBase,
+              per_page: 100,
+            });
+            const matches = pulls.filter((pull) =>
+              pull.base.repo.full_name === expectedRepository
+              && pull.base.ref === expectedBase
+              && pull.head.sha === run.head_sha
+              && pull.head.repo?.full_name === expectedHeadRepository
+              && pull.head.ref === run.head_branch
+            );
+            if (matches.length !== 1) {
+              core.setFailed(`Expected one trusted pull request for ${run.head_sha}, found ${matches.length}.`);
+              return;
+            }
+
+            core.setOutput('number', String(matches[0].number));
+            core.setOutput('head_sha', run.head_sha);
+            core.setOutput('repository', expectedRepository);
+
+      - name: Validate preview assets and create comment body
+        id: prepare
+        env:
+          EXPECTED_PR_NUMBER: ${{ steps.pull-request.outputs.number }}
+          EXPECTED_HEAD_SHA: ${{ steps.pull-request.outputs.head_sha }}
+          EXPECTED_REPOSITORY: ${{ steps.pull-request.outputs.repository }}
+        run: >-
+          npx tsx scripts/prepare-ontology-preview-assets.ts
+          --manifest ontology-preview-artifact/manifest.json
+          --artifact-dir ontology-preview-artifact
+          --publish-dir validated-preview-assets
+          --comment ontology-preview-comment.md
+          --branch ontology-preview-assets
+
+      - name: Upload validated preview package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: validated-ontology-preview
+          path: |
+            validated-preview-assets
+            ontology-preview-comment.md
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-preview:
+    needs: validate-artifact
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: validated-ontology-preview
+          path: validated-preview-package
 
       - name: Check out preview assets branch
         env:
@@ -50,14 +137,8 @@ jobs:
             git remote add origin "$remote_url"
           fi
 
-      - name: Prepare preview assets and comment body
-        run: >-
-          npx tsx scripts/prepare-ontology-preview-assets.ts
-          --manifest ontology-preview-artifact/manifest.json
-          --artifact-dir ontology-preview-artifact
-          --publish-dir ontology-preview-assets
-          --comment ontology-preview-comment.md
-          --branch ontology-preview-assets
+      - name: Stage validated preview assets
+        run: cp -R validated-preview-package/validated-preview-assets/. ontology-preview-assets/
 
       - name: Publish preview assets
         working-directory: ontology-preview-assets
@@ -73,23 +154,29 @@ jobs:
 
       - name: Upsert PR preview comment
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PR_NUMBER: ${{ needs.validate-artifact.outputs.pr_number }}
         with:
           script: |
             const fs = require('fs');
-            const manifest = JSON.parse(fs.readFileSync('ontology-preview-artifact/manifest.json', 'utf8'));
-            const body = fs.readFileSync('ontology-preview-comment.md', 'utf8');
+            const body = fs.readFileSync('validated-preview-package/ontology-preview-comment.md', 'utf8');
             const marker = '<!-- ontology-preview-render -->';
             const { owner, repo } = context.repo;
+            const issueNumber = Number(process.env.PR_NUMBER);
+            if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
+              core.setFailed('Validated preview PR number is missing.');
+              return;
+            }
 
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
-              issue_number: manifest.prNumber,
+              issue_number: issueNumber,
               per_page: 100,
             });
             const existing = comments.find((comment) => comment.user?.type === 'Bot' && comment.body?.includes(marker));
             if (existing) {
               await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
             } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number: manifest.prNumber, body });
+              await github.rest.issues.createComment({ owner, repo, issue_number: issueNumber, body });
             }

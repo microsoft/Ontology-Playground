@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { contrastRatio, AA_NORMAL_TEXT, AA_NON_TEXT, composite, parseColor } from './contrast';
 import { THEMES, getThemeTokens } from './themeTokens';
+import { EMBED_THEMES } from '../components/embedTheme';
 
 // Microsoft's accessibility bar is WCAG 2.1 Level AA. This suite enforces the
 // contrast contract for every theme so a new theme — or a tweak to an existing
@@ -57,6 +58,33 @@ describe('WCAG 2.1 AA theme contrast (SC 1.4.3 / 1.4.11)', () => {
           ).toBeGreaterThanOrEqual(minimum);
         });
       }
+    });
+  }
+});
+
+describe('WCAG 2.1 AA embed graph contrast', () => {
+  for (const [themeName, tokens] of Object.entries(EMBED_THEMES)) {
+    it(`${themeName} graph labels and lines meet contrast minimums`, () => {
+      expect(
+        contrastRatio(tokens.nodeText, tokens.bg),
+        `${themeName} embed node label contrast`,
+      ).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
+      expect(
+        contrastRatio(tokens.edgeText, tokens.edgeLabelBg),
+        `${themeName} embed edge label contrast`,
+      ).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
+      expect(
+        contrastRatio(tokens.text, tokens.edgeLabelBg),
+        `${themeName} embed active edge label contrast`,
+      ).toBeGreaterThanOrEqual(AA_NORMAL_TEXT);
+      expect(
+        contrastRatio(tokens.edgeColor, tokens.bg),
+        `${themeName} embed edge line contrast`,
+      ).toBeGreaterThanOrEqual(AA_NON_TEXT);
+      expect(
+        contrastRatio(tokens.accent, tokens.bg),
+        `${themeName} embed active edge line contrast`,
+      ).toBeGreaterThanOrEqual(AA_NON_TEXT);
     });
   }
 });

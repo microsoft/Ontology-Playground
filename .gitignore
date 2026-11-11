@@ -25,6 +25,9 @@ dist-ssr
 build
 api/local.settings.json
 public/catalogue.json
+public/catalogue-payloads-manifest.json
+public/catalogue-payloads/
+public/catalogue-sources/
 ontology-preview/
 ontology-preview-artifact/
 ontology-preview-assets/
@@ -32,6 +35,8 @@ ontology-preview-publish/
 ontology-preview-comment.md
 internal-docs/
 .vite
+playwright-report/
+test-results/
 release-review/
 data/codemind*.db
 **/codemind*.db

@@ -7,6 +7,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
-    exclude: ['**/node_modules/**', '**/ontology-pr*/**'],
+    exclude: [
+      '**/node_modules/**',
+      '**/ontology-pr*/**',
+      'api/**',
+      'tests/performance/**',
+    ],
   },
 });

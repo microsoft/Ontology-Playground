@@ -2,7 +2,22 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Sparkles, Send, Loader2, Check, AlertCircle, Edit3, Mic, MicOff } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
+import { validateGeneratedOntology } from '../lib/ontologyValidation';
+import type { ValidationError } from '../store/designerStore';
 import type { Ontology } from '../data/ontology';
+import { buildApiUrl } from '../lib/api';
+import {
+  GENERATION_TIMEOUT_MS,
+  MAX_DESCRIPTION_LENGTH,
+  generationRequestError,
+  matchesGenerationConnector,
+  parseGenerationConnector,
+  type GenerationConnector,
+} from '../lib/generationConnector';
+import {
+  parseOntologyValue,
+  type OntologySchemaIssue,
+} from '../lib/ontologySchema';
 
 // Web Speech API types
 interface SpeechRecognitionEvent extends Event {
@@ -53,6 +68,49 @@ interface NLBuilderModalProps {
 
 type Step = 'input' | 'loading' | 'preview' | 'error';
 
+const MAX_DISPLAYED_VALIDATION_ERRORS = 5;
+const DEFAULT_ENTITY_COLORS = [
+  '#0078D4',
+  '#107C10',
+  '#5C2D91',
+  '#FFB900',
+  '#D83B01',
+  '#00A9E0',
+  '#8764B8',
+  '#00B294',
+];
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function formatErrors(
+  prefix: string,
+  errors: readonly (ValidationError | OntologySchemaIssue)[],
+): string {
+  const shown = errors.slice(0, MAX_DISPLAYED_VALIDATION_ERRORS).map((e) => `• ${e.message}`);
+  const remaining = errors.length - shown.length;
+  const suffix = remaining > 0 ? `\n…and ${remaining} more` : '';
+  return `${prefix}:\n${shown.join('\n')}${suffix}`;
+}
+
+function parseBuilderOntology(value: unknown): Ontology {
+  const result = parseOntologyValue(value, {
+    defaultEntityColors: DEFAULT_ENTITY_COLORS,
+  });
+  if (!result.ontology) {
+    throw new Error(formatErrors(
+      'Ontology structure is invalid',
+      result.issues,
+    ));
+  }
+  return result.ontology;
+}
+
+function formatValidationErrors(errors: ValidationError[]): string {
+  return formatErrors('Generated ontology failed validation', errors);
+}
+
 export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   const [description, setDescription] = useState('');
   const [step, setStep] = useState<Step>('input');
@@ -65,6 +123,75 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const shouldKeepListeningRef = useRef(false);
+  const [connector, setConnector] = useState<GenerationConnector | null>(null);
+  const [connectorError, setConnectorError] = useState<string | null>(null);
+  const [connectorReload, setConnectorReload] = useState(0);
+  const [consent, setConsent] = useState(false);
+  const requestRef = useRef<AbortController | null>(null);
+  const requestVersion = useRef(0);
+
+  const cancelRequest = () => {
+    requestVersion.current += 1;
+    requestRef.current?.abort();
+    requestRef.current = null;
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const version = ++requestVersion.current;
+    requestRef.current = controller;
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, GENERATION_TIMEOUT_MS);
+    void (async () => {
+      try {
+        const response = await fetch(buildApiUrl('generation-connector'), {
+          credentials: 'include',
+          headers: { 'X-Ontology-Request': 'generate' },
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+        if (requestVersion.current !== version) return;
+        if (response.status !== 200) throw new Error(generationRequestError(response.status));
+        const metadata = parseGenerationConnector(await response.json());
+        if (requestVersion.current === version && !controller.signal.aborted) setConnector(metadata);
+      } catch (err) {
+        if (requestVersion.current !== version || (controller.signal.aborted && !timedOut)) return;
+        setConnectorError(timedOut
+          ? 'Loading the generation connector timed out. Reload the connector to try again.'
+          : err instanceof Error && err.message.startsWith('Generation')
+            ? err.message
+            : 'Generation connector could not be loaded. Check your connection or contact your administrator.');
+      } finally {
+        clearTimeout(timeout);
+      }
+    })();
+    return () => {
+      requestVersion.current += 1;
+      requestRef.current?.abort();
+      clearTimeout(timeout);
+      shouldKeepListeningRef.current = false;
+      if (recognitionRef.current) {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        recognitionRef.current.abort();
+      }
+      recognitionRef.current = null;
+    };
+  }, [connectorReload]);
+
+  const reloadConnector = () => {
+    cancelRequest();
+    setConnector(null);
+    setConsent(false);
+    setConnectorError(null);
+    setError(null);
+    setStep('input');
+    setConnectorReload(value => value + 1);
+  };
   
   const loadOntology = useAppStore((state) => state.loadOntology);
 
@@ -77,7 +204,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   const startRecording = () => {
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognitionAPI) {
-      console.error('Speech recognition not supported');
+      setVoiceError('Speech recognition not supported');
       return;
     }
 
@@ -92,6 +219,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
       recognition.lang = 'en-US';
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
+        if (!shouldKeepListeningRef.current) return;
         const transcript = event.results[0][0].transcript;
         if (transcript) {
           setDescription(prev => prev + transcript + ' ');
@@ -99,8 +227,8 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
       };
 
       recognition.onerror = (event) => {
+        if (!shouldKeepListeningRef.current) return;
         const errorEvent = event as Event & { error?: string };
-        console.log('Speech error:', errorEvent.error);
         
         // Handle specific errors
         if (errorEvent.error === 'network') {
@@ -128,13 +256,13 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         }
         
         if (errorEvent.error !== 'aborted') {
+          setVoiceError('Voice input failed. Please type your description or try again.');
           shouldKeepListeningRef.current = false;
           setIsRecording(false);
         }
       };
 
       recognition.onend = () => {
-        console.log('Recognition ended, shouldKeep:', shouldKeepListeningRef.current);
         if (shouldKeepListeningRef.current) {
           // Restart with a fresh instance - use longer delay for Edge
           setTimeout(() => {
@@ -149,9 +277,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
 
       try {
         recognition.start();
-        console.log('Recognition started');
-      } catch (e) {
-        console.error('Start failed:', e);
+      } catch {
         setVoiceError('Failed to start - try Chrome or Safari');
         shouldKeepListeningRef.current = false;
         setIsRecording(false);
@@ -164,9 +290,11 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   };
 
   const stopRecording = () => {
-    console.log('Stopping speech recognition...');
     shouldKeepListeningRef.current = false;
     if (recognitionRef.current) {
+      recognitionRef.current.onresult = null;
+      recognitionRef.current.onerror = null;
+      recognitionRef.current.onend = null;
       try {
         recognitionRef.current.abort();
       } catch {
@@ -178,7 +306,6 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   };
 
   const toggleRecording = () => {
-    console.log('Toggle recording, current state:', isRecording);
     if (isRecording) {
       stopRecording();
     } else {
@@ -187,38 +314,78 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   };
 
   const handleGenerate = async () => {
-    if (!description.trim()) return;
-    
+    if (!description.trim() || description.length > MAX_DESCRIPTION_LENGTH || !connector || !consent) return;
+    stopRecording();
+    cancelRequest();
+    const controller = new AbortController();
+    const version = requestVersion.current;
+    requestRef.current = controller;
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, GENERATION_TIMEOUT_MS);
     setStep('loading');
     setError(null);
     
     try {
-      const response = await fetch('/api/generate-ontology', {
+      const response = await fetch(buildApiUrl('generate-ontology'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: description.trim() }),
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-Ontology-Request': 'generate' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          description: description.trim(),
+          connectorId: connector.id,
+          revision: connector.revision,
+        }),
       });
-      
+      if (requestVersion.current !== version || controller.signal.aborted) return;
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to generate ontology');
+        if (response.status === 409) {
+          setConnector(null);
+          setConsent(false);
+          throw new Error('The generation connector changed. Reload the connector and consent again before generating.');
+        }
+        if ([401, 403, 404, 503].includes(response.status)) {
+          setConnector(null);
+          setConsent(false);
+        }
+        throw new Error(generationRequestError(response.status));
       }
       
-      const { ontology } = await response.json();
+      const data: unknown = await response.json();
+      if (requestVersion.current !== version || controller.signal.aborted) return;
+      if (!isRecord(data) || !matchesGenerationConnector(data.connector, connector)) {
+        setConnector(null);
+        setConsent(false);
+        throw new Error('Generation connector verification failed. Reload the connector and consent again.');
+      }
+      const ontology = parseBuilderOntology(
+        isRecord(data) ? data.ontology : undefined,
+      );
       
-      // Assign default colors if missing
-      const defaultColors = ['#0078D4', '#107C10', '#5C2D91', '#FFB900', '#D83B01', '#00A9E0', '#8764B8', '#00B294'];
-      ontology.entityTypes = ontology.entityTypes.map((entity: { color?: string }, index: number) => ({
-        ...entity,
-        color: entity.color || defaultColors[index % defaultColors.length]
-      }));
-      
+      const validationErrors = validateGeneratedOntology(ontology);
+      if (validationErrors.length > 0) {
+        throw new Error(formatValidationErrors(validationErrors));
+      }
+
       setGeneratedOntology(ontology);
       setEditedJson(JSON.stringify(ontology, null, 2));
       setStep('preview');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      if (requestVersion.current !== version || (controller.signal.aborted && !timedOut)) return;
+      setError(timedOut
+        ? 'Generation timed out. No automatic retry was made.'
+        : err instanceof Error && (err.message.startsWith('Generation')
+          || err.message.startsWith('The generation')
+          || err.message.startsWith('Ontology')
+          || err.message.startsWith('Generated ontology'))
+          ? err.message
+          : 'Failed to generate ontology. Check your connection and try again.');
       setStep('error');
+    } finally {
+      clearTimeout(timeout);
     }
   };
 
@@ -226,15 +393,30 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
     if (!generatedOntology) return;
     
     try {
-      const ontologyToApply = editMode ? JSON.parse(editedJson) : generatedOntology;
+      const candidate: unknown = editMode
+        ? JSON.parse(editedJson)
+        : generatedOntology;
+      const ontologyToApply = parseBuilderOntology(candidate);
+      const validationErrors = validateGeneratedOntology(ontologyToApply);
+      if (validationErrors.length > 0) {
+        setError(formatValidationErrors(validationErrors));
+        return;
+      }
       loadOntology(ontologyToApply);
       handleClose();
-    } catch {
-      setError('Invalid JSON in editor');
+    } catch (err) {
+      setError(
+        err instanceof SyntaxError
+          ? 'Invalid JSON in editor'
+          : err instanceof Error
+            ? err.message
+            : 'Invalid ontology in editor',
+      );
     }
   };
 
   const handleClose = () => {
+    cancelRequest();
     shouldKeepListeningRef.current = false;
     stopRecording();
     setDescription('');
@@ -242,6 +424,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
     setGeneratedOntology(null);
     setError(null);
     setEditMode(false);
+    setConsent(false);
     onClose();
   };
 
@@ -272,7 +455,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
             <Sparkles size={20} style={{ color: 'var(--accent)' }} />
             <h2>Describe Your Ontology</h2>
           </div>
-          <button className="modal-close" onClick={handleClose}>
+          <button className="modal-close" onClick={handleClose} aria-label="Close ontology builder">
             <X size={20} />
           </button>
         </div>
@@ -283,10 +466,38 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                   Describe your business scenario in natural language or use voice input. 
                   AI will extract entities, relationships, and properties to create an ontology.
                 </p>
+
+                {connector ? (
+                  <div className="generation-connector-disclosure">
+                    <p>Selected generation connector: <strong>{connector.name}</strong></p>
+                    <p>Provider destination: <code>{connector.destination}</code></p>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={consent}
+                        onChange={event => setConsent(event.target.checked)}
+                      />
+                      I consent to send my description to {connector.name} at {connector.destination}.
+                    </label>
+                    <p>Your description is sent to this connector only when you choose Generate Ontology.</p>
+                  </div>
+                ) : connectorError ? (
+                  <div role="alert">
+                    <p>{connectorError}</p>
+                    <button onClick={reloadConnector}>Reload connector</button>
+                  </div>
+                ) : (
+                  <p role="status">Loading generation connector…</p>
+                )}
+                {voiceSupported && (
+                  <p>Voice input uses your browser's speech service, which may process audio remotely, separately from the generation connector.</p>
+                )}
                 
+                <p id="generation-description-warning">Do not include secrets or sensitive personal information.</p>
                 <div className="nl-input-wrapper">
                   <textarea
                     className="nl-input-textarea"
+                    aria-describedby="generation-description-warning"
                     placeholder="Describe your business scenario..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -303,6 +514,12 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                     </button>
                   )}
                 </div>
+                <p aria-live="polite">
+                  {description.length} / {MAX_DESCRIPTION_LENGTH} characters
+                </p>
+                {description.length > MAX_DESCRIPTION_LENGTH && (
+                  <p role="alert">Description must be at most {MAX_DESCRIPTION_LENGTH} characters, including voice input.</p>
+                )}
                 
                 {isRecording && (
                   <div className="recording-indicator">
@@ -335,7 +552,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                 <button
                   className="nl-generate-btn"
                   onClick={handleGenerate}
-                  disabled={!description.trim()}
+                  disabled={!description.trim() || description.length > MAX_DESCRIPTION_LENGTH || !connector || !consent}
                 >
                   <Sparkles size={16} />
                   Generate Ontology
@@ -351,6 +568,11 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                 <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
                   Extracting entities, relationships, and properties
                 </p>
+                <button className="btn-secondary" onClick={() => {
+                  cancelRequest();
+                  setConsent(false);
+                  setStep('input');
+                }}>← Back</button>
               </div>
             )}
 
@@ -430,8 +652,8 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
               {error || 'An unknown error occurred'}
             </p>
-            <button className="btn-secondary" onClick={() => setStep('input')}>
-              Try Again
+            <button className="btn-secondary" onClick={connector ? () => setStep('input') : reloadConnector}>
+              {connector ? 'Try Again' : 'Reload connector'}
             </button>
           </div>
         )}

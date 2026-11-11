@@ -210,8 +210,9 @@ The graph uses the `fcose` force-directed layout. It works best with:
 The embeddable widget renders the same graph and inspector in a standalone
 container. Everything mentioned above applies, plus:
 
-- **RDF Source tab** — the widget shows your ontology as RDF/XML. Clean
-  names produce readable RDF
+- **Generated RDF tab** — the widget serializes the supported visual model as
+  RDF/XML. For external catalogue standards, this is labelled as a subset and
+  is not a replacement for the verified original source
 - **Compact inspector** — the bottom overlay has limited space, so keep
   descriptions concise (one sentence, not a paragraph)
 - **No search/filter** — the embed doesn't have the search bar, so users
@@ -238,10 +239,65 @@ Every catalogue ontology needs a `metadata.json` alongside the `.rdf` file:
 |-------|----------|-------|
 | `name` | Yes | Same as the ontology's `name` field |
 | `description` | Yes | Short description for the gallery card |
-| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `technology`, `general`, `fibo` |
+| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `food`, `media`, `events`, `technology`, `general`, `iq-lab`, `school`, `fibo` |
 | `icon` | No | Emoji for the gallery card. Defaults to a generic icon |
 | `tags` | No | Array of strings for filtering. Keep them lowercase |
 | `author` | No | Your GitHub username. Shown in the gallery |
+| `license` | External: yes | SPDX identifier or short license name shown in the gallery |
+| `sourceUrl` | External: yes | HTTPS URL for the canonical upstream source |
+| `version` | No | Upstream ontology version represented by this entry |
+
+Community entries adapted from another open project should also provide
+`license`, `sourceUrl`, and `version` when known. Original community entries
+may omit them. The compiler rejects non-HTTPS source links.
+
+### Tier-aware validation
+
+Run `npm run validate` to validate built-in examples and every official,
+community, and external catalogue entry. The catalogue compiler applies the
+same tier selection and core checks:
+
+- **Official and community** entries use the strict Designer profile, including
+  identifier-property and Fabric naming requirements.
+- **External** entries must have stable class and relationship identifiers,
+  valid relationship endpoints, safe metadata, an HTTPS source URL, a license,
+  valid UTF-8 RDF/XML, and remain within source and graph resource limits.
+  Missing Designer identifiers and incompatible display labels are summarized
+  as compatibility warnings instead of thousands of repeated errors.
+- Validation rejects `DOCTYPE` and `ENTITY` declarations and does not fetch or
+  dereference `owl:imports` or any other external resource.
+
+### Original source versus the editable model
+
+Catalogue compilation publishes two independent, content-addressed artifacts:
+
+- the parsed graph payload used by the Playground; and
+- the exact RDF bytes reviewed in the repository.
+
+The gallery verifies the original artifact's SHA-256 and byte length before it
+displays or downloads it. Ontology IRI, version IRI, version information,
+license, imports, classes, object properties, and subclass edges are mapped
+into the editable model. Imports remain inert identifiers and are never
+dereferenced.
+
+External ontologies can also contain SHACL rules or RDF constructs the visual
+model does not support. Those bytes remain intact in the verified original but
+are not executed, edited, or reproduced by generated RDF. Treat the graph,
+Designer, generated export, and embed RDF view as a supported visual subset;
+use the original download when complete source semantics are required.
+
+Paths under `catalogue/` select their profile automatically:
+
+```bash
+npm run validate -- catalogue/external/brick-schema/brick/ontology.rdf
+```
+
+For a standalone external file, select the profile explicitly and place a
+valid `metadata.json` beside it:
+
+```bash
+npm run validate -- --profile external path/to/ontology.rdf
+```
 
 ---
 
@@ -310,7 +366,10 @@ How do these concepts connect?
 ### Step 5: Create in the designer or write RDF
 
 **Option A:** Open the Ontology Designer (`/#/designer`), add the entities and
-relationships visually, then export as RDF.
+relationships visually, then export as RDF. Use **Playground round-trip** when
+the file needs to remain fully editable in the Playground, or
+**Standards-oriented OWL + SHACL** for standards-based RDF tooling. See
+[RDF export profiles](./rdf-export-profiles.md) for the differences.
 
 **Option B:** Write the RDF directly following the pattern in any official
 ontology (e.g., `catalogue/official/cosmic-coffee/cosmic-coffee.rdf`).
@@ -322,7 +381,8 @@ ontology (e.g., `catalogue/official/cosmic-coffee/cosmic-coffee.rdf`).
    Loan?"
 3. Check the inspector: click each node and edge
 4. Switch to RDF Source tab: does it look clean?
-5. Run validation: `npm run validate -- path/to/your-ontology.rdf`
+5. Run validation: `npm run validate -- path/to/your-ontology.rdf`. Add
+   `--profile external` for a standalone external standard.
 
 ### Step 7: Submit
 

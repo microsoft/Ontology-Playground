@@ -10,5 +10,7 @@
     "manchester",
     "protege"
   ],
-  "author": "University of Manchester (adapted)"
+  "author": "University of Manchester (adapted)",
+  "license": "CC-BY-3.0",
+  "sourceUrl": "https://protege.stanford.edu/ontologies/pizza/pizza.owl"
 }

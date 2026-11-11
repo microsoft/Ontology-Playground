@@ -4,5 +4,8 @@
   "category": "finance",
   "icon": "📈",
   "tags": ["investment", "asset-management", "fibo-aligned", "knowledge-graph", "open-source"],
-  "author": "antikas"
+  "author": "antikas",
+  "license": "MIT",
+  "sourceUrl": "https://github.com/antikas/open-investment-model/tree/v0.2.1",
+  "version": "0.2.1"
 }

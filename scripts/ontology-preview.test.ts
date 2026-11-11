@@ -1,5 +1,28 @@
-import { describe, expect, it } from 'vitest';
-import { catalogueIdFromPath, entriesFromNameStatus } from './list-changed-catalogue-entries';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import {
+  catalogueIdFromPath,
+  entriesFromNameStatus,
+  type OntologyPreviewManifest,
+} from './list-changed-catalogue-entries';
+import {
+  preparePreviewAssets,
+  validateManifest,
+  type RenderedManifest,
+  type TrustedPreviewRun,
+} from './prepare-ontology-preview-assets';
+import { writeRenderedManifest } from './render-ontology-previews';
+
+const temporaryDirectories: string[] = [];
+
+afterEach(() => {
+  for (const directory of temporaryDirectories) {
+    rmSync(directory, { recursive: true, force: true });
+  }
+  temporaryDirectories.length = 0;
+});
 
 describe('ontology preview changed-entry detection', () => {
   it('maps catalogue paths to compiler-compatible ids', () => {
@@ -50,5 +73,108 @@ describe('ontology preview changed-entry detection', () => {
         changedFiles: ['catalogue/community/alice/valid-entry/ontology.rdf'],
       },
     ]);
+  });
+});
+
+describe('ontology preview artifact authentication', () => {
+  const trustedRun: TrustedPreviewRun = {
+    prNumber: 42,
+    headSha: '0123456789abcdef0123456789abcdef01234567',
+    repository: 'microsoft/Ontology-Playground',
+  };
+
+  const manifest: RenderedManifest = {
+    ...trustedRun,
+    previews: [
+      {
+        id: 'community/alice/supply-chain',
+        file: 'community-alice-supply-chain.png',
+        bytes: 2048,
+      },
+    ],
+  };
+
+  it('accepts a manifest bound to trusted workflow-run metadata', () => {
+    expect(() => validateManifest(manifest, trustedRun)).not.toThrow();
+  });
+
+  it('rejects manifest identity fields that do not match the workflow run', () => {
+    expect(() => validateManifest(
+      { ...manifest, prNumber: 7 },
+      trustedRun,
+    )).toThrow(/PR number does not match/);
+    expect(() => validateManifest(
+      { ...manifest, headSha: 'abcdef0123456789abcdef0123456789abcdef01' },
+      trustedRun,
+    )).toThrow(/head SHA does not match/);
+    expect(() => validateManifest(
+      { ...manifest, repository: 'attacker/fork' },
+      trustedRun,
+    )).toThrow(/repository does not match/);
+  });
+
+  it('rejects catalogue IDs that could inject preview comment markdown', () => {
+    expect(() => validateManifest({
+      ...manifest,
+      previews: [
+        {
+          id: 'official/safe\n\n[click](https://attacker.example)',
+          file: 'official-safe.png',
+          bytes: 2048,
+        },
+      ],
+    }, trustedRun)).toThrow(/invalid catalogue ID/);
+  });
+
+  it('requires preview filenames to be derived from their catalogue IDs', () => {
+    expect(() => validateManifest({
+      ...manifest,
+      previews: [
+        {
+          id: 'official/cosmic-coffee',
+          file: 'different.png',
+          bytes: 2048,
+        },
+      ],
+    }, trustedRun)).toThrow(/filename does not match catalogue ID/);
+  });
+
+  it('creates a publishable sanitized package when there are no previews', () => {
+    const root = mkdtempSync(join(tmpdir(), 'ontology-preview-'));
+    temporaryDirectories.push(root);
+    const artifactDir = join(root, 'artifact');
+    const publishDir = join(root, 'publish');
+    const commentPath = join(root, 'comment.md');
+    const sourceManifest: OntologyPreviewManifest = {
+      ...trustedRun,
+      baseSha: 'abcdef0123456789abcdef0123456789abcdef01',
+      entries: [],
+    };
+    writeRenderedManifest(artifactDir, sourceManifest, []);
+
+    preparePreviewAssets({
+      manifest: join(artifactDir, 'manifest.json'),
+      artifactDir,
+      publishDir,
+      comment: commentPath,
+      branch: 'ontology-preview-assets',
+      expectedRun: trustedRun,
+    });
+
+    const sanitizedManifest = join(
+      publishDir,
+      `pr-${trustedRun.prNumber}`,
+      trustedRun.headSha,
+      'manifest.json',
+    );
+    const zeroPreviewManifest: RenderedManifest = {
+      ...trustedRun,
+      previews: [],
+    };
+    expect(existsSync(sanitizedManifest)).toBe(true);
+    expect(JSON.parse(readFileSync(sanitizedManifest, 'utf-8'))).toEqual(zeroPreviewManifest);
+    expect(readFileSync(commentPath, 'utf-8')).toContain(
+      'No changed catalogue ontology entries were detected in this PR.',
+    );
   });
 });

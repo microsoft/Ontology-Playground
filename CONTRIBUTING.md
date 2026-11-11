@@ -42,6 +42,17 @@ The easiest way to contribute is to add an ontology to the community catalogue:
    ```
    catalogue/community/<your-github-username>/<ontology-slug>/
    ```
+   Every directory name must contain only lowercase letters, numbers, hyphens,
+   or underscores. The catalogue build rejects unsafe directory names,
+   symlinks (including catalogue and tier roots), and unsupported filesystem
+   entries instead of silently skipping them. The catalogue root may contain
+   only the `official`, `community`, and `external` directories plus regular
+   files such as `metadata-schema.json`. Regular files alongside catalogue
+   directories are ignored so grouping-level documentation is allowed.
+   Ontology-entry directories may contain regular files only; nested
+   directories and symlinks are rejected. An empty directory in an
+   ontology-entry position is treated as an intended entry and fails
+   validation because its RDF and metadata are missing.
 3. Add two files:
    - **`<ontology-slug>.rdf`** — your ontology in RDF/OWL format (you can
      export from the Ontology Playground UI)
@@ -63,6 +74,15 @@ The easiest way to contribute is to add an ontology to the community catalogue:
    npm run catalogue:build   # must succeed
    npm test                  # all tests must pass
    ```
+   The compiler writes card metadata to `public/catalogue.json` and writes each
+   graph to a content-addressed file under `public/catalogue-payloads/`. It
+   records every retained hash in `public/catalogue-payloads-manifest.json`.
+   These generated files are ignored by Git; the production build publishes
+   all three artifacts.
+   Deployment jobs must restore the previously published payload directory
+   before compiling and preserve the merged directory afterward. Payloads are
+   immutable, and keeping prior hashes lets open tabs finish requests against
+   an older catalogue index.
 5. **Open a Pull Request** against the `main` branch
    - CI will automatically validate your RDF and metadata
    - A maintainer will review and merge
@@ -81,6 +101,13 @@ The `metadata.json` file must conform to the schema at
 | `icon`        | No       | Emoji icon for display                                   |
 | `tags`        | No       | Array of tags for filtering                              |
 | `author`      | No       | Your GitHub username or name                             |
+| `license`     | No       | SPDX identifier or short license name                   |
+| `sourceUrl`   | No       | Canonical HTTPS URL for an adapted upstream ontology    |
+| `version`     | No       | Upstream ontology version represented by the entry      |
+
+If a community entry adapts an existing open ontology, include its license,
+canonical source URL, and version when known. Entries under
+`catalogue/external/` must provide both `license` and `sourceUrl`.
 
 ### Contributing Code
 

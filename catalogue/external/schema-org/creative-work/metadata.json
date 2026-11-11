@@ -3,5 +3,7 @@
   "description": "Books, movies, articles, and other creative works — modelling authorship, publication, and audience ratings from Schema.org.",
   "category": "media",
   "author": "Schema.org (adapted)",
-  "tags": ["schema-org", "creative-work", "book", "article", "structured-data"]
+  "tags": ["schema-org", "creative-work", "book", "article", "structured-data"],
+  "license": "CC-BY-SA-3.0",
+  "sourceUrl": "https://schema.org/version/latest/schemaorg-current-https.rdf"
 }
